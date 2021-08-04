@@ -1,13 +1,19 @@
 <template>
-  <h1>Zenodo</h1>
-  <div class="myform">
-    <json-forms
-      :data="data"
-      :renderers="renderers"
-      :schema="schema"
-      :uischema="uischema"
-      @change="onChange"
-    />
+  <div v-if="loggedIn">
+    <a href="/api/logout" class="button">Logout</a>
+    <h1>Zenodo</h1>
+    <div class="myform">
+      <json-forms
+        :data="data"
+        :renderers="renderers"
+        :schema="schema"
+        :uischema="uischema"
+        @change="onChange"
+      />
+    </div>
+  </div>
+  <div v-else>
+    <a href="/api/login" class="button">Login</a>
   </div>
 </template>
 
@@ -219,6 +225,21 @@ const schema = {
   "type": "object"
 };
 
+function readCookie(cname: string) {
+  const name = cname + "=";
+  const ca = document.cookie.split(';');
+  for(let i = 0; i < ca.length; i++) {
+    let c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 export default defineComponent({
   name: "DSP",
   components: {
@@ -233,13 +254,23 @@ export default defineComponent({
       //uischema,
     };
   },
+  computed: {
+    loggedIn: function () {
+      return readCookie("Authorization");
+    }
+  },
   methods: {
     onChange(event: JsonFormsChangeEvent) {
       this.data = event.data;
     },
+    getCookie(){
+      alert("hello world");
+      const authorization = readCookie("Authorization");
+      alert(authorization);
+    }
   },
   created: function() {
-    axios.get("https://localhost:8001/view/zenodo/853465/")
+    //axios.get("https://localhost:8001/view/zenodo/853465/")
   },
   provide() {
     return {
