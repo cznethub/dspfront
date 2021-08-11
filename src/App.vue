@@ -2,18 +2,26 @@
   <div v-if="loggedIn">
     <a href="/api/logout" class="button">Logout</a>
     <br>
-    <button @click="getSchema()">Schema</button>
+    <a href="/api/authorize/zenodo" class="button">Authorize Zenodo</a>
+    <br>
     <button @click="create()">Create</button>
-    <h1>Zenodo</h1>
-    <div class="myform">
-      <json-forms
-        :data="data"
-        :renderers="renderers"
-        :schema="schema"
-        :uischema="uischema"
-        @change="onChange"
-      />
+    <br>
+    <input v-model="recordId">
+    <button @click="read()">Show</button>
+    <div v-if="edit">
+      <button @click="save()">Save</button>
+      <h1>Zenodo</h1>
+      <div class="myform">
+        <json-forms
+          :data="data"
+          :renderers="renderers"
+          :schema="schema"
+          :uischema="uischema"
+          @change="onChange"
+        />
+      </div>
     </div>
+    <p>{{message}}</p>
   </div>
   <div v-else>
     <a href="/api/login" class="button">Login</a>
@@ -64,6 +72,9 @@ export default defineComponent({
       renderers: Object.freeze(renderers),
       data: {},
       schema: this.getSchema(),
+      recordId: "",
+      edit: false,
+      message: "",
       //uischema,
     };
   },
@@ -82,6 +93,38 @@ export default defineComponent({
     async getSchema(){
       const resp = await axios.get("/api/schema/zenodo.json");
       this.schema = resp.data;
+    },
+    async getAccessToken(){
+      const resp = await axios.get("/api/access_token/zenodo/");
+      return resp.data.token;
+    },
+    async create(){
+      const token = await this.getAccessToken();
+      const resp = await axios.post("https://sandbox.zenodo.org/api/deposit/depositions", {},
+          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}});
+      this.recordId = resp.data.record_id;
+      this.edit = true;
+    },
+    async save(){
+      const token = await this.getAccessToken();
+      const resp = await axios.put("https://sandbox.zenodo.org/api/deposit/depositions/" + this.recordId,
+          {metadata: this.data},
+          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}});
+      await this.read();
+    },
+    async read(){
+      const token = await this.getAccessToken();
+      await axios.get("https://sandbox.zenodo.org/api/deposit/depositions/" + this.recordId,
+          {params: {"access_token": token}})
+      .then((resp) => {
+        this.data = resp.data.metadata;
+        this.edit = true;
+      })
+      .catch((error) => {
+        this.data = {}
+        this.edit = false;
+        this.message = error.message;
+      });
     }
   },
   created: function() {
