@@ -46,21 +46,6 @@ const renderers = [
   // here you can add custom renderers
 ];
 
-function readCookie(cname: string) {
-  const name = cname + "=";
-  const ca = document.cookie.split(';');
-  for(let i = 0; i < ca.length; i++) {
-    let c = ca[i];
-    while (c.charAt(0) == ' ') {
-      c = c.substring(1);
-    }
-    if (c.indexOf(name) == 0) {
-      return c.substring(name.length, c.length);
-    }
-  }
-  return "";
-}
-
 export default defineComponent({
   name: "DSP",
   components: {
@@ -75,20 +60,23 @@ export default defineComponent({
       recordId: "",
       edit: false,
       message: "",
+      loggedIn: false,
       //uischema,
     };
-  },
-  computed: {
-    loggedIn: function () {
-      return readCookie("Authorization");
-    }
   },
   methods: {
     onChange(event: JsonFormsChangeEvent) {
       this.data = event.data;
     },
-    getCookie(){
-      const authorization = readCookie("Authorization");
+    async checkAuthorization() {
+      const status = await axios.get("/api")
+          .then((resp) => {
+            return true;
+          })
+          .catch((error) => {
+            return false;
+          });
+      this.loggedIn = status;
     },
     async getSchema(){
       const resp = await axios.get("/api/schema/zenodo.json");
@@ -128,7 +116,7 @@ export default defineComponent({
     }
   },
   created: function() {
-    //axios.get("https://localhost:8001/view/zenodo/853465/")
+    this.checkAuthorization();
   },
   provide() {
     return {
