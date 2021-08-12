@@ -65,6 +65,7 @@
 
                   <div class="dropdown-divider"></div>
                   <a class="dropdown-item" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
+                  <a class="dropdown-item" href="#" @click.prevent="alert('hi')">Delete</a>
                 </div>
               </div>
             </td>
@@ -87,7 +88,6 @@
           :directory="directory"
           :create-directory="createDirectory"
           :size="size || 0"
-          :thread="thread < 1 ? 1 : (thread > 5 ? 5 : thread)"
           :headers="headers"
           :data="data"
           :drop="drop"
