@@ -87,22 +87,39 @@ export default defineComponent({
       this.schema = resp.data;
     },
     async getAccessToken(){
-      const resp = await axios.get("/api/access_token/zenodo/");
-      return resp.data.token;
+      return await axios.get("/api/access_token/zenodo/").then((resp) => {
+        return resp.data.token;
+      })
+        .catch((error) => {
+          this.message = error.message;
+          throw error;
+        }
+      );
     },
     async create(){
       const token = await this.getAccessToken();
-      const resp = await axios.post("https://sandbox.zenodo.org/api/deposit/depositions", {},
-          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}});
-      this.recordId = resp.data.record_id;
-      this.edit = true;
+      await axios.post("https://sandbox.zenodo.org/api/deposit/depositions", {},
+          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
+          .then((resp) => {
+            this.recordId = resp.data.record_id;
+            this.edit = true;
+          })
+          .catch((error) => {
+            this.data = {}
+            this.edit = false;
+            this.message = error.message;
+          });
     },
     async save(){
       const token = await this.getAccessToken();
-      const resp = await axios.put("https://sandbox.zenodo.org/api/deposit/depositions/" + this.recordId,
+      await axios.put("https://sandbox.zenodo.org/api/deposit/depositions/" + this.recordId,
           {metadata: this.data},
-          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}});
-      await this.read();
+          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
+          .then(async (resp) => {
+            await this.read();
+          }).catch((error) => {
+            this.message = error.message;
+          });
     },
     async read(){
       const token = await this.getAccessToken();
