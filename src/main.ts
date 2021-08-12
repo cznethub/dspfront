@@ -1,6 +1,9 @@
 import '@jsonforms/vue-vanilla/vanilla.css';
 
 import App from './App.vue'
+import VueUploadComponent from 'vue-upload-component'
 import { createApp } from 'vue'
 
-createApp(App).mount('#app')
+const app = createApp(App)
+app.mount('#app')
+app.component('file-upload',VueUploadComponent)

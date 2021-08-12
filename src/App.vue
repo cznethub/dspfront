@@ -10,7 +10,8 @@
     <button @click="read()">Show</button>
     <div v-if="edit">
       <button @click="save()">Save</button>
-      <h1>Zenodo</h1>
+      <h1>{{ repository }}</h1>
+      <SimpleFileUpload></SimpleFileUpload>
       <div class="myform">
         <json-forms
           :data="data"
@@ -37,6 +38,7 @@ import {
   mergeStyles,
   vanillaRenderers,
 } from "@jsonforms/vue-vanilla";
+import SimpleFileUpload from "@/SimpleFileUpload.vue";
 
 // mergeStyles combines all classes from both styles definitions into one
 const myStyles = mergeStyles(defaultStyles, { control: { label: "mylabel" } });
@@ -49,6 +51,7 @@ const renderers = [
 export default defineComponent({
   name: "DSP",
   components: {
+    SimpleFileUpload,
     JsonForms,
   },
   data() {
@@ -56,6 +59,7 @@ export default defineComponent({
       // freeze renderers for performance gains
       renderers: Object.freeze(renderers),
       data: {},
+      repository: "Zenodo",
       schema: this.getSchema(),
       recordId: "",
       edit: false,
