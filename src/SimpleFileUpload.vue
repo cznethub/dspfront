@@ -82,11 +82,7 @@
       <div class="btn-group">
         <file-upload
           class="btn btn-primary dropdown-toggle"
-          :post-action="postAction"
-          :put-action="putAction"
-          :put-action1="putAction"
-          :extensions="extensions"
-          :accept="accept"
+          :custom-action="customAction"
           :multiple="multiple"
           :directory="directory"
           :create-directory="createDirectory"
@@ -98,8 +94,6 @@
           :drop-directory="dropDirectory"
           :add-index="addIndex"
           v-model="files"
-          @input-filter="inputFilter"
-          @input-file="inputFile"
           ref="upload">
           <i class="fa fa-plus"></i>
           Select
@@ -121,100 +115,6 @@
     </div>
   </div>
 
-
-
-
-
-  <div class="option" v-show="isOption">
-    <div class="form-group">
-      <label for="accept">Accept:</label>
-      <input type="text" id="accept" class="form-control" v-model="accept">
-      <small class="form-text text-muted">Allow upload mime type</small>
-    </div>
-    <div class="form-group">
-      <label for="extensions">Extensions:</label>
-      <input type="text" id="extensions" class="form-control" v-model="extensions">
-      <small class="form-text text-muted">Allow upload file extension</small>
-    </div>
-    <div class="form-group">
-      <label>PUT Upload:</label>
-      <div class="form-check">
-        <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="put-action1" id="put-action1" value="" v-model="putAction"> Off
-        </label>
-      </div>
-      <div class="form-check">
-        <label class="form-check-label">
-          <input class="form-check-input" type="radio" name="put-action" id="put-action" value="/upload/put" v-model="putAction"> On
-        </label>
-      </div>
-      <small class="form-text text-muted">After the shutdown, use the POST method to upload</small>
-    </div>
-    <div class="form-group">
-      <label for="thread">Thread:</label>
-      <input type="number" max="5" min="1" id="thread" class="form-control" v-model.number="thread">
-      <small class="form-text text-muted">Also upload the number of files at the same time (number of threads)</small>
-    </div>
-    <div class="form-group">
-      <label for="size">Max size:</label>
-      <input type="number" min="0" id="size" class="form-control" v-model.number="size">
-    </div>
-    <div class="form-group">
-      <label for="minSize">Min size:</label>
-      <input type="number" min="0" id="minSize" class="form-control" v-model.number="minSize">
-    </div>
-    <div class="form-group">
-      <label for="autoCompress">Automatically compress:</label>
-      <input type="number" min="0" id="autoCompress" class="form-control" v-model.number="autoCompress">
-      <small class="form-text text-muted" v-if="autoCompress > 0">More than {{autoCompress}} files are automatically compressed</small>
-      <small class="form-text text-muted" v-else>Set up automatic compression</small>
-    </div>
-
-    <div class="form-group">
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="checkbox" id="add-index" class="form-check-input" v-model="addIndex"> Start position to add
-        </label>
-      </div>
-      <small class="form-text text-muted">Add a file list to start the location to add</small>
-    </div>
-
-    <div class="form-group">
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="checkbox" id="drop" class="form-check-input" v-model="drop"> Drop
-        </label>
-      </div>
-      <small class="form-text text-muted">Drag and drop upload</small>
-    </div>
-    <div class="form-group">
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="checkbox" id="drop-directory" class="form-check-input" v-model="dropDirectory"> Drop directory
-        </label>
-      </div>
-      <small class="form-text text-muted">Not checked, filter the dragged folder</small>
-    </div>
-    <div class="form-group">
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="checkbox" id="create-directory" class="form-check-input" v-model="createDirectory"> Create Directory
-        </label>
-      </div>
-      <small class="form-text text-muted">The directory file will send an upload request. The mime type is <code>text/directory</code></small>
-    </div>
-    <div class="form-group">
-      <div class="form-check">
-        <label class="form-check-label">
-          <input type="checkbox" id="upload-auto" class="form-check-input" v-model="uploadAuto"> Auto start
-        </label>
-      </div>
-      <small class="form-text text-muted">Automatically activate upload</small>
-    </div>
-    <div class="form-group">
-      <button type="button" class="btn btn-primary btn-lg btn-block" @click.prevent="isOption = !isOption">Confirm</button>
-    </div>
-  </div>
 
 </div>
 </template>
@@ -342,6 +242,7 @@
 
 <script>
 import FileUpload from 'vue-upload-component'
+import axios from "axios";
 export default {
   components: {
     FileUpload,
@@ -350,10 +251,6 @@ export default {
   data() {
     return {
       files: [],
-      //accept: 'image/png,image/gif,image/jpeg,image/webp',
-      //extensions: 'gif,jpg,jpeg,png,webp',
-      // extensions: ['gif', 'jpg', 'jpeg','png', 'webp'],
-      // extensions: /\.(gif|jpe?g|png|webp)$/i,
       minSize: 1024,
       size: 1024 * 1024 * 10,
       multiple: true,
@@ -364,13 +261,12 @@ export default {
       addIndex: false,
       thread: 3,
       name: 'file',
-      postAction: '/upload/post',
-      putAction: '/upload/put',
-      headers: {
-        'X-Csrf-Token': 'xxxx',
-      },
-      data: {
-        '_csrf_token': 'xxxxxx',
+      customAction: async (file, component) => {
+        const token = await this.$parent.getAccessToken()
+        const url = 'https://sandbox.zenodo.org/api/deposit/depositions/' + this.$parent.recordId + "/files"
+        const form = new window.FormData()
+        form.append(this.name, file.file, file.file.name || file.file.filename  || file.name)
+        await axios.post(url, form, {headers: {'Content-Type': 'multipart/form-data'}, params: {"access_token": token}})
       },
 
       autoCompress: 1024 * 1024,
@@ -527,19 +423,6 @@ export default {
           document.querySelector("body").removeChild(input)
         })
       }
-    },
-
-    onAddData() {
-      this.addData.show = false
-      if (!this.$refs.upload.features.html5) {
-        this.alert('Your browser does not support')
-        return
-      }
-
-      const file = new window.File([this.addData.content], this.addData.name, {
-        type: this.addData.type,
-      })
-      this.$refs.upload.add(file)
     }
   }
 }
