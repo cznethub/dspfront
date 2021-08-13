@@ -300,7 +300,12 @@ export default {
       const url = "https://sandbox.zenodo.org/api/deposit/depositions/" + this.$parent.recordId + "/files"
       const token = await this.$parent.getAccessToken()
       return await axios.get(url, {params: {"access_token": token}}).then((resp) => {
-        return [{"name": resp.data[0].filename, "size": resp.data[0].filesize, "id": resp.data[0].id, "upload": false, "active": false, "progress": '0.00', "success": true, "speed": 0}]
+        const files = []
+        const respData = resp.data
+        respData.forEach((f, index) => {
+          files.push({"name": f.filename, "size": f.filesize, "id": f.id, "upload": false, "active": false, "progress": '0.00', "success": true, "speed": 0})
+        })
+        return files
       }).catch((error) => {
         return []
       })
