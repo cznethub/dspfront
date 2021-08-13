@@ -56,7 +56,7 @@
 
                   <div class="dropdown-divider"></div>
                   <a :class="{'dropdown-item': true, disabled: file.success}" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
-                  <a class="dropdown-item" href="#" @click.prevent="alert('hi')">Delete</a>
+                  <a :class="{'dropdown-item': true, disabled: !file.success}" href="#" @click.prevent="deleteFile(file)">Delete</a>
                 </div>
               </div>
             </td>
@@ -64,6 +64,7 @@
         </tbody>
       </table>
     </div>
+
     <div class="example-foorer">
       <div class="footer-status float-right">
         Drop: {{$refs.upload ? $refs.upload.drop : false}},
@@ -242,6 +243,8 @@ export default {
   data() {
     return {
       files: [],
+      data: null,
+      headers: null,
       minSize: 1024,
       size: 1024 * 1024 * 10,
       multiple: true,
@@ -257,7 +260,9 @@ export default {
         const url = 'https://sandbox.zenodo.org/api/deposit/depositions/' + this.$parent.recordId + "/files"
         const form = new window.FormData()
         form.append(this.name, file.file, file.file.name || file.file.filename  || file.name)
-        await axios.post(url, form, {headers: {'Content-Type': 'multipart/form-data'}, params: {"access_token": token}})
+        await axios.post(url, form, {headers: {'Content-Type': 'multipart/form-data'}, params: {"access_token": token}}).then((resp) => {
+          file.response.id = resp.data.id
+        })
       },
 
       autoCompress: 1024 * 1024,
@@ -291,8 +296,8 @@ export default {
   },
 
   async created() {
-    const files = await this.listFiles()
-    this.files = files
+    await this.listFiles()
+    //this.files = files
   },
 
   methods: {
@@ -303,114 +308,41 @@ export default {
         const files = []
         const respData = resp.data
         respData.forEach((f, index) => {
-          files.push({"name": f.filename, "size": f.filesize, "id": f.id, "upload": false, "active": false, "progress": '0.00', "success": true, "speed": 0})
+          files.push({
+            "name": f.filename,
+            "size": f.filesize,
+            "response": {"id": f.id},
+            "upload": false,
+            "active": false,
+            "progress": '0.00',
+            "success": true,
+            "speed": 0,
+            // these are required for remove to work
+            "fileObject": null,
+            "type": null,
+            "error": null,
+            "putAction": null,
+            "postAction": null,
+            "timeout": null,
+            "id": f.id,
+            "file": null,
+            "data": null,
+            "headers": null})
         })
-        return files
-      }).catch((error) => {
-        return []
+        this.files = files
       })
     },
-    inputFilter(newFile, oldFile, prevent) {
-      if (newFile && !oldFile) {
-        // Before adding a file
-        // 添加文件前
-
-        // Filter system files or hide files
-        // 过滤系统文件 和隐藏文件
-        if (/(\/|^)(Thumbs\.db|desktop\.ini|\..+)$/.test(newFile.name)) {
-          return prevent()
+    async deleteFile(file) {
+      // 899159
+      const url = "https://sandbox.zenodo.org/api/deposit/depositions/" + this.$parent.recordId + "/files/" + file.response.id
+      const token = await this.$parent.getAccessToken()
+      await axios.delete(url, {params: {"access_token": token}}).then((resp) => {
+        if(!this.$refs.upload.remove(file.id)){
+          this.$parent.message = "file was deleted but failed to remove from listing"
         }
-
-        // Filter php html js file
-        // 过滤 php html js 文件
-        if (/\.(php5?|html?|jsx?)$/i.test(newFile.name)) {
-          return prevent()
-        }
-      }
-
-
-      if (newFile && newFile.error === "" && newFile.file && (!oldFile || newFile.file !== oldFile.file)) {
-        // Create a blob field
-        // 创建 blob 字段
-        newFile.blob = ''
-        const URL = (window.URL || window.webkitURL)
-        if (URL) {
-          newFile.blob = URL.createObjectURL(newFile.file)
-        }
-
-        // Thumbnails
-        // 缩略图
-        newFile.thumb = ''
-        if (newFile.blob && newFile.type.substr(0, 6) === 'image/') {
-          newFile.thumb = newFile.blob
-        }
-      }
-
-      // image size
-      // image 尺寸
-      if (newFile && newFile.error === '' && newFile.type.substr(0, 6) === "image/" && newFile.blob && (!oldFile || newFile.blob !== oldFile.blob)) {
-        newFile.error = 'image parsing'
-        const img = new Image();
-        img.onload = () => {
-          this.$refs.upload.update(newFile, {error: '', height: img.height, width: img.width})
-        }
-        img.οnerrοr = (e) => {
-          this.$refs.upload.update(newFile, { error: 'parsing image size'})
-        }
-        img.src = newFile.blob
-      }
-    },
-
-    // add, update, remove File Event
-    inputFile(newFile, oldFile) {
-      if (newFile && oldFile) {
-        // update
-
-        if (newFile.active && !oldFile.active) {
-          // beforeSend
-
-          // min size
-          if (newFile.size >= 0 && this.minSize > 0 && newFile.size < this.minSize) {
-            this.$refs.upload.update(newFile, { error: 'size' })
-          }
-        }
-
-        if (newFile.progress !== oldFile.progress) {
-          // progress
-        }
-
-        if (newFile.error && !oldFile.error) {
-          // error
-        }
-
-        if (newFile.success && !oldFile.success) {
-          // success
-        }
-      }
-
-
-      if (!newFile && oldFile) {
-        // remove
-        if (oldFile.success && oldFile.response.id) {
-          // $.ajax({
-          //   type: 'DELETE',
-          //   url: '/upload/delete?id=' + oldFile.response.id,
-          // })
-        }
-      }
-
-
-      // Automatically activate upload
-      if (Boolean(newFile) !== Boolean(oldFile) || oldFile.error !== newFile.error) {
-        if (this.uploadAuto && !this.$refs.upload.active) {
-          this.$refs.upload.active = true
-        }
-      }
-    },
-
-
-    alert(message) {
-      alert(message)
+      }).catch((error) => {
+        this.$parent.message = error.message
+      })
     },
 
     // add folder

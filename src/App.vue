@@ -1,5 +1,6 @@
 <template>
   <div v-if="loggedIn">
+    <p>{{message}}</p>
     <a href="/api/logout" class="button">Logout</a>
     <br>
     <a href="/api/authorize/zenodo" class="button">Authorize Zenodo</a>
@@ -22,7 +23,6 @@
         />
       </div>
     </div>
-    <p>{{message}}</p>
   </div>
   <div v-else>
     <a href="/api/login" class="button">Login</a>
@@ -65,7 +65,7 @@ export default defineComponent({
       edit: false,
       message: "",
       loggedIn: false,
-      //uischema,
+      uischema: {},
     };
   },
   methods: {
