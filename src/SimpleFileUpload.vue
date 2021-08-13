@@ -10,10 +10,7 @@
         <thead>
           <tr>
             <th>#</th>
-            <th>Thumb</th>
             <th>Name</th>
-            <th>Width</th>
-            <th>Height</th>
             <th>Size</th>
             <th>Speed</th>
             <th>Status</th>
@@ -32,10 +29,6 @@
           <tr v-for="(file, index) in files" :key="file.id">
             <td>{{index}}</td>
             <td>
-              <img class="td-image-thumb" v-if="file.thumb" :src="file.thumb" />
-              <span v-else>No Image</span>
-            </td>
-            <td>
               <div class="filename">
                 {{file.name}}
               </div>
@@ -43,8 +36,6 @@
                 <div :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}" role="progressbar" :style="{width: file.progress + '%'}">{{file.progress}}%</div>
               </div>
             </td>
-            <td>{{file.width || 0}}</td>
-            <td>{{file.height || 0}}</td>
             <td>{{file.size}}</td>
             <td>{{file.speed}}</td>
 
@@ -64,7 +55,7 @@
                   <a :class="{'dropdown-item': true, disabled: file.success || file.error === 'compressing' || file.error === 'image parsing'}" href="#" v-else @click.prevent="file.success || file.error === 'compressing' || file.error === 'image parsing' ? false : $refs.upload.update(file, {active: true})">Upload</a>
 
                   <div class="dropdown-divider"></div>
-                  <a class="dropdown-item" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
+                  <a :class="{'dropdown-item': true, disabled: file.success}" href="#" @click.prevent="$refs.upload.remove(file)">Remove</a>
                   <a class="dropdown-item" href="#" @click.prevent="alert('hi')">Delete</a>
                 </div>
               </div>
@@ -299,7 +290,21 @@ export default {
     },
   },
 
+  async created() {
+    const files = await this.listFiles()
+    this.files = files
+  },
+
   methods: {
+    async listFiles() {
+      const url = "https://sandbox.zenodo.org/api/deposit/depositions/" + this.$parent.recordId + "/files"
+      const token = await this.$parent.getAccessToken()
+      return await axios.get(url, {params: {"access_token": token}}).then((resp) => {
+        return [{"name": resp.data[0].filename, "size": resp.data[0].filesize, "id": resp.data[0].id, "upload": false, "active": false, "progress": '0.00', "success": true, "speed": 0}]
+      }).catch((error) => {
+        return []
+      })
+    },
     inputFilter(newFile, oldFile, prevent) {
       if (newFile && !oldFile) {
         // Before adding a file
