@@ -65,7 +65,7 @@ export default defineComponent({
       edit: false,
       message: "",
       loggedIn: false,
-      uischema: {},
+      uischema: null,
     };
   },
   methods: {
