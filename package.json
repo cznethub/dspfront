@@ -13,9 +13,9 @@
     "@jsonforms/vue-vanilla": "^2.5.1",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "sprintf-js": "^1.1.2",
     "vue": "^3.0.0",
-    "vue-upload-component": "^3.0.47",
-    "sprintf-js": "^1.1.2"
+    "vue-upload-component": "^3.0.47"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.33.0",
