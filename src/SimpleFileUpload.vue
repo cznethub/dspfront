@@ -257,7 +257,8 @@ export default {
       name: 'file',
       customAction: async (file, component) => {
         const token = await this.$parent.getAccessToken()
-        const url = 'https://sandbox.zenodo.org/api/deposit/depositions/' + this.$parent.recordId + "/files"
+        const recordId = this.$parent.recordId
+        const url = `https://sandbox.zenodo.org/api/deposit/depositions/${recordId}/files`
         const form = new window.FormData()
         form.append(this.name, file.file, file.file.name || file.file.filename  || file.name)
         await axios.post(url, form, {headers: {'Content-Type': 'multipart/form-data'}, params: {"access_token": token}}).then((resp) => {
@@ -302,7 +303,8 @@ export default {
 
   methods: {
     async listFiles() {
-      const url = "https://sandbox.zenodo.org/api/deposit/depositions/" + this.$parent.recordId + "/files"
+      const recordId = this.$parent.recordId
+      const url = `https://sandbox.zenodo.org/api/deposit/depositions/${recordId}/files`
       const token = await this.$parent.getAccessToken()
       return await axios.get(url, {params: {"access_token": token}}).then((resp) => {
         const files = []
@@ -334,7 +336,9 @@ export default {
     },
     async deleteFile(file) {
       // 899159
-      const url = "https://sandbox.zenodo.org/api/deposit/depositions/" + this.$parent.recordId + "/files/" + file.response.id
+      const recordId = this.$parent.recordId
+      const fileId = file.response.id
+      const url = `https://sandbox.zenodo.org/api/deposit/depositions/${recordId}/files/${fileId}`
       const token = await this.$parent.getAccessToken()
       await axios.delete(url, {params: {"access_token": token}}).then((resp) => {
         if(!this.$refs.upload.remove(file.id)){
