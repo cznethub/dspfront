@@ -15,7 +15,7 @@
     "core-js": "^3.6.5",
     "vue": "^3.0.0",
     "vue-upload-component": "^3.0.47",
-    "vue-router": "^3.5.2"
+    "sprintf-js": "^1.1.2"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.33.0",

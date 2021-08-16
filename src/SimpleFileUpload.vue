@@ -235,6 +235,8 @@
 <script>
 import FileUpload from 'vue-upload-component'
 import axios from "axios";
+
+const sprintf = require('sprintf-js').sprintf;
 export default {
   components: {
     FileUpload,
@@ -256,9 +258,11 @@ export default {
       thread: 3,
       name: 'file',
       customAction: async (file, component) => {
+        const recordUrl = 'https://sandbox.zenodo.org/api/deposit/depositions/%s/files'
         const token = await this.$parent.getAccessToken()
         const recordId = this.$parent.recordId
-        const url = `https://sandbox.zenodo.org/api/deposit/depositions/${recordId}/files`
+
+        const url = sprintf(recordUrl, recordId)
         const form = new window.FormData()
         form.append(this.name, file.file, file.file.name || file.file.filename  || file.name)
         await axios.post(url, form, {headers: {'Content-Type': 'multipart/form-data'}, params: {"access_token": token}}).then((resp) => {
@@ -303,8 +307,10 @@ export default {
 
   methods: {
     async listFiles() {
+      const filesUrl = 'https://sandbox.zenodo.org/api/deposit/depositions/%s/files'
       const recordId = this.$parent.recordId
-      const url = `https://sandbox.zenodo.org/api/deposit/depositions/${recordId}/files`
+
+      const url = sprintf(filesUrl, recordId)
       const token = await this.$parent.getAccessToken()
       return await axios.get(url, {params: {"access_token": token}}).then((resp) => {
         const files = []
@@ -336,9 +342,11 @@ export default {
     },
     async deleteFile(file) {
       // 899159
+      const fileUrl = 'https://sandbox.zenodo.org/api/deposit/depositions/%s/files/%s'
       const recordId = this.$parent.recordId
       const fileId = file.response.id
-      const url = `https://sandbox.zenodo.org/api/deposit/depositions/${recordId}/files/${fileId}`
+
+      const url = sprintf(fileUrl, recordId, fileId)
       const token = await this.$parent.getAccessToken()
       await axios.delete(url, {params: {"access_token": token}}).then((resp) => {
         if(!this.$refs.upload.remove(file.id)){
