@@ -40,6 +40,7 @@ import {
 } from "@jsonforms/vue-vanilla";
 import SimpleFileUpload from "@/SimpleFileUpload.vue";
 
+const sprintf = require('sprintf-js').sprintf;
 // mergeStyles combines all classes from both styles definitions into one
 const myStyles = mergeStyles(defaultStyles, { control: { label: "mylabel" } });
 
@@ -98,7 +99,8 @@ export default defineComponent({
     },
     async create(){
       const token = await this.getAccessToken();
-      await axios.post("https://sandbox.zenodo.org/api/deposit/depositions", {},
+      const createUrl = "https://sandbox.zenodo.org/api/deposit/depositions"
+      await axios.post(createUrl, {},
           {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
           .then((resp) => {
             this.recordId = resp.data.record_id;
@@ -112,7 +114,9 @@ export default defineComponent({
     },
     async save(){
       const token = await this.getAccessToken();
-      await axios.put("https://sandbox.zenodo.org/api/deposit/depositions/" + this.recordId,
+      const recordUrl = "https://sandbox.zenodo.org/api/deposit/depositions/%s"
+      const url = sprintf(recordUrl, this.recordId)
+      await axios.put(url,
           {metadata: this.data},
           {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
           .then(async (resp) => {
@@ -123,7 +127,9 @@ export default defineComponent({
     },
     async read(){
       const token = await this.getAccessToken();
-      await axios.get("https://sandbox.zenodo.org/api/deposit/depositions/" + this.recordId,
+      const recordUrl = "https://sandbox.zenodo.org/api/deposit/depositions/%s"
+      const url = sprintf(recordUrl, this.recordId)
+      await axios.get(url,
           {params: {"access_token": token}})
       .then((resp) => {
         this.data = resp.data.metadata;
