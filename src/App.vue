@@ -60,13 +60,22 @@ export default defineComponent({
       // freeze renderers for performance gains
       renderers: Object.freeze(renderers),
       data: {},
-      repository: "Zenodo",
-      schema: this.getSchema(),
+      repository: "zenodo",
+      schema: "",
       recordId: "",
       edit: false,
       message: "",
       loggedIn: false,
       uischema: null,
+
+      createUrl: "",
+      updateUrl: "",
+      readUrl: "",
+      fileCreateUrl: "",
+      fileDeleteUrl: "",
+      fileReadUrl: "",
+      schemaUrl: "",
+      accessTokenUrl: ""
     };
   },
   methods: {
@@ -83,12 +92,25 @@ export default defineComponent({
           });
       this.loggedIn = status;
     },
+    async getUrls() {
+      const resp = await axios.get("/api/urls/" + this.repository);
+
+      this.schemaUrl = resp.data.schema;
+      this.createUrl = resp.data.create;
+      this.updateUrl = resp.data.update;
+      this.readUrl = resp.data.read;
+      this.fileCreateUrl = resp.data.file_create;
+      this.fileDeleteUrl = resp.data.file_delete;
+      this.fileReadUrl = resp.data.file_read;
+      this.accessTokenUrl = resp.data.access_token;
+      await this.getSchema();
+    },
     async getSchema(){
-      const resp = await axios.get("/api/schema/zenodo.json");
+      const resp = await axios.get(this.schemaUrl);
       this.schema = resp.data;
     },
     async getAccessToken(){
-      return await axios.get("/api/access_token/zenodo/").then((resp) => {
+      return await axios.get(this.accessTokenUrl).then((resp) => {
         return resp.data.token;
       })
         .catch((error) => {
@@ -98,9 +120,8 @@ export default defineComponent({
       );
     },
     async create(){
-      const token = await this.getAccessToken();
-      const createUrl = "https://sandbox.zenodo.org/api/deposit/depositions"
-      await axios.post(createUrl, {},
+      const token = await this.getAccessToken()
+      await axios.post(this.createUrl, {},
           {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
           .then((resp) => {
             this.recordId = resp.data.record_id;
@@ -113,9 +134,8 @@ export default defineComponent({
           });
     },
     async save(){
-      const token = await this.getAccessToken();
-      const recordUrl = "https://sandbox.zenodo.org/api/deposit/depositions/%s"
-      const url = sprintf(recordUrl, this.recordId)
+      const token = await this.getAccessToken()
+      const url = sprintf(this.updateUrl, this.recordId)
       await axios.put(url,
           {metadata: this.data},
           {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
@@ -126,9 +146,8 @@ export default defineComponent({
           });
     },
     async read(){
-      const token = await this.getAccessToken();
-      const recordUrl = "https://sandbox.zenodo.org/api/deposit/depositions/%s"
-      const url = sprintf(recordUrl, this.recordId)
+      const token = await this.getAccessToken()
+      const url = sprintf(this.readUrl, this.recordId)
       await axios.get(url,
           {params: {"access_token": token}})
       .then((resp) => {
@@ -143,12 +162,13 @@ export default defineComponent({
     }
   },
   created: function() {
-    this.checkAuthorization();
+    this.checkAuthorization()
+    this.getUrls()
   },
   provide() {
     return {
       styles: myStyles,
-    };
+    }
   },
 });
 </script>

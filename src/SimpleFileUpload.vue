@@ -258,7 +258,7 @@ export default {
       thread: 3,
       name: 'file',
       customAction: async (file, component) => {
-        const recordUrl = 'https://sandbox.zenodo.org/api/deposit/depositions/%s/files'
+        const recordUrl = this.$parent.fileCreateUrl
         const token = await this.$parent.getAccessToken()
         const recordId = this.$parent.recordId
 
@@ -307,7 +307,7 @@ export default {
 
   methods: {
     async listFiles() {
-      const filesUrl = 'https://sandbox.zenodo.org/api/deposit/depositions/%s/files'
+      const filesUrl = this.$parent.fileReadUrl
       const recordId = this.$parent.recordId
 
       const url = sprintf(filesUrl, recordId)
@@ -342,7 +342,7 @@ export default {
     },
     async deleteFile(file) {
       // 899159
-      const fileUrl = 'https://sandbox.zenodo.org/api/deposit/depositions/%s/files/%s'
+      const fileUrl = this.$parent.fileDeleteUrl
       const recordId = this.$parent.recordId
       const fileId = file.response.id
 
