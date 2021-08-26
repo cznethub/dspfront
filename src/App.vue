@@ -3,6 +3,10 @@
     <p>{{ message }}</p>
     <a href="/api/logout" class="button">Logout</a>
     <br>
+    <select v-model="repository" @change="repositorySelected($event)">
+      <option v-for="repo in repositories" v-bind:key="repo" v-bind:value="repo">{{ repo }}</option>
+    </select>
+    <br>
     <a :href="authorizeUrl" class="button">Authorize {{ repository }}</a>
     <br>
     <button @click="create()">Create</button>
@@ -55,12 +59,24 @@ export default defineComponent({
     SimpleFileUpload,
     JsonForms,
   },
+  mounted() {
+    if (localStorage.repository) {
+      this.repository = localStorage.repository
+    }
+  },
+  watch: {
+    repository(newRepo) {
+      localStorage.repository = this.repository
+      this.getUrls()
+    }
+  },
   data() {
     return {
       // freeze renderers for performance gains
       renderers: Object.freeze(renderers),
       data: {},
-      repository: "hydroshare",
+      repositories: ['zenodo', 'hydroshare'],
+      repository: "zenodo",
       schema: "",
       recordId: "",
       edit: false,
@@ -87,6 +103,9 @@ export default defineComponent({
   methods: {
     finishedListFiles(){
       this.loadFiles = false
+    },
+    repositorySelected(event: any) {
+      this.getUrls()
     },
     onChange(event: JsonFormsChangeEvent) {
       this.data = event.data;

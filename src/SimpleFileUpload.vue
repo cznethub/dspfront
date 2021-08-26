@@ -267,7 +267,7 @@ export default {
         const form = new window.FormData()
         form.append(this.name, file.file, file.file.name || file.file.filename  || file.name)
         await axios.post(url, form, {headers: {'Content-Type': 'multipart/form-data'}, params: {"access_token": token}}).then((resp) => {
-          file.response.id = resp.data.id
+          file.response.id = resp.data.file_name ? resp.data.file_name : resp.data.id
         })
       },
 
@@ -326,9 +326,9 @@ export default {
         const respData = this.$parent.filesKey ? resp.data[this.$parent.filesKey] : resp.data
         respData.forEach((f, index) => {
           files.push({
-            "name": f.file_name,
-            "size": f.size,
-            "response": {"id": f.file_name},
+            "name": f.file_name ? f.file_name : f.filename,
+            "size": f.size ? f.size : f.filesize,
+            "response": {"id": f.file_name ? f.file_name : f.id},
             "upload": false,
             "active": false,
             "progress": '0.00',
@@ -341,7 +341,7 @@ export default {
             "putAction": null,
             "postAction": null,
             "timeout": null,
-            "id": f.id,
+            "id": f.file_name ? f.file_name : f.id,
             "file": null,
             "data": null,
             "headers": null})
@@ -353,9 +353,7 @@ export default {
       // 899159
       const fileUrl = this.$parent.fileDeleteUrl
       const recordId = this.$parent.recordId
-      const fileId = file.response.id
-
-      const url = sprintf(fileUrl, recordId, fileId)
+      const url = sprintf(fileUrl, recordId, file.response.id)
       const token = await this.$parent.getAccessToken()
       await axios.delete(url, {params: {"access_token": token}}).then((resp) => {
         if(!this.$refs.upload.remove(file.id)){
