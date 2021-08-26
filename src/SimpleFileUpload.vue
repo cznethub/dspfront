@@ -1,6 +1,5 @@
 <template>
 <div class="example-full">
-  <button v-if="loadFiles" @click="showRecord" class="btn btn-success">Reload Files</button>
   <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
 		<h3>Drop files to upload</h3>
   </div>
@@ -289,6 +288,10 @@ export default {
         name: '',
       }
     }
+  },
+
+  created: function() {
+    this.showRecord()
   },
 
   watch: {
