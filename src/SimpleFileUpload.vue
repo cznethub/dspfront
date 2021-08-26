@@ -1,6 +1,6 @@
 <template>
 <div class="example-full">
-
+  <button v-if="loadFiles" @click="showRecord" class="btn btn-success">Reload Files</button>
   <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
 		<h3>Drop files to upload</h3>
   </div>
@@ -242,6 +242,8 @@ export default {
     FileUpload,
   },
 
+  props: ["loadFiles"],
+
   data() {
     return {
       files: [],
@@ -298,14 +300,18 @@ export default {
         this.addData.content = ''
       }
     },
-  },
-
-  async created() {
-    await this.listFiles()
-    //this.files = files
+    'loadFiles'(load) {
+      if(load){
+        this.showRecord()
+      }
+    },
   },
 
   methods: {
+    showRecord() {
+      this.listFiles()
+      this.$emit('finishedListFiles')
+    },
     async listFiles() {
       const filesUrl = this.$parent.fileReadUrl
       const recordId = this.$parent.recordId
@@ -314,12 +320,12 @@ export default {
       const token = await this.$parent.getAccessToken()
       return await axios.get(url, {params: {"access_token": token}}).then((resp) => {
         const files = []
-        const respData = resp.data
+        const respData = this.$parent.filesKey ? resp.data[this.$parent.filesKey] : resp.data
         respData.forEach((f, index) => {
           files.push({
-            "name": f.filename,
-            "size": f.filesize,
-            "response": {"id": f.id},
+            "name": f.file_name,
+            "size": f.size,
+            "response": {"id": f.file_name},
             "upload": false,
             "active": false,
             "progress": '0.00',

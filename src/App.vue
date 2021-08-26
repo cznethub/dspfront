@@ -1,9 +1,9 @@
 <template>
   <div v-if="loggedIn">
-    <p>{{message}}</p>
+    <p>{{ message }}</p>
     <a href="/api/logout" class="button">Logout</a>
     <br>
-    <a href="/api/authorize/zenodo" class="button">Authorize Zenodo</a>
+    <a :href="authorizeUrl" class="button">Authorize {{ repository }}</a>
     <br>
     <button @click="create()">Create</button>
     <br>
@@ -12,7 +12,7 @@
     <div v-if="edit">
       <button @click="save()">Save</button>
       <h1>{{ repository }}</h1>
-      <SimpleFileUpload></SimpleFileUpload>
+      <SimpleFileUpload :loadFiles="loadFiles" @finishedListFiles="finishedListFiles"></SimpleFileUpload>
       <div class="myform">
         <json-forms
           :data="data"
@@ -60,7 +60,7 @@ export default defineComponent({
       // freeze renderers for performance gains
       renderers: Object.freeze(renderers),
       data: {},
-      repository: "zenodo",
+      repository: "hydroshare",
       schema: "",
       recordId: "",
       edit: false,
@@ -75,10 +75,19 @@ export default defineComponent({
       fileDeleteUrl: "",
       fileReadUrl: "",
       schemaUrl: "",
-      accessTokenUrl: ""
+      accessTokenUrl: "",
+      authorizeUrl: "",
+      recordKey: "",
+      filesKey: "",
+      metadataKey: "",
+
+      loadFiles: false
     };
   },
   methods: {
+    finishedListFiles(){
+      this.loadFiles = false
+    },
     onChange(event: JsonFormsChangeEvent) {
       this.data = event.data;
     },
@@ -103,6 +112,10 @@ export default defineComponent({
       this.fileDeleteUrl = resp.data.file_delete;
       this.fileReadUrl = resp.data.file_read;
       this.accessTokenUrl = resp.data.access_token;
+      this.authorizeUrl = resp.data.authorize_url;
+      this.recordKey = resp.data.record_key;
+      this.filesKey = resp.data.files_key;
+      this.metadataKey = resp.data.metadata_key;
       await this.getSchema();
     },
     async getSchema(){
@@ -124,8 +137,9 @@ export default defineComponent({
       await axios.post(this.createUrl, {},
           {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
           .then((resp) => {
-            this.recordId = resp.data.record_id;
+            this.recordId = resp.data[this.recordKey];
             this.edit = true;
+            this.read()
           })
           .catch((error) => {
             this.data = {}
@@ -136,8 +150,14 @@ export default defineComponent({
     async save(){
       const token = await this.getAccessToken()
       const url = sprintf(this.updateUrl, this.recordId)
+      let data: {[index: string]: any} = {}
+      if(this.metadataKey){
+        data[this.metadataKey] = this.data;
+      } else{
+        data = this.data;
+      }
       await axios.put(url,
-          {metadata: this.data},
+          data,
           {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
           .then(async (resp) => {
             await this.read();
@@ -151,8 +171,9 @@ export default defineComponent({
       await axios.get(url,
           {params: {"access_token": token}})
       .then((resp) => {
-        this.data = resp.data.metadata;
+        this.data = this.metadataKey ? resp.data["metadata"] : resp.data;
         this.edit = true;
+        this.loadFiles = true
       })
       .catch((error) => {
         this.data = {}
