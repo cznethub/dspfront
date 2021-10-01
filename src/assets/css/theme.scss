@@ -29,6 +29,16 @@
     font-size: 14px;
     font-size: 1.4rem;
   }
+
+  .content-wrapper {
+    max-width: 120rem;
+    flex-grow: 1;
+  }
+
+  .content-row {
+    display: flex;
+    justify-content: center;
+  }
   
   a {
     text-decoration: none;
