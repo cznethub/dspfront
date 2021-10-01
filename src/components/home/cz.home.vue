@@ -1,13 +1,12 @@
 <template>
   <div class="cz-home">
-    <section class="banner has-text-centered">
+    <section class="banner has-text-centered"
+      :style="{ 'background-image': 'url(' + require('@/assets/img/placeholder.png') + ')' }">
       <h1>Critical Zone Collaborative Network</h1>
       <h2 class="has-text-mute">Data Submission Portal</h2>
       <h2 class="has-text-mute">Ready to Submit Data?</h2>
-      <button>Log In</button>
+      <button class="button">Log In</button>
     </section>
-
-    <hr>
 
     <section class="has-text-centered">
       <h1>Submit Your Research Products</h1>
@@ -46,17 +45,17 @@
       <h1>What do you want to do?</h1>
       <ul class="features is-flex">
         <li class="is-flex-direction-column">
-          <img src="" alt="">
+          <img :src="require('@/assets/img/placeholder.png')" alt="">
           <h3>Submit Data Products</h3>
           <p class="has-text-mute">Assemble your data files and metadata using our templates and submit directly to a supported repository.</p>
         </li>
         <li class="is-flex-direction-column">
-          <img src="" alt="">
+          <img :src="require('@/assets/img/placeholder.png')" alt="">
           <h3>Find the Right Repository</h3>
           <p class="has-text-mute">Don't know which repository to use? Use our repository recommendation system to decide which repository is the best place for your data.</p>
         </li>
         <li class="is-flex-direction-column">
-          <img src="" alt="">
+          <img :src="require('@/assets/img/placeholder.png')" alt="">
           <h3>Explore CZCN Data</h3>
           <p class="has-text-mute">All products submitted via this Portal are  cataloged for browsing and discovery via the <a href="https://www.hydroshare.org/" target="_blank">HydroShare repository</a>. </p>
         </li>
@@ -99,10 +98,19 @@
     padding: 4rem;
   }
 
+  .banner {
+    background-size: contain;
+  }
+
   .features {
     align-items: center;
     flex-wrap: wrap;
     justify-content: space-evenly;
+
+    h3 {
+      line-height: 2;
+      margin-bottom: 1rem;
+    }
 
     & > li {
       display: flex;
@@ -113,6 +121,8 @@
 
       i {
         margin: 0;
+        font-size: 5rem;
+        margin-right: 2rem;
       }
     }
   }
