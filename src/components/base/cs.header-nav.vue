@@ -40,5 +40,12 @@
 </script>
 
 <style lang="scss" scoped>
+  /deep/ .navbar-brand {
+    margin-right: 4rem;
+  }
+
+  .navbar {
+    border-bottom: 1px solid #DDD;
+  }
   
 </style>
