@@ -1,0 +1,127 @@
+:root {
+    --dark: #0D0F15;
+    --main-blue: #14A9DD;
+    --dark-gray: #1A1D27;
+    --text-mute: #9699AF;
+  }
+  
+  @import '~@fortawesome/fontawesome-free/css/all.min.css';
+  
+  body, html {
+    padding: 0;
+    margin: 0;
+    // background: var(--dark);
+    // color: #ffffff;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 500;
+    min-height: 100%;
+    height: 100%;
+  }
+  
+  body {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  a {
+    text-decoration: none;
+    color: #14A9DD;
+  }
+  
+  .full-height {
+    height: 100%;
+  }
+  
+  .has-text-mute {
+    color: var(--text-mute) !important;
+  }
+  
+  .has-border-gray {
+    border: 1px solid var(--dark-gray);
+  }
+  
+  .has-background-dark {
+    background: var(--dark) !important;
+  }
+  
+  .has-background-dark-gray {
+    background: var(--dark-gray);
+  }
+  
+  .has-background-dark--gradient {
+    background: linear-gradient(180deg, #0D0F15 0%, #1A1D27 100%);
+  }
+  
+  .button {
+    padding: 10px 30px !important;
+    border: 2px solid #14A9DD !important;
+    border-radius: 40px;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    height: auto;
+    transition: color 0.15s ease;
+  
+    .chevron {
+      margin-left: 15px;
+      font-size: 24px;
+      line-height: 0;
+      margin-bottom: 2px;
+    }
+  }
+  
+  .button.is-primary {
+    background: var(--main-blue);
+  }
+  
+  .button.is-primary:hover, 
+  .button.is-primary.is-hovered {
+    background: #31c4f7;
+  }
+  
+  .button.is-dark {
+    background: var(--dark);
+  }
+  
+  .content-block {
+    padding: 160px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  @media screen and (max-width: 768px) {
+    .content-block {
+      padding: 48px 0;
+    }
+  }
+  
+  .block-section {
+    padding-left: 8vw;
+    padding-right: 8vw;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+  }
+  
+  html.has-navbar-fixed-top, 
+  body.has-navbar-fixed-top {
+    padding-top: 101px;
+  }
+  
+  .is-clickable {
+    cursor: pointer;
+    transition: color 0.15s ease;
+  
+    &:hover {
+      color: var(--main-blue) !important;
+    }
+  }
+  
+  .is-flipped-x {
+    transform: scaleX(-1);
+  }

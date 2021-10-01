@@ -232,13 +232,13 @@
 </style>
 
 <script>
-import FileUpload from 'vue-upload-component'
+// import FileUpload from 'vue-upload-component'
 import axios from "axios";
 
 const sprintf = require('sprintf-js').sprintf;
 export default {
   components: {
-    FileUpload,
+    // FileUpload,
   },
 
   props: ["loadFiles"],
