@@ -13,7 +13,7 @@
       <h1>Submit Your Research Products</h1>
       <p class="has-text-mute">Created for the Critical Zone Collaborative Network (CZCN), this Data Submission Portal provides tools for determining which repository to use for data submission along with enhanced submission tools to encourage data standards, complete metadata, and high-quality submissions.</p>
 
-      <ul class="features">
+      <ul class="features is-flex-desktop">
         <li class="level has-text-left">
           <i class="far fa-check-circle level-item"></i>
           <div>
@@ -38,15 +38,13 @@
           </div>
         </li>
       </ul>
-     
     </section>
 
     <hr>
 
     <section class="has-text-centered">
       <h1>What do you want to do?</h1>
-
-       <ul class="features">
+      <ul class="features is-flex">
         <li class="is-flex-direction-column">
           <img src="" alt="">
           <h3>Submit Data Products</h3>
@@ -102,7 +100,6 @@
   }
 
   .features {
-    display: flex;
     align-items: center;
     flex-wrap: wrap;
     justify-content: space-evenly;
