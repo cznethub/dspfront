@@ -1,6 +1,6 @@
 <template>
-  <footer class="cz-footer has-text-mute content-row">
-    <div class="content-wrapper">
+  <footer class="cz-footer has-text-mute">
+    <div class="container">
       <div class="footer-top is-flex-desktop">
         <section>
           <h3>Contact Us</h3>
@@ -47,6 +47,7 @@
     padding: 2rem;
     background: var(--bg-light-gray);
     display: flex;
+    justify-content: center;
   }
 
   .footer-top {

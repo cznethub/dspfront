@@ -1,8 +1,8 @@
 <template>
   <div class="cz-home">
-    <section class="banner has-text-centered content-row"
+    <section class="banner has-text-centered is-flex is-justify-content-center section"
       :style="{ 'background-image': 'url(' + require('@/assets/img/placeholder.png') + ')' }">
-      <div class="content-wrapper">
+      <div class="container">
         <h1>Critical Zone Collaborative Network</h1>
         <h2 class="has-text-mute">Data Submission Portal</h2>
         <h2 class="has-text-mute" style="margin-top: 4rem;">Ready to Submit Data?</h2>
@@ -10,8 +10,8 @@
       </div>
     </section>
 
-    <section class="has-text-centered content-row">
-      <div class="content-wrapper">
+    <section class="has-text-centered is-flex is-justify-content-center section">
+      <div class="container">
         <div class="is-flex is-flex-direction-column is-align-items-center">
           <h1>Submit Your Research Products</h1>
           <p class="has-text-mute">Created for the Critical Zone Collaborative Network (CZCN), this Data Submission Portal provides tools for determining which repository to use for data submission along with enhanced submission tools to encourage data standards, complete metadata, and high-quality submissions.</p>
@@ -47,8 +47,8 @@
 
     <hr>
 
-    <section class="has-text-centered content-row">
-      <div class="content-wrapper">
+    <section class="has-text-centered is-flex is-justify-content-center section">
+      <div class="container">
         <h1>What do you want to do?</h1>
         <ul class="features is-flex">
           <li class="is-flex-direction-column">
@@ -72,23 +72,23 @@
 
     <hr>
 
-    <section class="content-row">
-      <div class="content-wrapper is-flex">
+    <section class="is-flex is-justify-content-center section">
+      <div class="container">
         <div class="is-flex-grow-1">
           <h1>Make your Data FAIR</h1>
           <p class="has-text-mute">This Data Submission Portal works with reputable Earth Science repositories to ensure that research products you submit are <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and <u>R</u>eusable.</p>
         </div>
 
         <div class="is-flex-grow-1">
-          <img :src="require('@/assets/img/placeholder.png')" alt="">
+          <img :src="require('@/assets/img/placeholder.png')" alt="" style="width: 50rem;">
         </div>
       </div>
     </section>
 
     <hr>
 
-    <section class="has-text-centered content-row">
-      <div class="content-wrapper">
+    <section class="has-text-centered is-flex is-justify-content-center section">
+      <div class="container">
         <div class="is-flex is-flex-direction-column is-align-items-center">
           <h1>Supported Repositories</h1>
           <p class="has-text-mute">Data submitted via this Portal are deposited in multiple repositories. Click the links below to learn more about each of the supported repositories.</p>

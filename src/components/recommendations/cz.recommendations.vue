@@ -55,7 +55,7 @@ types of data together</h3>
 
 <style lang="scss" scoped>
   .cz-recommendations-content {
-    padding: 2rem 4rem;
+    padding: 4rem 2rem;
   }
 
   .banner {

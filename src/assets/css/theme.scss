@@ -11,8 +11,6 @@
   body, html {
     padding: 0;
     margin: 0;
-    // background: var(--dark);
-    // color: #ffffff;
     font-family: 'Inter';
     font-style: normal;
     font-weight: 500;
@@ -31,15 +29,10 @@
     font-size: 1.4rem;
   }
 
-  .content-wrapper {
-    max-width: 120rem;
-    flex-grow: 1;
-  }
-
-  .content-row {
-    display: flex;
-    justify-content: center;
-  }
+  // .content-wrapper {
+  //   max-width: 120rem;
+  //   flex-grow: 1;
+  // }
   
   a {
     text-decoration: none;
@@ -68,66 +61,6 @@
   
   .has-background-dark--gradient {
     background: linear-gradient(180deg, #0D0F15 0%, #1A1D27 100%);
-  }
-  
-  .button {
-    padding: 10px 30px !important;
-    border: 2px solid #14A9DD !important;
-    border-radius: 40px;
-    display: inline-flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    height: auto;
-    transition: color 0.15s ease;
-  
-    .chevron {
-      margin-left: 15px;
-      font-size: 24px;
-      line-height: 0;
-      margin-bottom: 2px;
-    }
-  }
-  
-  .button.is-primary {
-    background: var(--main-blue);
-  }
-  
-  .button.is-primary:hover, 
-  .button.is-primary.is-hovered {
-    background: #31c4f7;
-  }
-  
-  .button.is-dark {
-    background: var(--dark);
-  }
-  
-  .content-block {
-    padding: 160px 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-  }
-  
-  @media screen and (max-width: 768px) {
-    .content-block {
-      padding: 48px 0;
-    }
-  }
-  
-  .block-section {
-    padding-left: 8vw;
-    padding-right: 8vw;
-    width: 100%;
-    position: relative;
-    z-index: 1;
-  }
-  
-  html.has-navbar-fixed-top, 
-  body.has-navbar-fixed-top {
-    padding-top: 101px;
   }
   
   .is-clickable {
