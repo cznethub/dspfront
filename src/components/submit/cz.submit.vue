@@ -4,7 +4,7 @@
       <div class="container is-flex is-flex-direction-column is-justify-content-center is-align-items-center">
         <h1 class="has-space-bottom-2x has-text-weight-medium">Submit Data</h1>
         <h2 class="has-text-mute has-space-bottom-2x">Not sure which repository to use?</h2>
-        <button class="button is-size-4">Help Me Decide</button>
+        <button class="button is-size-4" @click="goToRecommendations">Help Me Decide</button>
       </div>
     </div>
 
@@ -67,7 +67,9 @@
     components: { },
   })
   export default class CzSubmit extends Vue {
-
+    protected goToRecommendations() {
+      this.$router.push({ path: '/recommendations' })
+    }
   }
 </script>
 

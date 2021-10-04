@@ -72,8 +72,8 @@
 
     <hr>
 
-    <section class="is-flex is-justify-content-center section">
-      <div class="container">
+    <section class="section">
+      <div class="container is-flex is-justify-content-center ">
         <div class="is-flex-grow-1">
           <h1>Make your Data FAIR</h1>
           <p class="has-text-mute">This Data Submission Portal works with reputable Earth Science repositories to ensure that research products you submit are <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and <u>R</u>eusable.</p>
