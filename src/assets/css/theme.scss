@@ -3,6 +3,7 @@
     --main-blue: #14A9DD;
     --dark-gray: #1A1D27;
     --text-mute: #9699AF;
+    --bg-light-gray: #EFEFEF;
   }
   
   @import '~@fortawesome/fontawesome-free/css/all.min.css';
@@ -137,9 +138,33 @@
       color: var(--main-blue) !important;
     }
   }
+
+  .is-marginless {
+    margin: 0;
+  }
   
   .is-flipped-x {
     transform: scaleX(-1);
+  }
+
+  .has-space-bottom {
+    margin-bottom: 1.5rem;
+  }
+
+  .has-space-bottom-2x {
+    margin-bottom: 3rem;
+  }
+
+  .has-space-top {
+    margin-top: 1.5rem;
+  }
+
+  .has-space-top-2x {
+    margin-top: 3rem;
+  }
+
+  .spacer {
+    flex: 1 1 auto;
   }
 
   h1 { font-size: 30px; font-size: 3rem !important; }

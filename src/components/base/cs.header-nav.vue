@@ -17,7 +17,7 @@
       <template #end>
         <b-navbar-item tag="div">
           <div class="buttons">
-            <a class="button is-light">
+            <a class="button is-light is-size-5">
               Log in
             </a>
           </div>

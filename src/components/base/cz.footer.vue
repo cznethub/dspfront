@@ -45,7 +45,7 @@
 <style lang="scss" scoped>
   .cz-footer {
     padding: 2rem;
-    background: #EFEFEF;
+    background: var(--bg-light-gray);
     display: flex;
   }
 

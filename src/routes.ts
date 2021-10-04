@@ -8,6 +8,7 @@ import CzAbout from '@/components/about/cz.about.vue'
 import CzSubmit from '@/components/submit/cz.submit.vue'
 import CzResources from '@/components/resources/cz.resources.vue'
 import CzContact from '@/components/contact/cz.contact.vue'
+import CzRecommendations from '@/components/recommendations/cz.recommendations.vue'
 
 export const routes: RouteConfig[] = [
     {
@@ -39,6 +40,14 @@ export const routes: RouteConfig[] = [
         path: '/resources',
         components: {
             content: CzResources,
+            footer: CzFooter
+        },
+    },
+    {
+        name: 'recommendations',
+        path: '/recommendations',
+        components: {
+            content: CzRecommendations,
             footer: CzFooter
         },
     },

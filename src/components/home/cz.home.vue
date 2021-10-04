@@ -6,7 +6,7 @@
         <h1>Critical Zone Collaborative Network</h1>
         <h2 class="has-text-mute">Data Submission Portal</h2>
         <h2 class="has-text-mute" style="margin-top: 4rem;">Ready to Submit Data?</h2>
-        <button class="button">Log In</button>
+        <button class="button is-size-3">Log In</button>
       </div>
     </section>
 
@@ -17,25 +17,25 @@
           <p class="has-text-mute">Created for the Critical Zone Collaborative Network (CZCN), this Data Submission Portal provides tools for determining which repository to use for data submission along with enhanced submission tools to encourage data standards, complete metadata, and high-quality submissions.</p>
         </div>
 
-        <ul class="features is-flex-desktop">
-          <li class="level has-text-left">
-            <i class="far fa-check-circle level-item"></i>
+        <ul class="features is-flex-desktop is-align-items-flex-start">
+          <li class="level has-text-left is-align-items-flex-start">
+            <i class="far fa-check-circle level-item" />
             <div>
               <h3>Which repository?</h3>
               <p class="has-text-mute">Use the Portal's repository recommendation system to determine which repository is right for submitting your research products.</p>
             </div>
           </li>
 
-          <li class="level has-text-left">
-            <i class="far fa-check-circle"></i>
+          <li class="level has-text-left is-align-items-flex-start">
+            <i class="far fa-check-circle" />
             <div>
               <h3>Which format?</h3>
               <p class="has-text-mute">Use CZ community recommendations to decide on formats and conventions for your data files.</p>
             </div>
           </li>
 
-          <li class="level has-text-left">
-            <i class="far fa-check-circle"></i>
+          <li class="level has-text-left is-align-items-flex-start">
+            <i class="far fa-check-circle" />
             <div>
               <h3>Which metadata?</h3>
               <p class="has-text-mute">Use the Portal's submission tools to ensure your metadata are complete and that your data are well described.</p>
@@ -130,6 +130,14 @@
     background-size: contain;
     padding-top: 6rem;
     padding-bottom: 6rem;
+
+    h1 {
+      margin-bottom: 2rem;
+    }
+
+    button {
+      margin-top: 2rem;
+    }
   }
 
   .features {

@@ -32,6 +32,7 @@ Vue.use(Buefy, {
 Vue.use(VueCompositionAPI)
 
 const router = new VueRouter({
+    mode: 'history',
     routes
 })
 
