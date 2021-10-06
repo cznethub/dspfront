@@ -1,0 +1,175 @@
+<template>
+  <div class="cz-submissions">
+    <section class="section cz-submissions--header">
+      <div class="container">
+        <div class="level is-justify-content-space-between">
+          <h1 class="title is-1">My Submissions</h1>
+          <div class="level">
+            <span class="has-space-right">New Submission</span>
+            <b-field>
+              <b-select size="is-medium" placeholder="Select a repository">
+                <option v-for="(repo, index) in repoOptions" :value="repo" :key="index">{{ enumRepositories[repo] }}</option>
+              </b-select>
+            </b-field>
+          </div>
+        </div>
+
+        <div class="box">
+          <div id="filters">
+            <b-field label="Search by Title and Author">
+              <b-input placeholder="Search submissions..." size="is-medium" icon="search" />
+            </b-field>
+
+            <div class="is-flex is-justify-content-flex-start is-align-items-flex-start">
+              <div class="is-flex is-justify-content-flex-start has-space-right">
+                <label for="status" class="has-text-weight-bold has-space-right">Status</label>
+                <div id="status" class="is-grid" style="grid-template-columns: auto;">
+                  <b-checkbox v-for="(status, index) of statusOptions" v-model="filters.statusOptions"
+                    :key="index" :native-value="status">
+                      <span>{{ enumSubmissionStatus[status] }}</span>
+                  </b-checkbox>
+                </div>
+              </div>
+
+              <div class="is-flex is-justify-content-flex-start">
+                <label for="repos" class="has-text-weight-bold has-space-right">Repository</label>
+                <div id="repos" class="is-grid" style="grid-template-columns: auto auto;">
+                  <b-checkbox v-for="(repo, index) of repoOptions" v-model="filters.repoOptions"
+                    :key="index" :native-value="repo">
+                      <span>{{ enumRepositories[repo] }}</span>
+                  </b-checkbox>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h3 class="title is-3">{{ 43 }} Total Submissions</h3>
+        <b-table :data="submissions" paginated :per-page="5" pagination-position="both">
+          <b-table-column field="title" label="Title" v-slot="props" :visible="false">
+            {{ props.row.title }}
+          </b-table-column>
+
+          <b-table-column field="authors" label="Authors" v-slot="props" :visible="false">
+            {{ props.row.authors.join(', ') }}
+          </b-table-column>
+
+          <b-table-column field="repository" label="Submission Repository" v-slot="props" :visible="false">
+            {{ props.row.repository }}
+          </b-table-column>
+
+          <b-table-column field="date" label="Submission Date" v-slot="props" :visible="false">
+            {{ props.row.date.toLocaleDateString() }}
+          </b-table-column>
+
+          <b-table-column field="status" label="Status" v-slot="props" :visible="false">
+            {{ props.row.status }}
+          </b-table-column>
+
+          <b-table-column field="identifier" label="Identifier" v-slot="props" :visible="false">
+            {{ props.row.identifier }}
+          </b-table-column>
+
+          <b-table-column v-slot="props">
+            <h4 class="is-size-4 has-text-weight-bold block">Title: {{ props.row.title }}</h4>
+            <p><b>Authors: </b>{{ props.row.authors.join(', ')}}</p>
+            <p><b>Submission Repository: </b>{{ props.row.repository }}</p>
+            <p><b>Submission Date: </b>{{ props.row.date.toLocaleDateString() }}</p>
+            <p><b>Status: </b>{{ props.row.status }}</p>
+            <p><b>Identifier: </b>{{ props.row.identifier }}</p>
+
+          </b-table-column>
+
+          <b-table-column>
+            <b-button class="block" expanded size="is-medium" type="is-primary">View Record In Repository</b-button>
+            <b-button class="block" expanded size="is-medium">Edit Submission</b-button>
+            <b-button class="block" expanded size="is-medium">Update Record</b-button>
+          </b-table-column>
+
+          <template #empty>
+            <div class="has-text-centered">No records</div>
+          </template>
+        </b-table>
+      </div>
+    </section>
+  </div>
+</template>
+
+<script lang="ts">
+  import { Component, Vue } from 'vue-property-decorator'
+  import { CzEnumRepositories, CzEnumSubmissionStatus, CzISubmission } from '@/components/submissions/types'
+  import { SUBMISSIONS } from '@/components/submissions/submissions.mock'
+
+  @Component({
+    name: 'cz-submissions',
+    components: { },
+  })
+  export default class CzSubmissions extends Vue {
+    protected submissions!: CzISubmission[]
+
+    protected filters: {
+      statusOptions: string[],
+      repoOptions: string[]
+    } = { statusOptions: [], repoOptions: [] }
+    protected enumSubmissionStatus = CzEnumSubmissionStatus
+    protected enumRepositories = CzEnumRepositories
+
+    protected get statusOptions() {
+      const options: string[] = []
+      for (const status in CzEnumSubmissionStatus) {
+        options.push(status)
+      }
+
+      return options
+    }
+
+    protected get repoOptions() {
+      const options: string[] = []
+      for (const repo in CzEnumRepositories) {
+        options.push(repo)
+      }
+
+      return options
+    }
+
+    beforeCreate() {
+      this.submissions = SUBMISSIONS
+    }
+  }
+</script>
+
+<style lang="scss" scoped>
+  /*.cz-submissions--header {
+    /deep/ select {
+      width: 20rem;
+    }
+
+    /deep/ input {
+      max-width: 40rem;
+    }
+  }*/
+
+  #filters {
+    max-width: 60rem;
+
+    .is-grid {
+      align-items: flex-start;
+    }
+
+    /deep/ .checkbox .control-label > span {
+      white-space: nowrap;
+    }
+
+    .b-checkbox {
+      margin: 0 2rem 1rem 0;
+    }
+  }
+
+  /deep/ table td {
+    padding: 2rem;
+  }
+</style>
