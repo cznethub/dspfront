@@ -20,9 +20,9 @@
               <b-input placeholder="Search submissions..." size="is-medium" icon="search" />
             </b-field>
 
-            <div class="is-flex is-justify-content-flex-start is-align-items-flex-start">
-              <div class="is-flex is-justify-content-flex-start has-space-right">
-                <label for="status" class="has-text-weight-bold has-space-right">Status</label>
+            <div class="is-flex is-justify-content-flex-start is-align-items-flex-start is-flex-wrap-wrap">
+              <div class="block is-flex has-space-right is-flex-direction-column">
+                <label for="status" class="has-text-weight-bold has-space-bottom">Status</label>
                 <div id="status" class="is-grid" style="grid-template-columns: auto;">
                   <b-checkbox v-for="(status, index) of statusOptions" v-model="filters.statusOptions"
                     :key="index" :native-value="status">
@@ -31,8 +31,8 @@
                 </div>
               </div>
 
-              <div class="is-flex is-justify-content-flex-start">
-                <label for="repos" class="has-text-weight-bold has-space-right">Repository</label>
+              <div class="block is-flex is-flex-direction-column">
+                <label for="repos" class="has-text-weight-bold has-space-bottom">Repository</label>
                 <div id="repos" class="is-grid" style="grid-template-columns: auto auto;">
                   <b-checkbox v-for="(repo, index) of repoOptions" v-model="filters.repoOptions"
                     :key="index" :native-value="repo">
@@ -57,7 +57,8 @@
             <div class="table-header">
               <div class="level">
                 <b-button size="is-medium">Export Submissions</b-button>
-                <div class="level level-right">
+                <hr class="is-hidden-tablet">
+                <div class="is-flex is-align-items-center">
                   <span class="has-text-weight-bold has-space-right">Sort</span>
                   <b-field>
                     <b-select size="is-medium" v-model="currentSort.defaultSort">
@@ -101,18 +102,22 @@
               </b-table-column>
 
               <b-table-column v-slot="props">
-                <h4 class="is-size-4 has-text-weight-bold block">Title: {{ props.row.title }}</h4>
-                <p><b>Authors: </b>{{ props.row.authors.join(', ')}}</p>
-                <p><b>Submission Repository: </b>{{ props.row.repository }}</p>
-                <p><b>Submission Date: </b>{{ props.row.date.toLocaleDateString() }}</p>
-                <p><b>Status: </b>{{ props.row.status }}</p>
-                <p><b>Identifier: </b>{{ props.row.identifier }}</p>
+                <div class="is-flex is-flex-direction-column is-align-items-flex-start">
+                  <h4 class="is-size-4 has-text-weight-bold block">Title: {{ props.row.title }}</h4>
+                  <p class="has-text-left"><b>Authors: </b>{{ props.row.authors.join(', ')}}</p>
+                  <p class="has-text-left"><b>Submission Repository: </b>{{ props.row.repository }}</p>
+                  <p class="has-text-left"><b>Submission Date: </b>{{ props.row.date.toLocaleDateString() }}</p>
+                  <p class="has-text-left"><b>Status: </b>{{ props.row.status }}</p>
+                  <p class="has-text-left"><b>Identifier: </b>{{ props.row.identifier }}</p>
+                </div>
               </b-table-column>
 
               <b-table-column>
-                <b-button class="block" expanded size="is-medium" type="is-primary">View Record In Repository</b-button>
-                <b-button class="block" expanded size="is-medium">Edit Submission</b-button>
-                <b-button class="block" expanded size="is-medium">Update Record</b-button>
+                <div class="is-flex is-flex-direction-column is-align-items-flex-start is-flex-grow-1">
+                  <b-button class="block" expanded size="is-medium" type="is-primary">View Record In Repository</b-button>
+                  <b-button class="block" expanded size="is-medium">Edit Submission</b-button>
+                  <b-button class="block" expanded size="is-medium">Update Record</b-button>
+                </div>
               </b-table-column>
 
               <template #empty>
@@ -242,5 +247,20 @@
 
   .panel-block {
     font-size: 1.4rem;
+
+    /deep/ .table-mobile-sort {
+      display: none;
+    }
+
+    /deep/ .table-wrapper.has-mobile-cards {
+      td {
+        padding: 0;
+        padding-bottom: 2rem;
+      }
+
+      tr {
+        box-shadow: none;
+      }
+    }
   }
 </style>
