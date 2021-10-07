@@ -48,60 +48,87 @@
 
     <section class="section">
       <div class="container">
-        <h3 class="title is-3">{{ 43 }} Total Submissions</h3>
-        <b-table :data="submissions" paginated :per-page="5" pagination-position="both">
-          <b-table-column field="title" label="Title" v-slot="props" :visible="false">
-            {{ props.row.title }}
-          </b-table-column>
+        <div class="level is-align-items-center">
+          <h3 class="title is-3 is-marginless">{{ submissions.length }} Total Submissions</h3>
+          <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
+        </div>
+        <article class="panel">
+          <div class="panel-heading">
+            <div class="table-header">
+              <div class="level">
+                <b-button size="is-medium">Export Submissions</b-button>
+                <div class="level level-right">
+                  <span class="has-text-weight-bold has-space-right">Sort</span>
+                  <b-field>
+                    <b-select size="is-medium" v-model="currentSort.defaultSort">
+                      <option v-for="sort in sortOptions" :value="sort" :key="sort">{{ enumSubmissionSorts[sort] }}</option>
+                    </b-select>
 
-          <b-table-column field="authors" label="Authors" v-slot="props" :visible="false">
-            {{ props.row.authors.join(', ') }}
-          </b-table-column>
+                    <b-select size="is-medium" v-model="currentSort.defaultSortDirection">
+                      <option v-for="direction in sortDirectionOptions" :value="direction" :key="direction">{{ enumSortDirections[direction] }}</option>
+                    </b-select>
+                  </b-field>
+                </div>
+              </div>
+            </div>
+          </div>
 
-          <b-table-column field="repository" label="Submission Repository" v-slot="props" :visible="false">
-            {{ props.row.repository }}
-          </b-table-column>
+          <div class="panel-block">
+            <b-table :data="filteredSubmissions" :show-header="false" paginated :per-page="5" pagination-position="bottom" ref="submissionsTable"
+              :defaultSort="currentSort.defaultSort" :defaultSortDirection="currentSort.defaultSortDirection" class="is-flex-grow-1">
+              <b-table-column field="title" label="Title" v-slot="props" :sortable="true" :visible="false">
+                {{ props.row.title }}
+              </b-table-column>
 
-          <b-table-column field="date" label="Submission Date" v-slot="props" :visible="false">
-            {{ props.row.date.toLocaleDateString() }}
-          </b-table-column>
+              <b-table-column field="authors" label="Authors" v-slot="props" :visible="false">
+                {{ props.row.authors.join(', ') }}
+              </b-table-column>
 
-          <b-table-column field="status" label="Status" v-slot="props" :visible="false">
-            {{ props.row.status }}
-          </b-table-column>
+              <b-table-column field="repository" label="Submission Repository" v-slot="props" :sortable="true" :visible="false">
+                {{ props.row.repository }}
+              </b-table-column>
 
-          <b-table-column field="identifier" label="Identifier" v-slot="props" :visible="false">
-            {{ props.row.identifier }}
-          </b-table-column>
+              <b-table-column field="date" label="Submission Date" v-slot="props" :sortable="true" :visible="false">
+                {{ props.row.date.toLocaleDateString() }}
+              </b-table-column>
 
-          <b-table-column v-slot="props">
-            <h4 class="is-size-4 has-text-weight-bold block">Title: {{ props.row.title }}</h4>
-            <p><b>Authors: </b>{{ props.row.authors.join(', ')}}</p>
-            <p><b>Submission Repository: </b>{{ props.row.repository }}</p>
-            <p><b>Submission Date: </b>{{ props.row.date.toLocaleDateString() }}</p>
-            <p><b>Status: </b>{{ props.row.status }}</p>
-            <p><b>Identifier: </b>{{ props.row.identifier }}</p>
+              <b-table-column field="status" label="Status" v-slot="props" :visible="false">
+                {{ props.row.status }}
+              </b-table-column>
 
-          </b-table-column>
+              <b-table-column field="identifier" label="Identifier" v-slot="props" :visible="false">
+                {{ props.row.identifier }}
+              </b-table-column>
 
-          <b-table-column>
-            <b-button class="block" expanded size="is-medium" type="is-primary">View Record In Repository</b-button>
-            <b-button class="block" expanded size="is-medium">Edit Submission</b-button>
-            <b-button class="block" expanded size="is-medium">Update Record</b-button>
-          </b-table-column>
+              <b-table-column v-slot="props">
+                <h4 class="is-size-4 has-text-weight-bold block">Title: {{ props.row.title }}</h4>
+                <p><b>Authors: </b>{{ props.row.authors.join(', ')}}</p>
+                <p><b>Submission Repository: </b>{{ props.row.repository }}</p>
+                <p><b>Submission Date: </b>{{ props.row.date.toLocaleDateString() }}</p>
+                <p><b>Status: </b>{{ props.row.status }}</p>
+                <p><b>Identifier: </b>{{ props.row.identifier }}</p>
+              </b-table-column>
 
-          <template #empty>
-            <div class="has-text-centered">No records</div>
-          </template>
-        </b-table>
+              <b-table-column>
+                <b-button class="block" expanded size="is-medium" type="is-primary">View Record In Repository</b-button>
+                <b-button class="block" expanded size="is-medium">Edit Submission</b-button>
+                <b-button class="block" expanded size="is-medium">Update Record</b-button>
+              </b-table-column>
+
+              <template #empty>
+                <div class="has-text-centered">No records</div>
+              </template>
+            </b-table>
+          </div>
+        </article>
       </div>
     </section>
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
-  import { CzEnumRepositories, CzEnumSubmissionStatus, CzISubmission } from '@/components/submissions/types'
+  import { Component, Vue, Ref, Watch } from 'vue-property-decorator'
+  import { EnumCzRepositories, EnumCzSubmissionStatus, ICzSubmission, EnumCzSubmissionSorts, EnumCzSortDirections } from '@/components/submissions/types'
   import { SUBMISSIONS } from '@/components/submissions/submissions.mock'
 
   @Component({
@@ -109,35 +136,75 @@
     components: { },
   })
   export default class CzSubmissions extends Vue {
-    protected submissions!: CzISubmission[]
+    @Ref('submissionsTable') submissionsTable
+    protected submissions!: ICzSubmission[]
+
+    protected currentSort = {
+      defaultSort: 'title',
+      defaultSortDirection: 'asc'
+    }
 
     protected filters: {
       statusOptions: string[],
       repoOptions: string[]
     } = { statusOptions: [], repoOptions: [] }
-    protected enumSubmissionStatus = CzEnumSubmissionStatus
-    protected enumRepositories = CzEnumRepositories
+
+    protected enumSubmissionStatus = EnumCzSubmissionStatus
+    protected enumRepositories = EnumCzRepositories
+    protected enumSubmissionSorts = EnumCzSubmissionSorts
+    protected enumSortDirections = EnumCzSortDirections
 
     protected get statusOptions() {
-      const options: string[] = []
-      for (const status in CzEnumSubmissionStatus) {
-        options.push(status)
-      }
-
-      return options
+      return Object.keys(EnumCzSubmissionStatus)
     }
 
     protected get repoOptions() {
-      const options: string[] = []
-      for (const repo in CzEnumRepositories) {
-        options.push(repo)
-      }
+      return Object.keys(EnumCzRepositories)
+    }
 
-      return options
+    protected get sortOptions() {    
+      return  Object.keys(EnumCzSubmissionSorts)
+    }
+
+    protected get sortDirectionOptions() {
+      return Object.keys(EnumCzSortDirections)
+    }
+
+    protected get isAnyFilterAcitve() {
+      return Object.keys(this.filters).find(key => this.filters[key].length)
+    }
+
+    protected get filteredSubmissions() {
+      let data = SUBMISSIONS
+      const filteredStatus = this.filters.statusOptions.map(s => EnumCzSubmissionStatus[s])
+      const filteredRepos = this.filters.repoOptions.map(r => EnumCzRepositories[r])
+
+      return data.filter((d) => {
+        if (filteredStatus.length) {
+          if (!filteredStatus.includes(d.status)) {
+            return false
+          }
+        }
+
+        if (filteredRepos.length) {
+          if (!filteredRepos.includes(d.repository)) {
+            return false
+          }
+        }
+
+        return true
+      })
     }
 
     beforeCreate() {
       this.submissions = SUBMISSIONS
+    }
+
+    @Watch('currentSort', { deep: true })
+    protected onDefaultSortChanged(newSort, oldSort) {
+      this.$nextTick(() => {
+        this.submissionsTable.initSort()
+      })
     }
   }
 </script>
@@ -171,5 +238,9 @@
 
   /deep/ table td {
     padding: 2rem;
+  }
+
+  .panel-block {
+    font-size: 1.4rem;
   }
 </style>
