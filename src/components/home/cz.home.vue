@@ -6,7 +6,7 @@
         <h1>Critical Zone Collaborative Network</h1>
         <h2 class="has-text-mute">Data Submission Portal</h2>
         <h2 class="has-text-mute" style="margin-top: 4rem;">Ready to Submit Data?</h2>
-        <button class="button is-size-3">Log In</button>
+        <router-link to="login"><b-button class="button is-size-3">Log In</b-button></router-link>
       </div>
     </section>
 

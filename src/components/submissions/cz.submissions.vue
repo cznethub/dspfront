@@ -75,7 +75,7 @@
           </div>
 
           <div class="panel-block">
-            <b-table :data="filteredSubmissions" :show-header="false" paginated :per-page="5" pagination-position="bottom" ref="submissionsTable"
+            <b-table :data="filteredSubmissions" :show-header="false" paginated :per-page="10" pagination-position="both" ref="submissionsTable"
               :defaultSort="currentSort.defaultSort" :defaultSortDirection="currentSort.defaultSortDirection" class="is-flex-grow-1">
               <b-table-column field="title" label="Title" v-slot="props" :sortable="true" :visible="false">
                 {{ props.row.title }}
@@ -252,15 +252,9 @@
       display: none;
     }
 
+    /*.control-label
     /deep/ .table-wrapper.has-mobile-cards {
-      td {
-        padding: 0;
-        padding-bottom: 2rem;
-      }
 
-      tr {
-        box-shadow: none;
-      }
-    }
+    }*/
   }
 </style>

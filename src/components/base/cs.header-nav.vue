@@ -17,9 +17,9 @@
       <template #end>
         <b-navbar-item tag="div">
           <div class="buttons">
-            <a class="button is-light is-size-5">
-              Log in
-            </a>
+            <router-link to="/login">
+              <b-button size="is-medium">Log In</b-button>
+            </router-link>
           </div>
         </b-navbar-item>
       </template>
