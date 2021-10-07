@@ -134,7 +134,8 @@
 <script lang="ts">
   import { Component, Vue, Ref, Watch } from 'vue-property-decorator'
   import { EnumCzRepositories, EnumCzSubmissionStatus, ICzSubmission, EnumCzSubmissionSorts, EnumCzSortDirections } from '@/components/submissions/types'
-  import { SUBMISSIONS } from '@/components/submissions/submissions.mock'
+  // import { SUBMISSIONS } from '@/components/submissions/submissions.mock'
+  import Submission from '@/models/submission.model'
 
   @Component({
     name: 'cz-submissions',
@@ -142,7 +143,6 @@
   })
   export default class CzSubmissions extends Vue {
     @Ref('submissionsTable') submissionsTable
-    protected submissions!: ICzSubmission[]
 
     protected currentSort = {
       defaultSort: 'title',
@@ -179,8 +179,13 @@
       return Object.keys(this.filters).find(key => this.filters[key].length)
     }
 
+    protected get submissions(): ICzSubmission[] {
+      console.log(Submission.all())
+      return Submission.all()
+    }
+
     protected get filteredSubmissions() {
-      let data = SUBMISSIONS
+      let data = Submission.all()
       const filteredStatus = this.filters.statusOptions.map(s => EnumCzSubmissionStatus[s])
       const filteredRepos = this.filters.repoOptions.map(r => EnumCzRepositories[r])
 
@@ -199,10 +204,6 @@
 
         return true
       })
-    }
-
-    beforeCreate() {
-      this.submissions = SUBMISSIONS
     }
 
     @Watch('currentSort', { deep: true })

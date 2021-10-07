@@ -8,13 +8,14 @@
         <div class="panel has-space-bottom-2x">
           <div class="panel-heading">Log In</div>
           <div class="panel-block is-flex is-flex-direction-column has-space-bottom">
-            <b-button class="block" size="is-medium" expanded type="is-primary">
-              <div class="level">
-                <i class="fab fa-orcid has-space-right is-size-3" />
-                <span>Log In Using ORCID</span>
-              </div>
-            </b-button>
-
+            <a class="block"  href="http://localhost:5002/api/login">
+              <b-button size="is-medium" expanded type="is-primary">
+                <div class="level">
+                  <i class="fab fa-orcid has-space-right is-size-3" />
+                  <span>Log In Using ORCID</span>
+                </div>
+              </b-button>
+            </a>
             <p class="block">User accounts in the Data Submission Portal are managed using your ORCID® iD. An ORCID iD is a persistent digital identifier that you own and control and that distinguishes you from every other researcher.</p>
             <p class="block">If you have an ORCID already, click the button above to get started. If you don't have an ORCID yet, getting one is easy. Visit <a href="https://orcid.org" target="_blank">https://orcid.org</a> to register and get your unique ORCID iD.</p>
             <img :src="require('@/assets/img/placeholder.png')" style="width: 10rem;" alt="">

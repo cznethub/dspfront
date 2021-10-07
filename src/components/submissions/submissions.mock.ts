@@ -1,6 +1,5 @@
 import { ICzSubmission, EnumCzSubmissionStatus, EnumCzRepositories } from "./types";
 
-const numberOfSubmissions = 50
 const titles = [
   'A really awesome dataset',
   'Another really awesome dataset',
@@ -18,6 +17,8 @@ const status = [
   EnumCzSubmissionStatus.draft,
   EnumCzSubmissionStatus.submitted,
 ]
+
+const numberOfSubmissions = 50
 
 export const SUBMISSIONS: ICzSubmission[] = Array.apply(null, Array(numberOfSubmissions)).map(() => {
   return {

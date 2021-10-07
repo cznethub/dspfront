@@ -13,12 +13,15 @@
     "@jsonforms/vue2": "^2.5.2",
     "@jsonforms/vue2-vanilla": "^2.5.2",
     "@vue/composition-api": "^1.2.2",
+    "@vuex-orm/core": "^0.36.4",
     "axios": "^0.21.1",
     "buefy": "^0.9.10",
     "core-js": "^3.18.1",
     "sprintf-js": "^1.1.2",
     "vue": "^2.6.11",
-    "vue-router": "^3.5.2"
+    "vue-router": "^3.5.2",
+    "vuex": "^3.6.2",
+    "vuex-orm-plugin-date-attribute": "^0.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.13.16",
