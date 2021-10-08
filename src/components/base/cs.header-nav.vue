@@ -17,9 +17,11 @@
       <template #end>
         <b-navbar-item tag="div">
           <div class="buttons">
-            <router-link to="/login">
+            <router-link v-if="!isLoggedIn" to="/login">
               <b-button size="is-medium">Log In</b-button>
             </router-link>
+
+            <b-button v-else size="is-medium" @click="logOut()">Log Out</b-button>
           </div>
         </b-navbar-item>
       </template>
@@ -29,13 +31,20 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
+  import User from '@/models/user.model'
 
   @Component({
     name: 'cz-header-nav',
     components: { },
   })
   export default class CzHeaderNav extends Vue {
+    protected get isLoggedIn() {
+      return User.isLoggedIn
+    }
 
+    protected logOut() {
+      User.logOut()
+    }
   }
 </script>
 

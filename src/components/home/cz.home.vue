@@ -6,7 +6,7 @@
         <h1>Critical Zone Collaborative Network</h1>
         <h2 class="has-text-mute">Data Submission Portal</h2>
         <h2 class="has-text-mute" style="margin-top: 4rem;">Ready to Submit Data?</h2>
-        <router-link to="login"><b-button class="button is-size-3">Log In</b-button></router-link>
+        <router-link to="login" v-if="!isLoggedIn"><b-button class="button is-size-3">Log In</b-button></router-link>
       </div>
     </section>
 
@@ -107,13 +107,16 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
+  import User from '@/models/user.model'
 
   @Component({
     name: 'cz-home',
     components: { },
   })
   export default class CzHome extends Vue {
-
+    protected get isLoggedIn() {
+      return User.isLoggedIn
+    }
   }
 </script>
 

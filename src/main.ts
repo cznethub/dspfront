@@ -1,9 +1,8 @@
 import '@jsonforms/vue2-vanilla/vanilla.css';
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
-import User from '@/models/user.model'
-import Submission from '@/models/submission.model'
 import datePlugin from 'vuex-orm-plugin-date-attribute'
+import createPersistedState from 'vuex-persistedstate'
 
 // import App from './App.vue'
 // import VueUploadComponent from 'vue-upload-component'
@@ -22,6 +21,8 @@ import VueRouter from 'vue-router'
 import Vue from 'vue'
 import App from './App.vue'
 import { routes } from './routes'
+import { orm } from '@/models/orm'
+import { persistedPaths } from './models/persistedPaths';
 
 VuexORM.use(datePlugin)
 
@@ -29,37 +30,37 @@ Vue.config.productionTip = false
 
 Vue.use(Vuex)
 
-// Create a new instance of Database.
-const database = new VuexORM.Database()
-
-// Register Models to Database.
-database.register(User)
-database.register(Submission)
-
 // Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({
-    plugins: [VuexORM.install(database)]
+  plugins: [
+    // VuexORM.install(database),
+    VuexORM.install(orm),
+    createPersistedState({
+      paths: persistedPaths,
+      key: 'CZ'
+    })
+  ]
 })
 
 Vue.use(Buefy, {
-    defaultIconPack: 'fas',
-    // defaultContainerElement: '#content',
-    defaultNotificationPosition: 'is-top',
-    defaultNotificationDuration: 10000,
-    defaultNoticeQueue: false,
+  defaultIconPack: 'fas',
+  // defaultContainerElement: '#content',
+  defaultNotificationPosition: 'is-top',
+  defaultNotificationDuration: 10000,
+  defaultNoticeQueue: false,
 })
 
 Vue.use(VueCompositionAPI)
 
 const router = new VueRouter({
-    mode: 'history',
-    routes
+  mode: 'history',
+  routes
 })
 
 Vue.use(VueRouter)
 
 new Vue({
-    router,
-    store,
-    render: (h) => h(App),
+  router,
+  store,
+  render: (h) => h(App),
 }).$mount('#app')

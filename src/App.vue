@@ -10,8 +10,8 @@
   import { Component, Vue } from 'vue-property-decorator'
   import CzFooter from '@/components/base/cz.footer.vue'
   import CzHeaderNav from '@/components/base/cs.header-nav.vue'
-  import axios from "axios"
   import Submission from '@/models/submission.model'
+  import User from '@/models/user.model'
   
   @Component({
     name: 'app',
@@ -22,23 +22,10 @@
 
     created() {
       document.title = 'CZ Hub';
-      this.checkAuthorization()
-      this.loadSubmissions()
-    }
-
-    async checkAuthorization() {
-      const status = await axios.get("/api")
-        // .then((resp) => {
-          //   return true;
-        // })
-        // .catch((error) => {
-          //   return false;
-        // })
-      console.log(status)
-    }
-
-    loadSubmissions() {
       Submission.fetchSubmissions()
+      // if (User.isLoggedIn) {
+        User.checkAuthorization()
+      // }
     }
   }
 </script>

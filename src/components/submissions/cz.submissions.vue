@@ -180,7 +180,6 @@
     }
 
     protected get submissions(): ICzSubmission[] {
-      console.log(Submission.all())
       return Submission.all()
     }
 
