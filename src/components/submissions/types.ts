@@ -1,32 +1,33 @@
-export interface ICzSubmission {
+export interface ISubmission {
   title: string
   authors: string[]
-  repository: EnumCzRepositories
+  repository: EnumRepositories
   date: Date
-  status: EnumCzSubmissionStatus
+  status: EnumSubmissionStatus
   identifier: string
 }
 
-export enum EnumCzSubmissionStatus {
+export enum EnumSubmissionStatus {
   draft = 'Draft',
   submitted = 'Submitted'
 }
 
-export enum EnumCzRepositories {
+export enum EnumRepositories {
   hydroShare = 'HydroShare',
   earthChemLibrary = 'EarthChem Library',
   zenodo = 'Zenodo',
   openTopography = 'Open Topography',
+  sesar = 'System for Earth Sample Registration',
   other = 'other'
 }
 
-export enum EnumCzSubmissionSorts {
+export enum EnumSubmissionSorts {
   title = 'Title',
   date = 'Most Recent',
   repository = 'Repository',
 }
 
-export enum EnumCzSortDirections {
+export enum EnumSortDirections {
   asc = 'Ascending',
   desc = 'Descending'
 }

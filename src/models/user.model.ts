@@ -21,6 +21,10 @@ export default class User extends Model {
     return !!(this.store().state.entities[this.entity]?.isLoggedIn)
   }
 
+  static get accessToken() {
+    return this.store().state.entities[this.entity]?.orcidAccessToken
+  }
+
   static state() {
     return {
       isLoggedIn: false,

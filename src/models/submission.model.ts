@@ -1,15 +1,15 @@
 import { SUBMISSIONS } from '@/components/submissions/submissions.mock'
-import { ICzSubmission, EnumCzRepositories, EnumCzSubmissionStatus } from '@/components/submissions/types'
+import { ISubmission, EnumRepositories, EnumSubmissionStatus } from '@/components/submissions/types'
 import { Model } from '@vuex-orm/core'
 
-export default class Submission extends Model implements ICzSubmission {
+export default class Submission extends Model implements ISubmission {
   // This is the name used as module name of the Vuex Store.
   static entity = 'submissions'
   public title!: string
   public authors!: string[]
-  public repository!: EnumCzRepositories
+  public repository!: EnumRepositories
   public date!: Date
-  public status!: EnumCzSubmissionStatus
+  public status!: EnumSubmissionStatus
   public identifier!: string
 
   // List of all fields (schema) of the post model. `this.attr` is used
@@ -26,7 +26,7 @@ export default class Submission extends Model implements ICzSubmission {
     }
   }
 
-  static getInsertData(apiSubmission): ICzSubmission {
+  static getInsertData(apiSubmission): ISubmission {
     // TODO: implement any necessary transformations here
     return apiSubmission
   }

@@ -1,4 +1,4 @@
-import { ICzSubmission, EnumCzSubmissionStatus, EnumCzRepositories } from "./types";
+import { ISubmission, EnumSubmissionStatus, EnumRepositories } from "./types";
 
 const titles = [
   'A really awesome dataset',
@@ -7,20 +7,20 @@ const titles = [
   'Really awesome LiDAR dataset'
 ]
 const repos = [
-  EnumCzRepositories.earthChemLibrary,
-  EnumCzRepositories.hydroShare,
-  EnumCzRepositories.openTopography,
-  EnumCzRepositories.zenodo,
-  EnumCzRepositories.other,
+  EnumRepositories.earthChemLibrary,
+  EnumRepositories.hydroShare,
+  EnumRepositories.openTopography,
+  EnumRepositories.zenodo,
+  EnumRepositories.other,
 ]
 const status = [
-  EnumCzSubmissionStatus.draft,
-  EnumCzSubmissionStatus.submitted,
+  EnumSubmissionStatus.draft,
+  EnumSubmissionStatus.submitted,
 ]
 
 const numberOfSubmissions = 50
 
-export const SUBMISSIONS: ICzSubmission[] = Array.apply(null, Array(numberOfSubmissions)).map(() => {
+export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmissions)).map(() => {
   return {
     title: getRandomElementFromArray(titles),
     authors: ['Jeffery S. Horsburgh', 'Scott Black', 'Kerstin Lehnert'],

@@ -1,7 +1,6 @@
 <template>
-  <div v-if="loggedIn">
+  <div v-if="isLoggedIn">
     <p>{{ message }}</p>
-    <a href="/api/logout" class="button">Logout</a>
     <br>
     <select v-model="repository" @change="repositorySelected($event)">
       <option v-for="repo in repositories" v-bind:key="repo" v-bind:value="repo">{{ repo }}</option>
@@ -29,7 +28,7 @@
     </div>
   </div>
   <div v-else>
-    <a href="http://localhost:5002/api/login" class="button">Login</a>
+    <a href="/api/login" class="button">Login</a>
   </div>
 </template>
 
@@ -37,6 +36,7 @@
   import { Component, Vue, Watch } from 'vue-property-decorator'
   import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
   import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
+  import User from '@/models/user.model'
   // import SimpleFileUpload from "./SimpleFileUpload.vue"
   import axios from "axios"
 
@@ -82,6 +82,10 @@
 
     loadFiles= false
 
+    protected get isLoggedIn() {
+      return User.isLoggedIn
+    }
+
     mounted() {
       if (localStorage.repository) {
         this.repository = localStorage.repository
@@ -103,18 +107,8 @@
     onChange(event: JsonFormsChangeEvent) {
       this.data = event.data;
     }
-    async checkAuthorization() {
-      const status = await axios.get("http://localhost:5002/api")
-          .then((resp) => {
-            return true;
-          })
-          .catch((error) => {
-            return false;
-          });
-      this.loggedIn = status;
-    }
     async getUrls() {
-      const resp = await axios.get("http://localhost:5002/api/urls/" + this.repository);
+      const resp = await axios.get("/api/urls/" + this.repository);
 
       this.schemaUrl = resp.data.schema;
       this.createUrl = resp.data.create;
@@ -147,18 +141,19 @@
     async create(){
       const token = await this.getAccessToken()
       await axios.post(this.createUrl, {},
-          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
-          .then((resp) => {
-            this.recordId = resp.data[this.recordKey];
-            this.edit = true;
-            this.read()
-          })
-          .catch((error) => {
-            this.data = {}
-            this.edit = false;
-            this.message = error.message;
-          });
+        {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
+        .then((resp) => {
+          this.recordId = resp.data[this.recordKey];
+          this.edit = true;
+          this.read()
+        })
+        .catch((error) => {
+          this.data = {}
+          this.edit = false;
+          this.message = error.message;
+        });
     }
+
     async save(){
       const token = await this.getAccessToken()
       const url = sprintf(this.updateUrl, this.recordId)
@@ -169,13 +164,13 @@
         data = this.data;
       }
       await axios.put(url,
-          data,
-          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
-          .then(async (resp) => {
-            await this.read();
-          }).catch((error) => {
-            this.message = error.message;
-          });
+        data,
+        {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
+        .then(async (resp) => {
+          await this.read();
+        }).catch((error) => {
+          this.message = error.message;
+        });
     }
     async read(){
       const token = await this.getAccessToken()
@@ -194,7 +189,6 @@
       });
     }
     created() {
-      this.checkAuthorization()
       this.getUrls()
     }
   }
