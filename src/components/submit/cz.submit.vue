@@ -24,7 +24,7 @@
               </div>
               
               <div class="card-content">
-                <b-button class="block has-text-left" type="is-primary" size="is-large" outlined expanded>
+                <b-button @click="submitTo(repo)" class="block has-text-left" type="is-primary" size="is-large" outlined expanded>
                   <p class="is-size-5">{{ repo.submitLabel || `Submit to` }}</p>
                   <p class="has-text-weight-bold">{{ repo.name }}</p>
                 </b-button>
@@ -54,6 +54,7 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
+  import { IRepository } from '@/components/submissions/types'
 
   @Component({
     name: 'cz-submit',
@@ -61,6 +62,18 @@
   })
   export default class CzSubmit extends Vue {
     protected repoMetadata = repoMetadata
+
+    protected submitTo(repo: IRepository) {
+      // TODO: check if already authorized
+      const authorized = false
+
+      if (authorized) {
+        this.$router.push({ path: '/new-submission' })
+      }
+      else {
+        this.$router.push({ path: '/authorize', query: { repo: repo.key } })
+      }
+    }
   }
 </script>
 

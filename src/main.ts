@@ -23,6 +23,7 @@ import App from './App.vue'
 import { routes } from './routes'
 import { orm } from '@/models/orm'
 import { persistedPaths } from './models/persistedPaths';
+import { APP_NAME } from './constants';
 
 VuexORM.use(datePlugin)
 
@@ -33,11 +34,10 @@ Vue.use(Vuex)
 // Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({
   plugins: [
-    // VuexORM.install(database),
     VuexORM.install(orm),
     createPersistedState({
       paths: persistedPaths,
-      key: 'CZ'
+      key: APP_NAME
     })
   ]
 })

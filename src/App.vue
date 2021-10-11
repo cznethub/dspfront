@@ -12,6 +12,7 @@
   import CzHeaderNav from '@/components/base/cs.header-nav.vue'
   import Submission from '@/models/submission.model'
   import User from '@/models/user.model'
+  import Zenodo from '@/models/zenodo.model'
   
   @Component({
     name: 'app',
@@ -21,11 +22,13 @@
     protected isLoading = true
 
     created() {
-      document.title = 'CZ Hub';
+      document.title = 'CZ Hub'
       Submission.fetchSubmissions()
-      // if (User.isLoggedIn) {
-        User.checkAuthorization()
-      // }
+      User.checkAuthorization()
+      Zenodo.deleteAll()  // For testing
+      if (User.isLoggedIn) {
+        Zenodo.init()
+      }
     }
   }
 </script>

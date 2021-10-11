@@ -7,7 +7,9 @@
         <div class="is-flex is-flex-direction-column is-align-items-center">
           <h2>Repository Recommendations</h2>
           <p class="has-text-mute">If you aren't sure which repository to use, visit our repository recommendation system to get help.</p>
-          <button class="button is-size-3" @click="goToRecommendations">Help Me Decide</button>
+          <router-link to="/recommendations">
+            <button class="button is-size-3">Help Me Decide</button>
+          </router-link>
         </div>
       </div>
     </div>
@@ -64,9 +66,7 @@
     components: { },
   })
   export default class CzResources extends Vue {
-    protected goToRecommendations() {
-      this.$router.push({ path: '/recommendations' })
-    }
+
   }
 </script>
 

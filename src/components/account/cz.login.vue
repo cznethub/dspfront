@@ -8,7 +8,7 @@
         <div class="panel has-space-bottom-2x">
           <div class="panel-heading">Log In</div>
           <div class="panel-block is-flex is-flex-direction-column has-space-bottom">
-            <a class="block"  href="http://localhost:5002/api/login">
+            <a class="block" href="/api/login">
               <b-button size="is-medium" expanded type="is-primary">
                 <div class="level">
                   <i class="fab fa-orcid has-space-right is-size-3" />

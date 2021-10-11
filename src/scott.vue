@@ -119,15 +119,18 @@
       this.fileReadUrl = resp.data.file_read;
       this.accessTokenUrl = resp.data.access_token;
       this.authorizeUrl = resp.data.authorize_url;
+
       this.recordKey = resp.data.record_key;
       this.filesKey = resp.data.files_key;
       this.metadataKey = resp.data.metadata_key;
+      
       await this.getSchema();
     }
     async getSchema(){
       const resp = await axios.get(this.schemaUrl);
       this.schema = resp.data;
     }
+
     async getAccessToken(){
       return await axios.get(this.accessTokenUrl).then((resp) => {
         return resp.data.token;
@@ -138,10 +141,16 @@
         }
       );
     }
+
     async create(){
       const token = await this.getAccessToken()
-      await axios.post(this.createUrl, {},
-        {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
+      await axios.post(
+        this.createUrl, 
+        { },
+        { 
+          headers: {"Content-Type": "application/json"},
+          params: {"access_token": token} 
+        })
         .then((resp) => {
           this.recordId = resp.data[this.recordKey];
           this.edit = true;

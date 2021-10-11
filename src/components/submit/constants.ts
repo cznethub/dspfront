@@ -1,12 +1,6 @@
-export interface IRepoMetadata {
-  key: string
-  name: string
-  logoSrc: string
-  description: string
-  submitLabel?: string
-}
+import { IRepository } from "@/components/submissions/types";
 
-export const repoMetadata: IRepoMetadata[] = [
+export const repoMetadata: IRepository[] = [
   {
     key: 'hydroShare',
     name: 'HydroShare',

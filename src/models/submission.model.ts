@@ -1,5 +1,5 @@
 import { SUBMISSIONS } from '@/components/submissions/submissions.mock'
-import { ISubmission, EnumRepositories, EnumSubmissionStatus } from '@/components/submissions/types'
+import { ISubmission, EnumRepositories, EnumSubmissionStatus, EnumRepositoryKeys } from '@/components/submissions/types'
 import { Model } from '@vuex-orm/core'
 
 export default class Submission extends Model implements ISubmission {
@@ -7,7 +7,7 @@ export default class Submission extends Model implements ISubmission {
   static entity = 'submissions'
   public title!: string
   public authors!: string[]
-  public repository!: EnumRepositories
+  public repository!: EnumRepositoryKeys
   public date!: Date
   public status!: EnumSubmissionStatus
   public identifier!: string
