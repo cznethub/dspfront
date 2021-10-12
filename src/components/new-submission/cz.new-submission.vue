@@ -37,10 +37,12 @@
   import { Component, Vue } from 'vue-property-decorator'
   import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
   import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
-import { JsonFormsRendererRegistryEntry } from '@jsonforms/core';
+  import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
+  import { inputRenderer } from '@/renderers/input/cz.input.renderer.vue'
 
   const renderers = [
     ...vanillaRenderers,
+    inputRenderer
     // here you can add custom renderers
   ];
 
