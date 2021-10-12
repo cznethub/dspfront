@@ -22,8 +22,8 @@ import Vue from 'vue'
 import App from './App.vue'
 import { routes } from './routes'
 import { orm } from '@/models/orm'
-import { persistedPaths } from './models/persistedPaths';
-import { APP_NAME } from './constants';
+import { persistedPaths } from './models/persistedPaths'
+import { APP_NAME } from './constants'
 
 VuexORM.use(datePlugin)
 

@@ -15,6 +15,10 @@ export default class Repository extends Model implements IRepository {
   public readonly urls?: IRepositoryUrls
   public readonly schema?: any
 
+  static get $state() {
+    return this.store().state.entities[this.entity]
+  }
+
   static fields () {
     return {
       key:  this.attr(''),
@@ -38,12 +42,12 @@ export default class Repository extends Model implements IRepository {
       [Zenodo.entity]: Zenodo,
     }
   }
+
+  static get(): Repository | null {
+    return this.query().withAll().first()
+  }
   
   static init: () => Promise<void>
   static getSchema: (schemaUrl: string | undefined) => Promise<any>
   static getUrls: () => Promise<undefined | IRepositoryUrls>
-
-  // static get(): Repository | null {
-  //   return this.query().withAll().first()
-  // }
 }

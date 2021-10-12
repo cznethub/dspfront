@@ -4,8 +4,18 @@ import { repoMetadata } from '@/components/submit/constants'
 import axios from "axios"
 import Repository from './repository.model'
 
+const sprintf = require('sprintf-js').sprintf;
+
 export default class Zenodo extends Repository implements IRepository {
   static entity = EnumRepositoryKeys.zenodo
+
+  static get isAuthorized() {
+    return !!(this.$state.accessToken)
+  }
+
+  static get accessToken() {
+    return this.$state.accessToken
+  }
 
   static state() {
     return {
@@ -42,7 +52,7 @@ export default class Zenodo extends Repository implements IRepository {
         data: { urls, schema }
       })
 
-      Zenodo.fetchAccessToken()
+      await Zenodo.fetchAccessToken()
     }
   }
 
@@ -77,22 +87,87 @@ export default class Zenodo extends Repository implements IRepository {
   }
 
   static async fetchAccessToken() {
+    console.info("Zenodo: Fetching access token...")
     const accessTokenUrl = Zenodo.get()?.urls?.accessTokenUrl
     if (accessTokenUrl) {
       try {
         const resp = await axios.get(accessTokenUrl)
-        const token = resp.data.token // TODO: also need its expiration date!
-        Zenodo.commit((state) => {
-          state.accessToken = token
-        })
+        if (resp.status === 200) {
+          const token = resp.data.token // TODO: also need its expiration date!
+          Zenodo.commit((state) => {
+            state.accessToken = token
+          })
+        }
       }
       catch(e) {
+        Zenodo.commit((state) => {
+          state.accessToken = ''
+        })
         console.error('Zenodo: failed to fetch access token. ', e)
       }
     }
   }
 
-  static get(): Repository | null {
-    return this.query().withAll().first()
+  static async createSubmission() {
+    console.info("Zenodo: Creating submission...")
+    const zenodo = this.get()
+    if (zenodo) {
+      try {
+        const resp = await axios.post(
+          zenodo.urls?.createUrl || '',
+          {},
+          { 
+            headers: {"Content-Type": "application/json"},
+            params: {"access_token": Zenodo.accessToken} 
+          }
+        )
+
+        if (resp.status === 200) {
+          console.log(resp)
+        }
+        else if (resp.status === 401) {
+          // access token has expired
+        }
+      }
+      catch(e) {
+        console.error("Zenodo: failed to create submission. ", e)
+      }
+
+
+      // this.read()
+
+        
+        // .then((resp) => {
+        //   this.recordId = resp.data[this.recordKey];
+        //   this.edit = true;
+        //   this.read()
+        // })
+        // .catch((error) => {
+        //   this.data = {}
+        //   this.edit = false;
+        //   this.message = error.message;
+        // });
+    }
   }
+
+  private static async read(recordId: string){
+    const zenodo = this.get()
+    if (zenodo) {
+      const url = sprintf(zenodo.urls?.readUrl, recordId)
+      const resp = await axios.get(url, { params: { "access_token": Zenodo.accessToken } })
+      console.log(resp)
+      // .then((resp) => {
+      //   this.data = this.metadataKey ? resp.data["metadata"] : resp.data;
+      //   this.edit = true;
+      //   this.loadFiles = true
+      // })
+      // .catch((error) => {
+      //   this.data = {}
+      //   this.edit = false;
+      //   this.message = error.message;
+      // });
+    }
+  }
+
+  
 }

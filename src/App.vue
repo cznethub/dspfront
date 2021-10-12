@@ -1,7 +1,9 @@
 <template>
   <div class="main-container">
     <cz-header-nav />
-    <router-view name="content" class="main-content" />
+    <div class="main-content">
+      <router-view v-if="!isLoading" name="content" />
+    </div>
     <router-view name="footer" />
   </div>
 </template>
@@ -21,14 +23,15 @@
   export default class App extends Vue {
     protected isLoading = true
 
-    created() {
+    async created() {
       document.title = 'CZ Hub'
+      await User.checkAuthorization()
       Submission.fetchSubmissions()
-      User.checkAuthorization()
-      Zenodo.deleteAll()  // For testing
+      // Zenodo.deleteAll()  // For testing
       if (User.isLoggedIn) {
-        Zenodo.init()
+        await Zenodo.init()
       }
+      this.isLoading = false
     }
   }
 </script>

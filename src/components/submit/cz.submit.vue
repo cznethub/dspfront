@@ -55,6 +55,7 @@
   import { Component, Vue } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
   import { IRepository } from '@/components/submissions/types'
+import Zenodo from '@/models/zenodo.model'
 
   @Component({
     name: 'cz-submit',
@@ -64,10 +65,7 @@
     protected repoMetadata = repoMetadata
 
     protected submitTo(repo: IRepository) {
-      // TODO: check if already authorized
-      const authorized = false
-
-      if (authorized) {
+      if (Zenodo.isAuthorized) {
         this.$router.push({ path: '/new-submission' })
       }
       else {
