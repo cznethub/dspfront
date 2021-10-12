@@ -188,6 +188,7 @@
           {params: {"access_token": token}})
       .then((resp) => {
         this.data = this.metadataKey ? resp.data["metadata"] : resp.data;
+        console.log(this.data, resp.data)
         this.edit = true;
         this.loadFiles = true
       })

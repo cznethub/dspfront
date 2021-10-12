@@ -8,7 +8,7 @@
         <div class="panel has-space-bottom-2x">
           <div class="panel-heading">Authorize</div>
           <div class="panel-block is-flex is-flex-direction-column has-space-bottom">
-            <a class="block"  href="/api/login">
+            <a class="block"  :href="authorizeUrl">
               <b-button size="is-medium" expanded type="is-primary">
                 <div class="level">
                   <i class="fab fa-orcid has-space-right is-size-3" />
@@ -25,14 +25,17 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import Zenodo from '@/models/zenodo.model'
+import { Component, Vue } from 'vue-property-decorator'
 
   @Component({
     name: 'cz-authorize',
     components: { },
   })
   export default class CzAuthorize extends Vue {
-
+    protected get authorizeUrl() {
+      return Zenodo.get()?.urls?.authorizeUrl
+    }
   }
 </script>
 

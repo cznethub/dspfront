@@ -1,6 +1,7 @@
 
 import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
 import { repoMetadata } from '@/components/submit/constants'
+import { router } from '@/router';
 import axios from "axios"
 import Repository from './repository.model'
 
@@ -56,15 +57,19 @@ export default class Zenodo extends Repository implements IRepository {
     }
   }
 
-  static async getSchema(schemaUrl: string | undefined) {
+  protected static async getSchema(schemaUrl: string | undefined) {
     if (!schemaUrl) {
       return undefined
     }
 
-    return await axios.get(schemaUrl)
+    const resp = await axios.get(schemaUrl)
+
+    if (resp.status === 200) {
+      return resp.data
+    }
   }
 
-  static async getUrls(): Promise<undefined | IRepositoryUrls> {
+  protected static async getUrls(): Promise<undefined | IRepositoryUrls> {
     try {
       const resp = await axios.get("/api/urls/" + this.get()?.key)
 
@@ -86,7 +91,7 @@ export default class Zenodo extends Repository implements IRepository {
     }
   }
 
-  static async fetchAccessToken() {
+  private static async fetchAccessToken() {
     console.info("Zenodo: Fetching access token...")
     const accessTokenUrl = Zenodo.get()?.urls?.accessTokenUrl
     if (accessTokenUrl) {
@@ -108,7 +113,7 @@ export default class Zenodo extends Repository implements IRepository {
     }
   }
 
-  static async createSubmission() {
+  static async createSubmission(): Promise<{ recordId: string, formMetadata: any} | null> {
     console.info("Zenodo: Creating submission...")
     const zenodo = this.get()
     if (zenodo) {
@@ -118,23 +123,33 @@ export default class Zenodo extends Repository implements IRepository {
           {},
           { 
             headers: {"Content-Type": "application/json"},
-            params: {"access_token": Zenodo.accessToken} 
+            params: {"access_token": Zenodo.accessToken } 
           }
         )
 
-        if (resp.status === 200) {
-          console.log(resp)
-        }
-        else if (resp.status === 401) {
-          // access token has expired
+        if (resp.status === 201) {
+          const recordId = resp.data.record_id
+          const formMetadata = await this.read(recordId)
+          return { recordId, formMetadata }
         }
       }
-      catch(e) {
-        console.error("Zenodo: failed to create submission. ", e)
+      catch(e: any) {
+        if (e.response.status === 401) {
+          // Token has expired
+          Zenodo.commit((state) => {
+            state.accessToken = ''
+          })
+          router.push({ path: '/authorize' })
+          
+          console.error("Zenodo: Authorization token has expired. ", e)
+        }
+        else {
+          console.error("Zenodo: failed to create submission. ", e)
+        }
       }
 
 
-      // this.read()
+      // this.read(recordId)
 
         
         // .then((resp) => {
@@ -148,14 +163,20 @@ export default class Zenodo extends Repository implements IRepository {
         //   this.message = error.message;
         // });
     }
+    return null
   }
 
-  private static async read(recordId: string){
+  private static async read(recordId: string) {
     const zenodo = this.get()
     if (zenodo) {
       const url = sprintf(zenodo.urls?.readUrl, recordId)
       const resp = await axios.get(url, { params: { "access_token": Zenodo.accessToken } })
-      console.log(resp)
+      if (resp.status === 200) {
+        return resp.data
+      }
+      else {
+        return {}
+      }
       // .then((resp) => {
       //   this.data = this.metadataKey ? resp.data["metadata"] : resp.data;
       //   this.edit = true;

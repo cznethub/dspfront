@@ -37,6 +37,8 @@ export default class User extends Model {
           state.isLoggedIn = true
           state.orcid = response.data.orcid
           state.orcidAccessToken = response.data.orcid_access_token
+
+          
         })
       }
       else {

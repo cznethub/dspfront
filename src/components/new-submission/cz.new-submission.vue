@@ -18,6 +18,15 @@
     <section class="section">
       <div class="container" style="min-height: 20rem;">
         <b-loading :is-full-page="false" :active="isLoading" />
+
+        <json-forms
+          v-if="!isLoading && data"
+          :data="data"
+          :renderers="renderers"
+          :schema="schema"
+          :uischema="uischema"
+          @change="onChange"
+        />
       </div>
     </section>
   </div>
@@ -25,19 +34,42 @@
 
 <script lang="ts">
   import Zenodo from '@/models/zenodo.model'
-import { Component, Vue } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-property-decorator'
+  import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
+  import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
+import { JsonFormsRendererRegistryEntry } from '@jsonforms/core';
+
+  const renderers = [
+    ...vanillaRenderers,
+    // here you can add custom renderers
+  ];
 
   @Component({
     name: 'cz-new-submission',
-    components: { },
+    components: { JsonForms },
   })
   export default class CzNewSubmission extends Vue {
     protected isLoading = true
     protected recordId = ''
+    protected data = null
+    protected renderers: JsonFormsRendererRegistryEntry[] = renderers
+    protected uischema = null
+
+    protected get schema() {
+      return Zenodo.get()?.schema
+    }
 
     async created() {
-      await Zenodo.createSubmission()
+      const submission = await Zenodo.createSubmission()
+      if (submission?.recordId) {
+        this.data = submission?.formMetadata.metadata
+        this.recordId = submission?.recordId
+      }
       this.isLoading = false
+    }
+
+    onChange(event: JsonFormsChangeEvent) {
+      this.data = event.data;
     }
   }
 </script>

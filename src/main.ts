@@ -20,7 +20,7 @@ import Buefy from 'buefy'
 import VueRouter from 'vue-router'
 import Vue from 'vue'
 import App from './App.vue'
-import { routes } from './routes'
+import { router } from './router'
 import { orm } from '@/models/orm'
 import { persistedPaths } from './models/persistedPaths'
 import { APP_NAME } from './constants'
@@ -49,14 +49,7 @@ Vue.use(Buefy, {
   defaultNotificationDuration: 10000,
   defaultNoticeQueue: false,
 })
-
 Vue.use(VueCompositionAPI)
-
-const router = new VueRouter({
-  mode: 'history',
-  routes
-})
-
 Vue.use(VueRouter)
 
 new Vue({

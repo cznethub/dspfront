@@ -48,6 +48,6 @@ export default class Repository extends Model implements IRepository {
   }
   
   static init: () => Promise<void>
-  static getSchema: (schemaUrl: string | undefined) => Promise<any>
-  static getUrls: () => Promise<undefined | IRepositoryUrls>
+  protected static getSchema: (schemaUrl: string | undefined) => Promise<any>
+  protected static getUrls: () => Promise<undefined | IRepositoryUrls>
 }
