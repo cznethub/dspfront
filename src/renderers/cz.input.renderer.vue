@@ -1,6 +1,13 @@
 <template>
-  <b-field :label="control.label">
-    <b-input size="is-medium" :value="control.data" @change.native="onChange" :placeholder="control.description" :message="control.errors" />
+  <b-field v-show="control.visible" :label="control.label" :message="control.errors" :type="{ 'is-danger': control.errors }">
+    <b-input
+      @input="onChange"
+      :disabled="!control.enabled"
+      :required="control.required"
+      :value="control.data"
+      :placeholder="control.description"
+      size="is-medium" 
+    />
   </b-field>
 </template>
 
@@ -19,13 +26,16 @@
     setup(props:any) {
       return useJsonFormsControl(props);
     },
+    created() {
+      // console.log(this.control)
+    },
     methods: {
-      onChange(event: Event) {
-        // console.log(this.control)
+      onChange(value: string) {
         this.handleChange(
           this.control.path,
-          (event.target as HTMLInputElement).value
+          value
         )
+        // console.log(this.control)
       }
     }
   })

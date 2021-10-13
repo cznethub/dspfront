@@ -134,7 +134,6 @@
 <script lang="ts">
   import { Component, Vue, Ref, Watch } from 'vue-property-decorator'
   import { EnumRepositories, EnumSubmissionStatus, ISubmission, EnumSubmissionSorts, EnumSortDirections } from '@/components/submissions/types'
-  // import { SUBMISSIONS } from '@/components/submissions/submissions.mock'
   import Submission from '@/models/submission.model'
 
   @Component({

@@ -16,18 +16,20 @@
     </section>
 
     <section class="section">
-      <div class="container" style="min-height: 20rem; max-width: 60rem;">
+      <div class="container" style="min-height: 20rem;">
         <b-loading :is-full-page="false" :active="isLoading" />
 
-        <json-forms
-          v-if="!isLoading && data"
-          :data="data"
-          :renderers="renderers"
-          :schema="schema"
-          :uischema="uischema"
-          @change="onChange"
-        />
-        <div class="has-space-top-2x">
+        <div style="max-width: 60rem;">
+          <json-forms
+            v-if="!isLoading && data"
+            :data="data"
+            :renderers="renderers"
+            :schema="schema"
+            :uischema="uischema"
+            @change="onChange"
+          />
+        </div>
+        <div class="has-space-top-2x level is-justify-content-flex-end">
           <b-button class="has-space-right" size="is-medium">Save</b-button>
           <b-button size="is-medium" type="is-primary">Submit</b-button>
         </div>
@@ -42,11 +44,11 @@
   import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
   import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
   import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
-  import { inputRenderer } from '@/renderers/input/cz.input.renderer.vue'
+  import { CzRenderers } from '@/renderers/renderer.vue'
 
   const renderers = [
     ...vanillaRenderers,
-    inputRenderer
+    ...CzRenderers,
     // here you can add custom renderers
   ];
 
@@ -70,12 +72,14 @@
 
       if (submission?.recordId) {
         this.data = submission?.formMetadata.metadata
+        // console.log(this.schema)
         this.recordId = submission?.recordId
       }
       else {
         // Token was invalid
         console.log("CzNewSubmission: token was invalid")
         this.$router.push({ path: '/authorize'})
+        // TODO: bring the router back to this page
       }
       this.isLoading = false
     }
@@ -87,5 +91,7 @@
 </script>
 
 <style lang="scss" scoped>
-  
+  /deep/ .vertical-layout-item {
+    margin: 1rem 0;
+  }
 </style>
