@@ -174,13 +174,14 @@
       }
       await axios.put(url,
         data,
-        {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
+        { headers: {"Content-Type": "application/json"}, params: {"access_token": token} })
         .then(async (resp) => {
           await this.read();
         }).catch((error) => {
           this.message = error.message;
         });
     }
+    
     async read(){
       const token = await this.getAccessToken()
       const url = sprintf(this.readUrl, this.recordId)

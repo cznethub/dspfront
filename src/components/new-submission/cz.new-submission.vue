@@ -16,7 +16,7 @@
     </section>
 
     <section class="section">
-      <div class="container" style="min-height: 20rem;">
+      <div class="container" style="min-height: 20rem; max-width: 60rem;">
         <b-loading :is-full-page="false" :active="isLoading" />
 
         <json-forms
@@ -27,6 +27,10 @@
           :uischema="uischema"
           @change="onChange"
         />
+        <div class="has-space-top-2x">
+          <b-button class="has-space-right" size="is-medium">Save</b-button>
+          <b-button size="is-medium" type="is-primary">Submit</b-button>
+        </div>
       </div>
     </section>
   </div>
@@ -63,9 +67,15 @@
 
     async created() {
       const submission = await Zenodo.createSubmission()
+
       if (submission?.recordId) {
         this.data = submission?.formMetadata.metadata
         this.recordId = submission?.recordId
+      }
+      else {
+        // Token was invalid
+        console.log("CzNewSubmission: token was invalid")
+        this.$router.push({ path: '/authorize'})
       }
       this.isLoading = false
     }

@@ -25,7 +25,9 @@
 
     async created() {
       document.title = 'CZ Hub'
+      // Check for Authorization cookie instead. 
       await User.checkAuthorization()
+
       Submission.fetchSubmissions()
       // Zenodo.deleteAll()  // For testing
       if (User.isLoggedIn) {

@@ -34,6 +34,7 @@ export default class Zenodo extends Repository implements IRepository {
   static async init() {
     // Insert initial repo
     if (!(this.get())) {
+      console.info("Zenodo: Initializing zenodo for the first time...")
       const newZenodoRepo: IRepository = {
         ...repoMetadata[4],
       }
@@ -41,10 +42,9 @@ export default class Zenodo extends Repository implements IRepository {
       this.insert({ data : newZenodoRepo })
     }
 
-    // TODO: decide how often to fetch these data
     // Fetch urls and schema if not populated yet
     const zenodo = this.get()
-    if (!(zenodo && zenodo.urls && Object.keys(zenodo.urls).length)) {
+    if (!(zenodo?.urls && Object.keys(zenodo.urls).length)) {
       const urls: IRepositoryUrls | undefined = await Zenodo.getUrls()
       const schema: any = await Zenodo.getSchema(urls?.schemaUrl)
 
@@ -52,7 +52,11 @@ export default class Zenodo extends Repository implements IRepository {
         where: Zenodo.entity,
         data: { urls, schema }
       })
+    }
 
+    // If we don't have an access token stored, fetch one using the accessTokenUrl
+    // TODO: also check if it expired, and if so refresh it
+    if (!(Zenodo.isAuthorized) && this.get()?.urls?.accessTokenUrl) {
       await Zenodo.fetchAccessToken()
     }
   }
@@ -116,6 +120,7 @@ export default class Zenodo extends Repository implements IRepository {
   static async createSubmission(): Promise<{ recordId: string, formMetadata: any} | null> {
     console.info("Zenodo: Creating submission...")
     const zenodo = this.get()
+    
     if (zenodo) {
       try {
         const resp = await axios.post(
@@ -131,6 +136,10 @@ export default class Zenodo extends Repository implements IRepository {
           const recordId = resp.data.record_id
           const formMetadata = await this.read(recordId)
           return { recordId, formMetadata }
+        }
+        else {
+          // Unexpected response
+          console.info("Zenodo: Failed to create submission. Unknown response status.", resp)
         }
       }
       catch(e: any) {

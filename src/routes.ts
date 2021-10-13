@@ -13,6 +13,7 @@ import CzSubmissions from '@/components/submissions/cz.submissions.vue'
 import CzLogin from '@/components/account/cz.login.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
 import CzAuthorize from '@/components/authorize/cz.authorize.vue'
+import Zenodo from './models/zenodo.model'
 
 export const routes: RouteConfig[] = [
   {
@@ -62,6 +63,7 @@ export const routes: RouteConfig[] = [
       content: CzSubmissions,
       footer: CzFooter
     },
+    meta: { hasLoggedInGuard: true }
   },
   {
     name: 'new-submissions',
@@ -70,6 +72,16 @@ export const routes: RouteConfig[] = [
       content: CzNewSubmission,
       footer: CzFooter
     },
+    meta: { hasLoggedInGuard: true },
+    beforeEnter: (to, from, next) => {
+      // TODO: read which repo is in use
+      if (!Zenodo.accessToken) {
+        next({ path: '/authorize'})
+      }
+      else {
+        next()
+      }
+    }
   },
   {
     name: 'authorize',
@@ -78,6 +90,7 @@ export const routes: RouteConfig[] = [
       content: CzAuthorize,
       footer: CzFooter
     },
+    meta: { hasLoggedInGuard: true }
   },
   {
     name: 'contact',
