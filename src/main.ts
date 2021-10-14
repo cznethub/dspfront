@@ -3,6 +3,7 @@ import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
 import datePlugin from 'vuex-orm-plugin-date-attribute'
 import createPersistedState from 'vuex-persistedstate'
+import VueCookies from 'vue-cookies'
 
 // import App from './App.vue'
 // import VueUploadComponent from 'vue-upload-component'
@@ -26,9 +27,7 @@ import { persistedPaths } from './models/persistedPaths'
 import { APP_NAME } from './constants'
 
 VuexORM.use(datePlugin)
-
 Vue.config.productionTip = false
-
 Vue.use(Vuex)
 
 // Create Vuex Store and register database through Vuex ORM.
@@ -42,15 +41,16 @@ const store = new Vuex.Store({
   ]
 })
 
+Vue.use(VueCompositionAPI)
+Vue.use(VueRouter)
+Vue.use(VueCookies)
 Vue.use(Buefy, {
   defaultIconPack: 'fas',
-  // defaultContainerElement: '#content',
+  defaultContainerElement: '#content',
   defaultNotificationPosition: 'is-top',
   defaultNotificationDuration: 10000,
   defaultNoticeQueue: false,
 })
-Vue.use(VueCompositionAPI)
-Vue.use(VueRouter)
 
 new Vue({
   router,

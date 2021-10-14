@@ -19,6 +19,7 @@
     "core-js": "^3.18.1",
     "sprintf-js": "^1.1.2",
     "vue": "^2.6.11",
+    "vue-cookies": "^1.7.4",
     "vue-router": "^3.5.2",
     "vuex": "^3.6.2",
     "vuex-orm-plugin-date-attribute": "^0.1.1",

@@ -115,7 +115,7 @@
   })
   export default class CzHome extends Vue {
     protected get isLoggedIn() {
-      return User.isLoggedIn
+      return User.$state.isLoggedIn
     }
   }
 </script>

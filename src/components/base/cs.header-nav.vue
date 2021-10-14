@@ -9,6 +9,7 @@
 
       <template #start>
         <b-navbar-item tag="router-link" :to="{ path: `/about` }">About</b-navbar-item>
+        <b-navbar-item tag="router-link" :to="{ path: `/submissions` }">My Submissions</b-navbar-item>
         <b-navbar-item tag="router-link" :to="{ path: `/submit` }">Submit Data</b-navbar-item>
         <b-navbar-item tag="router-link" :to="{ path: `/resources` }">Resources</b-navbar-item>
         <b-navbar-item tag="router-link" :to="{ path: `/contact` }">Contact</b-navbar-item>
@@ -39,7 +40,7 @@
   })
   export default class CzHeaderNav extends Vue {
     protected get isLoggedIn() {
-      return User.isLoggedIn
+      return User.$state.isLoggedIn
     }
 
     protected logOut() {

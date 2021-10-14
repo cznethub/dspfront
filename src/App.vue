@@ -1,7 +1,7 @@
 <template>
   <div class="main-container">
     <cz-header-nav />
-    <div class="main-content">
+    <div class="main-content" id="content">
       <router-view v-if="!isLoading" name="content" />
     </div>
     <router-view name="footer" />
@@ -26,11 +26,14 @@
     async created() {
       document.title = 'CZ Hub'
       // Check for Authorization cookie instead. 
-      await User.checkAuthorization()
+      const isAuthorized = this.$cookies.get('Authorization')
+      if (isAuthorized && !User.$state.isLoggedIn) {
+        await User.checkAuthorization()
+      }
 
       Submission.fetchSubmissions()
       // Zenodo.deleteAll()  // For testing
-      if (User.isLoggedIn) {
+      if (User.$state.isLoggedIn) {
         await Zenodo.init()
       }
       this.isLoading = false

@@ -83,7 +83,7 @@
     loadFiles= false
 
     protected get isLoggedIn() {
-      return User.isLoggedIn
+      return User.$state.isLoggedIn
     }
 
     mounted() {
