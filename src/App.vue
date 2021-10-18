@@ -33,7 +33,7 @@
       await User.checkAuthorization()
       // }
 
-      Submission.fetchSubmissions()
+      
       // Zenodo.deleteAll()  // For testing
       if (User.$state.isLoggedIn) {
         await Zenodo.init()

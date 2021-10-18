@@ -5,7 +5,7 @@ import { router } from '@/router';
 import axios from "axios"
 import Repository from './repository.model'
 
-const sprintf = require('sprintf-js').sprintf;
+const sprintf = require('sprintf-js').sprintf
 
 export default class Zenodo extends Repository implements IRepository {
   static entity = EnumRepositoryKeys.zenodo
@@ -46,6 +46,7 @@ export default class Zenodo extends Repository implements IRepository {
     const zenodo = this.get()
     if (!(zenodo?.urls && Object.keys(zenodo.urls).length)) {
       const urls: IRepositoryUrls | undefined = await Zenodo.getUrls()
+      // Do we want to load the schema every time to keep it updated?
       const schema: any = await Zenodo.getSchema(urls?.schemaUrl)
 
       Zenodo.update({
@@ -58,6 +59,21 @@ export default class Zenodo extends Repository implements IRepository {
     // TODO: also check if it expired, and if so refresh it
     if (!(Zenodo.isAuthorized) && this.get()?.urls?.accessTokenUrl) {
       await Zenodo.fetchAccessToken()
+    }
+  }
+
+  static async updateMetadata(data: { [key: string]: any }, recordId?: string) {
+    const zenodo = this.get()
+    if (zenodo) {
+      const url = sprintf(zenodo.urls?.readUrl, recordId)
+      const resp = await axios.put(
+        url, 
+        JSON.stringify(data),
+        { 
+          headers: {"Content-Type": "application/json"}, 
+          params: { access_token: Zenodo.accessToken }, 
+        },
+      )
     }
   }
 
@@ -117,25 +133,32 @@ export default class Zenodo extends Repository implements IRepository {
     }
   }
 
-  static async createSubmission(): Promise<{ recordId: string, formMetadata: any} | null> {
+  static async createSubmission(data?: any): Promise<{ recordId: string, formMetadata: any} | null> {
     console.info("Zenodo: Creating submission...")
     const zenodo = this.get()
     
     if (zenodo) {
       try {
+        const depositionMetadata = data
+          ? { metadata: data }
+          : { }
         const resp = await axios.post(
           zenodo.urls?.createUrl || '',
-          {},
+          depositionMetadata,
           { 
-            headers: {"Content-Type": "application/json"},
-            params: {"access_token": Zenodo.accessToken } 
+            headers: { "Content-Type": "application/json"},
+            params: { "access_token": Zenodo.accessToken } 
           }
         )
 
         if (resp.status === 201) {
+          // resp.links
           const recordId = resp.data.record_id
           const formMetadata = await this.read(recordId)
           return { recordId, formMetadata }
+
+          // Save to CZHub
+
         }
         else {
           // Unexpected response
@@ -148,32 +171,49 @@ export default class Zenodo extends Repository implements IRepository {
           Zenodo.commit((state) => {
             state.accessToken = ''
           })
-          router.push({ path: '/authorize', query: { next: '/new-submission' } })
+          router.push({ path: '/authorize', query: { repo: this.entity, next: '/new-submission' } })
           
           console.info("Zenodo: Authorization token is invalid or has expired.")
           console.info("Zenodo: Redirecting to authorization page...")
         }
         else {
-          console.error("Zenodo: failed to create submission. ", e)
+          console.error("Zenodo: failed to create submission. ", e.response)
         }
       }
-
-
-      // this.read(recordId)
-
-        
-        // .then((resp) => {
-        //   this.recordId = resp.data[this.recordKey];
-        //   this.edit = true;
-        //   this.read()
-        // })
-        // .catch((error) => {
-        //   this.data = {}
-        //   this.edit = false;
-        //   this.message = error.message;
-        // });
     }
     return null
+  }
+
+  static async uploadFiles(bucketUrl: string, filesToUpload: { name: string, data: any }[] | any[]) {
+    // const promises = filesToUpload.map((file) => {
+    //   const url = `${bucketUrl}/${file.name}`
+    //   return axios.put(
+    //     url, 
+    //     file.data,
+    //     { 
+    //       params: { access_token: Zenodo.accessToken }, 
+    //     },
+    //   )
+    // })
+
+    const promises = filesToUpload.map((file) => {
+      // const url = `${bucketUrl}/${file.name}` // new api
+      const url = bucketUrl // new api
+      const form = new window.FormData()
+      form.append('file', file, file.name)
+
+      return axios.post(
+        url,
+        form,
+        { 
+          headers: { 'Content-Type': 'multipart/form-data' }, 
+          params: { "access_token": Zenodo.accessToken }
+        }
+      )
+    })
+
+    const resp: PromiseSettledResult<any>[] = await Promise.allSettled(promises)
+    // TODO: indicate to Cz api that files were uploaded
   }
 
   private static async read(recordId: string) {

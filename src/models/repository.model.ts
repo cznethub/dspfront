@@ -1,7 +1,5 @@
 import { Model } from '@vuex-orm/core'
-import Submission from '@/models/submission.model'
-import axios from "axios"
-import { IRepository, IRepositoryUrls, ISubmission } from '@/components/submissions/types'
+import { IRepository, IRepositoryUrls } from '@/components/submissions/types'
 import Zenodo from './zenodo.model'
 
 export default class Repository extends Model implements IRepository {

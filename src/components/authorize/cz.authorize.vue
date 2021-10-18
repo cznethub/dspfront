@@ -10,7 +10,7 @@
           <div class="panel-block is-flex is-flex-direction-column has-space-bottom">
             <b-button @click="goToAuthorizePage()" size="is-medium" expanded type="is-primary">
               <div class="level">
-                <i class="fab fa-orcid has-space-right is-size-3" />
+                <i class="fas fa-key has-space-right is-size-3" />
                 <span>Authorize</span>
               </div>
             </b-button>

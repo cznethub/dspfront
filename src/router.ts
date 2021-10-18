@@ -9,6 +9,7 @@ export const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   // Resolve pending redirect (i.e after login)
+  console.log("Router beforeEach: ", to)
   const nextRoute = User.$state.next
   if (nextRoute) {
     // Consume the redirect

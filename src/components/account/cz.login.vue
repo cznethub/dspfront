@@ -33,14 +33,6 @@
     components: { },
   })
   export default class CzLogin extends Vue {
-    created() {
-      console.log(
-        // this.$route, 
-        // this.$cookies, 
-        this.$cookies.get('Authorization')
-      )
-    }
-
     protected goToOrcidLogin() {
       const next = this.$route.query.next
       // Save the next route in the model before navigating away

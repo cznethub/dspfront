@@ -44,7 +44,7 @@ export enum EnumSortDirections {
 export interface IRepositoryUrls {
   schemaUrl: string
   createUrl: string
-  updateUrl: string
+  updateUrl: string // To update metadata
   readUrl: string
   fileCreateUrl: string
   fileDeleteUrl: string

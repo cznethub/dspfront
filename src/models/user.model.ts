@@ -1,8 +1,8 @@
 import { DEFAULT_TOAST_DURATION } from '@/constants'
 import { router } from '@/router'
 import { Model } from '@vuex-orm/core'
-import axios from "axios"
 import { ToastProgrammatic } from 'buefy'
+import axios from "axios"
 
 export interface ICzCurrentUserState {
   orcid: string

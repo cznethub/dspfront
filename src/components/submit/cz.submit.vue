@@ -55,7 +55,7 @@
   import { Component, Vue } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
   import { IRepository } from '@/components/submissions/types'
-import Zenodo from '@/models/zenodo.model'
+  import Zenodo from '@/models/zenodo.model'
 
   @Component({
     name: 'cz-submit',
@@ -69,7 +69,7 @@ import Zenodo from '@/models/zenodo.model'
         this.$router.push({ path: '/new-submission' })
       }
       else {
-        this.$router.push({ path: '/authorize', query: { repo: repo.key } })
+        this.$router.push({ path: '/authorize', query: { repo: repo.key, next: '/new-submission' } })
       }
     }
   }

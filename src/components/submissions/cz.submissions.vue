@@ -121,7 +121,10 @@
               </b-table-column>
 
               <template #empty>
-                <div class="has-text-centered">No records</div>
+                <div class="has-text-centered">
+                  <b-loading :is-full-page="false" :active="isFetching" />
+                  <template v-if="!isFetching">No records</template>
+                </div>
               </template>
             </b-table>
           </div>
@@ -157,6 +160,10 @@
     protected enumRepositories = EnumRepositories
     protected enumSubmissionSorts = EnumSubmissionSorts
     protected enumSortDirections = EnumSortDirections
+
+    protected get isFetching() {
+      return Submission.$state.isFetching
+    }
 
     protected get statusOptions() {
       return Object.keys(EnumSubmissionStatus)
@@ -202,6 +209,10 @@
 
         return true
       })
+    }
+
+    created() {
+      Submission.fetchSubmissions()
     }
 
     @Watch('currentSort', { deep: true })
