@@ -27,9 +27,11 @@
       document.title = 'CZ Hub'
       // Check for Authorization cookie instead. 
       const isAuthorized = this.$cookies.get('Authorization')
-      if (isAuthorized && !User.$state.isLoggedIn) {
-        await User.checkAuthorization()
-      }
+      // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
+      // Reproducible if the server is restarted
+      // if (isAuthorized && !User.$state.isLoggedIn) {
+      await User.checkAuthorization()
+      // }
 
       Submission.fetchSubmissions()
       // Zenodo.deleteAll()  // For testing

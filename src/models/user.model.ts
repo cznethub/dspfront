@@ -32,7 +32,6 @@ export default class User extends Model {
     return 
   }
 
-
   static get accessToken() {
     return this.$state?.orcidAccessToken
   }

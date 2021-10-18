@@ -8,14 +8,12 @@
         <div class="panel has-space-bottom-2x">
           <div class="panel-heading">Authorize</div>
           <div class="panel-block is-flex is-flex-direction-column has-space-bottom">
-            <a class="block"  :href="authorizeUrl">
-              <b-button size="is-medium" expanded type="is-primary">
-                <div class="level">
-                  <i class="fab fa-orcid has-space-right is-size-3" />
-                  <span>Authorize</span>
-                </div>
-              </b-button>
-            </a>
+            <b-button @click="goToAuthorizePage()" size="is-medium" expanded type="is-primary">
+              <div class="level">
+                <i class="fab fa-orcid has-space-right is-size-3" />
+                <span>Authorize</span>
+              </div>
+            </b-button>
             <p class="block has-text-mute">Follow the instructions on the next page to allow CZnet to submit to this repository.</p>
           </div>
         </div>
@@ -25,8 +23,9 @@
 </template>
 
 <script lang="ts">
+  import { Component, Vue } from 'vue-property-decorator'
   import Zenodo from '@/models/zenodo.model'
-import { Component, Vue } from 'vue-property-decorator'
+  import User from '@/models/user.model'
 
   @Component({
     name: 'cz-authorize',
@@ -35,6 +34,19 @@ import { Component, Vue } from 'vue-property-decorator'
   export default class CzAuthorize extends Vue {
     protected get authorizeUrl() {
       return Zenodo.get()?.urls?.authorizeUrl
+    }
+
+    protected goToAuthorizePage() {
+      if (this.authorizeUrl) {
+        const next = this.$route.query.next
+        // Save the next route in the model before navigating away
+        if (next) {
+          User.commit((state) => {
+            state.next = next
+          })
+        }
+        window.location.replace(this.authorizeUrl)
+      }
     }
   }
 </script>

@@ -23,10 +23,6 @@
   import { defineComponent } from '@vue/composition-api'
   import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2'
 
-    // <b-field :label="control.label">
-    //   <b-input size="is-medium" :value="control.data" @change.native="onChange" :placeholder="control.description" :message="control.errors" />
-    // </b-field>
-
   // https://www.npmjs.com/package/@jsonforms/vue2
 
   const controlRenderer = defineComponent({
@@ -38,7 +34,7 @@
       return useJsonFormsControl(props);
     },
     created() {
-      console.log(this.control)
+      // console.log(this.control)
     },
     methods: {
       onChange(value) {

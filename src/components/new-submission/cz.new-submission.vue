@@ -19,9 +19,29 @@
       <div class="container" style="min-height: 20rem;">
         <b-loading :is-full-page="false" :active="isLoading" />
 
-        <div style="max-width: 60rem;">
+        <div v-if="!isLoading && data" style="max-width: 60rem;">
+
+          <b-field>
+            <b-upload v-model="dropFiles" multiple drag-drop expanded>
+              <section class="section">
+                <div class="content has-text-centered">
+                  <p>
+                    <b-icon icon="upload" size="is-large"></b-icon>
+                  </p>
+                  <p class="is-size-4">Drop your files here or click to upload</p>
+                </div>
+              </section>
+            </b-upload>
+          </b-field>
+
+          <div class="tags">
+            <span v-for="(file, index) in dropFiles" :key="index" class="tag is-primary is-size-4">
+              {{ file.name }}
+              <button class="delete is-small" type="button" @click="deleteDropFile(index)"></button>
+            </span>
+          </div>
+
           <json-forms
-            v-if="!isLoading && data"
             :data="data"
             :renderers="renderers"
             :schema="schema"
@@ -49,7 +69,6 @@
   const renderers = [
     ...vanillaRenderers,
     ...CzRenderers,
-    // here you can add custom renderers
   ];
 
   @Component({
@@ -62,6 +81,7 @@
     protected data = null
     protected renderers: JsonFormsRendererRegistryEntry[] = renderers
     protected uischema = null
+    protected dropFiles = []
 
     protected get schema() {
       return Zenodo.get()?.schema
@@ -75,13 +95,11 @@
         // console.log(this.schema)
         this.recordId = submission?.recordId
       }
-      else {
-        // Token was invalid
-        console.log("CzNewSubmission: token was invalid")
-        this.$router.push({ path: '/authorize'})
-        // TODO: bring the router back to this page
-      }
       this.isLoading = false
+    }
+
+    protected deleteDropFile(index) {
+      this.dropFiles.splice(index, 1);
     }
 
     onChange(event: JsonFormsChangeEvent) {

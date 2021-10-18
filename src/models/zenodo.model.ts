@@ -148,9 +148,10 @@ export default class Zenodo extends Repository implements IRepository {
           Zenodo.commit((state) => {
             state.accessToken = ''
           })
-          router.push({ path: '/authorize' })
+          router.push({ path: '/authorize', query: { next: '/new-submission' } })
           
-          console.error("Zenodo: Authorization token has expired. ", e)
+          console.info("Zenodo: Authorization token is invalid or has expired.")
+          console.info("Zenodo: Redirecting to authorization page...")
         }
         else {
           console.error("Zenodo: failed to create submission. ", e)
