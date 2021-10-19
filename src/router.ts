@@ -7,22 +7,37 @@ export const router = new VueRouter({
   routes
 })
 
-router.beforeEach((to, from, next) => {
-  // Resolve pending redirect (i.e after login)
-  console.log("Router beforeEach: ", to)
+export function setupRouteGuards() {
+  router.beforeEach((to, from, next) => {
+    // Resolve pending redirect (i.e after login)
+    console.log("Router beforeEach: ", to)
+    const nextRoute = User.$state.next
+    if (nextRoute) {
+      // Consume the redirect
+      User.commit((state) => {
+        state.next = ''
+      })
+      next({ path: nextRoute })
+    }
+    else if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
+      next({ path: '/login', query: { next: to.path } })
+    }
+    else {
+      next()
+    }
+  })
+}
+
+/** Call this manually immediately after app has initiated to perform a pending redirect.
+ * Useful if the guards were being setup when the redirect was needed. 
+ * */
+export function checkNextOnce() {
   const nextRoute = User.$state.next
   if (nextRoute) {
     // Consume the redirect
     User.commit((state) => {
       state.next = ''
     })
-    next({ path: nextRoute })
+    router.push({ path: nextRoute })
   }
-  else if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
-    next({ path: '/login', query: { next: to.path } })
-  }
-  else {
-    next()
-  }
-})
-
+}

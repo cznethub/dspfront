@@ -8,7 +8,7 @@
         <div class="panel has-space-bottom-2x">
           <div class="panel-heading">Log In</div>
           <div class="panel-block is-flex is-flex-direction-column has-space-bottom">
-            <b-button @click="goToOrcidLogin()" size="is-medium" expanded type="is-primary">
+            <b-button @click="goToOrcidLogin()" class="block" size="is-medium" expanded type="is-primary">
               <div class="level">
                 <i class="fab fa-orcid has-space-right is-size-3" />
                 <span>Log In Using ORCID</span>

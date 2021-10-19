@@ -10,6 +10,7 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
+  import { setupRouteGuards, checkNextOnce } from './router'
   import CzFooter from '@/components/base/cz.footer.vue'
   import CzHeaderNav from '@/components/base/cs.header-nav.vue'
   import User from '@/models/user.model'
@@ -35,6 +36,9 @@
       if (User.$state.isLoggedIn) {
         await Zenodo.init()
       }
+
+      setupRouteGuards()
+      checkNextOnce() // Check if a redirect was set
 
       this.isLoading = false
     }
