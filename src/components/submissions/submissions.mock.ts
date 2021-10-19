@@ -20,8 +20,9 @@ const status = [
 
 const numberOfSubmissions = 50
 
-export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmissions)).map(() => {
+export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmissions)).map((el, index) => {
   return {
+    id: index,
     title: getRandomElementFromArray(titles),
     authors: ['Jeffery S. Horsburgh', 'Scott Black', 'Kerstin Lehnert'],
     repository: getRandomElementFromArray(repos),

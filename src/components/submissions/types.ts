@@ -1,4 +1,5 @@
 export interface ISubmission {
+  id: number,
   title: string
   authors: string[]
   repository: EnumRepositoryKeys

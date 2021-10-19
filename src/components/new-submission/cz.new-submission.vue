@@ -162,5 +162,9 @@
 <style lang="scss" scoped>
   /deep/ .vertical-layout-item {
     margin: 1rem 0;
+
+    select {
+      width: 100%;
+    }
   }
 </style>

@@ -5,6 +5,8 @@ import axios from "axios"
 export default class Submission extends Model implements ISubmission {
   // This is the name used as module name of the Vuex Store.
   static entity = 'submissions'
+  static primaryKey = 'id'
+  public id!: number
   public title!: string
   public authors!: string[]
   public repository!: EnumRepositoryKeys
@@ -26,6 +28,7 @@ export default class Submission extends Model implements ISubmission {
   // for the generic field type. The argument is the default value.
   static fields () {
     return {
+      id: this.number(0),
       title: this.attr(''),
       repository: this.attr(''),
       authors: this.attr([]),
@@ -38,6 +41,7 @@ export default class Submission extends Model implements ISubmission {
 
   static getInsertData(apiSubmission): ISubmission {
     return {
+      id: apiSubmission.id,
       title: apiSubmission.title,
       authors: [],
       repository: apiSubmission.repo_type,
