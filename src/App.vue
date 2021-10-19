@@ -12,7 +12,6 @@
   import { Component, Vue } from 'vue-property-decorator'
   import CzFooter from '@/components/base/cz.footer.vue'
   import CzHeaderNav from '@/components/base/cs.header-nav.vue'
-  import Submission from '@/models/submission.model'
   import User from '@/models/user.model'
   import Zenodo from '@/models/zenodo.model'
   
@@ -26,18 +25,17 @@
     async created() {
       document.title = 'CZ Hub'
       // Check for Authorization cookie instead. 
-      const isAuthorized = this.$cookies.get('Authorization')
+      // const isAuthorized = this.$cookies.get('Authorization')
       // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
       // Reproducible if the server is restarted
       // if (isAuthorized && !User.$state.isLoggedIn) {
       await User.checkAuthorization()
       // }
-
       
-      // Zenodo.deleteAll()  // For testing
       if (User.$state.isLoggedIn) {
         await Zenodo.init()
       }
+
       this.isLoading = false
     }
   }

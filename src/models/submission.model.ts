@@ -37,8 +37,14 @@ export default class Submission extends Model implements ISubmission {
   }
 
   static getInsertData(apiSubmission): ISubmission {
-    // TODO: implement any necessary transformations here
-    return apiSubmission
+    return {
+      title: apiSubmission.title,
+      authors: [],
+      repository: apiSubmission.repo_type,
+      date: apiSubmission.submitted,
+      status: apiSubmission.status,
+      identifier: apiSubmission.identifier,
+    }
   }
 
   static async fetchSubmissions() {

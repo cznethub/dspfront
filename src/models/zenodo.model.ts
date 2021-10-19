@@ -118,7 +118,7 @@ export default class Zenodo extends Repository implements IRepository {
       try {
         const resp = await axios.get(accessTokenUrl)
         if (resp.status === 200) {
-          const token = resp.data.token // TODO: also need its expiration date!
+          const token = resp.data.access_token // TODO: also need its expiration date!
           Zenodo.commit((state) => {
             state.accessToken = token
           })
@@ -155,10 +155,14 @@ export default class Zenodo extends Repository implements IRepository {
           // resp.links
           const recordId = resp.data.record_id
           const formMetadata = await this.read(recordId)
-          return { recordId, formMetadata }
 
           // Save to CZHub
+          const czResp = await axios.get(`/api/draft/${this.entity}/${recordId}`)
+          // console.log(czResp)
 
+          // TODO: insert into Submission model
+
+          return { recordId, formMetadata }
         }
         else {
           // Unexpected response
