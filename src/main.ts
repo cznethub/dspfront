@@ -1,18 +1,12 @@
 import '@jsonforms/vue2-vanilla/vanilla.css';
+import 'vue-material/dist/vue-material.min.css'
+// import 'vue-material/dist/theme/default.css'
+
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
 import datePlugin from 'vuex-orm-plugin-date-attribute'
 import createPersistedState from 'vuex-persistedstate'
 import VueCookies from 'vue-cookies'
-
-// import App from './App.vue'
-// import VueUploadComponent from 'vue-upload-component'
-// import { createApp } from 'vue'
-
-// const app = createApp(App)
-// app.mount('#app')
-// app.component('file-upload', VueUploadComponent)
-
 
 import 'buefy/dist/buefy.css'
 import '@/assets/css/global.scss'
@@ -21,10 +15,30 @@ import Buefy from 'buefy'
 import VueRouter from 'vue-router'
 import Vue from 'vue'
 import App from './App.vue'
+
 import { router } from './router'
 import { orm } from '@/models/orm'
 import { persistedPaths } from './models/persistedPaths'
 import { APP_NAME } from './constants'
+
+import { 
+  MdButton,
+  MdContent,
+  MdTabs,
+  MdToolbar,
+  MdApp,
+  MdIcon,
+  MdCard,
+} from 'vue-material/dist/components'
+
+/** Material modules */
+Vue.use(MdButton)
+Vue.use(MdContent)
+Vue.use(MdTabs)
+Vue.use(MdToolbar)
+Vue.use(MdApp)
+Vue.use(MdIcon)
+Vue.use(MdCard)
 
 VuexORM.use(datePlugin)
 Vue.config.productionTip = false

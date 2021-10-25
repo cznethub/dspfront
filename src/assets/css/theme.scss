@@ -1,131 +1,146 @@
 :root {
-    --dark: #0D0F15;
-    --main-blue: #14A9DD;
-    --dark-gray: #1A1D27;
-    --text-mute: #9699AF;
-    --bg-light-gray: #EFEFEF;
-  }
-  
-  @import '~@fortawesome/fontawesome-free/css/all.min.css';
-  
-  body, html {
-    padding: 0;
-    margin: 0;
-    font-family: 'Inter';
-    font-style: normal;
-    font-weight: 300;
-    min-height: 100%;
-    height: 100%;
-  }
+  // --dark: #0D0F15;
+  // --main-blue: #14A9DD;
+  // --dark-gray: #1A1D27;
+  --text-mute: #9699AF;
+  // --bg-light-gray: #EFEFEF;
+}
 
-  html {
-    font-size: 62.5%;
-  }
+@import "~vue-material/dist/theme/engine"; // Import the theme engine
+@include md-register-theme("default", (
+  primary: md-get-palette-color(bluegrey, 200), // The primary color of your application
+  accent: md-get-palette-color(blue, 700), // The accent or secondary color
+  theme: light
+));
+@import "~vue-material/dist/theme/all"; // Apply the theme
+@import '~@fortawesome/fontawesome-free/css/all.min.css';
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5 {
-    font-weight: 500;
-  }
-  
-  body {
-    display: flex;
-    flex-direction: column;
-    font-size: 14px;
-    font-size: 1.4rem;
-  }
-  
-  a {
-    text-decoration: none;
-    color: #14A9DD;
-  }
-  
-  .full-height {
-    height: 100%;
-  }
-  
-  .has-text-mute {
-    color: var(--text-mute) !important;
-  }
-  
-  .has-border-gray {
-    border: 1px solid var(--dark-gray);
-  }
-  
-  .has-background-dark {
-    background: var(--dark) !important;
-  }
-  
-  .has-background-dark-gray {
-    background: var(--dark-gray);
-  }
-  
-  .has-background-dark--gradient {
-    background: linear-gradient(180deg, #0D0F15 0%, #1A1D27 100%);
-  }
-  
-  .is-clickable {
-    cursor: pointer;
-    transition: color 0.15s ease;
-  
-    &:hover {
-      color: var(--main-blue) !important;
-    }
-  }
+body, html {
+  // padding: 0;
+  // margin: 0;
+  // font-family: 'Inter';
+  // font-style: normal;
+  // font-weight: 300;
+  // min-height: 100%;
+  // height: 100%;
+}
 
-  .is-marginless {
-    margin: 0;
-  }
-  
-  .is-flipped-x {
-    transform: scaleX(-1);
-  }
+html {
+  font-size: 62.5%;
+}
 
-  .has-space-bottom {
-    margin-bottom: 1.5rem;
-  }
+h1,
+h2,
+h3,
+h4,
+h5 {
+  font-weight: 500;
+}
 
-  .has-space-bottom-2x {
-    margin-bottom: 3rem;
-  }
+body {
+  // display: flex;
+  // flex-direction: column;
+  font-size: 14px;
+  font-size: 1.4rem;
+}
 
-  .has-space-top {
-    margin-top: 1.5rem;
-  }
+// a {
+//   text-decoration: none;
+//   color: #14A9DD;
+// }
 
-  .has-space-top-2x {
-    margin-top: 3rem;
-  }
+.full-height {
+  height: 100%;
+}
 
-  .has-space-right {
-    margin-right: 1.5rem;
-  }
+.full-width {
+  width: 100%;
+}
 
-  .has-space-left {
-    margin-left: 1.5rem;
-  }
+.has-text-mute {
+  color: var(--text-mute) !important;
+}
 
-  .is-grid {
-    display: grid;
-  }
+.has-text-white {
+  color: #FFF;
+}
 
-  .spacer {
-    flex: 1 1 auto;
-  }
+// .has-border-gray {
+//   border: 1px solid var(--dark-gray);
+// }
 
-  h1 { font-size: 30px; font-size: 3rem !important; }
-  h2 { font-size: 25px; font-size: 2.5rem !important; }
-  h3 { font-size: 20px; font-size: 2rem !important; }
-  h4 { font-size: 15px; font-size: 1.5rem !important; }
-  h5 { font-size: 12.5px; font-size: 1.25rem !important; }
-  h6 { font-size: 10px; font-size: 1rem !important; }
+// .has-background-dark {
+//   background: var(--dark) !important;
+// }
 
-  .panel {
-    font-size: 1.4rem;
-  }
+// .has-background-dark-gray {
+//   background: var(--dark-gray);
+// }
 
-  .panel-block {
-    padding: 2rem;
-  }
+// .has-background-dark--gradient {
+//   background: linear-gradient(180deg, #0D0F15 0%, #1A1D27 100%);
+// }
+
+// .is-clickable {
+//   cursor: pointer;
+//   transition: color 0.15s ease;
+
+//   &:hover {
+//     color: var(--main-blue) !important;
+//   }
+// }
+
+.is-marginless {
+  margin: 0;
+}
+
+.is-flipped-x {
+  transform: scaleX(-1);
+}
+
+.has-space-bottom {
+  margin-bottom: 1.5rem;
+}
+
+.has-space-bottom-2x {
+  margin-bottom: 3rem;
+}
+
+.has-space-top {
+  margin-top: 1.5rem;
+}
+
+.has-space-top-2x {
+  margin-top: 3rem;
+}
+
+.has-space-right {
+  margin-right: 1.5rem;
+}
+
+.has-space-left {
+  margin-left: 1.5rem;
+}
+
+.is-grid {
+  display: grid;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+// h1 { font-size: 30px; font-size: 3rem !important; }
+// h2 { font-size: 25px; font-size: 2.5rem !important; }
+// h3 { font-size: 20px; font-size: 2rem !important; }
+// h4 { font-size: 15px; font-size: 1.5rem !important; }
+// h5 { font-size: 12.5px; font-size: 1.25rem !important; }
+// h6 { font-size: 10px; font-size: 1rem !important; }
+
+// .panel {
+//   font-size: 1.4rem;
+// }
+
+// .panel-block {
+//   padding: 2rem;
+// }

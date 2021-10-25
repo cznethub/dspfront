@@ -1,5 +1,15 @@
 <template>
-  <div class="cz-header-nav">
+  <div class="md-toolbar-row md-layout-item content">
+    <!-- <div class="logo"
+      :style="{ 'background-image': 'url(' + require('@/assets/img/CZN_Logo.png') + ')' }"></div> -->
+    <!-- <div class="logo"> -->
+      <img class="logo" :src="require('@/assets/img/CZN_Logo.png')" alt="">
+    <!-- </div> -->
+    <div class="spacer"></div>
+    <md-button class="md-raised md-accent">Create</md-button>
+  </div>
+
+  <!-- <div class="cz-header-nav">
     <b-navbar>
       <template #brand>
         <b-navbar-item tag="router-link" :to="{ path: '/' }">
@@ -27,7 +37,7 @@
         </b-navbar-item>
       </template>
     </b-navbar>
-  </div>
+  </div> -->
 </template>
 
 <script lang="ts">

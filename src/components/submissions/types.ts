@@ -8,6 +8,11 @@ export interface ISubmission {
   identifier: string
 }
 
+export interface IFolder {
+  folders?: IFolder[]
+  files?: any[]
+}
+
 export enum EnumSubmissionStatus {
   draft = 'Draft',
   submitted = 'Submitted'

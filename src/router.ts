@@ -26,9 +26,11 @@ export function setupRouteGuards() {
       next()
     }
   })
+
+  checkNextOnce() // Check if a redirect was set
 }
 
-/** Call this manually immediately after app has initiated to perform a pending redirect.
+/** Call this manually immediately after guards are setup to perform a pending redirect.
  * Useful if the guards were being setup when the redirect was needed. 
  * */
 export function checkNextOnce() {
