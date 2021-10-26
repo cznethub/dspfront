@@ -202,6 +202,7 @@
     flex: 1;
     overflow: auto;
     border-top: 1px solid #DDD;
+    min-height: 75vh;
   }
 
   .md-dialog /deep/.md-dialog-container {
