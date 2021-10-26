@@ -79,7 +79,6 @@
       }
       // Check if the route is active pending a redirect
       else if (this.$router.currentRoute.query.next){
-        console.log("hre")
         const matchedNextRoute = this.$router.match(this.$router.currentRoute.query.next as string)
         return matchedNextRoute.name === matchedRoute.name
       }

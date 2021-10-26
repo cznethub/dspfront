@@ -33,7 +33,7 @@ export function setupRouteGuards() {
 /** Call this manually immediately after guards are setup to perform a pending redirect.
  * Useful if the guards were being setup when the redirect was needed. 
  * */
-export function checkNextOnce() {
+function checkNextOnce() {
   const nextRoute = User.$state.next
   if (nextRoute) {
     // Consume the redirect

@@ -1,16 +1,16 @@
 <template>
   <div class="cz-new-submission">
-
     <section class="section">
       <div class="container">
         <div class="level">
           <h1 class="title is-1">New Submission</h1>
           <img :src="require('@/assets/img/placeholder.png')" alt="" style="width: 20rem;">
           <div>
-            <b-button @click="save()" class="has-space-right" size="is-medium" :disabled="isSaving">
+            <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
+            <md-button class="md-raised" @click="save()" :disabled="isSaving">
               {{ isSaving ? 'Saving...' : 'Save' }}
-            </b-button>
-            <b-button size="is-medium" type="is-primary">Submit</b-button>
+            </md-button>
+            <md-button class="md-raised md-accent">Submit</md-button>
           </div>
         </div>
         <p><b>Instructions</b>: Fill in the required fields (marked with *). Press the "Save" button to save your upload for later editing. When the form is complete, click the "Submit" button to upload your submission to the repository.</p>
@@ -60,16 +60,30 @@
         </div>
       </div>
     </section>
+
+    <md-dialog v-if="isDevMode" :md-active.sync="showUISchema" :md-fullscreen="true">
+      <md-dialog-title>UI Schema</md-dialog-title>
+      <div class="schema-wrapper">
+        <json-viewer
+          :value="usedUISchema"
+          :expand-depth="5"
+          copyable
+          expanded
+          sort />
+      </div>
+    </md-dialog>
   </div>
 </template>
 
 <script lang="ts">
-  import Zenodo from '@/models/zenodo.model'
   import { Component, Vue, Ref } from 'vue-property-decorator'
   import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
   import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
   import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
   import { CzRenderers } from '@/renderers/renderer.vue'
+  import Zenodo from '@/models/zenodo.model'
+  import JsonViewer from 'vue-json-viewer'
+
   const sprintf = require('sprintf-js').sprintf
 
   const renderers = [
@@ -79,7 +93,7 @@
 
   @Component({
     name: 'cz-new-submission',
-    components: { JsonForms },
+    components: { JsonForms, JsonViewer },
   })
   export default class CzNewSubmission extends Vue {
     @Ref('form') jsonForm!: typeof JsonForms 
@@ -91,13 +105,26 @@
     protected renderers: JsonFormsRendererRegistryEntry[] = renderers
     protected uischema = null
     protected dropFiles: File[] = []
+    protected showUISchema = false
+    protected usedUISchema = ''
 
     protected get schema() {
       return Zenodo.get()?.schema
     }
 
-    created() {
-      console.log(this.schema)
+    protected get isDevMode() {
+      return process.env.NODE_ENV === 'development'
+    }
+
+    protected onShowUISchema() {
+      if (this.jsonForm) {
+        // this.usedUISchema = JSON.stringify(this.jsonForm.uischemaToUse, null, 2)
+        this.usedUISchema = this.jsonForm.uischemaToUse
+      }
+      else {
+        this.usedUISchema = ''  // default
+      }
+      this.showUISchema = true
     }
 
     protected async save() {
@@ -166,5 +193,18 @@
     select {
       width: 100%;
     }
+  }
+
+  .schema-wrapper {
+    width: 100rem;
+    max-width: 100%;
+    height: 0;
+    flex: 1;
+    overflow: auto;
+    border-top: 1px solid #DDD;
+  }
+
+  .md-dialog /deep/.md-dialog-container {
+    max-width: 100rem;
   }
 </style>

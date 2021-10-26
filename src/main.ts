@@ -29,6 +29,7 @@ import {
   MdApp,
   MdIcon,
   MdCard,
+  MdDialog,
 } from 'vue-material/dist/components'
 
 /** Material modules */
@@ -39,6 +40,7 @@ Vue.use(MdToolbar)
 Vue.use(MdApp)
 Vue.use(MdIcon)
 Vue.use(MdCard)
+Vue.use(MdDialog)
 
 VuexORM.use(datePlugin)
 Vue.config.productionTip = false
