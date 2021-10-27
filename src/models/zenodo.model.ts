@@ -47,11 +47,13 @@ export default class Zenodo extends Repository implements IRepository {
     if (!(zenodo?.urls && Object.keys(zenodo.urls).length)) {
       const urls: IRepositoryUrls | undefined = await Zenodo.getUrls()
       // Do we want to load the schema every time to keep it updated?
-      const schema: any = await Zenodo.getSchema(urls?.schemaUrl)
+      const schema: any = await Zenodo.getJson(urls?.schemaUrl)
+      const uischema: any = await Zenodo.getJson(urls?.uischemaUrl)
+      const schemaDefaults: any = await Zenodo.getJson(urls?.schemaDefaultsUrl)
 
       Zenodo.update({
         where: Zenodo.entity,
-        data: { urls, schema }
+        data: { urls, schema, uischema, schemaDefaults }
       })
     }
 
@@ -77,12 +79,12 @@ export default class Zenodo extends Repository implements IRepository {
     }
   }
 
-  protected static async getSchema(schemaUrl: string | undefined) {
-    if (!schemaUrl) {
+  protected static async getJson(jsonUrl: string | undefined) {
+    if (!jsonUrl) {
       return undefined
     }
 
-    const resp = await axios.get(schemaUrl)
+    const resp = await axios.get(jsonUrl)
 
     if (resp.status === 200) {
       return resp.data
@@ -95,6 +97,8 @@ export default class Zenodo extends Repository implements IRepository {
 
       return {
         schemaUrl: resp.data.schema,
+        uischemaUrl: resp.data.uischema,
+        schemaDefaultsUrl: resp.data.schema_defaults,
         createUrl: resp.data.create,
         updateUrl: resp.data.update,
         readUrl: resp.data.read,

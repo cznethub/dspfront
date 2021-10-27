@@ -100,16 +100,23 @@
     protected isLoading = false
     protected isSaving = false
     protected recordId = ''
-    protected data: any = {}
+    protected data: any = this.schemaDefaults
     protected links: any = {}
     protected renderers: JsonFormsRendererRegistryEntry[] = renderers
-    protected uischema = null
     protected dropFiles: File[] = []
     protected showUISchema = false
     protected usedUISchema = ''
 
     protected get schema() {
       return Zenodo.get()?.schema
+    }
+
+    protected get uischema() {
+      return Zenodo.get()?.uischema
+    }
+
+    protected get schemaDefaults() {
+      return Zenodo.get()?.schemaDefaults
     }
 
     protected get isDevMode() {

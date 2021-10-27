@@ -12,6 +12,8 @@ export default class Repository extends Model implements IRepository {
   public readonly submitLabel?: string
   public readonly urls?: IRepositoryUrls
   public readonly schema?: any
+  public readonly uischema?: any
+  public readonly schemaDefaults?: any
 
   static get $state() {
     return this.store().state.entities[this.entity]
@@ -26,6 +28,8 @@ export default class Repository extends Model implements IRepository {
       submitLabel:  this.attr(''),
       urls: this.attr({}),
       schema: this.attr({}),
+      uischema: this.attr({}),
+      schemaDefaults: this.attr({}),
     }
   }
 
@@ -46,6 +50,6 @@ export default class Repository extends Model implements IRepository {
   }
   
   static init: () => Promise<void>
-  protected static getSchema: (schemaUrl: string | undefined) => Promise<any>
+  protected static getJson: (jsonUrl: string | undefined) => Promise<any>
   protected static getUrls: () => Promise<undefined | IRepositoryUrls>
 }
