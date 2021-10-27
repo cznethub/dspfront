@@ -43,15 +43,29 @@ export default class Zenodo extends Repository implements IRepository {
     }
 
     // Fetch urls and schema if not populated yet.
-    const isOutdated = false  // TODO: we need a way to detect when the schema is outdated.
+    const isOutdated = true  // TODO: we need a way to detect when the schema is outdated.
     const zenodo = this.get()
     if (isOutdated || !(zenodo?.urls && Object.keys(zenodo.urls).length)) {
       console.info(`Zenodo: fetching schemas and updating them...`)
-      const urls: IRepositoryUrls | undefined = await Zenodo.getUrls()
       // TODO: Do we want to load the schema every time to keep it updated?
-      const schema: any = await Zenodo.getJson(urls?.schemaUrl)
-      const uischema: any = await Zenodo.getJson(urls?.uischemaUrl)
-      const schemaDefaults: any = await Zenodo.getJson(urls?.schemaDefaultsUrl)
+      
+      const urls: IRepositoryUrls | undefined = await Zenodo.getUrls()
+
+      let results: PromiseSettledResult<any>[] = await Promise.allSettled([
+        Zenodo.getJson(urls?.schemaUrl),
+        Zenodo.getJson(urls?.uischemaUrl),
+        Zenodo.getJson(urls?.schemaDefaultsUrl)
+      ])
+
+      results = results.map((r: PromiseSettledResult<any>) => {
+        if (r.status === 'fulfilled') {
+          return r.value
+        }
+      })
+
+      const schema = results[0]
+      const uischema = results[1]
+      const schemaDefaults = results[2]
 
       Zenodo.update({
         where: Zenodo.entity,
