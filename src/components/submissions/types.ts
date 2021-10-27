@@ -49,6 +49,8 @@ export enum EnumSortDirections {
 
 export interface IRepositoryUrls {
   schemaUrl: string
+  uischemaUrl: string
+  schemaDefaultsUrl: string
   createUrl: string
   updateUrl: string // To update metadata
   readUrl: string
@@ -66,5 +68,7 @@ export interface IRepository {
   description: string
   submitLabel?: string
   urls?: IRepositoryUrls
-  schema?: any
+  schema?: any,
+  uischema?: any
+  schemaDefaults?: any
 }

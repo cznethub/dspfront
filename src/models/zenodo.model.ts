@@ -42,16 +42,34 @@ export default class Zenodo extends Repository implements IRepository {
       this.insert({ data : newZenodoRepo })
     }
 
-    // Fetch urls and schema if not populated yet
+    // Fetch urls and schema if not populated yet.
+    const isOutdated = true  // TODO: we need a way to detect when the schema is outdated.
     const zenodo = this.get()
-    if (!(zenodo?.urls && Object.keys(zenodo.urls).length)) {
+    if (isOutdated || !(zenodo?.urls && Object.keys(zenodo.urls).length)) {
+      console.info(`Zenodo: fetching schemas and updating them...`)
+      // TODO: Do we want to load the schema every time to keep it updated?
+      
       const urls: IRepositoryUrls | undefined = await Zenodo.getUrls()
-      // Do we want to load the schema every time to keep it updated?
-      const schema: any = await Zenodo.getSchema(urls?.schemaUrl)
+
+      let results: PromiseSettledResult<any>[] = await Promise.allSettled([
+        Zenodo.getJson(urls?.schemaUrl),
+        Zenodo.getJson(urls?.uischemaUrl),
+        Zenodo.getJson(urls?.schemaDefaultsUrl)
+      ])
+
+      results = results.map((r: PromiseSettledResult<any>) => {
+        if (r.status === 'fulfilled') {
+          return r.value
+        }
+      })
+
+      const schema = results[0]
+      const uischema = results[1]
+      const schemaDefaults = results[2]
 
       Zenodo.update({
         where: Zenodo.entity,
-        data: { urls, schema }
+        data: { urls, schema, uischema, schemaDefaults }
       })
     }
 
@@ -77,15 +95,21 @@ export default class Zenodo extends Repository implements IRepository {
     }
   }
 
-  protected static async getSchema(schemaUrl: string | undefined) {
-    if (!schemaUrl) {
+  protected static async getJson(jsonUrl: string | undefined) {
+    if (!jsonUrl) {
       return undefined
     }
 
-    const resp = await axios.get(schemaUrl)
+    try {
+      const resp = await axios.get(jsonUrl)
 
-    if (resp.status === 200) {
-      return resp.data
+      if (resp.status === 200) {
+        return resp.data
+      }
+    }
+    catch(e) {
+      console.error(`Zenodo: Failed to get JSON from url ${jsonUrl}.`, e)
+      return undefined
     }
   }
 
@@ -95,6 +119,8 @@ export default class Zenodo extends Repository implements IRepository {
 
       return {
         schemaUrl: resp.data.schema,
+        uischemaUrl: resp.data.uischema,
+        schemaDefaultsUrl: resp.data.schema_defaults,
         createUrl: resp.data.create,
         updateUrl: resp.data.update,
         readUrl: resp.data.read,
