@@ -1,5 +1,7 @@
 import '@jsonforms/vue2-vanilla/vanilla.css';
 import 'vue-material/dist/vue-material.min.css'
+// import 'buefy/dist/buefy.css'
+import '@/assets/css/global.scss'
 // import 'vue-material/dist/theme/default.css'
 
 import Vuex from 'vuex'
@@ -7,9 +9,6 @@ import VuexORM from '@vuex-orm/core'
 import datePlugin from 'vuex-orm-plugin-date-attribute'
 import createPersistedState from 'vuex-persistedstate'
 import VueCookies from 'vue-cookies'
-
-import 'buefy/dist/buefy.css'
-import '@/assets/css/global.scss'
 import VueCompositionAPI from '@vue/composition-api'
 import Buefy from 'buefy'
 import VueRouter from 'vue-router'

@@ -16,7 +16,7 @@
             </router-link>
           </div>
           <md-button v-if="!isLoggedIn" href="/login" class="md-raised">Log In</md-button>
-          <md-button v-else size="is-medium" @click="logOut()">Log Out</md-button>
+          <md-button v-else class="md-raised" @click="logOut()">Log Out</md-button>
         </div>
       </md-app-toolbar>
 
@@ -55,10 +55,10 @@
     protected isLoading = true
 
     protected paths = [
-      { to: '/about', label: 'About'},
       { to: '/submissions', label: 'My Submissions'},
       { to: '/submit', label: 'Submit Data'},
       { to: '/resources', label: 'Resources'},
+      { to: '/about', label: 'About'},
       { to: '/contact', label: 'Contact'},
     ]
 

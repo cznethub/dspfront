@@ -61,8 +61,20 @@ body {
   color: var(--text-mute) !important;
 }
 
+.has-text-centered {
+  text-align: center;
+}
+
 .has-text-white {
-  color: #FFF;
+  color: #FFF !important;
+}
+
+hr {
+  background-color: whitesmoke;
+  border: none;
+  display: block;
+  height: 2px;
+  margin: 1.5rem 0;
 }
 
 // .has-border-gray {
@@ -129,6 +141,20 @@ body {
 .spacer {
   flex: 1 1 auto;
 }
+
+.md-button.md-raised {
+  border-radius: 2rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+}
+
 
 // h1 { font-size: 30px; font-size: 3rem !important; }
 // h2 { font-size: 25px; font-size: 2.5rem !important; }
