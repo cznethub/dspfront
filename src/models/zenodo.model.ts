@@ -42,11 +42,13 @@ export default class Zenodo extends Repository implements IRepository {
       this.insert({ data : newZenodoRepo })
     }
 
-    // Fetch urls and schema if not populated yet
+    // Fetch urls and schema if not populated yet.
+    const isOutdated = false  // TODO: we need a way to detect when the schema is outdated.
     const zenodo = this.get()
-    if (!(zenodo?.urls && Object.keys(zenodo.urls).length)) {
+    if (isOutdated || !(zenodo?.urls && Object.keys(zenodo.urls).length)) {
+      console.info(`Zenodo: fetching schemas and updating them...`)
       const urls: IRepositoryUrls | undefined = await Zenodo.getUrls()
-      // Do we want to load the schema every time to keep it updated?
+      // TODO: Do we want to load the schema every time to keep it updated?
       const schema: any = await Zenodo.getJson(urls?.schemaUrl)
       const uischema: any = await Zenodo.getJson(urls?.uischemaUrl)
       const schemaDefaults: any = await Zenodo.getJson(urls?.schemaDefaultsUrl)
@@ -84,10 +86,16 @@ export default class Zenodo extends Repository implements IRepository {
       return undefined
     }
 
-    const resp = await axios.get(jsonUrl)
+    try {
+      const resp = await axios.get(jsonUrl)
 
-    if (resp.status === 200) {
-      return resp.data
+      if (resp.status === 200) {
+        return resp.data
+      }
+    }
+    catch(e) {
+      console.error(`Zenodo: Failed to get JSON from url ${jsonUrl}.`, e)
+      return undefined
     }
   }
 

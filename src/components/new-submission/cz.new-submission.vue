@@ -100,12 +100,12 @@
     protected isLoading = false
     protected isSaving = false
     protected recordId = ''
-    protected data: any = this.schemaDefaults
+    protected data: any = {}
     protected links: any = {}
     protected renderers: JsonFormsRendererRegistryEntry[] = renderers
     protected dropFiles: File[] = []
     protected showUISchema = false
-    protected usedUISchema = ''
+    protected usedUISchema = {}
 
     protected get schema() {
       return Zenodo.get()?.schema
@@ -123,13 +123,16 @@
       return process.env.NODE_ENV === 'development'
     }
 
+    created() {
+      this.data = this.schemaDefaults
+    }
+
     protected onShowUISchema() {
       if (this.jsonForm) {
-        // this.usedUISchema = JSON.stringify(this.jsonForm.uischemaToUse, null, 2)
         this.usedUISchema = this.jsonForm.uischemaToUse
       }
       else {
-        this.usedUISchema = ''  // default
+        this.usedUISchema = {}  // default
       }
       this.showUISchema = true
     }
@@ -157,27 +160,8 @@
 
       // If files have been selected for upload, upload them
       if (this.dropFiles.length) {
-        // const filesToUpload: { name: string, data: any }[] = []
-
         const url = sprintf(Zenodo.get()?.urls?.fileCreateUrl, this.recordId) 
         Zenodo.uploadFiles(url, this.dropFiles)
-
-        // for (let file of this.dropFiles) {
-        //   const reader = new FileReader()
-
-        //   reader.onload = (e) => { 
-        //     filesToUpload.push({ name: file.name, data: e.target?.result })
-        //     if (filesToUpload.length === this.dropFiles.length) {
-        //       console.log(this.data)
-        //       // All files have now been read and are ready to upload
-        //       // Zenodo.uploadFiles(this.links.bucket, filesToUpload) // New api
-        //       const url = sprintf(Zenodo.get()?.urls?.fileCreateUrl, this.recordId) 
-        //       Zenodo.uploadFiles(url, filesToUpload)  // Old api
-        //     }
-        //   }
-
-        //   reader.readAsBinaryString(file)
-        // }
       }
 
       this.isSaving = false
@@ -187,7 +171,7 @@
       this.dropFiles.splice(index, 1);
     }
 
-    onChange(event: JsonFormsChangeEvent) {
+    protected onChange(event: JsonFormsChangeEvent) {
       this.data = event.data
     }
   }
