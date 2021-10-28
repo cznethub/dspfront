@@ -7,20 +7,20 @@ import Repository from './repository.model'
 
 const sprintf = require('sprintf-js').sprintf
 
-export default class Zenodo extends Repository implements IRepository {
-  static entity = EnumRepositoryKeys.zenodo
+export default class HydroShare extends Repository implements IRepository {
+  static entity = EnumRepositoryKeys.hydroShare
   static baseEntity = 'repository'
 
   static async updateMetadata(data: { [key: string]: any }, recordId?: string) {
-    const zenodo = this.get()
-    if (zenodo) {
-      const url = sprintf(zenodo.urls?.readUrl, recordId)
+    const hydroshare = this.get()
+    if (hydroshare) {
+      const url = sprintf(hydroshare.urls?.readUrl, recordId)
       const resp = await axios.put(
         url, 
         JSON.stringify(data),
         { 
           headers: {"Content-Type": "application/json"}, 
-          params: { access_token: Zenodo.accessToken }, 
+          params: { access_token: HydroShare.accessToken },
         },
       )
     }
@@ -40,7 +40,7 @@ export default class Zenodo extends Repository implements IRepository {
           depositionMetadata,
           { 
             headers: { "Content-Type": "application/json"},
-            params: { "access_token": Zenodo.accessToken } 
+            params: { "access_token": HydroShare.accessToken }
           }
         )
 
@@ -65,7 +65,7 @@ export default class Zenodo extends Repository implements IRepository {
       catch(e: any) {
         if (e.response.status === 401) {
           // Token has expired
-          Zenodo.commit((state) => {
+          HydroShare.commit((state) => {
             state.accessToken = ''
           })
           router.push({ path: '/authorize', query: { repo: this.entity, next: '/new-submission' } })
@@ -104,7 +104,7 @@ export default class Zenodo extends Repository implements IRepository {
         form,
         { 
           headers: { 'Content-Type': 'multipart/form-data' }, 
-          params: { "access_token": Zenodo.accessToken }
+          params: { "access_token": HydroShare.accessToken }
         }
       )
     })
@@ -117,7 +117,7 @@ export default class Zenodo extends Repository implements IRepository {
     const zenodo = this.get()
     if (zenodo) {
       const url = sprintf(zenodo.urls?.readUrl, recordId)
-      const resp = await axios.get(url, { params: { "access_token": Zenodo.accessToken } })
+      const resp = await axios.get(url, { params: { "access_token": HydroShare.accessToken } })
       if (resp.status === 200) {
         return resp.data
       }
