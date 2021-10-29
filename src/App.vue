@@ -15,7 +15,7 @@
               <md-button :class="{'is-active': isPathActive(path.to)}" class="md-accent" :md-ripple="false">{{ path.label }}</md-button>
             </router-link>
           </div>
-          <md-button v-if="!isLoggedIn" href="/login" class="md-raised">Log In</md-button>
+          <router-link v-if="!isLoggedIn" to="/login"><md-button class="md-raised">Log In</md-button></router-link>
           <md-button v-else class="md-raised" @click="logOut()">Log Out</md-button>
         </div>
       </md-app-toolbar>
@@ -46,6 +46,7 @@
   import CzHeaderNav from '@/components/base/cs.header-nav.vue'
   import User from '@/models/user.model'
   import Zenodo from '@/models/zenodo.model'
+  import HydroShare from './models/hydroshare.model'
   
   @Component({
     name: 'app',
@@ -100,6 +101,7 @@
       
       if (User.$state.isLoggedIn) {
         await Zenodo.init()
+        await HydroShare.init()
       }
 
       this.isLoading = false
@@ -146,6 +148,7 @@
   #main-content {
     max-width: 1280px;
     width: 100%;
+    min-height: initial;
   }
 
   /deep/ .md-app-scroller {
@@ -165,9 +168,10 @@
   }
 
   #nav-items {
-    a.router-link-exact-active .md-button,
-    .md-button.is-active {
-      background: #0000001f;
+    a.router-link-exact-active .md-button::before,
+    .md-button.is-active::before {
+      background-color: currentColor;
+      opacity: .12;
     }
   }
 </style>

@@ -3,7 +3,7 @@
     <section class="section">
       <div class="container">
         <div class="level">
-          <h1 class="title is-1">New Submission</h1>
+          <h1 class="title is-1">New Submission - {{ activeRepository ? activeRepository.key : '' }}</h1>
           <img :src="require('@/assets/img/placeholder.png')" alt="" style="width: 20rem;">
           <div>
             <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
@@ -81,8 +81,10 @@
   import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
   import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
   import { CzRenderers } from '@/renderers/renderer.vue'
+  import { EnumRepositoryKeys } from '../submissions/types'
   import Zenodo from '@/models/zenodo.model'
   import JsonViewer from 'vue-json-viewer'
+  import Repository from '@/models/repository.model'
 
   const sprintf = require('sprintf-js').sprintf
 
@@ -123,8 +125,16 @@
       return process.env.NODE_ENV === 'development'
     }
 
+    protected get activeRepository() {
+      return Repository.activeRepository
+    }
+
     created() {
       this.data = this.schemaDefaults
+      const routeRepositoryKey = this.$route.params.repository as EnumRepositoryKeys
+      if (!this.activeRepository || this.activeRepository.key !== routeRepositoryKey) {
+        this.setActiveRepository(routeRepositoryKey)
+      }
     }
 
     protected onShowUISchema() {
@@ -173,6 +183,12 @@
 
     protected onChange(event: JsonFormsChangeEvent) {
       this.data = event.data
+    }
+
+    private setActiveRepository(key: EnumRepositoryKeys) {
+      Repository.commit((state) => {
+        state.submittingTo = key
+      })
     }
   }
 </script>

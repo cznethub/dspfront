@@ -14,6 +14,7 @@ import CzLogin from '@/components/account/cz.login.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
 import CzAuthorize from '@/components/authorize/cz.authorize.vue'
 import Zenodo from './models/zenodo.model'
+import Repository from "./models/repository.model"
 
 export const routes: RouteConfig[] = [
   {
@@ -67,21 +68,12 @@ export const routes: RouteConfig[] = [
   },
   {
     name: 'new-submissions',
-    path: '/new-submission',
+    path: '/new-submission/:repository',
     components: {
       content: CzNewSubmission,
       footer: CzFooter
     },
-    meta: { hasLoggedInGuard: true },
-    beforeEnter: (to, from, next) => {
-      // TODO: read which repo is in use
-      if (!Zenodo.accessToken) {
-        next({ path: '/authorize'})
-      }
-      else {
-        next()
-      }
-    }
+    meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true },
   },
   {
     name: 'authorize',

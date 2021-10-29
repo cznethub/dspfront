@@ -1,5 +1,9 @@
 import VueRouter from 'vue-router'
+import { EnumRepositoryKeys } from './components/submissions/types'
+import HydroShare from './models/hydroshare.model'
+import Repository from './models/repository.model'
 import User from './models/user.model'
+import Zenodo from './models/zenodo.model'
 import { routes } from './routes'
 
 export const router = new VueRouter({
@@ -9,7 +13,6 @@ export const router = new VueRouter({
 
 export function setupRouteGuards() {
   router.beforeEach((to, from, next) => {
-    // Resolve pending redirect (i.e after login)
     console.log("Router beforeEach: ", to)
     const nextRoute = User.$state.next
     if (nextRoute) {
@@ -21,6 +24,22 @@ export function setupRouteGuards() {
     }
     else if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
       next({ path: '/login', query: { next: to.path } })
+    }
+    else if (to.meta?.hasAccessTokenGuard) {
+      let activeRepository: typeof Repository | null = null
+      let key = to.params.repository
+
+      switch (key) {
+        case EnumRepositoryKeys.hydroShare: activeRepository = HydroShare; break;
+        case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
+      }
+
+      if (!(activeRepository?.$state.accessToken)) {
+        next({ path: '/authorize', query: { next: to.path }})
+      }
+      else {
+        next()
+      }
     }
     else {
       next()

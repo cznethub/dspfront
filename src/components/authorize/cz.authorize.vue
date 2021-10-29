@@ -2,7 +2,7 @@
   <div class="cz-authorize section">
     <div class="container">
       <div class="is-flex is-flex-direction-column is-align-items-center">
-        <h1 class="title is-1">Submit to Zenodo</h1>
+        <h1 class="title is-1">Submit to {{ activeRepository.name }}</h1>
         <h3 class="has-text-mute has-space-bottom">Permission is needed to post to this repository</h3>
 
         <div class="panel has-space-bottom-2x">
@@ -24,8 +24,8 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
-  import Zenodo from '@/models/zenodo.model'
   import User from '@/models/user.model'
+  import Repository from '@/models/repository.model'
 
   @Component({
     name: 'cz-authorize',
@@ -33,8 +33,13 @@
   })
   export default class CzAuthorize extends Vue {
     protected get authorizeUrl() {
-      return Zenodo.get()?.urls?.authorizeUrl
+      return this.activeRepository?.urls?.authorizeUrl
     }
+
+    protected get activeRepository() {
+      return Repository.activeRepository
+    }
+    
 
     protected goToAuthorizePage() {
       if (this.authorizeUrl) {

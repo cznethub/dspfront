@@ -1,13 +1,12 @@
 import { Model } from '@vuex-orm/core'
-import { IRepository, IRepositoryUrls } from '@/components/submissions/types'
-import Zenodo from './zenodo.model'
-import {repoMetadata} from "@/components/submit/constants";
+import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
+import { repoMetadata } from "@/components/submit/constants";
 import axios from "axios";
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
   static primaryKey = 'key'
-  public readonly key!: string
+  public readonly key!: EnumRepositoryKeys
   public readonly name!: string
   public readonly logoSrc!: string
   public readonly description!: string
@@ -17,27 +16,73 @@ export default class Repository extends Model implements IRepository {
   public readonly uischema?: any
   public readonly schemaDefaults?: any
 
+  static get isAuthorized() {
+    return !!(this.$state.accessToken)
+  }
+
+  static get accessToken() {
+    return this.$state.accessToken
+  }
+
+  static state() {
+    return {
+      accessToken: '',
+      submittingTo: null
+    }
+  }
+
+  static get $state() {
+    return this.store().state.entities[this.entity]
+  }
+
+  static get activeRepository() {
+    return Repository.query().where('key', this.$state.submittingTo).withAll().first()
+  }
+
+  static fields () {
+    return {
+      key:  this.attr(''),
+      name:  this.attr(''),
+      logoSrc:  this.attr(''),
+      description:  this.attr(''),
+      submitLabel:  this.attr(''),
+      urls: this.attr({}),
+      schema: this.attr({}),
+      uischema: this.attr({}),
+      schemaDefaults: this.attr({}),
+    }
+  }
+
+  // TODO: this causes a circular dependency error
+  // https://vuex-orm.org/guide/model/single-table-inheritance.html#notes-on-circular-imports
+  // static types() {
+  //   return {
+  //     [Zenodo.entity]: Zenodo,
+  //     [HydroShare.entity]: HydroShare,
+  //   }
+  // }
+
   static async init() {
     // Insert initial repo
     if (!(this.get())) {
-      console.info("Repository: Initializing" + this.entity + "for the first time...")
+      console.info(`Repository: Initializing ${this.entity} for the first time...`)
       const newRepo: IRepository = {
-        ...repoMetadata[4],
+        ...repoMetadata[this.entity],
       }
 
-      this.insert({ data : newRepo })
+      Repository.insert({ data : newRepo })
     }
 
     // Fetch urls and schema if not populated yet
     const repository = this.get()
     if (!(repository?.urls && Object.keys(repository.urls).length)) {
-      const urls: IRepositoryUrls | undefined = await Repository.getUrls()
+      const urls: IRepositoryUrls | undefined = await this.getUrls()
       // Do we want to load the schema every time to keep it updated?
-      const schema: any = await Repository.getJson(urls?.schemaUrl)
-      const uischema: any = await Repository.getJson(urls?.uischemaUrl)
-      const schemaDefaults: any = await Repository.getJson(urls?.schemaDefaultsUrl)
+      const schema: any = await this.getJson(urls?.schemaUrl)
+      const uischema: any = await this.getJson(urls?.uischemaUrl)
+      const schemaDefaults: any = await this.getJson(urls?.schemaDefaultsUrl)
 
-      Repository.update({
+      this.update({
         where: this.entity,
         data: { urls, schema, uischema, schemaDefaults }
       })
@@ -45,8 +90,8 @@ export default class Repository extends Model implements IRepository {
 
     // If we don't have an access token stored, fetch one using the accessTokenUrl
     // TODO: also check if it expired, and if so refresh it
-    if (!(Repository.isAuthorized) && this.get()?.urls?.accessTokenUrl) {
-      await Repository.fetchAccessToken()
+    if (!(this.isAuthorized) && repository?.urls?.accessTokenUrl) {
+      await this.fetchAccessToken()
     }
   }
 
@@ -94,60 +139,21 @@ export default class Repository extends Model implements IRepository {
         const resp = await axios.get(accessTokenUrl)
         if (resp.status === 200) {
           const token = resp.data.access_token // TODO: also need its expiration date!
-          Repository.commit((state) => {
+          this.commit((state) => {
             state.accessToken = token
           })
         }
       }
       catch(e) {
-        Repository.commit((state) => {
+        this.commit((state) => {
           state.accessToken = ''
         })
-        console.error(this.get()?.key + ': failed to fetch access token. ', e)
+        // console.error(this.get()?.key + ': failed to fetch access token. ', e)
       }
     }
   }
 
-  static get isAuthorized() {
-    return !!(this.$state.accessToken)
-  }
-
-  static get accessToken() {
-    return this.$state.accessToken
-  }
-
-  static state() {
-    return {
-      //...super.state(),
-      accessToken: ''
-    }
-  }
-
-  static get $state() {
-    return this.store().state.entities[this.entity]
-  }
-
-  static fields () {
-    return {
-      key:  this.attr(''),
-      name:  this.attr(''),
-      logoSrc:  this.attr(''),
-      description:  this.attr(''),
-      submitLabel:  this.attr(''),
-      urls: this.attr({}),
-      schema: this.attr({}),
-      uischema: this.attr({}),
-      schemaDefaults: this.attr({}),
-    }
-  }
-
-  static types() {
-    return {
-      [Zenodo.entity]: Zenodo,
-    }
-  }
-
   static get(): Repository | null {
-    return this.query().withAll().first()
+    return Repository.query().where('key', this.entity).withAll().first()
   }
 }

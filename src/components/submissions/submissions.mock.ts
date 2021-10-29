@@ -7,12 +7,13 @@ const titles = [
   'Really awesome LiDAR dataset'
 ]
 const repos = [
-  EnumRepositories.earthChemLibrary,
-  EnumRepositories.hydroShare,
-  EnumRepositories.openTopography,
+  EnumRepositories.hydroshare,
   EnumRepositories.zenodo,
-  EnumRepositories.other,
+  // EnumRepositories.earthChemLibrary,
+  // EnumRepositories.openTopography,
+  // EnumRepositories.other,
 ]
+
 const status = [
   EnumSubmissionStatus.draft,
   EnumSubmissionStatus.submitted,

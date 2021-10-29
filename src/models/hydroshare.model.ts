@@ -1,46 +1,51 @@
 
-import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
-import { repoMetadata } from '@/components/submit/constants'
+import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { router } from '@/router';
 import axios from "axios"
 import Repository from './repository.model'
 
 const sprintf = require('sprintf-js').sprintf
 
-export default class HydroShare extends Repository implements IRepository {
+export default class HydroShare extends Repository {
   static entity = EnumRepositoryKeys.hydroShare
   static baseEntity = 'repository'
 
+  static state() {
+    return {
+      ...super.state(),
+    }
+  }
+
   static async updateMetadata(data: { [key: string]: any }, recordId?: string) {
-    const hydroshare = this.get()
-    if (hydroshare) {
-      const url = sprintf(hydroshare.urls?.readUrl, recordId)
+    const hydroShare = this.get()
+    if (hydroShare) {
+      const url = sprintf(hydroShare.urls?.readUrl, recordId)
       const resp = await axios.put(
         url, 
         JSON.stringify(data),
         { 
           headers: {"Content-Type": "application/json"}, 
-          params: { access_token: HydroShare.accessToken },
+          params: { access_token: this.accessToken },
         },
       )
     }
   }
 
   static async createSubmission(data?: any): Promise<{ recordId: string, formMetadata: any} | null> {
-    console.info("Zenodo: Creating submission...")
-    const zenodo = this.get()
+    console.info("HydroShare: Creating submission...")
+    const hydroShare = this.get()
     
-    if (zenodo) {
+    if (hydroShare) {
       try {
         const depositionMetadata = data
           ? { metadata: data }
           : { }
         const resp = await axios.post(
-          zenodo.urls?.createUrl || '',
+          hydroShare.urls?.createUrl || '',
           depositionMetadata,
           { 
             headers: { "Content-Type": "application/json"},
-            params: { "access_token": HydroShare.accessToken }
+            params: { "access_token": this.accessToken }
           }
         )
 
@@ -59,22 +64,22 @@ export default class HydroShare extends Repository implements IRepository {
         }
         else {
           // Unexpected response
-          console.info("Zenodo: Failed to create submission. Unknown response status.", resp)
+          console.info("HydroShare: Failed to create submission. Unknown response status.", resp)
         }
       }
       catch(e: any) {
         if (e.response.status === 401) {
           // Token has expired
-          HydroShare.commit((state) => {
+          this.commit((state) => {
             state.accessToken = ''
           })
           router.push({ path: '/authorize', query: { repo: this.entity, next: '/new-submission' } })
           
-          console.info("Zenodo: Authorization token is invalid or has expired.")
-          console.info("Zenodo: Redirecting to authorization page...")
+          console.info("HydroShare: Authorization token is invalid or has expired.")
+          console.info("HydroShare: Redirecting to authorization page...")
         }
         else {
-          console.error("Zenodo: failed to create submission. ", e.response)
+          console.error("HydroShare: failed to create submission. ", e.response)
         }
       }
     }
@@ -82,17 +87,6 @@ export default class HydroShare extends Repository implements IRepository {
   }
 
   static async uploadFiles(bucketUrl: string, filesToUpload: { name: string, data: any }[] | any[]) {
-    // const promises = filesToUpload.map((file) => {
-    //   const url = `${bucketUrl}/${file.name}`
-    //   return axios.put(
-    //     url, 
-    //     file.data,
-    //     { 
-    //       params: { access_token: Zenodo.accessToken }, 
-    //     },
-    //   )
-    // })
-
     const promises = filesToUpload.map((file) => {
       // const url = `${bucketUrl}/${file.name}` // new api
       const url = bucketUrl // new api
@@ -104,7 +98,7 @@ export default class HydroShare extends Repository implements IRepository {
         form,
         { 
           headers: { 'Content-Type': 'multipart/form-data' }, 
-          params: { "access_token": HydroShare.accessToken }
+          params: { "access_token": this.accessToken }
         }
       )
     })
@@ -114,10 +108,10 @@ export default class HydroShare extends Repository implements IRepository {
   }
 
   private static async read(recordId: string) {
-    const zenodo = this.get()
-    if (zenodo) {
-      const url = sprintf(zenodo.urls?.readUrl, recordId)
-      const resp = await axios.get(url, { params: { "access_token": HydroShare.accessToken } })
+    const hydroShare = this.get()
+    if (hydroShare) {
+      const url = sprintf(hydroShare.urls?.readUrl, recordId)
+      const resp = await axios.get(url, { params: { "access_token": this.accessToken } })
       if (resp.status === 200) {
         return resp.data
       }
@@ -136,6 +130,4 @@ export default class HydroShare extends Repository implements IRepository {
       // });
     }
   }
-
-  
 }

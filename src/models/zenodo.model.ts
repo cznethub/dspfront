@@ -1,15 +1,21 @@
 
-import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
-import { repoMetadata } from '@/components/submit/constants'
+import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { router } from '@/router';
 import axios from "axios"
 import Repository from './repository.model'
 
 const sprintf = require('sprintf-js').sprintf
 
-export default class Zenodo extends Repository implements IRepository {
+export default class Zenodo extends Repository {
   static entity = EnumRepositoryKeys.zenodo
   static baseEntity = 'repository'
+
+  static state() {
+    return {
+      ...super.state(),
+    }
+  }
+
 
   static async updateMetadata(data: { [key: string]: any }, recordId?: string) {
     const zenodo = this.get()
@@ -20,7 +26,7 @@ export default class Zenodo extends Repository implements IRepository {
         JSON.stringify(data),
         { 
           headers: {"Content-Type": "application/json"}, 
-          params: { access_token: Zenodo.accessToken }, 
+          params: { access_token: this.accessToken }, 
         },
       )
     }
@@ -40,7 +46,7 @@ export default class Zenodo extends Repository implements IRepository {
           depositionMetadata,
           { 
             headers: { "Content-Type": "application/json"},
-            params: { "access_token": Zenodo.accessToken } 
+            params: { "access_token": this.accessToken } 
           }
         )
 
@@ -54,7 +60,6 @@ export default class Zenodo extends Repository implements IRepository {
           // console.log(czResp)
 
           // TODO: insert into Submission model
-
           return { recordId, formMetadata }
         }
         else {
@@ -65,7 +70,7 @@ export default class Zenodo extends Repository implements IRepository {
       catch(e: any) {
         if (e.response.status === 401) {
           // Token has expired
-          Zenodo.commit((state) => {
+          this.commit((state) => {
             state.accessToken = ''
           })
           router.push({ path: '/authorize', query: { repo: this.entity, next: '/new-submission' } })
@@ -82,17 +87,6 @@ export default class Zenodo extends Repository implements IRepository {
   }
 
   static async uploadFiles(bucketUrl: string, filesToUpload: { name: string, data: any }[] | any[]) {
-    // const promises = filesToUpload.map((file) => {
-    //   const url = `${bucketUrl}/${file.name}`
-    //   return axios.put(
-    //     url, 
-    //     file.data,
-    //     { 
-    //       params: { access_token: Zenodo.accessToken }, 
-    //     },
-    //   )
-    // })
-
     const promises = filesToUpload.map((file) => {
       // const url = `${bucketUrl}/${file.name}` // new api
       const url = bucketUrl // new api
@@ -104,7 +98,7 @@ export default class Zenodo extends Repository implements IRepository {
         form,
         { 
           headers: { 'Content-Type': 'multipart/form-data' }, 
-          params: { "access_token": Zenodo.accessToken }
+          params: { "access_token": this.accessToken }
         }
       )
     })
@@ -117,7 +111,7 @@ export default class Zenodo extends Repository implements IRepository {
     const zenodo = this.get()
     if (zenodo) {
       const url = sprintf(zenodo.urls?.readUrl, recordId)
-      const resp = await axios.get(url, { params: { "access_token": Zenodo.accessToken } })
+      const resp = await axios.get(url, { params: { "access_token": this.accessToken } })
       if (resp.status === 200) {
         return resp.data
       }
@@ -136,6 +130,4 @@ export default class Zenodo extends Repository implements IRepository {
       // });
     }
   }
-
-  
 }

@@ -66,6 +66,7 @@ export default class User extends Model {
         }
       }
       else {
+        
         // Something went wrong, authorization may be invalid
         User.commit((state) => {
           state.isLoggedIn = false
@@ -73,7 +74,7 @@ export default class User extends Model {
       }
     }
     catch(e) {
-      // console.error(e)
+      console.log("here")
       User.commit((state) => {
         state.isLoggedIn = false
       })

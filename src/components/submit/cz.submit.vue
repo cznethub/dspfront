@@ -54,23 +54,27 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
-  import { IRepository } from '@/components/submissions/types'
-  import Zenodo from '@/models/zenodo.model'
+  import { EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
+  import Repository from '@/models/repository.model'
 
   @Component({
     name: 'cz-submit',
     components: { },
   })
   export default class CzSubmit extends Vue {
-    protected repoMetadata = repoMetadata
-
+    protected get repoMetadata() {
+      return Object.keys(repoMetadata).map(r => repoMetadata[r])
+    }
+    
     protected submitTo(repo: IRepository) {
-      if (Zenodo.isAuthorized) {
-        this.$router.push({ path: '/new-submission' })
-      }
-      else {
-        this.$router.push({ path: '/authorize', query: { repo: repo.key, next: '/new-submission' } })
-      }
+      this.setActiveRepository(repo.key)
+      this.$router.push({ path: '/new-submission/' + repo.key }).catch(() => {})
+    }
+
+    private setActiveRepository(key: EnumRepositoryKeys) {
+      Repository.commit((state) => {
+        state.submittingTo = key
+      })
     }
   }
 </script>
