@@ -1,4 +1,5 @@
-import { ISubmission, EnumSubmissionStatus, EnumRepositories } from "./types";
+import { repoMetadata } from "../submit/constants";
+import { ISubmission, EnumSubmissionStatus } from "./types";
 
 const titles = [
   'A really awesome dataset',
@@ -6,12 +7,13 @@ const titles = [
   'Yet another really awesome dataset',
   'Really awesome LiDAR dataset'
 ]
+
 const repos = [
-  EnumRepositories.hydroshare,
-  EnumRepositories.zenodo,
-  // EnumRepositories.earthChemLibrary,
-  // EnumRepositories.openTopography,
-  // EnumRepositories.other,
+  repoMetadata.hydroshare.name,
+  repoMetadata.zenodo.name,
+  // repoMetadata.earthChemLibrary.name,
+  // repoMetadata.openTopography.name,
+  // repoMetadata.other.name,
 ]
 
 const status = [

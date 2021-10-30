@@ -20,20 +20,11 @@ export enum EnumSubmissionStatus {
 
 export enum EnumRepositoryKeys {
   hydroShare = 'hydroshare',
-  earthChemLibrary = 'earthChemLibrary',
   zenodo = 'zenodo',
-  openTopography = 'openTopography',
-  sesar = 'sesar',
-  other = 'other'
-}
-
-export const EnumRepositories = {
-  [EnumRepositoryKeys.hydroShare]: 'HydroShare',
-  [EnumRepositoryKeys.earthChemLibrary]: 'EarthChem Library',
-  [EnumRepositoryKeys.zenodo]: 'Zenodo',
-  [EnumRepositoryKeys.openTopography]: 'Open Topography',
-  [EnumRepositoryKeys.sesar]: 'System for Earth Sample Registration',
-  [EnumRepositoryKeys.other]: 'other'
+  // earthChemLibrary = 'earthChemLibrary',
+  // openTopography = 'openTopography',
+  // sesar = 'sesar',
+  // other = 'other'
 }
 
 export enum EnumSubmissionSorts {

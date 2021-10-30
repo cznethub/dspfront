@@ -1,4 +1,4 @@
-import { ISubmission, EnumRepositories, EnumSubmissionStatus, EnumRepositoryKeys } from '@/components/submissions/types'
+import { ISubmission, EnumSubmissionStatus, EnumRepositoryKeys } from '@/components/submissions/types'
 import { Model } from '@vuex-orm/core'
 import axios from "axios"
 

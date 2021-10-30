@@ -9,10 +9,10 @@
           <div class="spacer"></div>
           <div id="nav-items" class="has-space-right">
             <router-link to="/">
-              <md-button class="md-accent" :md-ripple="false">Home</md-button>
+              <md-button :class="{'is-active': isPathActive('/'), 'md-raised': isPathActive('/')}" class="md-accent md-dense" :md-ripple="false">Home</md-button>
             </router-link>
             <router-link v-for="path of paths" :key="path.to" :to="path.to">
-              <md-button :class="{'is-active': isPathActive(path.to)}" class="md-accent" :md-ripple="false">{{ path.label }}</md-button>
+              <md-button :class="{'is-active': isPathActive(path.to), 'md-raised': isPathActive(path.to)}" class="md-accent" :md-ripple="false">{{ path.label }}</md-button>
             </router-link>
           </div>
           <router-link v-if="!isLoggedIn" to="/login"><md-button class="md-raised">Log In</md-button></router-link>
@@ -28,12 +28,6 @@
         <router-view name="footer" /> 
       </md-app-content>
     </md-app>
-
-    <!-- <cz-header-nav /> -->
-    <!-- <div class="main-content" id="content">
-      <router-view v-if="!isLoading" name="content" />
-    </div>
-    -->
 
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
   </div>
@@ -110,23 +104,9 @@
 </script>
 
 <style lang="scss" scoped>
-  // .main-container {
-  //   display: flex;
-  //   flex-direction: column;
-  //   flex-grow: 1;
-  // }
-
-  // .main-content {
-  //   flex-grow: 1;
-  // }
-
   .md-toolbar.md-overlap-off .logo {
     max-height: 6rem;
     margin-top: unset;
-  }
-
-  /deep/ .md-app-container {
-    // background: #f0f3f5;
   }
 
   .md-toolbar {
@@ -136,7 +116,7 @@
   .logo {
     max-height: 117px;
     transition: max-height 0.25s ease;
-    will-change: max-height;
+    will-change: max-height, margin-top;
     margin-top: -6rem;
   }
 
@@ -161,10 +141,7 @@
     width: 100%;
     margin: 0;
     min-height: unset;
-  }
-
-  #nav-items .md-button {
-    // border-radius: 8px 8px 0 0;
+    margin-top: 4rem;
   }
 
   #nav-items {

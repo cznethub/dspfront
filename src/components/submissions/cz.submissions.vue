@@ -8,7 +8,7 @@
             <span class="has-space-right">New Submission</span>
             <b-field>
               <b-select size="is-medium" placeholder="Select a repository">
-                <option v-for="(repo, index) in repoOptions" :value="repo" :key="index">{{ enumRepositories[repo] }}</option>
+                <option v-for="(repo, index) in repoOptions" :value="repo" :key="index">{{ repoMetadata[repo].name }}</option>
               </b-select>
             </b-field>
           </div>
@@ -36,7 +36,7 @@
                 <div id="repos" class="is-grid" style="grid-template-columns: auto auto;">
                   <b-checkbox v-for="(repo, index) of repoOptions" v-model="filters.repoOptions"
                     :key="index" :native-value="repo">
-                      <span>{{ enumRepositories[repo] }}</span>
+                      <span>{{ repoMetadata[repo].name }}</span>
                   </b-checkbox>
                 </div>
               </div>
@@ -136,7 +136,8 @@
 
 <script lang="ts">
   import { Component, Vue, Ref, Watch } from 'vue-property-decorator'
-  import { EnumRepositories, EnumSubmissionStatus, ISubmission, EnumSubmissionSorts, EnumSortDirections } from '@/components/submissions/types'
+  import { EnumSubmissionStatus, ISubmission, EnumSubmissionSorts, EnumSortDirections } from '@/components/submissions/types'
+  import { repoMetadata } from '../submit/constants'
   import Submission from '@/models/submission.model'
 
   @Component({
@@ -157,7 +158,7 @@
     } = { statusOptions: [], repoOptions: [] }
 
     protected enumSubmissionStatus = EnumSubmissionStatus
-    protected enumRepositories = EnumRepositories
+    protected repoMetadata = repoMetadata
     protected enumSubmissionSorts = EnumSubmissionSorts
     protected enumSortDirections = EnumSortDirections
 
@@ -170,7 +171,7 @@
     }
 
     protected get repoOptions() {
-      return Object.keys(EnumRepositories)
+      return Object.keys(repoMetadata)
     }
 
     protected get sortOptions() {    
@@ -192,7 +193,7 @@
     protected get filteredSubmissions() {
       let data = Submission.all()
       const filteredStatus = this.filters.statusOptions.map(s => EnumSubmissionStatus[s])
-      const filteredRepos = this.filters.repoOptions.map(r => EnumRepositories[r])
+      const filteredRepos = this.filters.repoOptions.map(r => repoMetadata[r].name)
 
       return data.filter((d) => {
         if (filteredStatus.length) {
