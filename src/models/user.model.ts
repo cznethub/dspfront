@@ -74,7 +74,6 @@ export default class User extends Model {
       }
     }
     catch(e) {
-      console.log("here")
       User.commit((state) => {
         state.isLoggedIn = false
       })
