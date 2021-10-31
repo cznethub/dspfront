@@ -5,8 +5,8 @@
 
 @import "~vue-material/dist/theme/engine"; // Import the theme engine
 @include md-register-theme("default", (
-  primary: md-get-palette-color(bluegrey, 200), // The primary color of your application
-  accent: md-get-palette-color(blue, 700), // The accent or secondary color
+  primary: md-get-palette-color(bluegrey, 100), // The primary color of your application
+  accent: md-get-palette-color(lightblue, 800), // The accent or secondary color
   theme: light
 ));
 @import "~vue-material/dist/theme/all"; // Apply the theme
@@ -24,6 +24,7 @@ body {
 
 .md-theme-default a:not(.md-button) {
   color: var(--md-theme-default-accent);
+  // font-weight: 500;
 
   &:hover {
     color: rgba(0, 0, 0, 0.87);
@@ -127,7 +128,7 @@ hr {
 }
 
 .md-button {
-  border-radius: 1rem;
+  border-radius: 2rem;
 }
 
 h1,

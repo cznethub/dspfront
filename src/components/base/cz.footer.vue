@@ -10,7 +10,7 @@
 
       <section class="md-layout-item md-small-size-100">
         <h3 class="md-headline has-space-bottom">Get Started</h3>
-        <a href="#">Log In</a>
+        <router-link to="/login">Log In</router-link>
       </section>
 
       <section class="md-layout-item md-small-size-100">
@@ -42,7 +42,7 @@
 
 <style lang="scss" scoped>
   .cz-footer {
-    background: var(--bg-light-gray);
+    background: var(--md-default-primary);
     padding: 4rem;
   }
 

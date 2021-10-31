@@ -135,7 +135,8 @@
     margin: 0;
     min-height: unset;
     margin-top: 4rem;
-    background: #b0bec552;
+    background: var(--md-theme-default-primary);
+    box-shadow: none;
   }
 
   #nav-items {
