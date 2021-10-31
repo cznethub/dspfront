@@ -139,7 +139,7 @@ import { repoMetadata } from '../submit/constants'
     padding-top: 9rem;
     padding-bottom: 9rem;
     margin: -$md-padding;
-    margin-bottom: 4rem;
+    margin-bottom: 2rem;
   }
 
   #features-1 {

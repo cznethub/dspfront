@@ -1,9 +1,6 @@
 :root {
-  // --dark: #0D0F15;
-  // --main-blue: #14A9DD;
-  // --dark-gray: #1A1D27;
   --text-mute: #9699AF;
-  // --bg-light-gray: #EFEFEF;
+  --text-mute-darker: #575f6d;
 }
 
 @import "~vue-material/dist/theme/engine"; // Import the theme engine
@@ -15,39 +12,30 @@
 @import "~vue-material/dist/theme/all"; // Apply the theme
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
-body, html {
-  // padding: 0;
-  // margin: 0;
-  // font-family: 'Inter';
-  // font-style: normal;
-  // font-weight: 300;
-  // min-height: 100%;
-  // height: 100%;
-}
 
 html {
   font-size: 62.5%;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5 {
-  font-weight: 500;
-}
-
 body {
-  // display: flex;
-  // flex-direction: column;
   font-size: 14px;
   font-size: 1.4rem;
 }
 
-// a {
-//   text-decoration: none;
-//   color: #14A9DD;
-// }
+.md-theme-default a:not(.md-button) {
+  color: var(--md-theme-default-accent);
+
+  &:hover {
+    color: rgba(0, 0, 0, 0.87);
+  }
+}
+
+.content,
+#main-content {
+  max-width: 1280px;
+  width: 100%;
+  min-height: initial;
+}
 
 .full-height {
   height: 100%;
@@ -59,6 +47,10 @@ body {
 
 .has-text-mute {
   color: var(--text-mute) !important;
+}
+
+.has-text-mute-darker {
+  color: var(--text-mute-darker) !important;
 }
 
 .has-text-shadow {
@@ -81,30 +73,18 @@ hr {
   margin: 1.5rem 0;
 }
 
-// .has-border-gray {
-//   border: 1px solid var(--dark-gray);
-// }
-
-// .has-background-dark {
-//   background: var(--dark) !important;
-// }
-
-// .has-background-dark-gray {
-//   background: var(--dark-gray);
-// }
-
 // .has-background-dark--gradient {
 //   background: linear-gradient(180deg, #0D0F15 0%, #1A1D27 100%);
 // }
 
-// .is-clickable {
-//   cursor: pointer;
-//   transition: color 0.15s ease;
+.is-clickable {
+  cursor: pointer;
+  transition: color 0.15s ease;
 
-//   &:hover {
-//     color: var(--main-blue) !important;
-//   }
-// }
+  &:hover {
+    color: var(--md-default-accent) !important;
+  }
+}
 
 .is-marginless {
   margin: 0;
@@ -146,10 +126,6 @@ hr {
   flex: 1 1 auto;
 }
 
-.md-button.md-raised {
-  // border-radius: 2rem;
-}
-
 .md-button {
   border-radius: 1rem;
 }
@@ -162,19 +138,3 @@ h5,
 h6 {
   margin: 0;
 }
-
-
-// h1 { font-size: 30px; font-size: 3rem !important; }
-// h2 { font-size: 25px; font-size: 2.5rem !important; }
-// h3 { font-size: 20px; font-size: 2rem !important; }
-// h4 { font-size: 15px; font-size: 1.5rem !important; }
-// h5 { font-size: 12.5px; font-size: 1.25rem !important; }
-// h6 { font-size: 10px; font-size: 1rem !important; }
-
-// .panel {
-//   font-size: 1.4rem;
-// }
-
-// .panel-block {
-//   padding: 2rem;
-// }

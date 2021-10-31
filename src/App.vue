@@ -7,12 +7,12 @@
             <img class="logo" :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network logo">
           </router-link>
           <div class="spacer"></div>
-          <div id="nav-items" class="has-space-right">
+          <div id="nav-items" class="has-space-right md-elevation-2">
             <router-link to="/">
-              <md-button :class="{'is-active': isPathActive('/'), 'md-raised': isPathActive('/')}" class="md-accent md-dense" :md-ripple="false">Home</md-button>
+              <md-button :class="{'is-active md-raised md-accent': isPathActive('/')}" :md-ripple="false">Home</md-button>
             </router-link>
             <router-link v-for="path of paths" :key="path.to" :to="path.to">
-              <md-button :class="{'is-active': isPathActive(path.to), 'md-raised': isPathActive(path.to)}" class="md-accent" :md-ripple="false">{{ path.label }}</md-button>
+              <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button>
             </router-link>
           </div>
           <router-link v-if="!isLoggedIn" to="/login"><md-button class="md-raised">Log In</md-button></router-link>
@@ -124,13 +124,6 @@
     height: 100vh;
   }
 
-  .content,
-  #main-content {
-    max-width: 1280px;
-    width: 100%;
-    min-height: initial;
-  }
-
   /deep/ .md-app-scroller {
     display: flex;
     flex-direction: column;
@@ -142,13 +135,23 @@
     margin: 0;
     min-height: unset;
     margin-top: 4rem;
+    background: #b0bec552;
   }
 
   #nav-items {
+    background: var(--md-theme-default-background, #fff);
+    border-radius: 2rem;
+    overflow: hidden;
+
     a.router-link-exact-active .md-button::before,
     .md-button.is-active::before {
       background-color: currentColor;
       opacity: .12;
+    }
+
+    .md-button {
+      margin: 0;
+      border-radius: 0;
     }
   }
 </style>

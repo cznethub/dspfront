@@ -1,31 +1,29 @@
 <template>
-  <footer class="cz-footer has-text-mute">
-    <div class="container">
-      <div class="footer-top is-flex-desktop">
-        <section>
-          <h3>Contact Us</h3>
-          <a href="#">Contact</a>
-          <p>Learn more about the <a href="#">CZCN</a> and <a href="#">CZ Hub</a></p>
-          <p>Visit <a href="#">cuahsi.org</a></p>
-        </section>
+  <footer class="cz-footer has-text-mute-darker md-layout md-alignment-center-center" style="flex-direction: column;">
+    <div class="footer-top md-layout-item md-layout md-alignment-top-space-between content">
+      <section class="md-layout-item md-small-size-100">
+        <h3 class="md-headline has-space-bottom">Contact Us</h3>
+        <router-link to="/contact">Contact</router-link>
+        <p>Learn more about the <a href="#">CZCN</a> and <a href="#">CZ Hub</a></p>
+        <p>Visit <a href="#">cuahsi.org</a></p>
+      </section>
 
-        <section>
-          <h3>Get Started</h3>
-          <a href="#">Log In</a>
-        </section>
+      <section class="md-layout-item md-small-size-100">
+        <h3 class="md-headline has-space-bottom">Get Started</h3>
+        <a href="#">Log In</a>
+      </section>
 
-        <section>
-          <h3>Open Source</h3>
-          <p>The Data Submission Portal is Open Source. Find us on GitHub.</p>
-          <p>Report a bug <a href="#">here</a></p>
-          <p>This is Version X.X.X of the Data Submission Portal</p>
-        </section>
-      </div>
+      <section class="md-layout-item md-small-size-100">
+        <h3 class="md-headline has-space-bottom">Open Source</h3>
+        <p>The Data Submission Portal is Open Source. Find us on GitHub.</p>
+        <p>Report a bug <a href="#">here</a></p>
+        <p>This is Version X.X.X of the Data Submission Portal</p>
+      </section>
+    </div>
 
-      <div class="has-text-centered footer-bottom">
-        <p>(c) 2021 CUAHSI. ﻿This material is based upon work supported by the National Science Foundation (NSF) under awards 2012893, 2012593, and 2012748.</p>
-        <p>Any opinions, findings, conclusions, or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the NSF. </p>
-      </div>
+    <div class="has-text-centered md-layout-item content">
+      <p>(c) 2021 CUAHSI. ﻿This material is based upon work supported by the National Science Foundation (NSF) under awards 2012893, 2012593, and 2012748.</p>
+      <p>Any opinions, findings, conclusions, or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the NSF. </p>
     </div>
   </footer>
 </template>
@@ -44,18 +42,13 @@
 
 <style lang="scss" scoped>
   .cz-footer {
-    padding: 2rem;
     background: var(--bg-light-gray);
-    display: flex;
-    justify-content: center;
+    padding: 4rem;
   }
 
   .footer-top {
-    justify-content: space-between;
-
     section {
       margin-bottom: 2rem;
     }
   }
-  
 </style>
