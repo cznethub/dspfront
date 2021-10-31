@@ -17,7 +17,7 @@
 
         <div class="has-space-bottom-2x">
           <div class="repositories">
-            <md-card v-for="repo of repoMetadata" :key="repo.key" @click.native="submitTo(repo)" md-with-hover>
+            <md-card v-for="repo of repoMetadata" :key="repo.key" @click.native="submitTo(repo)" class="md-primary" md-theme="grey-card" md-with-hover>
               <md-card-media class="md-layout md-alignment-center-center" style="height: 10rem; padding: 2rem;">
                 <img :src="repo.logoSrc" :alt="repo.name" class="md-layout-item">
               </md-card-media>

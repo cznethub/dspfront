@@ -29,6 +29,11 @@
       </md-app-content>
     </md-app>
 
+    <md-snackbar :md-position="position" :md-duration="isInfinity ? Infinity : duration" :md-active.sync="showSnackbar" md-persistent>
+      <span>Connection timeout. Showing limited messages!</span>
+      <md-button class="md-primary" @click="showSnackbar = false">Retry</md-button>
+    </md-snackbar>
+
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
   </div>
 </template>
@@ -48,6 +53,11 @@
   })
   export default class App extends Vue {
     protected isLoading = true
+
+    protected showSnackbar = false
+    protected position = 'center'
+    protected duration = 4000
+    protected isInfinity = false
 
     protected paths = [
       { to: '/submissions', label: 'My Submissions'},
