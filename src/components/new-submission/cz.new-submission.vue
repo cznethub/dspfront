@@ -3,8 +3,8 @@
     <section class="section">
       <div class="container">
         <div class="level">
-          <h1 class="title is-1">New Submission - {{ activeRepository ? activeRepository.key : '' }}</h1>
-          <img :src="require('@/assets/img/placeholder.png')" alt="" style="width: 20rem;">
+          <h1 class="title is-1">New Submission - {{ activeRepository ? activeRepository.get().key : '' }}</h1>
+          <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
           <div>
             <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
             <md-button class="md-raised" @click="save()" :disabled="isSaving">
@@ -82,9 +82,10 @@
   import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
   import { CzRenderers } from '@/renderers/renderer.vue'
   import { EnumRepositoryKeys } from '../submissions/types'
-  import Zenodo from '@/models/zenodo.model'
   import JsonViewer from 'vue-json-viewer'
   import Repository from '@/models/repository.model'
+  import HydroShare from '@/models/hydroshare.model'
+  import Zenodo from '@/models/zenodo.model'
 
   const sprintf = require('sprintf-js').sprintf
 
@@ -110,30 +111,42 @@
     protected usedUISchema = {}
 
     protected get schema() {
-      return Zenodo.get()?.schema
+      return this.activeRepository?.get()?.schema
     }
 
     protected get uischema() {
-      return Zenodo.get()?.uischema
+      return this.activeRepository?.get()?.uischema
     }
 
     protected get schemaDefaults() {
-      return Zenodo.get()?.schemaDefaults
+      return this.activeRepository?.get()?.schemaDefaults
     }
 
     protected get isDevMode() {
       return process.env.NODE_ENV === 'development'
     }
 
+    // TODO: add to a mixin and reuse
     protected get activeRepository() {
-      return Repository.activeRepository
+      const key = Repository.$state.submittingTo
+      switch (key) {
+        case EnumRepositoryKeys.hydroShare: return HydroShare
+        case EnumRepositoryKeys.zenodo: return Zenodo
+        default: return Zenodo
+      }
     }
 
     created() {
       this.data = this.schemaDefaults
       const routeRepositoryKey = this.$route.params.repository as EnumRepositoryKeys
-      if (!this.activeRepository || this.activeRepository.key !== routeRepositoryKey) {
-        this.setActiveRepository(routeRepositoryKey)
+      
+      if (!this.activeRepository || this.activeRepository.get()?.key !== routeRepositoryKey) {
+        console.log(Object.keys(EnumRepositoryKeys), routeRepositoryKey)
+        // Check that the key from the url is actually a EnumRepositoryKeys
+        if (Object.keys(EnumRepositoryKeys).includes(routeRepositoryKey)) {
+          
+          this.setActiveRepository(routeRepositoryKey)
+        }
       }
     }
 
@@ -153,7 +166,7 @@
       // If first time saving, create a new record
       if (!this.recordId) {
         console.info('CzNewSubmission: creating new record...')
-        const submission = await Zenodo.createSubmission(this.data)
+        const submission = await this.activeRepository?.createSubmission(this.data)
 
         if (submission?.recordId) {
           this.data = {
@@ -165,13 +178,13 @@
         }
       }
       else {
-        Zenodo.updateMetadata(this.data, this.recordId)
+        this.activeRepository?.updateMetadata(this.data, this.recordId)
       }
 
       // If files have been selected for upload, upload them
       if (this.dropFiles.length) {
-        const url = sprintf(Zenodo.get()?.urls?.fileCreateUrl, this.recordId) 
-        Zenodo.uploadFiles(url, this.dropFiles)
+        const url = sprintf(this.activeRepository?.get()?.urls?.fileCreateUrl, this.recordId) 
+        this.activeRepository?.uploadFiles(url, this.dropFiles)
       }
 
       this.isSaving = false

@@ -73,7 +73,7 @@ export default class HydroShare extends Repository {
           this.commit((state) => {
             state.accessToken = ''
           })
-          router.push({ path: '/authorize', query: { repo: this.entity, next: '/new-submission' } })
+          router.push({ path: '/authorize', query: { repo: this.entity, next: `/submit/${this.entity}` } })
           
           console.info("HydroShare: Authorization token is invalid or has expired.")
           console.info("HydroShare: Redirecting to authorization page...")

@@ -24,8 +24,11 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
-  import User from '@/models/user.model'
+  import { EnumRepositoryKeys } from '../submissions/types'
+  import { saveNextRoute } from '@/router'
   import Repository from '@/models/repository.model'
+  import HydroShare from '@/models/hydroshare.model'
+  import Zenodo from '@/models/zenodo.model'
 
   @Component({
     name: 'cz-authorize',
@@ -33,23 +36,22 @@
   })
   export default class CzAuthorize extends Vue {
     protected get authorizeUrl() {
-      return this.activeRepository?.urls?.authorizeUrl
+      return this.activeRepository?.get()?.urls?.authorizeUrl
     }
 
+    // TODO: add to a mixin and reuse
     protected get activeRepository() {
-      return Repository.activeRepository
+      const key = Repository.$state.submittingTo
+      switch (key) {
+        case EnumRepositoryKeys.hydroShare: return HydroShare
+        case EnumRepositoryKeys.zenodo: return Zenodo
+        default: return Zenodo
+      }
     }
-    
 
     protected goToAuthorizePage() {
       if (this.authorizeUrl) {
-        const next = this.$route.query.next
-        // Save the next route in the model before navigating away
-        if (next) {
-          User.commit((state) => {
-            state.next = next
-          })
-        }
+        saveNextRoute()
         window.location.replace(this.authorizeUrl)
       }
     }

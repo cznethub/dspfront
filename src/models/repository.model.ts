@@ -2,6 +2,7 @@ import { Model } from '@vuex-orm/core'
 import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
 import { repoMetadata } from "@/components/submit/constants";
 import axios from "axios";
+import Zenodo from './zenodo.model';
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
@@ -35,9 +36,9 @@ export default class Repository extends Model implements IRepository {
     return this.store().state.entities[this.entity]
   }
 
-  static get activeRepository() {
-    return Repository.query().where('key', this.$state.submittingTo).withAll().first()
-  }
+  // static get activeRepository() {
+  //   return Repository.query().where('key', this.$state.submittingTo).withAll().first()
+  // }
 
   static fields () {
     return {
@@ -64,14 +65,15 @@ export default class Repository extends Model implements IRepository {
 
   static async init() {
     // Insert initial repo
-    if (!(this.get())) {
+    // TODO: should we initialize repos on app start in case we change urls?
+    // if (!(this.get())) {
       console.info(`Repository: Initializing ${this.entity} for the first time...`)
       const newRepo: IRepository = {
         ...repoMetadata[this.entity],
       }
 
       Repository.insert({ data : newRepo })
-    }
+    // }
 
     // Fetch urls and schema if not populated yet
     const repository = this.get()
@@ -156,4 +158,6 @@ export default class Repository extends Model implements IRepository {
   static get(): Repository | null {
     return Repository.query().where('key', this.entity).withAll().first()
   }
+
+  protected static createSubmission: (data?: any) => Promise<{ recordId: string, formMetadata: any} | null>
 }

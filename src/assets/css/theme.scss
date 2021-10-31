@@ -22,6 +22,10 @@ body {
   font-size: 1.4rem;
 }
 
+section {
+  padding: 4rem 0;
+}
+
 .md-theme-default a:not(.md-button) {
   color: var(--md-theme-default-accent);
   // font-weight: 500;
@@ -36,6 +40,10 @@ body {
   max-width: 1280px;
   width: 100%;
   min-height: initial;
+}
+
+#main-content {
+  // padding: 2vw;
 }
 
 .full-height {
@@ -129,6 +137,8 @@ hr {
 
 .md-button {
   border-radius: 2rem;
+  margin: 0;
+  padding: 0 0.75rem;
 }
 
 h1,

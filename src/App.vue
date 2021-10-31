@@ -67,13 +67,13 @@
 
     protected isPathActive(path: string) {
       const matchedRoute = this.$router.match(path)
-      const isActive = matchedRoute && matchedRoute.name === this.$router.currentRoute.name
+      const isActive = this.$route.matched.some(r => r.name === matchedRoute.name)
 
       if (isActive) {
         return true
       }
       // Check if the route is active pending a redirect
-      else if (this.$router.currentRoute.query.next){
+      else if (this.$router.currentRoute.query.next) {
         const matchedNextRoute = this.$router.match(this.$router.currentRoute.query.next as string)
         return matchedNextRoute.name === matchedRoute.name
       }
@@ -105,8 +105,9 @@
 
 <style lang="scss" scoped>
   .md-toolbar.md-overlap-off .logo {
-    max-height: 6rem;
+    max-height: 7rem;
     margin-top: unset;
+    padding: 1rem 0;
   }
 
   .md-toolbar {

@@ -1,14 +1,19 @@
 <template>
   <div class="cz-home">
-    <section class="banner has-text-centered has-text-shadow"
-      :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.7), rgba(28, 37, 65, 0.3)), url(' + require('@/assets/img/bg-2.png') + ')' }">
-      <h1 class="md-display-2 has-text-white">Critical Zone Collaborative Network</h1>
-      <h2 class="md-display-1 has-text-white has-space-top-2x">Data Submission Portal</h2>
+    <section class="banner has-text-centered has-text-shadow md-layout"
+      :class="isLoggedIn ? 'md-alignment-center-center' : 'md-alignment-center-space-between'"
+      :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.7), rgba(28, 37, 65, 0.3)), url(' + require('@/assets/img/bg-2.png') + ')', 'flex-direction': 'column' }">
+      <div>
+        <h1 class="md-display-2 has-text-white">Critical Zone Collaborative Network</h1>
+        <h2 class="md-display-1 has-text-white has-space-top-2x">Data Submission Portal</h2>
+      </div>
       <template v-if="!isLoggedIn">
-        <h2 class="md-headline has-text-white has-space-top-2x">Ready to Submit Data?</h2>
-        <router-link to="login">
-          <md-button class="md-raised">Log In</md-button>
-        </router-link>
+        <div>
+          <h2 class="md-headline has-text-white has-space-top-2x has-space-bottom">Ready to Submit Data?</h2>
+          <router-link to="login">
+            <md-button class="md-raised">Log In</md-button>
+          </router-link>
+        </div>
       </template>
     </section>
 
@@ -90,7 +95,7 @@
       <div class="md-layout md-alignment-center-center">
         <p class="has-text-mute has-text-centered">Data submitted via this Portal are deposited in multiple repositories. Click the links below to learn more about each of the supported repositories.</p>
       </div>
-      <div class="md-layout repos md-alignment-center-center md-gutter">
+      <div class="md-layout repos md-alignment-center-space-around md-gutter has-space-bottom-2x">
         <div v-for="repo of supportedRepositories" :key="repo.key" class="md-layout-item md-xsmall-size-50">
           <img :src="repo.logoSrc" :alt="repo.name">
         </div>
@@ -101,8 +106,8 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
+  import { repoMetadata } from '../submit/constants'
   import User from '@/models/user.model'
-import { repoMetadata } from '../submit/constants'
 
   @Component({
     name: 'cz-home',
@@ -129,10 +134,6 @@ import { repoMetadata } from '../submit/constants'
     max-width: 70rem;
   }
 
-  section {
-    padding: 4rem;
-  }
-
   .banner {
     background-size: cover;
     background-repeat: no-repeat;
@@ -140,6 +141,11 @@ import { repoMetadata } from '../submit/constants'
     padding-bottom: 9rem;
     margin: -$md-padding;
     margin-bottom: 2rem;
+    min-height: 50rem;
+  }
+
+  section {
+    padding: 4rem;
   }
 
   #features-1 {

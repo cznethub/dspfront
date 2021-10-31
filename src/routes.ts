@@ -13,8 +13,6 @@ import CzSubmissions from '@/components/submissions/cz.submissions.vue'
 import CzLogin from '@/components/account/cz.login.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
 import CzAuthorize from '@/components/authorize/cz.authorize.vue'
-import Zenodo from './models/zenodo.model'
-import Repository from "./models/repository.model"
 
 export const routes: RouteConfig[] = [
   {
@@ -30,14 +28,6 @@ export const routes: RouteConfig[] = [
     path: '/about',
     components: {
       content: CzAbout,
-      footer: CzFooter
-    },
-  },
-  {
-    name: 'submit-data',
-    path: '/submit',
-    components: {
-      content: CzSubmit,
       footer: CzFooter
     },
   },
@@ -67,13 +57,22 @@ export const routes: RouteConfig[] = [
     meta: { hasLoggedInGuard: true }
   },
   {
-    name: 'new-submissions',
-    path: '/new-submission/:repository',
+    name: 'submit',
+    path: '/submit',
     components: {
-      content: CzNewSubmission,
+      content: CzSubmit,
       footer: CzFooter
     },
-    meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true },
+    children: [
+      {
+        name: 'submit.repository',
+        path: ':repository',
+        components: {
+          default: CzNewSubmission,
+        },
+        meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true },
+      },
+    ]
   },
   {
     name: 'authorize',

@@ -1,9 +1,9 @@
 import { routes } from './routes'
 import { EnumRepositoryKeys } from './components/submissions/types'
 import VueRouter from 'vue-router'
+import User from './models/user.model'
 import HydroShare from './models/hydroshare.model'
 import Repository from './models/repository.model'
-import User from './models/user.model'
 import Zenodo from './models/zenodo.model'
 
 export const router = new VueRouter({
@@ -36,7 +36,7 @@ export function setupRouteGuards() {
   // hasLoggedInGuard
   router.beforeEach((to, from, next) => {
     if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
-      next({ path: '/login', query: { next: to.path } })
+      next({ name: 'login', query: { next: to.path } })
     }
     else {
       next()
@@ -52,9 +52,8 @@ export function setupRouteGuards() {
       switch (key) {
         case EnumRepositoryKeys.hydroShare: activeRepository = HydroShare; break;
         case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
+        default: activeRepository = Zenodo
       }
-
-      console.log(activeRepository?.$state)
 
       if (!(activeRepository?.$state.accessToken)) {
         next({ path: '/authorize', query: { next: to.path }})
@@ -69,6 +68,16 @@ export function setupRouteGuards() {
   })
 
   checkNextOnce() // Check if a redirect was set
+}
+
+/** Call before navigating to an external url to save the next route in state and navigate to it after callback url */
+export function saveNextRoute() {
+  const next = router.currentRoute.query.next
+  if (next) {
+    User.commit((state) => {
+      state.next = next
+    })
+  }
 }
 
 /** Call this manually immediately after guards are setup to perform a pending redirect.

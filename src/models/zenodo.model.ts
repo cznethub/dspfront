@@ -16,7 +16,6 @@ export default class Zenodo extends Repository {
     }
   }
 
-
   static async updateMetadata(data: { [key: string]: any }, recordId?: string) {
     const zenodo = this.get()
     if (zenodo) {
@@ -73,7 +72,7 @@ export default class Zenodo extends Repository {
           this.commit((state) => {
             state.accessToken = ''
           })
-          router.push({ path: '/authorize', query: { repo: this.entity, next: '/new-submission' } })
+          router.push({ path: '/authorize', query: { repo: this.entity, next: `/submit/${this.entity}` } })
           
           console.info("Zenodo: Authorization token is invalid or has expired.")
           console.info("Zenodo: Redirecting to authorization page...")

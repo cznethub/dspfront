@@ -43,12 +43,5 @@
 <style lang="scss" scoped>
   .cz-footer {
     background: var(--md-default-primary);
-    padding: 4rem;
-  }
-
-  .footer-top {
-    section {
-      margin-bottom: 2rem;
-    }
   }
 </style>
