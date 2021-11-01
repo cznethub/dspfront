@@ -74,21 +74,31 @@ export default class Repository extends Model implements IRepository {
       Repository.insertOrUpdate({ data : newRepo })
     }
 
-    // Fetch urls and schema if not populated yet
+    // Fetch urls and schemas
     const repository = this.get()
-    // if (!(repository?.urls && Object.keys(repository.urls).length)) {
-      const urls: IRepositoryUrls | undefined = await this.getUrls()
-      // Do we want to load the schemas every time to keep them updated?
-      // TODO: do these requests at the same time
-      const schema: any = await this.getJson(urls?.schemaUrl)
-      const uischema: any = await this.getJson(urls?.uischemaUrl)
-      const schemaDefaults: any = await this.getJson(urls?.schemaDefaultsUrl)
+    console.info(`${this.entity}: fetching schemas...`)
+    const urls: IRepositoryUrls | undefined = await this.getUrls()
 
-      this.update({
-        where: this.entity,
-        data: { urls, schema, uischema, schemaDefaults }
-      })
-    // }
+    let results: PromiseSettledResult<any>[] = await Promise.allSettled([
+      this.getJson(urls?.schemaUrl),
+      this.getJson(urls?.uischemaUrl),
+      this.getJson(urls?.schemaDefaultsUrl)
+    ])
+
+    results = results.map((r: PromiseSettledResult<any>) => {
+      if (r.status === 'fulfilled') {
+        return r.value
+      }
+    })
+
+    const schema = results[0]
+    const uischema = results[1]
+    const schemaDefaults = results[2]
+
+    this.update({
+      where: this.entity,
+      data: { urls, schema, uischema, schemaDefaults }
+    })
 
     // If we don't have an access token stored, fetch one using the accessTokenUrl
     // TODO: also check if it expired, and if so refresh it

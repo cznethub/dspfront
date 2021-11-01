@@ -95,8 +95,10 @@
       document.title = 'CZ Hub'
       // Check for Authorization cookie instead. 
       // const isAuthorized = this.$cookies.get('Authorization')
+
       // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
       // Reproducible if the server is restarted
+      
       // if (isAuthorized && !User.$state.isLoggedIn) {
       await User.checkAuthorization()
       // Guards are setup after checking authorization because they depend on user logged in status
@@ -104,8 +106,10 @@
       // }
       
       if (User.$state.isLoggedIn) {
-        await Zenodo.init()
-        await HydroShare.init()
+        await Promise.all([
+          Zenodo.init(),
+          HydroShare.init()
+        ])
       }
 
       this.isLoading = false
