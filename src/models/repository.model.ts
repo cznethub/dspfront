@@ -65,21 +65,21 @@ export default class Repository extends Model implements IRepository {
 
   static async init() {
     // Insert initial repo
-    // TODO: should we initialize repos on app start in case we change urls?
     if (!(this.get())) {
       console.info(`Repository: Initializing ${this.entity} for the first time...`)
       const newRepo: IRepository = {
         ...repoMetadata[this.entity],
       }
 
-      Repository.insert({ data : newRepo })
+      Repository.insertOrUpdate({ data : newRepo })
     }
 
     // Fetch urls and schema if not populated yet
     const repository = this.get()
-    if (!(repository?.urls && Object.keys(repository.urls).length)) {
+    // if (!(repository?.urls && Object.keys(repository.urls).length)) {
       const urls: IRepositoryUrls | undefined = await this.getUrls()
-      // Do we want to load the schema every time to keep it updated?
+      // Do we want to load the schemas every time to keep them updated?
+      // TODO: do these requests at the same time
       const schema: any = await this.getJson(urls?.schemaUrl)
       const uischema: any = await this.getJson(urls?.uischemaUrl)
       const schemaDefaults: any = await this.getJson(urls?.schemaDefaultsUrl)
@@ -88,7 +88,7 @@ export default class Repository extends Model implements IRepository {
         where: this.entity,
         data: { urls, schema, uischema, schemaDefaults }
       })
-    }
+    // }
 
     // If we don't have an access token stored, fetch one using the accessTokenUrl
     // TODO: also check if it expired, and if so refresh it

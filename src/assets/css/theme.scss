@@ -18,8 +18,6 @@
 @import "~vue-material/dist/theme/all"; // Apply the theme
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
-
-
 html {
   font-size: 62.5%;
 }
@@ -51,6 +49,16 @@ section {
 
 #main-content {
   // padding: 2vw;
+  min-height: 85vh;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
 }
 
 .full-height {
@@ -111,19 +119,19 @@ hr {
 }
 
 .has-space-bottom {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem !important;
 }
 
 .has-space-bottom-2x {
-  margin-bottom: 3rem;
+  margin-bottom: 3rem !important;
 }
 
 .has-space-top {
-  margin-top: 1.5rem;
+  margin-top: 1.5rem !important;
 }
 
 .has-space-top-2x {
-  margin-top: 3rem;
+  margin-top: 3rem !important;
 }
 
 .has-space-right {
@@ -146,13 +154,4 @@ hr {
   border-radius: 2rem;
   margin: 0;
   padding: 0 0.75rem;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
 }

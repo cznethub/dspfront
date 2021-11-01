@@ -8,7 +8,10 @@ import Zenodo from './models/zenodo.model'
 
 export const router = new VueRouter({
   mode: 'history',
-  routes
+  routes,
+  scrollBehavior (to, from, savedPosition) {
+    return { x: 0, y: 0 }
+  }
 })
 
 /** Guards are executed in the order they are created */

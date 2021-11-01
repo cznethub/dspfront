@@ -1,24 +1,23 @@
 <template>
-  <div class="cz-authorize section">
-    <div class="container">
-      <div class="is-flex is-flex-direction-column is-align-items-center">
-        <h1 class="title is-1">Submit to {{ activeRepository.name }}</h1>
-        <h3 class="has-text-mute has-space-bottom">Permission is needed to post to this repository</h3>
-
-        <div class="panel has-space-bottom-2x">
-          <div class="panel-heading">Authorize</div>
-          <div class="panel-block is-flex is-flex-direction-column has-space-bottom">
-            <b-button @click="goToAuthorizePage()" size="is-medium" expanded type="is-primary">
-              <div class="level">
-                <i class="fas fa-key has-space-right is-size-3" />
-                <span>Authorize</span>
-              </div>
-            </b-button>
-            <p class="block has-text-mute">Follow the instructions on the next page to allow CZnet to submit to this repository.</p>
+  <div class="cz-authorize">
+    <md-card class="has-text-centered">
+      <md-card-media class="md-layout md-alignment-center-center" style="height: 10rem; padding: 2rem;">
+        <img :src="activeRepository.get().logoSrc" :alt="activeRepository.name" class="md-layout-item">
+      </md-card-media>
+      <md-card-header class="">
+        <div class="md-title">Submit to {{ activeRepository.name }}</div>
+        <div class="md-subhead">Permission is needed to post to this repository</div>
+      </md-card-header>
+      <md-card-content class="">
+        <md-button @click="goToAuthorizePage()" class="md-raised md-accent">
+          <div class="level">
+            <i class="fas fa-key has-space-right is-size-3" />
+            <span>Authorize</span>
           </div>
-        </div>
-      </div>
-    </div>
+        </md-button>
+        <p class="">Follow the instructions on the next page to allow CZnet to submit to this repository.</p>
+      </md-card-content>
+    </md-card>
   </div>
 </template>
 
@@ -59,11 +58,23 @@
 </script>
 
 <style lang="scss" scoped>
-  .panel {
-    max-width: 40rem;
+  .cz-authorize {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
   }
+  
+  .md-card {
+    max-width: 40rem;
 
-  .panel-heading {
-    text-align: center;
+    .md-card-media {
+      background: linear-gradient(135deg, #f1f3f5 0%, var(--md-theme-default-primary) 100%);
+
+      img {
+        height: 100%;
+        flex: 0;
+      }
+    }
   }
 </style>
