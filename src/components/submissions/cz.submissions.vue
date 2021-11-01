@@ -23,14 +23,14 @@
 
           <md-field>
             <label for="status">Status</label>
-            <md-select v-model="filters.statusOptions" multiple id="status">
+            <md-select v-model="filters.statusOptions" multiple id="status" md-dense>
               <md-option v-for="(status, index) of statusOptions" :key="index" :value="status">{{ enumSubmissionStatus[status] }}</md-option>
             </md-select>
           </md-field>
 
           <md-field>
             <label for="repository">Repository</label>
-            <md-select v-model="filters.repoOptions" multiple id="repository">
+            <md-select v-model="filters.repoOptions" multiple id="repository" md-dense>
               <md-option v-for="(repo, index) of repoOptions" :key="index" :value="repo">{{ repoMetadata[repo].name }}</md-option>
             </md-select>
           </md-field>
@@ -72,7 +72,7 @@
                 <p class="has-text-left"><b>Authors: </b>{{ item.authors.join(', ')}}</p>
                 <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[item.repository].name }}</p>
                 <p class="has-text-left"><b>Submission Date: </b>{{ item.date.toLocaleDateString() }}</p>
-                <p class="has-text-left"><b>Status: </b>{{ item.status }}</p>
+                <p class="has-text-left"><b>Status: </b>{{ enumSubmissionStatus[item.status] }}</p>
                 <p class="has-text-left"><b>Identifier: </b>{{ item.identifier }}</p>
               </md-table-cell>
 
@@ -173,11 +173,12 @@
     protected searchOnTable() {
       const data = this.submissions
       // const data = SUBMISSIONS // TESTING
-      const filteredStatus = this.filters.statusOptions.map(s => EnumSubmissionStatus[s])
-      const filteredRepos = this.filters.repoOptions.map(r => repoMetadata[r].name)
+      const filteredStatus = this.filters.statusOptions //.map(s => EnumSubmissionStatus[s])
+      const filteredRepos = this.filters.repoOptions //.map(r => repoMetadata[r].name)
       const query = this.filters.searchStr.toLowerCase().trim()
 
       this.filteredSubmissions = data.filter((d) => {
+        console.log(d)
         // Filter by status
         if (filteredStatus.length) {
           if (!filteredStatus.includes(d.status)) {

@@ -69,8 +69,9 @@
 </script>
 
 <style lang="scss" scoped>
-  // .cz-resources {
-  // }
+  .cz-resources {
+    padding: 1rem;
+  }
 
   #data-templates {
     max-width: 65rem;

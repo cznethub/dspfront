@@ -4,12 +4,12 @@
     <h3 class="has-text-mute has-space-bottom md-headline has-space-top">Data Submission Portal</h3>
 
     <md-card class="panel has-space-top-2x md-elevation-2">
-      <md-toolbar class="md-accent" md-elevation="0">
+      <md-toolbar md-elevation="0">
         <span class="md-title">Log In</span>
       </md-toolbar>
 
       <div class="panel-content has-space-bottom md-layout md-alignment-center-center" style="flex-direction: column;">
-        <md-button @click="goToOrcidLogin()" class="md-raised md-primary full-width">
+        <md-button @click="goToOrcidLogin()" class="md-raised md-accent full-width">
           <i class="fab fa-orcid has-space-right is-size-3" />
           <span>Log In Using ORCID</span>
         </md-button>
