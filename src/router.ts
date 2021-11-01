@@ -9,8 +9,8 @@ import Zenodo from './models/zenodo.model'
 export const router = new VueRouter({
   mode: 'history',
   routes,
-  scrollBehavior (to, from, savedPosition) {
-    return { x: 0, y: 0 }
+  scrollBehavior(to, from, savedPosition) {
+    document.getElementsByClassName('md-app-container')[0]?.scrollTo({ left: 0, top: 0});
   }
 })
 

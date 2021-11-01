@@ -3,32 +3,30 @@
     <section class="cz-submissions--header">
       <div class="md-layout md-alignment-center-space-between">
         <h1 class="md-display-1">My Submissions</h1>
-        <div class="">
-          <md-field>
-            <label for="repository">New Submission</label>
-            <md-select id="repository">
-              <md-option v-for="(repo, index) in repoOptions" :value="repo" :key="index">{{ repoMetadata[repo].name }}</md-option>
-            </md-select>
-          </md-field>
-        </div>
+        <md-field class="md-layout-item" style="flex-grow: 0;">
+          <label for="repository">New Submission</label>
+          <md-select id="repository">
+            <md-option v-for="(repo, index) in repoOptions" :value="repo" :key="index">{{ repoMetadata[repo].name }}</md-option>
+          </md-select>
+        </md-field>
       </div>
 
       <md-card>
-        <md-card-content id="filters">
-          <md-field>
+        <md-card-content id="filters" class="md-layout">
+          <md-field class="md-layout-item">
             <md-icon>search</md-icon>
             <label>Search by Title and Author</label>
             <md-input v-model="filters.searchStr"></md-input>
           </md-field>
 
-          <md-field>
+          <md-field class="md-layout-item">
             <label for="status">Status</label>
             <md-select v-model="filters.statusOptions" multiple id="status" md-dense>
               <md-option v-for="(status, index) of statusOptions" :key="index" :value="status">{{ enumSubmissionStatus[status] }}</md-option>
             </md-select>
           </md-field>
 
-          <md-field>
+          <md-field class="md-layout-item">
             <label for="repository">Repository</label>
             <md-select v-model="filters.repoOptions" multiple id="repository" md-dense>
               <md-option v-for="(repo, index) of repoOptions" :key="index" :value="repo">{{ repoMetadata[repo].name }}</md-option>
@@ -240,7 +238,10 @@
   }
 
   #filters {
-    max-width: 60rem;
+    // max-width: 60rem;
+    & > .md-field {
+      margin: 0 1rem;
+    }
   }
 
   .md-toolbar {
