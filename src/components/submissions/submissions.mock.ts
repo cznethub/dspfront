@@ -27,7 +27,7 @@ export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmis
   return {
     id: index,
     title: getRandomElementFromArray(titles),
-    authors: ['Jeffery S. Horsburgh', 'Scott Black', 'Kerstin Lehnert'],
+    authors: [getRandomElementFromArray(['Jeffery S. Horsburgh', 'Scott Black', 'Kerstin Lehnert'])],
     repository: getRandomElementFromArray(repos),
     date: getRandomDate(),
     status: getRandomElementFromArray(status),

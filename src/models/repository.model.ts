@@ -66,14 +66,14 @@ export default class Repository extends Model implements IRepository {
   static async init() {
     // Insert initial repo
     // TODO: should we initialize repos on app start in case we change urls?
-    // if (!(this.get())) {
+    if (!(this.get())) {
       console.info(`Repository: Initializing ${this.entity} for the first time...`)
       const newRepo: IRepository = {
         ...repoMetadata[this.entity],
       }
 
       Repository.insert({ data : newRepo })
-    // }
+    }
 
     // Fetch urls and schema if not populated yet
     const repository = this.get()

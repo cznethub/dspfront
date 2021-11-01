@@ -1,135 +1,107 @@
 <template>
   <div class="cz-submissions">
-    <section class="section cz-submissions--header">
-      <div class="container">
-        <div class="level is-justify-content-space-between">
-          <h1 class="title is-1">My Submissions</h1>
-          <div class="level">
-            <span class="has-space-right">New Submission</span>
-            <b-field>
-              <b-select size="is-medium" placeholder="Select a repository">
-                <option v-for="(repo, index) in repoOptions" :value="repo" :key="index">{{ repoMetadata[repo].name }}</option>
-              </b-select>
-            </b-field>
-          </div>
-        </div>
-
-        <div class="box">
-          <div id="filters">
-            <b-field label="Search by Title and Author">
-              <b-input placeholder="Search submissions..." size="is-medium" icon="search" />
-            </b-field>
-
-            <div class="is-flex is-justify-content-flex-start is-align-items-flex-start is-flex-wrap-wrap">
-              <div class="block is-flex has-space-right is-flex-direction-column">
-                <label for="status" class="has-text-weight-bold has-space-bottom">Status</label>
-                <div id="status" class="is-grid" style="grid-template-columns: auto;">
-                  <b-checkbox v-for="(status, index) of statusOptions" v-model="filters.statusOptions"
-                    :key="index" :native-value="status">
-                      <span>{{ enumSubmissionStatus[status] }}</span>
-                  </b-checkbox>
-                </div>
-              </div>
-
-              <div class="block is-flex is-flex-direction-column">
-                <label for="repos" class="has-text-weight-bold has-space-bottom">Repository</label>
-                <div id="repos" class="is-grid" style="grid-template-columns: auto auto;">
-                  <b-checkbox v-for="(repo, index) of repoOptions" v-model="filters.repoOptions"
-                    :key="index" :native-value="repo">
-                      <span>{{ repoMetadata[repo].name }}</span>
-                  </b-checkbox>
-                </div>
-              </div>
-            </div>
-          </div>
+    <section class="cz-submissions--header">
+      <div class="md-layout md-alignment-center-space-between">
+        <h1 class="md-display-1">My Submissions</h1>
+        <div class="">
+          <md-field>
+            <label for="repository">New Submission</label>
+            <md-select id="repository">
+              <md-option v-for="(repo, index) in repoOptions" :value="repo" :key="index">{{ repoMetadata[repo].name }}</md-option>
+            </md-select>
+          </md-field>
         </div>
       </div>
+
+      <md-card>
+        <md-card-content id="filters">
+          <md-field>
+            <md-icon>search</md-icon>
+            <label>Search by Title and Author</label>
+            <md-input v-model="filters.searchStr"></md-input>
+          </md-field>
+
+          <md-field>
+            <label for="status">Status</label>
+            <md-select v-model="filters.statusOptions" multiple id="status">
+              <md-option v-for="(status, index) of statusOptions" :key="index" :value="status">{{ enumSubmissionStatus[status] }}</md-option>
+            </md-select>
+          </md-field>
+
+          <md-field>
+            <label for="repository">Repository</label>
+            <md-select v-model="filters.repoOptions" multiple id="repository">
+              <md-option v-for="(repo, index) of repoOptions" :key="index" :value="repo">{{ repoMetadata[repo].name }}</md-option>
+            </md-select>
+          </md-field>
+        </md-card-content>
+      </md-card>
     </section>
 
-    <section class="section">
-      <div class="container">
-        <div class="level is-align-items-center">
-          <h3 class="title is-3 is-marginless">{{ submissions.length }} Total Submissions</h3>
-          <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
-        </div>
-        <article class="panel">
-          <div class="panel-heading">
-            <div class="table-header">
-              <div class="level">
-                <b-button size="is-medium">Export Submissions</b-button>
-                <hr class="is-hidden-tablet">
-                <div class="is-flex is-align-items-center">
-                  <span class="has-text-weight-bold has-space-right">Sort</span>
-                  <b-field>
-                    <b-select size="is-medium" v-model="currentSort.defaultSort">
-                      <option v-for="sort in sortOptions" :value="sort" :key="sort">{{ enumSubmissionSorts[sort] }}</option>
-                    </b-select>
-
-                    <b-select size="is-medium" v-model="currentSort.defaultSortDirection">
-                      <option v-for="direction in sortDirectionOptions" :value="direction" :key="direction">{{ enumSortDirections[direction] }}</option>
-                    </b-select>
-                  </b-field>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="panel-block">
-            <b-table :data="filteredSubmissions" :show-header="false" paginated :per-page="10" pagination-position="both" ref="submissionsTable"
-              :defaultSort="currentSort.defaultSort" :defaultSortDirection="currentSort.defaultSortDirection" class="is-flex-grow-1">
-              <b-table-column field="title" label="Title" v-slot="props" :sortable="true" :visible="false">
-                {{ props.row.title }}
-              </b-table-column>
-
-              <b-table-column field="authors" label="Authors" v-slot="props" :visible="false">
-                {{ props.row.authors.join(', ') }}
-              </b-table-column>
-
-              <b-table-column field="repository" label="Submission Repository" v-slot="props" :sortable="true" :visible="false">
-                {{ props.row.repository }}
-              </b-table-column>
-
-              <b-table-column field="date" label="Submission Date" v-slot="props" :sortable="true" :visible="false">
-                {{ props.row.date.toLocaleDateString() }}
-              </b-table-column>
-
-              <b-table-column field="status" label="Status" v-slot="props" :visible="false">
-                {{ props.row.status }}
-              </b-table-column>
-
-              <b-table-column field="identifier" label="Identifier" v-slot="props" :visible="false">
-                {{ props.row.identifier }}
-              </b-table-column>
-
-              <b-table-column v-slot="props">
-                <div class="is-flex is-flex-direction-column is-align-items-flex-start">
-                  <h4 class="is-size-4 has-text-weight-bold block">Title: {{ props.row.title }}</h4>
-                  <p class="has-text-left"><b>Authors: </b>{{ props.row.authors.join(', ')}}</p>
-                  <p class="has-text-left"><b>Submission Repository: </b>{{ props.row.repository }}</p>
-                  <p class="has-text-left"><b>Submission Date: </b>{{ props.row.date.toLocaleDateString() }}</p>
-                  <p class="has-text-left"><b>Status: </b>{{ props.row.status }}</p>
-                  <p class="has-text-left"><b>Identifier: </b>{{ props.row.identifier }}</p>
-                </div>
-              </b-table-column>
-
-              <b-table-column>
-                <div class="is-flex is-flex-direction-column is-align-items-flex-start is-flex-grow-1">
-                  <b-button class="block" expanded size="is-medium" type="is-primary">View Record In Repository</b-button>
-                  <b-button class="block" expanded size="is-medium">Edit Submission</b-button>
-                  <b-button class="block" expanded size="is-medium">Update Record</b-button>
-                </div>
-              </b-table-column>
-
-              <template #empty>
-                <div class="has-text-centered">
-                  <b-loading :is-full-page="false" :active="isFetching" />
-                  <template v-if="!isFetching">No records</template>
-                </div>
-              </template>
-            </b-table>
-          </div>
-        </article>
+    <section>
+      <div class="md-layout md-alignment-center-space-between">
+        <h3 class="md-title">{{ submissions.length }} Total Submissions</h3>
+        <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
       </div>
+
+      <md-card class="panel">
+        <md-toolbar class="md-layout md-alignment-center-space-between" md-elevation="0">
+          <md-button class="md-raised">Export Submissions</md-button>
+          <!-- <hr class="is-hidden-tablet"> -->
+          <div class="md-layout-item md-layout md-alignment-center-flex-end md-size-50 md-small-size-100 md-gutter">
+            <md-field class="md-layout-item">
+              <label for="sorts">Sort</label>
+              <md-select v-model="currentSort.defaultSort" id="sorts" md-dense>
+                <md-option v-for="sort in sortOptions" :value="sort" :key="sort">{{ enumSubmissionSorts[sort] }}</md-option>
+              </md-select>
+            </md-field>
+
+            <md-field class="md-layout-item">
+              <md-select v-model="currentSort.defaultSortDirection" md-dense>
+                <md-option v-for="direction in sortDirectionOptions" :value="direction" :key="direction">{{ enumSortDirections[direction] }}</md-option>
+              </md-select>
+            </md-field>
+          </div>
+        </md-toolbar>
+
+        <md-card-content v-if="!isFetching">
+          <md-table v-model="filteredSubmissions" :md-sort="currentSort.defaultSort" :md-sort-order="currentSort.defaultSortDirection" ref="submissionsTable">
+            <md-table-row slot="md-table-row" slot-scope="{ item }">
+              <md-table-cell>
+                <b>Title: </b> <span class="md-subheading">{{ item.title }}</span>
+                <p class="has-text-left"><b>Authors: </b>{{ item.authors.join(', ')}}</p>
+                <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[item.repository].name }}</p>
+                <p class="has-text-left"><b>Submission Date: </b>{{ item.date.toLocaleDateString() }}</p>
+                <p class="has-text-left"><b>Status: </b>{{ item.status }}</p>
+                <p class="has-text-left"><b>Identifier: </b>{{ item.identifier }}</p>
+              </md-table-cell>
+
+              <md-table-cell>
+                <div class="md-layout actions" style="flex-direction: column;">
+                  <md-button class="md-raised md-accent" expanded size="is-medium" type="is-primary">View Record In Repository</md-button>
+                  <md-button class="md-raised md-primary" expanded size="is-medium">Edit Submission</md-button>
+                  <md-button class="md-raised md-primary" expanded size="is-medium">Update Record</md-button>
+                </div>
+              </md-table-cell>
+            </md-table-row>
+
+            <!-- TODO: this feature is not released yet -->
+            <!-- https://www.creative-tim.com/vuematerial/components/table -->
+            <md-table-pagination
+              :md-page-size="5"
+              :md-page-options="[5, 10, 15, 20]"
+              :md-update="updatePagination"
+              :md-data="filteredSubmissions"
+              :md-paginated-data.sync="paginatedSubmissions" />
+<!-- 
+            <md-table-empty-state
+              md-label="No submissions found"
+              :md-description="`No submissions found for this '${filters.searchStr}' query. Try a different search term or create a new submissions.`">
+              <md-button class="md-primary md-raised" @click="null">Create New Submission</md-button>
+            </md-table-empty-state> -->
+          </md-table>
+        </md-card-content>
+      </md-card>
     </section>
   </div>
 </template>
@@ -138,6 +110,7 @@
   import { Component, Vue, Ref, Watch } from 'vue-property-decorator'
   import { EnumSubmissionStatus, ISubmission, EnumSubmissionSorts, EnumSortDirections } from '@/components/submissions/types'
   import { repoMetadata } from '../submit/constants'
+  import { SUBMISSIONS } from './submissions.mock'
   import Submission from '@/models/submission.model'
 
   @Component({
@@ -154,13 +127,16 @@
 
     protected filters: {
       statusOptions: string[],
-      repoOptions: string[]
-    } = { statusOptions: [], repoOptions: [] }
+      repoOptions: string[],
+      searchStr: string
+    } = { statusOptions: [], repoOptions: [], searchStr: '' }
 
-    protected enumSubmissionStatus = EnumSubmissionStatus
     protected repoMetadata = repoMetadata
+    protected enumSubmissionStatus = EnumSubmissionStatus
     protected enumSubmissionSorts = EnumSubmissionSorts
     protected enumSortDirections = EnumSortDirections
+    protected filteredSubmissions: ISubmission[] = []
+    protected paginatedSubmissions: ISubmission[] = []
 
     protected get isFetching() {
       return Submission.$state.isFetching
@@ -190,20 +166,39 @@
       return Submission.all()
     }
 
-    protected get filteredSubmissions() {
-      let data = Submission.all()
+    protected updatePagination (page, pageSize, sort, sortOrder) {
+      console.log('pagination has updated', page, pageSize, sort, sortOrder);
+    }
+
+    protected searchOnTable() {
+      const data = this.submissions
+      // const data = SUBMISSIONS // TESTING
       const filteredStatus = this.filters.statusOptions.map(s => EnumSubmissionStatus[s])
       const filteredRepos = this.filters.repoOptions.map(r => repoMetadata[r].name)
+      const query = this.filters.searchStr.toLowerCase().trim()
 
-      return data.filter((d) => {
+      this.filteredSubmissions = data.filter((d) => {
+        // Filter by status
         if (filteredStatus.length) {
           if (!filteredStatus.includes(d.status)) {
             return false
           }
         }
 
+        // Filter by repository
         if (filteredRepos.length) {
           if (!filteredRepos.includes(d.repository)) {
+            return false
+          }
+        }
+
+        // Filter by search query
+
+        if (query) {
+          const occursInTitle = d.title.toLowerCase().indexOf(query) >= 0
+          const occursInAuthors= d.authors.some(a => a.toLowerCase().indexOf(query) >= 0)
+          
+          if (!occursInTitle && !occursInAuthors) {
             return false
           }
         }
@@ -212,60 +207,55 @@
       })
     }
 
-    created() {
-      Submission.fetchSubmissions()
+    async created() {
+      await Submission.fetchSubmissions()
+      // this.filteredSubmissions = SUBMISSIONS // Testing
+      this.filteredSubmissions = this.submissions
     }
 
     @Watch('currentSort', { deep: true })
     protected onDefaultSortChanged(newSort, oldSort) {
       this.$nextTick(() => {
-        this.submissionsTable.initSort()
+        this.submissionsTable.sortTable()
+      })
+    }
+
+    @Watch('filters', { deep: true })
+    protected onFiltersChanged(newFilters, oldFilters) {
+      this.$nextTick(() => {
+        this.searchOnTable()
       })
     }
   }
 </script>
 
 <style lang="scss" scoped>
-  /*.cz-submissions--header {
-    /deep/ select {
-      width: 20rem;
-    }
+  .cz-submissions {
+    padding: 0 1rem;
+  }
 
-    /deep/ input {
-      max-width: 40rem;
-    }
-  }*/
+  .md-card {
+    margin: 0;
+  }
 
   #filters {
     max-width: 60rem;
-
-    .is-grid {
-      align-items: flex-start;
-    }
-
-    /deep/ .checkbox .control-label > span {
-      white-space: nowrap;
-    }
-
-    .b-checkbox {
-      margin: 0 2rem 1rem 0;
-    }
   }
 
-  /deep/ table td {
-    padding: 2rem;
+  .md-toolbar {
+    padding: 1rem;
   }
 
-  .panel-block {
-    font-size: 1.4rem;
+  .actions {
+    align-content: flex-end;
+  }
+  
+  .actions .md-button {
+    margin: 1rem 0;
+    max-width: 30rem;
+  }
 
-    /deep/ .table-mobile-sort {
-      display: none;
-    }
-
-    /*.control-label
-    /deep/ .table-wrapper.has-mobile-cards {
-
-    }*/
+  /deep/ .md-table-head {
+    display: none;
   }
 </style>

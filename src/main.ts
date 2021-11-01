@@ -30,6 +30,12 @@ import {
   MdCard,
   MdDialog,
   MdSnackbar,
+  MdField,
+  MdMenu,
+  MdList,
+  MdTable,
+  MdRipple,
+  MdCheckbox,
 } from 'vue-material/dist/components'
 
 /** Material modules */
@@ -42,6 +48,22 @@ Vue.use(MdIcon)
 Vue.use(MdCard)
 Vue.use(MdDialog)
 Vue.use(MdSnackbar)
+Vue.use(MdField)
+Vue.use(MdMenu)
+Vue.use(MdList)
+Vue.use(MdTable)
+Vue.use(MdRipple)
+Vue.use(MdCheckbox)
+
+// https://github.com/vuematerial/vue-material/issues/2285
+Vue.config.errorHandler = (err, vm, info) => {
+  if (process.env.NODE_ENV !== 'production') {
+    // Show any error but this one
+    if (err.message !== "Cannot read properties of undefined (reading 'badInput')") {
+      console.error(err)
+    }
+  }
+}
 
 VuexORM.use(datePlugin)
 Vue.config.productionTip = false
