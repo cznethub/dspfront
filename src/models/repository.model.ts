@@ -2,7 +2,6 @@ import { Model } from '@vuex-orm/core'
 import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
 import { repoMetadata } from "@/components/submit/constants";
 import axios from "axios";
-import Zenodo from './zenodo.model';
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'

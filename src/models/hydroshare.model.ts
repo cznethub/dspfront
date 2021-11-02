@@ -42,7 +42,7 @@ export default class HydroShare extends Repository {
           : { }
         const resp = await axios.post(
           hydroShare.urls?.createUrl || '',
-          depositionMetadata,
+          // depositionMetadata,
           { 
             headers: { "Content-Type": "application/json"},
             params: { "access_token": this.accessToken }
