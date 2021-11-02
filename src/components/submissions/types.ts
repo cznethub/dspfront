@@ -19,7 +19,7 @@ export enum EnumSubmissionStatus {
 }
 
 export enum EnumRepositoryKeys {
-  hydroShare = 'hydroshare',
+  hydroshare = 'hydroshare',
   zenodo = 'zenodo',
   // earthChemLibrary = 'earthChemLibrary',
   // openTopography = 'openTopography',

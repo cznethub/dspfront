@@ -53,7 +53,7 @@ export function setupRouteGuards() {
       let key = to.params.repository
 
       switch (key) {
-        case EnumRepositoryKeys.hydroShare: activeRepository = HydroShare; break;
+        case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;
         case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
         default: activeRepository = Zenodo
       }

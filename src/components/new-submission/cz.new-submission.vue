@@ -130,7 +130,7 @@
     protected get activeRepository() {
       const key = Repository.$state.submittingTo
       switch (key) {
-        case EnumRepositoryKeys.hydroShare: return HydroShare
+        case EnumRepositoryKeys.hydroshare: return HydroShare
         case EnumRepositoryKeys.zenodo: return Zenodo
         default: return Zenodo
       }
@@ -141,10 +141,8 @@
       const routeRepositoryKey = this.$route.params.repository as EnumRepositoryKeys
       
       if (!this.activeRepository || this.activeRepository.get()?.key !== routeRepositoryKey) {
-        console.log(Object.keys(EnumRepositoryKeys), routeRepositoryKey)
         // Check that the key from the url is actually a EnumRepositoryKeys
-        if (Object.keys(EnumRepositoryKeys).includes(routeRepositoryKey)) {
-          
+        if (EnumRepositoryKeys[routeRepositoryKey]) {
           this.setActiveRepository(routeRepositoryKey)
         }
       }

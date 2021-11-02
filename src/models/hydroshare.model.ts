@@ -7,7 +7,7 @@ import Repository from './repository.model'
 const sprintf = require('sprintf-js').sprintf
 
 export default class HydroShare extends Repository {
-  static entity = EnumRepositoryKeys.hydroShare
+  static entity = EnumRepositoryKeys.hydroshare
   static baseEntity = 'repository'
 
   static state() {

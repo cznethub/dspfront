@@ -42,7 +42,7 @@
     protected get activeRepository() {
       const key = Repository.$state.submittingTo
       switch (key) {
-        case EnumRepositoryKeys.hydroShare: return HydroShare
+        case EnumRepositoryKeys.hydroshare: return HydroShare
         case EnumRepositoryKeys.zenodo: return Zenodo
         default: return Zenodo
       }
@@ -59,8 +59,9 @@
 
 <style lang="scss" scoped>
   .cz-authorize {
+    padding-top: 4rem;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
     height: 100%;
   }
