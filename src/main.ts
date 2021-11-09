@@ -36,6 +36,9 @@ import {
   MdTable,
   MdRipple,
   MdCheckbox,
+  MdChips,
+  MdDatepicker,
+  MdSpeedDial,
 } from 'vue-material/dist/components'
 
 /** Material modules */
@@ -54,6 +57,9 @@ Vue.use(MdList)
 Vue.use(MdTable)
 Vue.use(MdRipple)
 Vue.use(MdCheckbox)
+Vue.use(MdChips)
+Vue.use(MdDatepicker)
+Vue.use(MdSpeedDial)
 
 // https://github.com/vuematerial/vue-material/issues/2285
 Vue.config.errorHandler = (err, vm, info) => {

@@ -1,44 +1,48 @@
 <template>
   <div class="cz-submissions">
     <section class="cz-submissions--header">
+      <h1 class="md-display-1">My Submissions</h1>
+      <hr>
       <div class="md-layout md-alignment-center-space-between">
-        <h1 class="md-display-1">My Submissions</h1>
-        <md-field class="md-layout-item" style="flex-grow: 0;">
-          <label for="repository">New Submission</label>
-          <md-select id="repository">
-            <md-option v-for="(repo, index) in repoOptions" :value="repo" :key="index">{{ repoMetadata[repo].name }}</md-option>
-          </md-select>
-        </md-field>
+        <md-card style="flex-grow: 1; margin-right: 2rem;">
+          <md-card-content id="filters" class="md-layout">
+            <md-field class="md-layout-item">
+              <md-icon>search</md-icon>
+              <label>Search by Title and Author</label>
+              <md-input v-model="filters.searchStr"></md-input>
+            </md-field>
+
+            <md-field class="md-layout-item">
+              <label for="status">Status</label>
+              <md-select v-model="filters.statusOptions" multiple id="status" md-dense>
+                <md-option v-for="(status, index) of statusOptions" :key="index" :value="status">{{ enumSubmissionStatus[status] }}</md-option>
+              </md-select>
+            </md-field>
+
+            <md-field class="md-layout-item">
+              <label for="repository">Repository</label>
+              <md-select v-model="filters.repoOptions" multiple id="repository" md-dense>
+                <md-option v-for="(repo, index) of repoOptions" :key="index" :value="repo">{{ repoMetadata[repo].name }}</md-option>
+              </md-select>
+            </md-field>
+          </md-card-content>
+        </md-card>
+
+        <md-speed-dial md-direction="bottom">
+          <md-speed-dial-target>
+            <md-icon>add</md-icon>
+          </md-speed-dial-target>
+
+          <md-speed-dial-content>
+            <md-button  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</md-button>
+          </md-speed-dial-content>
+        </md-speed-dial>
       </div>
-
-      <md-card>
-        <md-card-content id="filters" class="md-layout">
-          <md-field class="md-layout-item">
-            <md-icon>search</md-icon>
-            <label>Search by Title and Author</label>
-            <md-input v-model="filters.searchStr"></md-input>
-          </md-field>
-
-          <md-field class="md-layout-item">
-            <label for="status">Status</label>
-            <md-select v-model="filters.statusOptions" multiple id="status" md-dense>
-              <md-option v-for="(status, index) of statusOptions" :key="index" :value="status">{{ enumSubmissionStatus[status] }}</md-option>
-            </md-select>
-          </md-field>
-
-          <md-field class="md-layout-item">
-            <label for="repository">Repository</label>
-            <md-select v-model="filters.repoOptions" multiple id="repository" md-dense>
-              <md-option v-for="(repo, index) of repoOptions" :key="index" :value="repo">{{ repoMetadata[repo].name }}</md-option>
-            </md-select>
-          </md-field>
-        </md-card-content>
-      </md-card>
     </section>
 
-    <section>
+    <div>
       <div class="md-layout md-alignment-center-space-between">
-        <h3 class="md-title">{{ submissions.length }} Total Submissions</h3>
+        <h3 class="md-title has-space-bottom">{{ submissions.length }} Total Submissions</h3>
         <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
       </div>
 
@@ -100,16 +104,17 @@
           </md-table>
         </md-card-content>
       </md-card>
-    </section>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
   import { Component, Vue, Ref, Watch } from 'vue-property-decorator'
-  import { EnumSubmissionStatus, ISubmission, EnumSubmissionSorts, EnumSortDirections } from '@/components/submissions/types'
+  import { EnumSubmissionStatus, ISubmission, EnumSubmissionSorts, EnumSortDirections, EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
   import { repoMetadata } from '../submit/constants'
   import { SUBMISSIONS } from './submissions.mock'
   import Submission from '@/models/submission.model'
+import Repository from '@/models/repository.model'
 
   @Component({
     name: 'cz-submissions',
@@ -176,7 +181,6 @@
       const query = this.filters.searchStr.toLowerCase().trim()
 
       this.filteredSubmissions = data.filter((d) => {
-        console.log(d)
         // Filter by status
         if (filteredStatus.length) {
           if (!filteredStatus.includes(d.status)) {
@@ -192,7 +196,6 @@
         }
 
         // Filter by search query
-
         if (query) {
           const occursInTitle = d.title.toLowerCase().indexOf(query) >= 0
           const occursInAuthors= d.authors.some(a => a.toLowerCase().indexOf(query) >= 0)
@@ -211,6 +214,22 @@
       // this.filteredSubmissions = SUBMISSIONS // Testing
       this.filteredSubmissions = this.submissions
     }
+
+    // TODO: move to mixin and reuse
+    // =================
+    protected submitTo(repo: IRepository) {
+      if (Object.keys(EnumRepositoryKeys).includes(repo.key)) {
+        this.setActiveRepository(repo.key)
+      }
+      this.$router.push({ name: 'submit.repository', params: { repository: repo.key } }).catch(() => {})
+    }
+
+    private setActiveRepository(key: EnumRepositoryKeys) {
+      Repository.commit((state) => {
+        state.submittingTo = key
+      })
+    }
+    // =================
 
     @Watch('currentSort', { deep: true })
     protected onDefaultSortChanged(newSort, oldSort) {
@@ -259,5 +278,20 @@
 
   /deep/ .md-table-head {
     display: none;
+  }
+
+  .md-speed-dial {
+    position: relative;
+
+    .md-speed-dial-content {
+      position: absolute;
+      top: 6rem;
+      right: 0;
+      align-items: flex-end;
+
+      button {
+        width: 100%;
+      }
+    }
   }
 </style>

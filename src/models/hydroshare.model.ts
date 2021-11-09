@@ -42,12 +42,14 @@ export default class HydroShare extends Repository {
           : { }
         const resp = await axios.post(
           hydroShare.urls?.createUrl || '',
-          // depositionMetadata,
+          {},
           { 
             headers: { "Content-Type": "application/json"},
             params: { "access_token": this.accessToken }
           }
         )
+
+        console.log(resp)
 
         if (resp.status === 201) {
           // resp.links

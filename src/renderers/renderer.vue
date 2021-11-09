@@ -4,9 +4,10 @@
    */
   import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
   import { defineComponent } from '@vue/composition-api'
+  import { inputDateRenderer } from './cz.input-date.renderer.vue'
   import { inputRenderer } from './cz.input.renderer.vue'
   import { listInputObjectRenderer } from './cz.list-input-object.renderer.vue'
-  import { listInputPrimitiveRenderer } from './cz.list-input-primitive.renderer.vue'
+  import { enumControlRenderer } from './cz.enum-control.renderer.vue'
   import { selectRenderer } from './cz.select.renderer.vue'
 
   const controlRenderer = defineComponent({})
@@ -14,8 +15,9 @@
 
   export const CzRenderers: JsonFormsRendererRegistryEntry[] = [
     inputRenderer,
+    inputDateRenderer,
     selectRenderer,
-    listInputPrimitiveRenderer,
+    enumControlRenderer,
     // listInputObjectRenderer,
   ]
 </script>

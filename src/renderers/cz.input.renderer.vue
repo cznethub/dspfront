@@ -1,14 +1,16 @@
 <template>
-  <b-field v-show="control.visible" :label="control.label" :message="control.errors" :type="{ 'is-danger': control.errors }">
-    <b-input
+  <md-field v-show="control.visible" ref="field">
+    <label>{{ control.label }}</label>
+    <md-input
       @input="onChange"
       :disabled="!control.enabled"
       :required="control.required"
       :value="control.data"
-      :placeholder="control.description"
       size="is-medium" 
     />
-  </b-field>
+    <span class="md-helper-text">{{ control.description }}</span>
+    <span v-for="(error, index) in control.errors" :key="index" class="md-error">{{ error }}</span>
+  </md-field>
 </template>
 
 <script lang="ts">
@@ -24,19 +26,30 @@
       ...rendererProps()
     },
     setup(props:any) {
-      return useJsonFormsControl(props);
+      return useJsonFormsControl(props)
     },
     created() {
       // console.log(this.control)
+      
     },
     methods: {
       onChange(value: string) {
+        console.log(this.$refs.field)
         this.handleChange(
           this.control.path,
           value
         )
         // console.log(this.control)
-      }
+      },
+      // getValidationClass (fieldName) {
+      //   const field = this.$v.form[fieldName]
+
+      //   if (field) {
+      //     return {
+      //       'md-invalid': field.$invalid && field.$dirty
+      //     }
+      //   }
+      // }
     }
   })
   export default controlRenderer

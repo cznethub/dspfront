@@ -1,7 +1,7 @@
 <template>
   <div class="cz-login md-layout md-alignment-center-center">
     <div id="panel-left" class="md-layout-item has-text-centered md-small-hide has-text-shadow"
-      :style="{ 'background-image': 'url(' + require('@/assets/img/bg-3.png') + ')' }">
+      :style="{ 'background-image': 'linear-gradient(rgb(0 52 82 / 31%), rgba(0, 0, 0, 0)), url(' + require('@/assets/img/bg-3.png') + ')' }">
       <h1 class="md-display-1 has-text-white">Critical Zone Collaborative Network</h1>
       <h3 class="has-text-mute has-space-bottom md-headline has-space-top has-text-white">Data Submission Portal</h3>
     </div>
@@ -9,7 +9,7 @@
     <div id="panel-right" class="md-layout-item md-layout md-alignment-center-center">
       <div class="md-title has-space-bottom">Log In</div>
 
-      <md-button @click="goToOrcidLogin()" class="md-raised md-accent full-width">
+      <md-button @click="goToOrcidLogin()" class="md-raised md-accent has-space-bottom-2x">
         <i class="fab fa-orcid has-space-right is-size-3" />
         <span>Log In Using ORCID</span>
       </md-button>
@@ -44,7 +44,6 @@
 
   #panel-left {
     height: 100%;
-    display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
@@ -56,7 +55,8 @@
   }
 
   #panel-right {
-    max-width: 45rem;
-    padding: 2rem;
+    max-width: 50rem;
+    padding: 4rem;
+    flex-direction: column;
   }
 </style>

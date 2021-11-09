@@ -1,21 +1,22 @@
 <template>
-  <b-field :label="control.label" :message="control.errors" :type="{ 'is-danger': control.errors }">
-    <b-select size="is-medium" 
+  <md-field v-show="control.visible" md-dense>
+    <label>{{ control.label }}</label>
+    <md-select
       @input="onChange"
       :disabled="!control.enabled"
       :required="control.required"
-      :placeholder="control.description"
       :value="control.schema.default"
     >
-      <option
+      <md-option
         v-for="option in control.schema.enum"
         :value="option"
         :key="option"
       >
         {{ option }}
-      </option>
-    </b-select>
-  </b-field>
+      </md-option>
+    </md-select>
+    <div class="md-helper-text">{{ control.description }}</div>
+  </md-field>
 </template>
 
 <script lang="ts">

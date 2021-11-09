@@ -151,7 +151,11 @@ hr {
 }
 
 .md-button {
-  border-radius: 2rem;
+  
   margin: 0;
   padding: 0 0.75rem;
+}
+
+.md-button:not(.md-fab) {
+  border-radius: 2rem;
 }

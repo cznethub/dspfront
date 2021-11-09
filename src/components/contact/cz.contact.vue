@@ -1,6 +1,7 @@
 <template>
   <div class="cz-contact">
-    This is the contact page
+    <h1 class="md-display-1">Contact</h1>
+    <hr>
   </div>
 </template>
 

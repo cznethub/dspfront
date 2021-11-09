@@ -1,16 +1,16 @@
 <template>
   <div class="cz-new-submission">
+    <h1 class="md-display-1">New Submission</h1>
+    <hr>
     <section class="section">
       <div class="container">
-        <div class="level">
-          <h1 class="title is-1">New Submission - {{ activeRepository ? activeRepository.get().key : '' }}</h1>
+        <div class="md-layout md-alignment-center-space-between">
           <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
           <div>
             <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
             <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
               {{ isSaving ? 'Saving...' : 'Save' }}
             </md-button>
-            <!-- <md-button class="md-raised md-accent">Submit</md-button> -->
           </div>
         </div>
         <p><b>Instructions</b>: Fill in the required fields (marked with *). Press the "Save" button to save your upload for later editing. When the form is complete, click the "Submit" button to upload your submission to the repository.</p>
@@ -91,7 +91,7 @@
 
   const renderers = [
     ...vanillaRenderers,
-    // ...CzRenderers,
+    ...CzRenderers,
   ];
 
   @Component({

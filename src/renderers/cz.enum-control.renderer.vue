@@ -1,23 +1,21 @@
 <template>
-  <b-field :label="control.label">
-    <b-taginput
-      size="is-medium"
+    <md-chips 
+      @input="onChange" 
       v-model="tags"
-      @input="onChange"
-      ellipsis
-      type="is-info"
-      icon="tag"
-      icon-pack
-      :placeholder="control.description"
-      aria-close-label="Delete this tag">
-    </b-taginput>
-  </b-field>
+      :md-placeholder="control.label"
+      @keydown.native="onKeyDown"
+      class="md-primary shake-on-error"
+      ref="chips"
+    > 
+      <div class="md-helper-text">{{ control.description }}</div>
+    </md-chips>
 </template>
 
 <script lang="ts">
   import { isPrimitiveArrayControl, JsonFormsRendererRegistryEntry, rankWith } from '@jsonforms/core'
   import { defineComponent } from '@vue/composition-api'
   import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2'
+  import { MdChips } from 'vue-material/dist/components'
 
   // https://www.npmjs.com/package/@jsonforms/vue2
 
@@ -27,7 +25,7 @@
       ...rendererProps()
     },
     setup(props: any) {
-      let tags = []
+      const tags = []
       return {
         tags,
         ...useJsonFormsControl(props),
@@ -35,6 +33,7 @@
     },
     created() {
       // console.log(this.control)
+      this.tags = this.control.schema.default
     },
     methods: {
       onChange(values) {
@@ -42,12 +41,28 @@
           this.control.path,
           values
         )
+      },
+      onKeyDown(e) {
+        const delimeters = [
+          'Comma',
+        ]
+        if (delimeters.includes(e.code)) {
+          const chips = this.$refs.chips as MdChips
+
+          if (chips) {
+            const newKeyword = chips.inputValue
+            if (newKeyword) {
+              chips.insertChip(newKeyword)
+              e.preventDefault()
+            }
+          }
+        }
       }
     }
   })
   export default controlRenderer
 
-  export const listInputPrimitiveRenderer: JsonFormsRendererRegistryEntry = {
+  export const enumControlRenderer: JsonFormsRendererRegistryEntry = {
     renderer: controlRenderer,
     tester: rankWith(3, isPrimitiveArrayControl)
   }

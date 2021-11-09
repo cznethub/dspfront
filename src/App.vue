@@ -93,6 +93,7 @@
 
     async created() {
       document.title = 'CZ Hub'
+      
       // Check for Authorization cookie instead. 
       // const isAuthorized = this.$cookies.get('Authorization')
 
