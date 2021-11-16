@@ -1,0 +1,3030 @@
+{
+  "program": {
+    "fileInfos": {
+      "./node_modules/typescript/lib/lib.es5.d.ts": {
+        "version": "70ae6416528e68c2ee7b62892200d2ca631759943d4429f8b779b947ff1e124d",
+        "signature": "70ae6416528e68c2ee7b62892200d2ca631759943d4429f8b779b947ff1e124d",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.d.ts": {
+        "version": "dc47c4fa66b9b9890cf076304de2a9c5201e94b740cffdf09f87296d877d71f6",
+        "signature": "dc47c4fa66b9b9890cf076304de2a9c5201e94b740cffdf09f87296d877d71f6",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/typescript/lib/lib.es2016.d.ts": {
+        "version": "7a387c58583dfca701b6c85e0adaf43fb17d590fb16d5b2dc0a2fbd89f35c467",
+        "signature": "7a387c58583dfca701b6c85e0adaf43fb17d590fb16d5b2dc0a2fbd89f35c467",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/typescript/lib/lib.es2017.d.ts": {
+        "version": "8a12173c586e95f4433e0c6dc446bc88346be73ffe9ca6eec7aa63c8f3dca7f9",
+        "signature": "8a12173c586e95f4433e0c6dc446bc88346be73ffe9ca6eec7aa63c8f3dca7f9",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/typescript/lib/lib.es2018.d.ts": {
+        "version": "5f4e733ced4e129482ae2186aae29fde948ab7182844c3a5a51dd346182c7b06",
+        "signature": "5f4e733ced4e129482ae2186aae29fde948ab7182844c3a5a51dd346182c7b06",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/typescript/lib/lib.es2019.d.ts": {
+        "version": "e6b724280c694a9f588847f754198fb96c43d805f065c3a5b28bbc9594541c84",
+        "signature": "e6b724280c694a9f588847f754198fb96c43d805f065c3a5b28bbc9594541c84",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/typescript/lib/lib.es2020.d.ts": {
+        "version": "94b4108552f078722078d7c4a010ca4851063882f6c0c51a1468aa7a39aed4b3",
+        "signature": "94b4108552f078722078d7c4a010ca4851063882f6c0c51a1468aa7a39aed4b3",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/typescript/lib/lib.esnext.d.ts": {
+        "version": "2f8f379dedbdbd96a38a1e445cb3919853a1157a950fd977f85808db8d0f8a58",
+        "signature": "2f8f379dedbdbd96a38a1e445cb3919853a1157a950fd977f85808db8d0f8a58",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/typescript/lib/lib.dom.d.ts": {
+        "version": "9affb0a2ddc57df5b8174c0af96c288d697a262e5bc9ca1f544c999dc64a91e6",
+        "signature": "9affb0a2ddc57df5b8174c0af96c288d697a262e5bc9ca1f544c999dc64a91e6",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.dom.iterable.d.ts": {
+        "version": "fb0c09b697dc42afa84d1587e3c994a2f554d2a45635e4f0618768d16a86b69a",
+        "signature": "fb0c09b697dc42afa84d1587e3c994a2f554d2a45635e4f0618768d16a86b69a",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.scripthost.d.ts": {
+        "version": "097a57355ded99c68e6df1b738990448e0bf170e606707df5a7c0481ff2427cd",
+        "signature": "097a57355ded99c68e6df1b738990448e0bf170e606707df5a7c0481ff2427cd",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.core.d.ts": {
+        "version": "63e0cc12d0f77394094bd19e84464f9840af0071e5b9358ced30511efef1d8d2",
+        "signature": "63e0cc12d0f77394094bd19e84464f9840af0071e5b9358ced30511efef1d8d2",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.collection.d.ts": {
+        "version": "43fb1d932e4966a39a41b464a12a81899d9ae5f2c829063f5571b6b87e6d2f9c",
+        "signature": "43fb1d932e4966a39a41b464a12a81899d9ae5f2c829063f5571b6b87e6d2f9c",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.generator.d.ts": {
+        "version": "cdccba9a388c2ee3fd6ad4018c640a471a6c060e96f1232062223063b0a5ac6a",
+        "signature": "cdccba9a388c2ee3fd6ad4018c640a471a6c060e96f1232062223063b0a5ac6a",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.iterable.d.ts": {
+        "version": "42f5e41e5893da663dbf0394268f54f1da4b43dc0ddd2ea4bf471fe5361d6faf",
+        "signature": "42f5e41e5893da663dbf0394268f54f1da4b43dc0ddd2ea4bf471fe5361d6faf",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.promise.d.ts": {
+        "version": "0b7a905675e6cb4211c128f0a3aa47d414b275180a299a9aad5d3ec298abbfc4",
+        "signature": "0b7a905675e6cb4211c128f0a3aa47d414b275180a299a9aad5d3ec298abbfc4",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.proxy.d.ts": {
+        "version": "dfff68b3c34338f6b307a25d4566de15eed7973b0dc5d69f9fde2bcac1c25315",
+        "signature": "dfff68b3c34338f6b307a25d4566de15eed7973b0dc5d69f9fde2bcac1c25315",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.reflect.d.ts": {
+        "version": "cb609802a8698aa28b9c56331d4b53f590ca3c1c3a255350304ae3d06017779d",
+        "signature": "cb609802a8698aa28b9c56331d4b53f590ca3c1c3a255350304ae3d06017779d",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.symbol.d.ts": {
+        "version": "3013574108c36fd3aaca79764002b3717da09725a36a6fc02eac386593110f93",
+        "signature": "3013574108c36fd3aaca79764002b3717da09725a36a6fc02eac386593110f93",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts": {
+        "version": "4670208dd7da9d6c774ab1b75c1527a810388c7989c4905de6aaea8561cb9dce",
+        "signature": "4670208dd7da9d6c774ab1b75c1527a810388c7989c4905de6aaea8561cb9dce",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2016.array.include.d.ts": {
+        "version": "3be5a1453daa63e031d266bf342f3943603873d890ab8b9ada95e22389389006",
+        "signature": "3be5a1453daa63e031d266bf342f3943603873d890ab8b9ada95e22389389006",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2017.object.d.ts": {
+        "version": "17bb1fc99591b00515502d264fa55dc8370c45c5298f4a5c2083557dccba5a2a",
+        "signature": "17bb1fc99591b00515502d264fa55dc8370c45c5298f4a5c2083557dccba5a2a",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts": {
+        "version": "d0db416bccdb33975548baf09a42ee8c47eace1aac7907351a000f1e568e7232",
+        "signature": "d0db416bccdb33975548baf09a42ee8c47eace1aac7907351a000f1e568e7232",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2017.string.d.ts": {
+        "version": "6a6b173e739a6a99629a8594bfb294cc7329bfb7b227f12e1f7c11bc163b8577",
+        "signature": "6a6b173e739a6a99629a8594bfb294cc7329bfb7b227f12e1f7c11bc163b8577",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2017.intl.d.ts": {
+        "version": "12a310447c5d23c7d0d5ca2af606e3bd08afda69100166730ab92c62999ebb9d",
+        "signature": "12a310447c5d23c7d0d5ca2af606e3bd08afda69100166730ab92c62999ebb9d",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2017.typedarrays.d.ts": {
+        "version": "b0124885ef82641903d232172577f2ceb5d3e60aed4da1153bab4221e1f6dd4e",
+        "signature": "b0124885ef82641903d232172577f2ceb5d3e60aed4da1153bab4221e1f6dd4e",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts": {
+        "version": "0eb85d6c590b0d577919a79e0084fa1744c1beba6fd0d4e951432fa1ede5510a",
+        "signature": "0eb85d6c590b0d577919a79e0084fa1744c1beba6fd0d4e951432fa1ede5510a",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2018.asynciterable.d.ts": {
+        "version": "a40c4d82bf13fcded295ac29f354eb7d40249613c15e07b53f2fc75e45e16359",
+        "signature": "a40c4d82bf13fcded295ac29f354eb7d40249613c15e07b53f2fc75e45e16359",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2018.intl.d.ts": {
+        "version": "df9c8a72ca8b0ed62f5470b41208a0587f0f73f0a7db28e5a1272cf92537518e",
+        "signature": "df9c8a72ca8b0ed62f5470b41208a0587f0f73f0a7db28e5a1272cf92537518e",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2018.promise.d.ts": {
+        "version": "bb2d3fb05a1d2ffbca947cc7cbc95d23e1d053d6595391bd325deb265a18d36c",
+        "signature": "bb2d3fb05a1d2ffbca947cc7cbc95d23e1d053d6595391bd325deb265a18d36c",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2018.regexp.d.ts": {
+        "version": "c80df75850fea5caa2afe43b9949338ce4e2de086f91713e9af1a06f973872b8",
+        "signature": "c80df75850fea5caa2afe43b9949338ce4e2de086f91713e9af1a06f973872b8",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2019.array.d.ts": {
+        "version": "9d57b2b5d15838ed094aa9ff1299eecef40b190722eb619bac4616657a05f951",
+        "signature": "9d57b2b5d15838ed094aa9ff1299eecef40b190722eb619bac4616657a05f951",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2019.object.d.ts": {
+        "version": "6c51b5dd26a2c31dbf37f00cfc32b2aa6a92e19c995aefb5b97a3a64f1ac99de",
+        "signature": "6c51b5dd26a2c31dbf37f00cfc32b2aa6a92e19c995aefb5b97a3a64f1ac99de",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2019.string.d.ts": {
+        "version": "93544ca2f26a48716c1b6c5091842cad63129daac422dfa4bc52460465f22bb1",
+        "signature": "93544ca2f26a48716c1b6c5091842cad63129daac422dfa4bc52460465f22bb1",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2019.symbol.d.ts": {
+        "version": "2ad234885a4240522efccd77de6c7d99eecf9b4de0914adb9a35c0c22433f993",
+        "signature": "2ad234885a4240522efccd77de6c7d99eecf9b4de0914adb9a35c0c22433f993",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2020.bigint.d.ts": {
+        "version": "4f435f794b7853c55e2ae7cff6206025802aa79232d2867544178f2ca8ff5eaa",
+        "signature": "4f435f794b7853c55e2ae7cff6206025802aa79232d2867544178f2ca8ff5eaa",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2020.promise.d.ts": {
+        "version": "7435b75fdf3509622e79622dbe5091cf4b09688410ee2034e4fc17d0c99d0862",
+        "signature": "7435b75fdf3509622e79622dbe5091cf4b09688410ee2034e4fc17d0c99d0862",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2020.string.d.ts": {
+        "version": "faf0221ae0465363c842ce6aa8a0cbda5d9296940a8e26c86e04cc4081eea21e",
+        "signature": "faf0221ae0465363c842ce6aa8a0cbda5d9296940a8e26c86e04cc4081eea21e",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts": {
+        "version": "936d7d2e8851af9ccfa5333b15e877a824417d352b1d7fd06388639dc69ef80a",
+        "signature": "936d7d2e8851af9ccfa5333b15e877a824417d352b1d7fd06388639dc69ef80a",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.esnext.intl.d.ts": {
+        "version": "89bf2b7a601b73ea4311eda9c41f86a58994fec1bee3b87c4a14d68d9adcdcbd",
+        "signature": "89bf2b7a601b73ea4311eda9c41f86a58994fec1bee3b87c4a14d68d9adcdcbd",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.esnext.string.d.ts": {
+        "version": "fb4416144c1bf0323ccbc9afb0ab289c07312214e8820ad17d709498c865a3fe",
+        "signature": "fb4416144c1bf0323ccbc9afb0ab289c07312214e8820ad17d709498c865a3fe",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/typescript/lib/lib.esnext.promise.d.ts": {
+        "version": "cd6efb9467a8b6338ece2e2855e37765700f2cd061ca54b01b33878cf5c7677e",
+        "signature": "cd6efb9467a8b6338ece2e2855e37765700f2cd061ca54b01b33878cf5c7677e",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/tslib/tslib.d.ts": {
+        "version": "4576b4e61049f5ffd7c9e935cf88832e089265bdb15ffc35077310042cbbbeea",
+        "signature": "4576b4e61049f5ffd7c9e935cf88832e089265bdb15ffc35077310042cbbbeea",
+        "affectsGlobalScope": false
+      },
+      "./src/constants.ts": {
+        "version": "8ba95a7d1b78d6c419c2fdb7645c0b2fa162445a0960dbdd445ca4c96d617d34",
+        "signature": "3c65f42eb0cf2d5b435aa495e12fa811d6bddfc5d5803bc7ca7e57c41e5374d5",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@vue/shared/dist/shared.d.ts": {
+        "version": "5a4379f902f6ed97139be8e1522baebbb652ded6593a053f6e14969c7e1a8064",
+        "signature": "5a4379f902f6ed97139be8e1522baebbb652ded6593a053f6e14969c7e1a8064",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@babel/types/lib/index.d.ts": {
+        "version": "368d98ad7e5cb65c247aa95c97e86b3812b4d91a74bafa6b0d4420d1ce91557c",
+        "signature": "368d98ad7e5cb65c247aa95c97e86b3812b4d91a74bafa6b0d4420d1ce91557c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@babel/parser/typings/babel-parser.d.ts": {
+        "version": "6da9e714516d081abaa435946d77c8d74dba888530412dc71601e83d2c8a512e",
+        "signature": "6da9e714516d081abaa435946d77c8d74dba888530412dc71601e83d2c8a512e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/source-map/source-map.d.ts": {
+        "version": "2887592574fcdfd087647c539dcb0fbe5af2521270dad4a37f9d17c16190d579",
+        "signature": "2887592574fcdfd087647c539dcb0fbe5af2521270dad4a37f9d17c16190d579",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@vue/compiler-core/dist/compiler-core.d.ts": {
+        "version": "343deb67cee28fcd795d6a35934dba395a657b354cd16b2aeca1433e2e518609",
+        "signature": "343deb67cee28fcd795d6a35934dba395a657b354cd16b2aeca1433e2e518609",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@vue/compiler-dom/dist/compiler-dom.d.ts": {
+        "version": "ec615941bf9e09cdfdcf87234001e2ef7120407b44d887ef81a6043ee3f6ca1f",
+        "signature": "ec615941bf9e09cdfdcf87234001e2ef7120407b44d887ef81a6043ee3f6ca1f",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@vue/reactivity/dist/reactivity.d.ts": {
+        "version": "66d63e41ae7e2f8ebb3be857a39ce200b448adf2af1cd2b42069b045fbe6667c",
+        "signature": "66d63e41ae7e2f8ebb3be857a39ce200b448adf2af1cd2b42069b045fbe6667c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@vue/runtime-core/dist/runtime-core.d.ts": {
+        "version": "851bff1021c4e314cc117baf3842a541b045a5cb59e9d0fded2ae2832f57e6de",
+        "signature": "851bff1021c4e314cc117baf3842a541b045a5cb59e9d0fded2ae2832f57e6de",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/csstype/index.d.ts": {
+        "version": "62ff558f4dcb21d44516f34fad264cf380c12c652d84e11e8668ac81d47d5249",
+        "signature": "62ff558f4dcb21d44516f34fad264cf380c12c652d84e11e8668ac81d47d5249",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts": {
+        "version": "a00d2d7cf0a1e5eecd1e36ceb7e0722b251dc2d052b8ce296ee358d90f2f4e49",
+        "signature": "a00d2d7cf0a1e5eecd1e36ceb7e0722b251dc2d052b8ce296ee358d90f2f4e49",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/vue/dist/vue.d.ts": {
+        "version": "db6ca7a40a1c61e910f5ff9b9f06f785601c4b352ecbf98b5c1823b9bde2a2f2",
+        "signature": "db6ca7a40a1c61e910f5ff9b9f06f785601c4b352ecbf98b5c1823b9bde2a2f2",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/axios/index.d.ts": {
+        "version": "0d892f035dbee4534f0ba096407136877595ca592f67ec9bb8a5c912b9c967e8",
+        "signature": "0d892f035dbee4534f0ba096407136877595ca592f67ec9bb8a5c912b9c967e8",
+        "affectsGlobalScope": false
+      },
+      "./src/models/user.model.ts": {
+        "version": "c7e1956c80b7fdf7eead0e2ac83c04596a303576d390010ec172bc3cc0091420",
+        "signature": "5c46a8a666d6a84363e8bf34c28c28d823bf7b0dee7bc4fba0755e276d2c9f10",
+        "affectsGlobalScope": false
+      },
+      "./src/scott.vue.ts": {
+        "version": "f63d709f81b21c7719f5c7b6a050f964de76ab3ac82f9597984609282d80f34c",
+        "signature": "0f0ba2734515297295e42380cf1127197836215b8b1cbab3a196e9f25f3d1065",
+        "affectsGlobalScope": false
+      },
+      "./src/components/base/cz.footer.vue.ts": {
+        "version": "708f7e195690d27c36c71c9b07db81c178a17a01e1350256290aa56d0f92ed1e",
+        "signature": "f16b70cf4c414885135b54645924f709b6851daba98396aa037bc09cf5c40d60",
+        "affectsGlobalScope": false
+      },
+      "./src/components/home/cz.home.vue.ts": {
+        "version": "27bfd5c66e93e320fe3029bd7d5554a8452cefb94fe5bfa035b516f77f1c7037",
+        "signature": "f9f9a17925fac13dddebabd150c8abb9a43c3eb42ee2633afe73b0162ef0f0c3",
+        "affectsGlobalScope": false
+      },
+      "./src/components/about/cz.about.vue.ts": {
+        "version": "80419f35a5d61f1c6924d61d4871add478aa1d6b01fe34555d492189ff457fec",
+        "signature": "6a181d61417f1ff5881118cebdcc981a077030ac5c000609bf98a0ae01a6ee79",
+        "affectsGlobalScope": false
+      },
+      "./src/components/submissions/types.ts": {
+        "version": "dc67e15c5a716e1352ec54a68f3e78fd5273f2470dcaafaedf7cacdf7884438d",
+        "signature": "f123ff3be8d820a1dba4812d21e673e9b2b746b76fd90d929c89773697cbd338",
+        "affectsGlobalScope": false
+      },
+      "./src/components/submit/constants.ts": {
+        "version": "79478e560e877a91c24f78c8c3cd0cd8fb3274e8616a2007361ad71e7c537a74",
+        "signature": "c6f5a9bd4e32e8143fcd7d088f51c0c0d06bd57e65fe8918bc5f22a751daa453",
+        "affectsGlobalScope": false
+      },
+      "./src/models/repository.model.ts": {
+        "version": "c7faa3d8d16a0e44556d2a86fc6e6ef254b90d2e51f614055dc3a952c1977d5d",
+        "signature": "1d78701f680175bfc6ee79dbae5cc3583137f79ab3fce6d55ad42871e2248f28",
+        "affectsGlobalScope": false
+      },
+      "./src/models/zenodo.model.ts": {
+        "version": "0781ca89c41d216662c4f9bca41edcd44fb38ae83f4b8ccb5d136159a7e6ee36",
+        "signature": "ab8e4bce3baecc8517febd431f3da31cfe0b3253aca83faf6aeec328b4443c08",
+        "affectsGlobalScope": false
+      },
+      "./src/components/submit/cz.submit.vue.ts": {
+        "version": "6762124264d2b551590d298a030a537e411a709532cd3d45ff30dcd3665e9594",
+        "signature": "4fade67bbb148fa64186cd438b37785ce2730d8877bf4c41aa4625c2e2e93275",
+        "affectsGlobalScope": false
+      },
+      "./src/components/resources/cz.resources.vue.ts": {
+        "version": "d516780fe4f19bd661e3ab8fac4362d75d3ab915a29b2a5cbe7b4c7484d1d680",
+        "signature": "f1b3e1234a272133002af35f244fb32dc587c58ccb56615cfa6bce3494c52b5d",
+        "affectsGlobalScope": false
+      },
+      "./src/components/contact/cz.contact.vue.ts": {
+        "version": "77f6d8daa15963845424692e440a003ce3ebd0b29c7025b97a1c3964a5e2f4c7",
+        "signature": "6c55bf89706921d09a968b8002f29d92b786e2faec8841b60e28b511bc88f4c1",
+        "affectsGlobalScope": false
+      },
+      "./src/components/recommendations/cz.recommendations.vue.ts": {
+        "version": "119298edba68935fd6c81a2c9f2a4f158a097de5771e14b2de93d9f9cb0f08b6",
+        "signature": "f0852dd4decf4321fa19b8a59e517633a6a414a1daec6cfae28a54ab27df0c65",
+        "affectsGlobalScope": false
+      },
+      "./src/models/submission.model.ts": {
+        "version": "54d78d6c5471d165f24f60b94047729dd6170ed7f4a0cbf9722aa64c1292f444",
+        "signature": "b6f17a84260400cc2e9e376718fc3c6125195e8990529a5c8509901cdc9a5134",
+        "affectsGlobalScope": false
+      },
+      "./src/components/submissions/cz.submissions.vue.ts": {
+        "version": "9183af5eca45380dc19c23bdaff3035727bfb8e99047f036543eb49840ba709e",
+        "signature": "91c63231a5647bbb6580be6e4d50f51a2b22d5fda24afdc503cc294d24b145eb",
+        "affectsGlobalScope": false
+      },
+      "./src/components/account/cz.login.vue.ts": {
+        "version": "234604e67af6be89728d36ae3da31520a484b3b60297f39d57eede8fb299bd53",
+        "signature": "a893e1208e5e5a825aaff3777ab560b19db14571983cb5ab54f0a09941af34de",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/path.d.ts": {
+        "version": "b15b6ca36982238abc3195001375e1d1d406e7eca02657665d4d622daf04192e",
+        "signature": "b15b6ca36982238abc3195001375e1d1d406e7eca02657665d4d622daf04192e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/models/jsonschema4.d.ts": {
+        "version": "40cde9262c94a0cc80669d3a29e557d6970448147dcd89ff14432bf8646d4a13",
+        "signature": "40cde9262c94a0cc80669d3a29e557d6970448147dcd89ff14432bf8646d4a13",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/models/jsonschema7.d.ts": {
+        "version": "bc397d1bb2e85d0d3d795a4bd6e2540fa88fb66082af2dbf2ca8b20d52915e05",
+        "signature": "bc397d1bb2e85d0d3d795a4bd6e2540fa88fb66082af2dbf2ca8b20d52915e05",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts": {
+        "version": "743ed0cefb68cab5fbba17f8cba5d3fa95426067a295c2740c91f7400d5b18de",
+        "signature": "743ed0cefb68cab5fbba17f8cba5d3fa95426067a295c2740c91f7400d5b18de",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/models/uischema.d.ts": {
+        "version": "63900e5b8581196385e31080e4150985ba2fdeb80412ae205ff8153381222284",
+        "signature": "63900e5b8581196385e31080e4150985ba2fdeb80412ae205ff8153381222284",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/ajv/lib/ajv.d.ts": {
+        "version": "67f129ed8b372622ff36b8b10e39d03e09e363a5ff7821105f92f085b8d1ccba",
+        "signature": "67f129ed8b372622ff36b8b10e39d03e09e363a5ff7821105f92f085b8d1ccba",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/runtime.d.ts": {
+        "version": "a322009d611c040b31106ab4f1c3d902f8da04fc1e5ddf766b14a8bd94f7b285",
+        "signature": "a322009d611c040b31106ab4f1c3d902f8da04fc1e5ddf766b14a8bd94f7b285",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/label.d.ts": {
+        "version": "65415b479ccd2784eda40a47efc22ae6fb59617493a9aebc9b920cb326207a42",
+        "signature": "65415b479ccd2784eda40a47efc22ae6fb59617493a9aebc9b920cb326207a42",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/resolvers.d.ts": {
+        "version": "cb539635e6b3e0e0e7b1bd7b193d30077abbd74497ed61cd4689a4ba06b8eedf",
+        "signature": "cb539635e6b3e0e0e7b1bd7b193d30077abbd74497ed61cd4689a4ba06b8eedf",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/testers/index.d.ts": {
+        "version": "5d10d4d06f18c60420cf1e8f46de3138e8e30633e38bf299b68f7780d5997a8b",
+        "signature": "5d10d4d06f18c60420cf1e8f46de3138e8e30633e38bf299b68f7780d5997a8b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/json-schema/index.d.ts": {
+        "version": "3a1e165b22a1cb8df82c44c9a09502fd2b33f160cd277de2cd3a055d8e5c6b27",
+        "signature": "3a1e165b22a1cb8df82c44c9a09502fd2b33f160cd277de2cd3a055d8e5c6b27",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/json-schema-ref-parser/lib/index.d.ts": {
+        "version": "9b34d3f86e576f024e32b8a7e46f6394f8a9fa0ce64ea7a8a282e44b610bac1b",
+        "signature": "9b34d3f86e576f024e32b8a7e46f6394f8a9fa0ce64ea7a8a282e44b610bac1b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/type.d.ts": {
+        "version": "2c281cbb7c90e255075a19efb8e0aa22d73bd9eb5fcf3750c8320f4477739640",
+        "signature": "2c281cbb7c90e255075a19efb8e0aa22d73bd9eb5fcf3750c8320f4477739640",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts": {
+        "version": "5eed617f061bfc8ebd5b2f73ee54b5d1bed6ec1dbec939c683b02cc8a292df3c",
+        "signature": "5eed617f061bfc8ebd5b2f73ee54b5d1bed6ec1dbec939c683b02cc8a292df3c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/reducers/core.d.ts": {
+        "version": "887b77fa1eed96e990f3a43bc99c54a95eef15af7f64184ba5b4b41c3e210931",
+        "signature": "887b77fa1eed96e990f3a43bc99c54a95eef15af7f64184ba5b4b41c3e210931",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/actions/index.d.ts": {
+        "version": "8d7b9f95e532aae7edbc5b258f5f4bd2d2db80edf4398fa6ce9dd33f2976d8dc",
+        "signature": "8d7b9f95e532aae7edbc5b258f5f4bd2d2db80edf4398fa6ce9dd33f2976d8dc",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts": {
+        "version": "f92e1577f8d2c7a76cb3979d9a58b0a827e8973631d835f54a5ae5686bbf6024",
+        "signature": "f92e1577f8d2c7a76cb3979d9a58b0a827e8973631d835f54a5ae5686bbf6024",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts": {
+        "version": "ec6db9f0134e3ca32a3a1afe6a8af7fb8116d70b2477515bd7a21016508a890a",
+        "signature": "ec6db9f0134e3ca32a3a1afe6a8af7fb8116d70b2477515bd7a21016508a890a",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/reducers/i18n.d.ts": {
+        "version": "007285c0d016bbf76ed026615a31c5291ad90f0a7ed0c9c9299a362ffeaa1a15",
+        "signature": "007285c0d016bbf76ed026615a31c5291ad90f0a7ed0c9c9299a362ffeaa1a15",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/store.d.ts": {
+        "version": "00ba88a028d89869c6c9962d4d68a3221db79761f7f3b44667a0fa1c1f1b7e8c",
+        "signature": "00ba88a028d89869c6c9962d4d68a3221db79761f7f3b44667a0fa1c1f1b7e8c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/renderer.d.ts": {
+        "version": "f099773be2208bf3fc5a89548723cb0dfa434a63d378a0e9416e52e1e32c095c",
+        "signature": "f099773be2208bf3fc5a89548723cb0dfa434a63d378a0e9416e52e1e32c095c",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/cell.d.ts": {
+        "version": "cf806695d230235f00649d87492c03491ec2290a84286184568f32ffa393c057",
+        "signature": "cf806695d230235f00649d87492c03491ec2290a84286184568f32ffa393c057",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/formatted.d.ts": {
+        "version": "e69440573457abc510fba15f1d7300920b8959524ecd190efe11e50ddf567a4d",
+        "signature": "e69440573457abc510fba15f1d7300920b8959524ecd190efe11e50ddf567a4d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/ids.d.ts": {
+        "version": "71229bc2260f6e8c11cb0c6feba7e797a34368f965c3b296f11ac8802b2c7034",
+        "signature": "71229bc2260f6e8c11cb0c6feba7e797a34368f965c3b296f11ac8802b2c7034",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/validator.d.ts": {
+        "version": "9a80c23f5b4d73622c67b266da9ec33406ab0573eba52cda8bf2f4af3c59e054",
+        "signature": "9a80c23f5b4d73622c67b266da9ec33406ab0573eba52cda8bf2f4af3c59e054",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/combinators.d.ts": {
+        "version": "acbe304f0894200031987b9132754c24c90626163a2c1441adde875e7eb88a5e",
+        "signature": "acbe304f0894200031987b9132754c24c90626163a2c1441adde875e7eb88a5e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/uischema.d.ts": {
+        "version": "ad1e245ca7323553cb9f50d39d3c1792e0c3715bf645b1655a5f186c1c47ddd5",
+        "signature": "ad1e245ca7323553cb9f50d39d3c1792e0c3715bf645b1655a5f186c1c47ddd5",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/array.d.ts": {
+        "version": "b7826dc1be6a2e5b65214d7ffeb525a438ca0350f52b2107c561b839d4a900a0",
+        "signature": "b7826dc1be6a2e5b65214d7ffeb525a438ca0350f52b2107c561b839d4a900a0",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/schema.d.ts": {
+        "version": "611056e5b9a6da48484a6f33bd23b67513ae9695db525b90b3d45bd53e203b6d",
+        "signature": "611056e5b9a6da48484a6f33bd23b67513ae9695db525b90b3d45bd53e203b6d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/util/index.d.ts": {
+        "version": "06b6d00c293d349d227a0f893efa98b559703f59218c73cb9ab68bd7c65db72e",
+        "signature": "06b6d00c293d349d227a0f893efa98b559703f59218c73cb9ab68bd7c65db72e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/reducers/default-data.d.ts": {
+        "version": "63b0b9fa2e3a6233d9574aca400a0b1f3f413f40ad0f96ec4ab5b5ca61a94b5e",
+        "signature": "63b0b9fa2e3a6233d9574aca400a0b1f3f413f40ad0f96ec4ab5b5ca61a94b5e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/reducers/config.d.ts": {
+        "version": "29cf409f309b5b2df9bd955c6b73f141bc1b8ff2b903766119cb69a9c6a000eb",
+        "signature": "29cf409f309b5b2df9bd955c6b73f141bc1b8ff2b903766119cb69a9c6a000eb",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/reducers/index.d.ts": {
+        "version": "df502382c158eb492addefeefaeb771f521dca46ab6688acdc5e240969fe703f",
+        "signature": "df502382c158eb492addefeefaeb771f521dca46ab6688acdc5e240969fe703f",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/generators/schema.d.ts": {
+        "version": "aba91a8bce97cb4164e17473bdd3556d8cd54ca5e8f2a19af954bca62f5b0a4b",
+        "signature": "aba91a8bce97cb4164e17473bdd3556d8cd54ca5e8f2a19af954bca62f5b0a4b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/generators/uischema.d.ts": {
+        "version": "0f9a919fe7c19bf310f693b4ce69fee50d07ca892333bdf7c7bfa6ff6ba0c71a",
+        "signature": "0f9a919fe7c19bf310f693b4ce69fee50d07ca892333bdf7c7bfa6ff6ba0c71a",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/generators/index.d.ts": {
+        "version": "c4cdb8e27e7be130228de654a3a121e882a1d20a1c27f79ed38eaea2e82e5b39",
+        "signature": "c4cdb8e27e7be130228de654a3a121e882a1d20a1c27f79ed38eaea2e82e5b39",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@jsonforms/core/lib/index.d.ts": {
+        "version": "0978211cfa88c6f87c0fba9c5391884a40b7390836a3763077e23c72f343d952",
+        "signature": "0978211cfa88c6f87c0fba9c5391884a40b7390836a3763077e23c72f343d952",
+        "affectsGlobalScope": false
+      },
+      "./src/renderers/cz.input.renderer.vue.ts": {
+        "version": "d4443ab19b234dad780251e71fe541c44d987522c1c9273221fb5a7a36ae840c",
+        "signature": "823244685648317ddbde4b033f46cc3e2418ca1e8d7041e03b6c54df7c4794a9",
+        "affectsGlobalScope": false
+      },
+      "./src/renderers/cz.list-input-object.renderer.vue.ts": {
+        "version": "2c832fc0d1ea09e721f1a3db94686e7f5888e47b77283034615aae1b8c3cc07a",
+        "signature": "d4f1c985b50082d69223097b7abd0454fd8bdd0523d61b2c12304876fb3433b7",
+        "affectsGlobalScope": false
+      },
+      "./src/renderers/cz.list-input-primitive.renderer.vue.ts": {
+        "version": "16fdbabba054d0e4de5a25b62c1d17103843c48ed39fdb133f52c60a70004727",
+        "signature": "372e9b6e7d6a438151ff094a4c99adb0a14a425980a43c0e20299575bd664996",
+        "affectsGlobalScope": false
+      },
+      "./src/renderers/cz.select.renderer.vue.ts": {
+        "version": "061af5346c4bc8ef406f30e8df076afdd904bd37f7b2e1c27c53f85a8e7616e2",
+        "signature": "d7729bc04a1a0e306e037da5a9d545ba96368aaad731fdb1e6a33c9ee51ccd7a",
+        "affectsGlobalScope": false
+      },
+      "./src/renderers/renderer.vue.ts": {
+        "version": "a2f0df74953b4307549e6cb19dfc9265e0ee5e5bba5c7be47a05b93bd72a450b",
+        "signature": "6fc62de2298e1d09a72c4f72275c7d4ebdc1a12f1cd5ed24728f84140ca7cc76",
+        "affectsGlobalScope": false
+      },
+      "./src/components/new-submission/cz.new-submission.vue.ts": {
+        "version": "2251b114b70ab6c7ed7717aa45310744dc695e5835ead3e376e6fef3541e8107",
+        "signature": "a076b09a4755768f1e57cebc46fbf438e79447ee4dd857df3d899e75b616d028",
+        "affectsGlobalScope": false
+      },
+      "./src/components/authorize/cz.authorize.vue.ts": {
+        "version": "49bae79c9f052696b7c2d9ac452a48a14e144740c13088bcae354f82963ee3d1",
+        "signature": "8fdb05a3372251b3045a339c1c087069c23840cbe7f30a8ba3b204605503600e",
+        "affectsGlobalScope": false
+      },
+      "./src/routes.ts": {
+        "version": "160f64743b46fdc1bb3a1b38daf238bd530eb00e726d27be3760347d903ace79",
+        "signature": "8a45a983c3d99b9387c594b7583a0313b405db77efbcdbdb9df3e227c3f275cd",
+        "affectsGlobalScope": false
+      },
+      "./src/router.ts": {
+        "version": "5eb7ffdb4bff290c29faf16166eb62796ade51d7e5e94ea7574811872475601e",
+        "signature": "a9dd3b06ea52d1511618e00c07d277dac1c8b03315fa5996062e005b532d9ba0",
+        "affectsGlobalScope": false
+      },
+      "./src/components/base/cs.header-nav.vue.ts": {
+        "version": "e5ec6a099511b7d797b471e09de3b1a21dd0850b21437420bbd192eefae9f1ab",
+        "signature": "0648b437fc0503498d8ae16e939bc933b781c5d78e9de9a13136c93013bc1998",
+        "affectsGlobalScope": false
+      },
+      "./src/app.vue.ts": {
+        "version": "7a30834a779d9bd066c7d4633003a67537c3da0c519b3d218841b3377b825beb",
+        "signature": "24f74de5408e61063db3028b30f9783f5e5096dca83017083d82ac7244502c98",
+        "affectsGlobalScope": false
+      },
+      "./src/models/orm.ts": {
+        "version": "fe4c7cd9b514b645fa86efd3425467cb1e8231930b3c8b939eb9f0a02adf4cfc",
+        "signature": "7bf1bb6200e37df8f29278103454339d3a4472826ee4e8c98a515e06caee42fa",
+        "affectsGlobalScope": false
+      },
+      "./src/models/persistedpaths.ts": {
+        "version": "6e5009cb7de9eb407c0de5059592f495dc73ebb25602e3f00658ccc613f2f8f7",
+        "signature": "7276dfc06f14419b7887ca610c4f22d3cbfb62751758d43cc6ac17f46b390e40",
+        "affectsGlobalScope": false
+      },
+      "./src/main.ts": {
+        "version": "a862d5030547a73190a4b3dba17d44fff8bfea77462f81cabadac8e129f99ba7",
+        "signature": "469b9b1725ebd8479b5723eb945b52803189e708fc96b4ec3b12ad8f48051f20",
+        "affectsGlobalScope": false
+      },
+      "./src/shims-vue.d.ts": {
+        "version": "f799aed326b2aad54902a39be18c271e9511aa1231eb2e224e2c3b709045d30c",
+        "signature": "f799aed326b2aad54902a39be18c271e9511aa1231eb2e224e2c3b709045d30c",
+        "affectsGlobalScope": false
+      },
+      "./src/components/submissions/constants.ts": {
+        "version": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "signature": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "affectsGlobalScope": false
+      },
+      "./src/components/submissions/submissions.mock.ts": {
+        "version": "7beb0b8192bd59523bf42526032cb66d1ef27f7bc30120ec5d573d46fd69f545",
+        "signature": "f69e4649a9d00e0bba1c7d701dcabcd531f6b6a0395314e3fc990a07259e81c0",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/webpack-env/index.d.ts": {
+        "version": "5b3e6ce357a7a1a07c858432a3d2002750058725874db09a03a0a9e899d861f5",
+        "signature": "5b3e6ce357a7a1a07c858432a3d2002750058725874db09a03a0a9e899d861f5",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/@types/node/globals.d.ts": {
+        "version": "e9a43c3ee6fb8376bb9a4d318a660412c6abcfe5161c106e801e5431b41b7476",
+        "signature": "e9a43c3ee6fb8376bb9a4d318a660412c6abcfe5161c106e801e5431b41b7476",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/@types/node/async_hooks.d.ts": {
+        "version": "7698983d080f951eaf53ff81e5c7bd61abc02e4a1a21266f1bd79ea85c0dc641",
+        "signature": "7698983d080f951eaf53ff81e5c7bd61abc02e4a1a21266f1bd79ea85c0dc641",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/buffer.d.ts": {
+        "version": "5726b5ce952dc5beaeb08d5f64236632501568a54a390363d2339ba1dc5393b1",
+        "signature": "5726b5ce952dc5beaeb08d5f64236632501568a54a390363d2339ba1dc5393b1",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/child_process.d.ts": {
+        "version": "89a3409a743c2a408d02bd68255a61d8416225b76c2c66d8e2e74dad3e00bc5d",
+        "signature": "89a3409a743c2a408d02bd68255a61d8416225b76c2c66d8e2e74dad3e00bc5d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/cluster.d.ts": {
+        "version": "714637d594e1a38a075091fe464ca91c6abc0b154784b4287f6883200e28ccef",
+        "signature": "714637d594e1a38a075091fe464ca91c6abc0b154784b4287f6883200e28ccef",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/console.d.ts": {
+        "version": "23edba5f47d3409810c563fe8034ae2c59e718e1ef8570f4152ccdde1915a096",
+        "signature": "23edba5f47d3409810c563fe8034ae2c59e718e1ef8570f4152ccdde1915a096",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/@types/node/constants.d.ts": {
+        "version": "0e9c55f894ca2d9cf63b5b0d43a8cec1772dd560233fd16275bc7a485eb82f83",
+        "signature": "0e9c55f894ca2d9cf63b5b0d43a8cec1772dd560233fd16275bc7a485eb82f83",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/crypto.d.ts": {
+        "version": "64813a6beff756b9e3f3c06d1b648d55e7c90af2b55c64d13a69d6c7f573643d",
+        "signature": "64813a6beff756b9e3f3c06d1b648d55e7c90af2b55c64d13a69d6c7f573643d",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/dgram.d.ts": {
+        "version": "5f0a09de75bd965c21dc6d73671ba88830272f9ed62897bb0aa9754b369b1eed",
+        "signature": "5f0a09de75bd965c21dc6d73671ba88830272f9ed62897bb0aa9754b369b1eed",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/dns.d.ts": {
+        "version": "2b34e7fcba9e1f24e7f54ba5c8be5a8895b0b8b444ccf6548e04acdee0899317",
+        "signature": "2b34e7fcba9e1f24e7f54ba5c8be5a8895b0b8b444ccf6548e04acdee0899317",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/domain.d.ts": {
+        "version": "06d2be99c3dd2ff52114d02ee443ba486ab482423df1941d3c97d6a92e924d70",
+        "signature": "06d2be99c3dd2ff52114d02ee443ba486ab482423df1941d3c97d6a92e924d70",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/@types/node/events.d.ts": {
+        "version": "bfd4f140c07091b5e8a963c89e6fa3f44b6cfcbc11471b465cf63e2d020ad0eb",
+        "signature": "bfd4f140c07091b5e8a963c89e6fa3f44b6cfcbc11471b465cf63e2d020ad0eb",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/@types/node/fs.d.ts": {
+        "version": "a106a0bea088b70879ac88ff606dc253c0cc474ea05ad3a282b8bfb1091ae576",
+        "signature": "a106a0bea088b70879ac88ff606dc253c0cc474ea05ad3a282b8bfb1091ae576",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/fs/promises.d.ts": {
+        "version": "c98ce957db9eebd75f53edda3f6893e05ab2d2283b5667b18e31bcdb6427ed10",
+        "signature": "c98ce957db9eebd75f53edda3f6893e05ab2d2283b5667b18e31bcdb6427ed10",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/http.d.ts": {
+        "version": "1f08bd8305d4a789a68f71ab622156dfff993aa51a2aa58b9ccf166cc6f9fcf7",
+        "signature": "1f08bd8305d4a789a68f71ab622156dfff993aa51a2aa58b9ccf166cc6f9fcf7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/http2.d.ts": {
+        "version": "4c260129d649d69f0608cd123e7016e61364b553a5ca2de9b66b0398594959cf",
+        "signature": "4c260129d649d69f0608cd123e7016e61364b553a5ca2de9b66b0398594959cf",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/https.d.ts": {
+        "version": "1978992206803f5761e99e893d93b25abc818c5fe619674fdf2ae02b29f641ba",
+        "signature": "1978992206803f5761e99e893d93b25abc818c5fe619674fdf2ae02b29f641ba",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/inspector.d.ts": {
+        "version": "05fbe81f09fc455a2c343d2458d2b3c600c90b92b22926be765ee79326be9466",
+        "signature": "05fbe81f09fc455a2c343d2458d2b3c600c90b92b22926be765ee79326be9466",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/module.d.ts": {
+        "version": "8e7d6dae9e19bbe47600dcfd4418db85b30ae7351474ea0aad5e628f9845d340",
+        "signature": "8e7d6dae9e19bbe47600dcfd4418db85b30ae7351474ea0aad5e628f9845d340",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/net.d.ts": {
+        "version": "f20ea392f7f27feb7a90e5a24319a4e365b07bf83c39a547711fe7ff9df68657",
+        "signature": "f20ea392f7f27feb7a90e5a24319a4e365b07bf83c39a547711fe7ff9df68657",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/os.d.ts": {
+        "version": "32542c4660ecda892a333a533feedba31738ee538ef6a78eb73af647137bc3fc",
+        "signature": "32542c4660ecda892a333a533feedba31738ee538ef6a78eb73af647137bc3fc",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/path.d.ts": {
+        "version": "0ecacea5047d1a7d350e7049dbd22f26435be5e8736a81a56afec5b3264db1ca",
+        "signature": "0ecacea5047d1a7d350e7049dbd22f26435be5e8736a81a56afec5b3264db1ca",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/perf_hooks.d.ts": {
+        "version": "ffcb4ebde21f83370ed402583888b28651d2eb7f05bfec9482eb46d82adedd7f",
+        "signature": "ffcb4ebde21f83370ed402583888b28651d2eb7f05bfec9482eb46d82adedd7f",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/process.d.ts": {
+        "version": "06c004006016a51c4d1855527a523562c329dc44c473931c65f10373281f730e",
+        "signature": "06c004006016a51c4d1855527a523562c329dc44c473931c65f10373281f730e",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/@types/node/punycode.d.ts": {
+        "version": "a7b43c69f9602d198825e403ee34e5d64f83c48b391b2897e8c0e6f72bca35f8",
+        "signature": "a7b43c69f9602d198825e403ee34e5d64f83c48b391b2897e8c0e6f72bca35f8",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/querystring.d.ts": {
+        "version": "f4a3fc4efc6944e7b7bd4ccfa45e0df68b6359808e6cf9d061f04fd964a7b2d3",
+        "signature": "f4a3fc4efc6944e7b7bd4ccfa45e0df68b6359808e6cf9d061f04fd964a7b2d3",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/readline.d.ts": {
+        "version": "73cad675aead7a2c05cf934e7e700c61d84b2037ac1d576c3f751199b25331da",
+        "signature": "73cad675aead7a2c05cf934e7e700c61d84b2037ac1d576c3f751199b25331da",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/repl.d.ts": {
+        "version": "8c3137ba3583ec18484429ec1c8eff89efdc42730542f157b38b102fdccc0c71",
+        "signature": "8c3137ba3583ec18484429ec1c8eff89efdc42730542f157b38b102fdccc0c71",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/stream.d.ts": {
+        "version": "d84300d886b45a198c346158e4ff7ae361cc7bc1c3deab44afb3db7de56b5d25",
+        "signature": "d84300d886b45a198c346158e4ff7ae361cc7bc1c3deab44afb3db7de56b5d25",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/string_decoder.d.ts": {
+        "version": "94ca7beec4e274d32362b54e0133152f7b4be9487db7b005070c03880b6363aa",
+        "signature": "94ca7beec4e274d32362b54e0133152f7b4be9487db7b005070c03880b6363aa",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/timers.d.ts": {
+        "version": "2d713cbcbd5bcc38d91546eaeea7bb1c8686dc4a2995a28556d957b1b9de11d9",
+        "signature": "2d713cbcbd5bcc38d91546eaeea7bb1c8686dc4a2995a28556d957b1b9de11d9",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/tls.d.ts": {
+        "version": "bbf21f210782db4193359010a4710786add43e3b50aa42fc0d371f45b4e4d8d3",
+        "signature": "bbf21f210782db4193359010a4710786add43e3b50aa42fc0d371f45b4e4d8d3",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/trace_events.d.ts": {
+        "version": "0b7733d83619ac4e3963e2a9f7c75dc1e9af6850cb2354c9554977813092c10a",
+        "signature": "0b7733d83619ac4e3963e2a9f7c75dc1e9af6850cb2354c9554977813092c10a",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/tty.d.ts": {
+        "version": "3ce933f0c3955f67f67eb7d6b5c83c2c54a18472c1d6f2bb651e51dd40c84837",
+        "signature": "3ce933f0c3955f67f67eb7d6b5c83c2c54a18472c1d6f2bb651e51dd40c84837",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/url.d.ts": {
+        "version": "631e96db896d645f7132c488ad34a16d71fd2be9f44696f8c98289ee1c8cbfa9",
+        "signature": "631e96db896d645f7132c488ad34a16d71fd2be9f44696f8c98289ee1c8cbfa9",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/util.d.ts": {
+        "version": "2c77230d381cba81eb6f87cda2fbfff6c0427c6546c2e2590110effff37c58f7",
+        "signature": "2c77230d381cba81eb6f87cda2fbfff6c0427c6546c2e2590110effff37c58f7",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/v8.d.ts": {
+        "version": "da86ee9a2f09a4583db1d5e37815894967e1f694ad9f3c25e84e0e4d40411e14",
+        "signature": "da86ee9a2f09a4583db1d5e37815894967e1f694ad9f3c25e84e0e4d40411e14",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/vm.d.ts": {
+        "version": "66679e8ffbf1fddef1796c60757e54e6e6551dd9823f75ef2f80176473bdaaff",
+        "signature": "66679e8ffbf1fddef1796c60757e54e6e6551dd9823f75ef2f80176473bdaaff",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/worker_threads.d.ts": {
+        "version": "ddc086b1adac44e2fccf55422da1e90fa970e659d77f99712422a421564b4877",
+        "signature": "ddc086b1adac44e2fccf55422da1e90fa970e659d77f99712422a421564b4877",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/zlib.d.ts": {
+        "version": "515ef1d99036ff0dafa5bf738e02222edea94e0d97a0aa0ff277ac5e96b57977",
+        "signature": "515ef1d99036ff0dafa5bf738e02222edea94e0d97a0aa0ff277ac5e96b57977",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/ts3.4/base.d.ts": {
+        "version": "d44028ae0127eb3e9fcfa5f55a8b81d64775ce15aca1020fe25c511bbb055834",
+        "signature": "d44028ae0127eb3e9fcfa5f55a8b81d64775ce15aca1020fe25c511bbb055834",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/globals.global.d.ts": {
+        "version": "2708349d5a11a5c2e5f3a0765259ebe7ee00cdcc8161cb9990cb4910328442a1",
+        "signature": "2708349d5a11a5c2e5f3a0765259ebe7ee00cdcc8161cb9990cb4910328442a1",
+        "affectsGlobalScope": true
+      },
+      "./node_modules/@types/node/wasi.d.ts": {
+        "version": "780058f4a804c8bdcdd2f60e7af64b2bc57d149c1586ee3db732a84d659a50bf",
+        "signature": "780058f4a804c8bdcdd2f60e7af64b2bc57d149c1586ee3db732a84d659a50bf",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/ts3.6/base.d.ts": {
+        "version": "ad1ae5ae98eceb9af99061e83e867b9897d267aebc8f3b938c9424deabadf4bb",
+        "signature": "ad1ae5ae98eceb9af99061e83e867b9897d267aebc8f3b938c9424deabadf4bb",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/assert.d.ts": {
+        "version": "19d580a3b42ad5caeaee266ae958260e23f2df0549ee201c886c8bd7a4f01d4e",
+        "signature": "19d580a3b42ad5caeaee266ae958260e23f2df0549ee201c886c8bd7a4f01d4e",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/base.d.ts": {
+        "version": "e61a21e9418f279bc480394a94d1581b2dee73747adcbdef999b6737e34d721b",
+        "signature": "e61a21e9418f279bc480394a94d1581b2dee73747adcbdef999b6737e34d721b",
+        "affectsGlobalScope": false
+      },
+      "./node_modules/@types/node/index.d.ts": {
+        "version": "9c4c395e927045b324877acdc4bfb95f128f36bc9f073266a2f0342495075a4f",
+        "signature": "9c4c395e927045b324877acdc4bfb95f128f36bc9f073266a2f0342495075a4f",
+        "affectsGlobalScope": false
+      }
+    },
+    "options": {
+      "incremental": true,
+      "resolveJsonModule": true,
+      "target": 4,
+      "module": 99,
+      "strict": true,
+      "importHelpers": true,
+      "moduleResolution": 2,
+      "experimentalDecorators": true,
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "sourceMap": false,
+      "noImplicitAny": false,
+      "skipLibCheck": true,
+      "baseUrl": "./",
+      "types": [
+        "webpack-env",
+        "node"
+      ],
+      "paths": {
+        "@/*": [
+          "src/*"
+        ]
+      },
+      "lib": [
+        "lib.esnext.d.ts",
+        "lib.dom.d.ts",
+        "lib.dom.iterable.d.ts",
+        "lib.scripthost.d.ts"
+      ],
+      "inlineSourceMap": false,
+      "declarationMap": false,
+      "configFilePath": "./tsconfig.json"
+    },
+    "referencedMap": {
+      "./node_modules/@babel/parser/typings/babel-parser.d.ts": [
+        "./node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/actions/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/core.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts",
+        "./node_modules/json-schema-ref-parser/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/generators/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/generators/schema.d.ts",
+        "./node_modules/@jsonforms/core/lib/generators/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/generators/schema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema4.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/generators/uischema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/generators/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema4.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema7.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/store.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema4.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema7.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/models/uischema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/config.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/core.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts",
+        "./node_modules/json-schema-ref-parser/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/default-data.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/i18n.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/config.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/core.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/default-data.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/i18n.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+        "./node_modules/@jsonforms/core/lib/store.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts",
+        "./node_modules/json-schema-ref-parser/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/store.d.ts": [
+        "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/core.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/i18n.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/testers/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/cell.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+        "./node_modules/@jsonforms/core/lib/store.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/renderer.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/combinators.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/array.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/cell.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/combinators.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/formatted.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/ids.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/label.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/path.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/renderer.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/resolvers.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/runtime.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/schema.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/validator.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/label.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/path.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/renderer.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+        "./node_modules/@jsonforms/core/lib/store.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/index.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/resolvers.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/runtime.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/uischema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/validator.d.ts": [
+        "./node_modules/ajv/lib/ajv.d.ts"
+      ],
+      "./node_modules/@types/node/assert.d.ts": [
+        "./node_modules/@types/node/assert.d.ts"
+      ],
+      "./node_modules/@types/node/async_hooks.d.ts": [
+        "./node_modules/@types/node/async_hooks.d.ts"
+      ],
+      "./node_modules/@types/node/base.d.ts": [
+        "./node_modules/@types/node/assert.d.ts",
+        "./node_modules/@types/node/ts3.6/base.d.ts"
+      ],
+      "./node_modules/@types/node/buffer.d.ts": [
+        "./node_modules/@types/node/buffer.d.ts"
+      ],
+      "./node_modules/@types/node/child_process.d.ts": [
+        "./node_modules/@types/node/child_process.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/stream.d.ts"
+      ],
+      "./node_modules/@types/node/cluster.d.ts": [
+        "./node_modules/@types/node/child_process.d.ts",
+        "./node_modules/@types/node/cluster.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/net.d.ts"
+      ],
+      "./node_modules/@types/node/console.d.ts": [
+        "./node_modules/@types/node/util.d.ts"
+      ],
+      "./node_modules/@types/node/constants.d.ts": [
+        "./node_modules/@types/node/constants.d.ts",
+        "./node_modules/@types/node/crypto.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/os.d.ts"
+      ],
+      "./node_modules/@types/node/crypto.d.ts": [
+        "./node_modules/@types/node/crypto.d.ts",
+        "./node_modules/@types/node/stream.d.ts"
+      ],
+      "./node_modules/@types/node/dgram.d.ts": [
+        "./node_modules/@types/node/dgram.d.ts",
+        "./node_modules/@types/node/dns.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/net.d.ts"
+      ],
+      "./node_modules/@types/node/dns.d.ts": [
+        "./node_modules/@types/node/dns.d.ts"
+      ],
+      "./node_modules/@types/node/domain.d.ts": [
+        "./node_modules/@types/node/domain.d.ts",
+        "./node_modules/@types/node/events.d.ts"
+      ],
+      "./node_modules/@types/node/events.d.ts": [
+        "./node_modules/@types/node/events.d.ts"
+      ],
+      "./node_modules/@types/node/fs.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/fs/promises.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/fs/promises.d.ts": [
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/fs/promises.d.ts"
+      ],
+      "./node_modules/@types/node/http.d.ts": [
+        "./node_modules/@types/node/http.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/http2.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/http.d.ts",
+        "./node_modules/@types/node/http2.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/tls.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/https.d.ts": [
+        "./node_modules/@types/node/http.d.ts",
+        "./node_modules/@types/node/https.d.ts",
+        "./node_modules/@types/node/tls.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/index.d.ts": [
+        "./node_modules/@types/node/base.d.ts"
+      ],
+      "./node_modules/@types/node/inspector.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/inspector.d.ts"
+      ],
+      "./node_modules/@types/node/module.d.ts": [
+        "./node_modules/@types/node/module.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/net.d.ts": [
+        "./node_modules/@types/node/dns.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/stream.d.ts"
+      ],
+      "./node_modules/@types/node/os.d.ts": [
+        "./node_modules/@types/node/os.d.ts"
+      ],
+      "./node_modules/@types/node/path.d.ts": [
+        "./node_modules/@types/node/path.d.ts"
+      ],
+      "./node_modules/@types/node/perf_hooks.d.ts": [
+        "./node_modules/@types/node/async_hooks.d.ts",
+        "./node_modules/@types/node/perf_hooks.d.ts"
+      ],
+      "./node_modules/@types/node/process.d.ts": [
+        "./node_modules/@types/node/tty.d.ts"
+      ],
+      "./node_modules/@types/node/punycode.d.ts": [
+        "./node_modules/@types/node/punycode.d.ts"
+      ],
+      "./node_modules/@types/node/querystring.d.ts": [
+        "./node_modules/@types/node/querystring.d.ts"
+      ],
+      "./node_modules/@types/node/readline.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/readline.d.ts"
+      ],
+      "./node_modules/@types/node/repl.d.ts": [
+        "./node_modules/@types/node/readline.d.ts",
+        "./node_modules/@types/node/repl.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/vm.d.ts"
+      ],
+      "./node_modules/@types/node/stream.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/stream.d.ts"
+      ],
+      "./node_modules/@types/node/string_decoder.d.ts": [
+        "./node_modules/@types/node/string_decoder.d.ts"
+      ],
+      "./node_modules/@types/node/timers.d.ts": [
+        "./node_modules/@types/node/timers.d.ts"
+      ],
+      "./node_modules/@types/node/tls.d.ts": [
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/tls.d.ts"
+      ],
+      "./node_modules/@types/node/trace_events.d.ts": [
+        "./node_modules/@types/node/trace_events.d.ts"
+      ],
+      "./node_modules/@types/node/ts3.4/base.d.ts": [
+        "./node_modules/@types/node/async_hooks.d.ts",
+        "./node_modules/@types/node/buffer.d.ts",
+        "./node_modules/@types/node/child_process.d.ts",
+        "./node_modules/@types/node/cluster.d.ts",
+        "./node_modules/@types/node/console.d.ts",
+        "./node_modules/@types/node/constants.d.ts",
+        "./node_modules/@types/node/crypto.d.ts",
+        "./node_modules/@types/node/dgram.d.ts",
+        "./node_modules/@types/node/dns.d.ts",
+        "./node_modules/@types/node/domain.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/fs/promises.d.ts",
+        "./node_modules/@types/node/globals.d.ts",
+        "./node_modules/@types/node/http.d.ts",
+        "./node_modules/@types/node/http2.d.ts",
+        "./node_modules/@types/node/https.d.ts",
+        "./node_modules/@types/node/inspector.d.ts",
+        "./node_modules/@types/node/module.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/os.d.ts",
+        "./node_modules/@types/node/path.d.ts",
+        "./node_modules/@types/node/perf_hooks.d.ts",
+        "./node_modules/@types/node/process.d.ts",
+        "./node_modules/@types/node/punycode.d.ts",
+        "./node_modules/@types/node/querystring.d.ts",
+        "./node_modules/@types/node/readline.d.ts",
+        "./node_modules/@types/node/repl.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/string_decoder.d.ts",
+        "./node_modules/@types/node/timers.d.ts",
+        "./node_modules/@types/node/tls.d.ts",
+        "./node_modules/@types/node/trace_events.d.ts",
+        "./node_modules/@types/node/tty.d.ts",
+        "./node_modules/@types/node/url.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/v8.d.ts",
+        "./node_modules/@types/node/vm.d.ts",
+        "./node_modules/@types/node/worker_threads.d.ts",
+        "./node_modules/@types/node/zlib.d.ts"
+      ],
+      "./node_modules/@types/node/ts3.6/base.d.ts": [
+        "./node_modules/@types/node/globals.global.d.ts",
+        "./node_modules/@types/node/ts3.4/base.d.ts",
+        "./node_modules/@types/node/wasi.d.ts"
+      ],
+      "./node_modules/@types/node/tty.d.ts": [
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/tty.d.ts"
+      ],
+      "./node_modules/@types/node/url.d.ts": [
+        "./node_modules/@types/node/querystring.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/util.d.ts": [
+        "./node_modules/@types/node/util.d.ts"
+      ],
+      "./node_modules/@types/node/v8.d.ts": [
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/v8.d.ts"
+      ],
+      "./node_modules/@types/node/vm.d.ts": [
+        "./node_modules/@types/node/vm.d.ts"
+      ],
+      "./node_modules/@types/node/wasi.d.ts": [
+        "./node_modules/@types/node/wasi.d.ts"
+      ],
+      "./node_modules/@types/node/worker_threads.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs/promises.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/url.d.ts",
+        "./node_modules/@types/node/vm.d.ts",
+        "./node_modules/@types/node/worker_threads.d.ts"
+      ],
+      "./node_modules/@types/node/zlib.d.ts": [
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/zlib.d.ts"
+      ],
+      "./node_modules/@vue/compiler-core/dist/compiler-core.d.ts": [
+        "./node_modules/@babel/parser/typings/babel-parser.d.ts",
+        "./node_modules/@vue/shared/dist/shared.d.ts",
+        "./node_modules/source-map/source-map.d.ts"
+      ],
+      "./node_modules/@vue/compiler-dom/dist/compiler-dom.d.ts": [
+        "./node_modules/@vue/compiler-core/dist/compiler-core.d.ts"
+      ],
+      "./node_modules/@vue/runtime-core/dist/runtime-core.d.ts": [
+        "./node_modules/@vue/reactivity/dist/reactivity.d.ts",
+        "./node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts",
+        "./node_modules/@vue/shared/dist/shared.d.ts"
+      ],
+      "./node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts": [
+        "./node_modules/@vue/reactivity/dist/reactivity.d.ts",
+        "./node_modules/@vue/runtime-core/dist/runtime-core.d.ts",
+        "./node_modules/csstype/index.d.ts"
+      ],
+      "./node_modules/json-schema-ref-parser/lib/index.d.ts": [
+        "./node_modules/@types/json-schema/index.d.ts"
+      ],
+      "./node_modules/vue/dist/vue.d.ts": [
+        "./node_modules/@vue/compiler-dom/dist/compiler-dom.d.ts",
+        "./node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts"
+      ],
+      "./src/app.vue.ts": [
+        "./src/components/base/cs.header-nav.vue.ts",
+        "./src/components/base/cz.footer.vue.ts",
+        "./src/models/user.model.ts",
+        "./src/models/zenodo.model.ts",
+        "./src/router.ts"
+      ],
+      "./src/components/account/cz.login.vue.ts": [
+        "./src/models/user.model.ts"
+      ],
+      "./src/components/authorize/cz.authorize.vue.ts": [
+        "./src/models/user.model.ts",
+        "./src/models/zenodo.model.ts"
+      ],
+      "./src/components/base/cs.header-nav.vue.ts": [
+        "./src/models/user.model.ts"
+      ],
+      "./src/components/home/cz.home.vue.ts": [
+        "./src/models/user.model.ts"
+      ],
+      "./src/components/new-submission/cz.new-submission.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./src/models/zenodo.model.ts",
+        "./src/renderers/renderer.vue.ts"
+      ],
+      "./src/components/submissions/cz.submissions.vue.ts": [
+        "./src/components/submissions/types.ts",
+        "./src/models/submission.model.ts"
+      ],
+      "./src/components/submissions/submissions.mock.ts": [
+        "./src/components/submissions/types.ts"
+      ],
+      "./src/components/submit/constants.ts": [
+        "./src/components/submissions/types.ts"
+      ],
+      "./src/components/submit/cz.submit.vue.ts": [
+        "./src/components/submissions/types.ts",
+        "./src/components/submit/constants.ts",
+        "./src/models/zenodo.model.ts"
+      ],
+      "./src/main.ts": [
+        "./node_modules/vue/dist/vue.d.ts",
+        "./src/app.vue.ts",
+        "./src/constants.ts",
+        "./src/models/orm.ts",
+        "./src/models/persistedpaths.ts",
+        "./src/router.ts"
+      ],
+      "./src/models/orm.ts": [
+        "./src/models/repository.model.ts",
+        "./src/models/submission.model.ts",
+        "./src/models/user.model.ts",
+        "./src/models/zenodo.model.ts"
+      ],
+      "./src/models/persistedpaths.ts": [
+        "./src/models/user.model.ts",
+        "./src/models/zenodo.model.ts"
+      ],
+      "./src/models/repository.model.ts": [
+        "./src/components/submissions/types.ts",
+        "./src/models/zenodo.model.ts"
+      ],
+      "./src/models/submission.model.ts": [
+        "./node_modules/axios/index.d.ts",
+        "./src/components/submissions/types.ts"
+      ],
+      "./src/models/user.model.ts": [
+        "./node_modules/axios/index.d.ts",
+        "./src/constants.ts",
+        "./src/router.ts"
+      ],
+      "./src/models/zenodo.model.ts": [
+        "./node_modules/axios/index.d.ts",
+        "./src/components/submissions/types.ts",
+        "./src/components/submit/constants.ts",
+        "./src/models/repository.model.ts",
+        "./src/router.ts"
+      ],
+      "./src/renderers/cz.input.renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/renderers/cz.list-input-object.renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/renderers/cz.list-input-primitive.renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/renderers/cz.select.renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/renderers/renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./src/renderers/cz.input.renderer.vue.ts",
+        "./src/renderers/cz.list-input-object.renderer.vue.ts",
+        "./src/renderers/cz.list-input-primitive.renderer.vue.ts",
+        "./src/renderers/cz.select.renderer.vue.ts"
+      ],
+      "./src/router.ts": [
+        "./src/models/user.model.ts",
+        "./src/routes.ts"
+      ],
+      "./src/routes.ts": [
+        "./src/components/about/cz.about.vue.ts",
+        "./src/components/account/cz.login.vue.ts",
+        "./src/components/authorize/cz.authorize.vue.ts",
+        "./src/components/base/cz.footer.vue.ts",
+        "./src/components/contact/cz.contact.vue.ts",
+        "./src/components/home/cz.home.vue.ts",
+        "./src/components/new-submission/cz.new-submission.vue.ts",
+        "./src/components/recommendations/cz.recommendations.vue.ts",
+        "./src/components/resources/cz.resources.vue.ts",
+        "./src/components/submissions/cz.submissions.vue.ts",
+        "./src/components/submit/cz.submit.vue.ts",
+        "./src/models/zenodo.model.ts",
+        "./src/scott.vue.ts"
+      ],
+      "./src/scott.vue.ts": [
+        "./node_modules/axios/index.d.ts",
+        "./src/models/user.model.ts"
+      ],
+      "./src/shims-vue.d.ts": [
+        "./node_modules/vue/dist/vue.d.ts"
+      ]
+    },
+    "exportedModulesMap": {
+      "./node_modules/@babel/parser/typings/babel-parser.d.ts": [
+        "./node_modules/@babel/types/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/actions/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/core.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts",
+        "./node_modules/json-schema-ref-parser/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/generators/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/generators/schema.d.ts",
+        "./node_modules/@jsonforms/core/lib/generators/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/generators/schema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema4.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/generators/uischema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/generators/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema4.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema7.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/store.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema4.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema7.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/models/uischema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/config.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/core.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts",
+        "./node_modules/json-schema-ref-parser/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/default-data.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/i18n.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/config.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/core.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/default-data.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/i18n.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+        "./node_modules/@jsonforms/core/lib/store.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts",
+        "./node_modules/json-schema-ref-parser/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/store.d.ts": [
+        "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/core.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/i18n.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/testers/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/cell.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+        "./node_modules/@jsonforms/core/lib/store.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/renderer.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/combinators.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/index.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/array.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/cell.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/combinators.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/formatted.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/ids.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/label.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/path.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/renderer.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/resolvers.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/runtime.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/schema.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/type.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/validator.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/label.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/path.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/renderer.d.ts": [
+        "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts",
+        "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+        "./node_modules/@jsonforms/core/lib/store.d.ts",
+        "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+        "./node_modules/@jsonforms/core/lib/util/index.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/resolvers.d.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/runtime.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+        "./node_modules/ajv/lib/ajv.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/uischema.d.ts": [
+        "./node_modules/@jsonforms/core/lib/models/uischema.d.ts"
+      ],
+      "./node_modules/@jsonforms/core/lib/util/validator.d.ts": [
+        "./node_modules/ajv/lib/ajv.d.ts"
+      ],
+      "./node_modules/@types/node/assert.d.ts": [
+        "./node_modules/@types/node/assert.d.ts"
+      ],
+      "./node_modules/@types/node/async_hooks.d.ts": [
+        "./node_modules/@types/node/async_hooks.d.ts"
+      ],
+      "./node_modules/@types/node/base.d.ts": [
+        "./node_modules/@types/node/assert.d.ts",
+        "./node_modules/@types/node/ts3.6/base.d.ts"
+      ],
+      "./node_modules/@types/node/buffer.d.ts": [
+        "./node_modules/@types/node/buffer.d.ts"
+      ],
+      "./node_modules/@types/node/child_process.d.ts": [
+        "./node_modules/@types/node/child_process.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/stream.d.ts"
+      ],
+      "./node_modules/@types/node/cluster.d.ts": [
+        "./node_modules/@types/node/child_process.d.ts",
+        "./node_modules/@types/node/cluster.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/net.d.ts"
+      ],
+      "./node_modules/@types/node/console.d.ts": [
+        "./node_modules/@types/node/util.d.ts"
+      ],
+      "./node_modules/@types/node/constants.d.ts": [
+        "./node_modules/@types/node/constants.d.ts",
+        "./node_modules/@types/node/crypto.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/os.d.ts"
+      ],
+      "./node_modules/@types/node/crypto.d.ts": [
+        "./node_modules/@types/node/crypto.d.ts",
+        "./node_modules/@types/node/stream.d.ts"
+      ],
+      "./node_modules/@types/node/dgram.d.ts": [
+        "./node_modules/@types/node/dgram.d.ts",
+        "./node_modules/@types/node/dns.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/net.d.ts"
+      ],
+      "./node_modules/@types/node/dns.d.ts": [
+        "./node_modules/@types/node/dns.d.ts"
+      ],
+      "./node_modules/@types/node/domain.d.ts": [
+        "./node_modules/@types/node/domain.d.ts",
+        "./node_modules/@types/node/events.d.ts"
+      ],
+      "./node_modules/@types/node/events.d.ts": [
+        "./node_modules/@types/node/events.d.ts"
+      ],
+      "./node_modules/@types/node/fs.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/fs/promises.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/fs/promises.d.ts": [
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/fs/promises.d.ts"
+      ],
+      "./node_modules/@types/node/http.d.ts": [
+        "./node_modules/@types/node/http.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/http2.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/http.d.ts",
+        "./node_modules/@types/node/http2.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/tls.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/https.d.ts": [
+        "./node_modules/@types/node/http.d.ts",
+        "./node_modules/@types/node/https.d.ts",
+        "./node_modules/@types/node/tls.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/index.d.ts": [
+        "./node_modules/@types/node/base.d.ts"
+      ],
+      "./node_modules/@types/node/inspector.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/inspector.d.ts"
+      ],
+      "./node_modules/@types/node/module.d.ts": [
+        "./node_modules/@types/node/module.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/net.d.ts": [
+        "./node_modules/@types/node/dns.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/stream.d.ts"
+      ],
+      "./node_modules/@types/node/os.d.ts": [
+        "./node_modules/@types/node/os.d.ts"
+      ],
+      "./node_modules/@types/node/path.d.ts": [
+        "./node_modules/@types/node/path.d.ts"
+      ],
+      "./node_modules/@types/node/perf_hooks.d.ts": [
+        "./node_modules/@types/node/async_hooks.d.ts",
+        "./node_modules/@types/node/perf_hooks.d.ts"
+      ],
+      "./node_modules/@types/node/process.d.ts": [
+        "./node_modules/@types/node/tty.d.ts"
+      ],
+      "./node_modules/@types/node/punycode.d.ts": [
+        "./node_modules/@types/node/punycode.d.ts"
+      ],
+      "./node_modules/@types/node/querystring.d.ts": [
+        "./node_modules/@types/node/querystring.d.ts"
+      ],
+      "./node_modules/@types/node/readline.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/readline.d.ts"
+      ],
+      "./node_modules/@types/node/repl.d.ts": [
+        "./node_modules/@types/node/readline.d.ts",
+        "./node_modules/@types/node/repl.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/vm.d.ts"
+      ],
+      "./node_modules/@types/node/stream.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/stream.d.ts"
+      ],
+      "./node_modules/@types/node/string_decoder.d.ts": [
+        "./node_modules/@types/node/string_decoder.d.ts"
+      ],
+      "./node_modules/@types/node/timers.d.ts": [
+        "./node_modules/@types/node/timers.d.ts"
+      ],
+      "./node_modules/@types/node/tls.d.ts": [
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/tls.d.ts"
+      ],
+      "./node_modules/@types/node/trace_events.d.ts": [
+        "./node_modules/@types/node/trace_events.d.ts"
+      ],
+      "./node_modules/@types/node/ts3.4/base.d.ts": [
+        "./node_modules/@types/node/async_hooks.d.ts",
+        "./node_modules/@types/node/buffer.d.ts",
+        "./node_modules/@types/node/child_process.d.ts",
+        "./node_modules/@types/node/cluster.d.ts",
+        "./node_modules/@types/node/console.d.ts",
+        "./node_modules/@types/node/constants.d.ts",
+        "./node_modules/@types/node/crypto.d.ts",
+        "./node_modules/@types/node/dgram.d.ts",
+        "./node_modules/@types/node/dns.d.ts",
+        "./node_modules/@types/node/domain.d.ts",
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs.d.ts",
+        "./node_modules/@types/node/fs/promises.d.ts",
+        "./node_modules/@types/node/globals.d.ts",
+        "./node_modules/@types/node/http.d.ts",
+        "./node_modules/@types/node/http2.d.ts",
+        "./node_modules/@types/node/https.d.ts",
+        "./node_modules/@types/node/inspector.d.ts",
+        "./node_modules/@types/node/module.d.ts",
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/os.d.ts",
+        "./node_modules/@types/node/path.d.ts",
+        "./node_modules/@types/node/perf_hooks.d.ts",
+        "./node_modules/@types/node/process.d.ts",
+        "./node_modules/@types/node/punycode.d.ts",
+        "./node_modules/@types/node/querystring.d.ts",
+        "./node_modules/@types/node/readline.d.ts",
+        "./node_modules/@types/node/repl.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/string_decoder.d.ts",
+        "./node_modules/@types/node/timers.d.ts",
+        "./node_modules/@types/node/tls.d.ts",
+        "./node_modules/@types/node/trace_events.d.ts",
+        "./node_modules/@types/node/tty.d.ts",
+        "./node_modules/@types/node/url.d.ts",
+        "./node_modules/@types/node/util.d.ts",
+        "./node_modules/@types/node/v8.d.ts",
+        "./node_modules/@types/node/vm.d.ts",
+        "./node_modules/@types/node/worker_threads.d.ts",
+        "./node_modules/@types/node/zlib.d.ts"
+      ],
+      "./node_modules/@types/node/ts3.6/base.d.ts": [
+        "./node_modules/@types/node/globals.global.d.ts",
+        "./node_modules/@types/node/ts3.4/base.d.ts",
+        "./node_modules/@types/node/wasi.d.ts"
+      ],
+      "./node_modules/@types/node/tty.d.ts": [
+        "./node_modules/@types/node/net.d.ts",
+        "./node_modules/@types/node/tty.d.ts"
+      ],
+      "./node_modules/@types/node/url.d.ts": [
+        "./node_modules/@types/node/querystring.d.ts",
+        "./node_modules/@types/node/url.d.ts"
+      ],
+      "./node_modules/@types/node/util.d.ts": [
+        "./node_modules/@types/node/util.d.ts"
+      ],
+      "./node_modules/@types/node/v8.d.ts": [
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/v8.d.ts"
+      ],
+      "./node_modules/@types/node/vm.d.ts": [
+        "./node_modules/@types/node/vm.d.ts"
+      ],
+      "./node_modules/@types/node/wasi.d.ts": [
+        "./node_modules/@types/node/wasi.d.ts"
+      ],
+      "./node_modules/@types/node/worker_threads.d.ts": [
+        "./node_modules/@types/node/events.d.ts",
+        "./node_modules/@types/node/fs/promises.d.ts",
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/url.d.ts",
+        "./node_modules/@types/node/vm.d.ts",
+        "./node_modules/@types/node/worker_threads.d.ts"
+      ],
+      "./node_modules/@types/node/zlib.d.ts": [
+        "./node_modules/@types/node/stream.d.ts",
+        "./node_modules/@types/node/zlib.d.ts"
+      ],
+      "./node_modules/@vue/compiler-core/dist/compiler-core.d.ts": [
+        "./node_modules/@babel/parser/typings/babel-parser.d.ts",
+        "./node_modules/@vue/shared/dist/shared.d.ts",
+        "./node_modules/source-map/source-map.d.ts"
+      ],
+      "./node_modules/@vue/compiler-dom/dist/compiler-dom.d.ts": [
+        "./node_modules/@vue/compiler-core/dist/compiler-core.d.ts"
+      ],
+      "./node_modules/@vue/runtime-core/dist/runtime-core.d.ts": [
+        "./node_modules/@vue/reactivity/dist/reactivity.d.ts",
+        "./node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts",
+        "./node_modules/@vue/shared/dist/shared.d.ts"
+      ],
+      "./node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts": [
+        "./node_modules/@vue/reactivity/dist/reactivity.d.ts",
+        "./node_modules/@vue/runtime-core/dist/runtime-core.d.ts",
+        "./node_modules/csstype/index.d.ts"
+      ],
+      "./node_modules/json-schema-ref-parser/lib/index.d.ts": [
+        "./node_modules/@types/json-schema/index.d.ts"
+      ],
+      "./node_modules/vue/dist/vue.d.ts": [
+        "./node_modules/@vue/compiler-dom/dist/compiler-dom.d.ts",
+        "./node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts"
+      ],
+      "./src/components/new-submission/cz.new-submission.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/components/submissions/cz.submissions.vue.ts": [
+        "./src/components/submissions/types.ts"
+      ],
+      "./src/components/submissions/submissions.mock.ts": [
+        "./src/components/submissions/types.ts"
+      ],
+      "./src/components/submit/constants.ts": [
+        "./src/components/submissions/types.ts"
+      ],
+      "./src/components/submit/cz.submit.vue.ts": [
+        "./src/components/submissions/types.ts"
+      ],
+      "./src/models/repository.model.ts": [
+        "./src/components/submissions/types.ts",
+        "./src/models/zenodo.model.ts"
+      ],
+      "./src/models/submission.model.ts": [
+        "./src/components/submissions/types.ts"
+      ],
+      "./src/models/zenodo.model.ts": [
+        "./src/components/submissions/types.ts",
+        "./src/models/repository.model.ts"
+      ],
+      "./src/renderers/cz.input.renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/renderers/cz.list-input-object.renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/renderers/cz.list-input-primitive.renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/renderers/cz.select.renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/renderers/renderer.vue.ts": [
+        "./node_modules/@jsonforms/core/lib/index.d.ts"
+      ],
+      "./src/shims-vue.d.ts": [
+        "./node_modules/vue/dist/vue.d.ts"
+      ]
+    },
+    "semanticDiagnosticsPerFile": [
+      "./node_modules/@babel/parser/typings/babel-parser.d.ts",
+      "./node_modules/@babel/types/lib/index.d.ts",
+      "./node_modules/@jsonforms/core/lib/actions/index.d.ts",
+      "./node_modules/@jsonforms/core/lib/generators/index.d.ts",
+      "./node_modules/@jsonforms/core/lib/generators/schema.d.ts",
+      "./node_modules/@jsonforms/core/lib/generators/uischema.d.ts",
+      "./node_modules/@jsonforms/core/lib/index.d.ts",
+      "./node_modules/@jsonforms/core/lib/models/jsonschema.d.ts",
+      "./node_modules/@jsonforms/core/lib/models/jsonschema4.d.ts",
+      "./node_modules/@jsonforms/core/lib/models/jsonschema7.d.ts",
+      "./node_modules/@jsonforms/core/lib/models/uischema.d.ts",
+      "./node_modules/@jsonforms/core/lib/reducers/cells.d.ts",
+      "./node_modules/@jsonforms/core/lib/reducers/config.d.ts",
+      "./node_modules/@jsonforms/core/lib/reducers/core.d.ts",
+      "./node_modules/@jsonforms/core/lib/reducers/default-data.d.ts",
+      "./node_modules/@jsonforms/core/lib/reducers/i18n.d.ts",
+      "./node_modules/@jsonforms/core/lib/reducers/index.d.ts",
+      "./node_modules/@jsonforms/core/lib/reducers/renderers.d.ts",
+      "./node_modules/@jsonforms/core/lib/reducers/uischemas.d.ts",
+      "./node_modules/@jsonforms/core/lib/store.d.ts",
+      "./node_modules/@jsonforms/core/lib/testers/index.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/array.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/cell.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/combinators.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/formatted.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/ids.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/index.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/label.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/path.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/renderer.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/resolvers.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/runtime.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/schema.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/type.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/uischema.d.ts",
+      "./node_modules/@jsonforms/core/lib/util/validator.d.ts",
+      "./node_modules/@types/json-schema/index.d.ts",
+      "./node_modules/@types/node/assert.d.ts",
+      "./node_modules/@types/node/async_hooks.d.ts",
+      "./node_modules/@types/node/base.d.ts",
+      "./node_modules/@types/node/buffer.d.ts",
+      "./node_modules/@types/node/child_process.d.ts",
+      "./node_modules/@types/node/cluster.d.ts",
+      "./node_modules/@types/node/console.d.ts",
+      "./node_modules/@types/node/constants.d.ts",
+      "./node_modules/@types/node/crypto.d.ts",
+      "./node_modules/@types/node/dgram.d.ts",
+      "./node_modules/@types/node/dns.d.ts",
+      "./node_modules/@types/node/domain.d.ts",
+      "./node_modules/@types/node/events.d.ts",
+      "./node_modules/@types/node/fs.d.ts",
+      "./node_modules/@types/node/fs/promises.d.ts",
+      "./node_modules/@types/node/globals.d.ts",
+      "./node_modules/@types/node/globals.global.d.ts",
+      "./node_modules/@types/node/http.d.ts",
+      "./node_modules/@types/node/http2.d.ts",
+      "./node_modules/@types/node/https.d.ts",
+      "./node_modules/@types/node/index.d.ts",
+      "./node_modules/@types/node/inspector.d.ts",
+      "./node_modules/@types/node/module.d.ts",
+      "./node_modules/@types/node/net.d.ts",
+      "./node_modules/@types/node/os.d.ts",
+      "./node_modules/@types/node/path.d.ts",
+      "./node_modules/@types/node/perf_hooks.d.ts",
+      "./node_modules/@types/node/process.d.ts",
+      "./node_modules/@types/node/punycode.d.ts",
+      "./node_modules/@types/node/querystring.d.ts",
+      "./node_modules/@types/node/readline.d.ts",
+      "./node_modules/@types/node/repl.d.ts",
+      "./node_modules/@types/node/stream.d.ts",
+      "./node_modules/@types/node/string_decoder.d.ts",
+      "./node_modules/@types/node/timers.d.ts",
+      "./node_modules/@types/node/tls.d.ts",
+      "./node_modules/@types/node/trace_events.d.ts",
+      "./node_modules/@types/node/ts3.4/base.d.ts",
+      "./node_modules/@types/node/ts3.6/base.d.ts",
+      "./node_modules/@types/node/tty.d.ts",
+      "./node_modules/@types/node/url.d.ts",
+      "./node_modules/@types/node/util.d.ts",
+      "./node_modules/@types/node/v8.d.ts",
+      "./node_modules/@types/node/vm.d.ts",
+      "./node_modules/@types/node/wasi.d.ts",
+      "./node_modules/@types/node/worker_threads.d.ts",
+      "./node_modules/@types/node/zlib.d.ts",
+      "./node_modules/@types/webpack-env/index.d.ts",
+      "./node_modules/@vue/compiler-core/dist/compiler-core.d.ts",
+      "./node_modules/@vue/compiler-dom/dist/compiler-dom.d.ts",
+      "./node_modules/@vue/reactivity/dist/reactivity.d.ts",
+      "./node_modules/@vue/runtime-core/dist/runtime-core.d.ts",
+      "./node_modules/@vue/runtime-dom/dist/runtime-dom.d.ts",
+      "./node_modules/@vue/shared/dist/shared.d.ts",
+      "./node_modules/ajv/lib/ajv.d.ts",
+      "./node_modules/axios/index.d.ts",
+      "./node_modules/csstype/index.d.ts",
+      "./node_modules/json-schema-ref-parser/lib/index.d.ts",
+      "./node_modules/source-map/source-map.d.ts",
+      "./node_modules/tslib/tslib.d.ts",
+      "./node_modules/typescript/lib/lib.dom.d.ts",
+      "./node_modules/typescript/lib/lib.dom.iterable.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.collection.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.core.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.generator.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.iterable.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.promise.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.proxy.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.reflect.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.symbol.d.ts",
+      "./node_modules/typescript/lib/lib.es2015.symbol.wellknown.d.ts",
+      "./node_modules/typescript/lib/lib.es2016.array.include.d.ts",
+      "./node_modules/typescript/lib/lib.es2016.d.ts",
+      "./node_modules/typescript/lib/lib.es2017.d.ts",
+      "./node_modules/typescript/lib/lib.es2017.intl.d.ts",
+      "./node_modules/typescript/lib/lib.es2017.object.d.ts",
+      "./node_modules/typescript/lib/lib.es2017.sharedmemory.d.ts",
+      "./node_modules/typescript/lib/lib.es2017.string.d.ts",
+      "./node_modules/typescript/lib/lib.es2017.typedarrays.d.ts",
+      "./node_modules/typescript/lib/lib.es2018.asyncgenerator.d.ts",
+      "./node_modules/typescript/lib/lib.es2018.asynciterable.d.ts",
+      "./node_modules/typescript/lib/lib.es2018.d.ts",
+      "./node_modules/typescript/lib/lib.es2018.intl.d.ts",
+      "./node_modules/typescript/lib/lib.es2018.promise.d.ts",
+      "./node_modules/typescript/lib/lib.es2018.regexp.d.ts",
+      "./node_modules/typescript/lib/lib.es2019.array.d.ts",
+      "./node_modules/typescript/lib/lib.es2019.d.ts",
+      "./node_modules/typescript/lib/lib.es2019.object.d.ts",
+      "./node_modules/typescript/lib/lib.es2019.string.d.ts",
+      "./node_modules/typescript/lib/lib.es2019.symbol.d.ts",
+      "./node_modules/typescript/lib/lib.es2020.bigint.d.ts",
+      "./node_modules/typescript/lib/lib.es2020.d.ts",
+      "./node_modules/typescript/lib/lib.es2020.promise.d.ts",
+      "./node_modules/typescript/lib/lib.es2020.string.d.ts",
+      "./node_modules/typescript/lib/lib.es2020.symbol.wellknown.d.ts",
+      "./node_modules/typescript/lib/lib.es5.d.ts",
+      "./node_modules/typescript/lib/lib.esnext.d.ts",
+      "./node_modules/typescript/lib/lib.esnext.intl.d.ts",
+      "./node_modules/typescript/lib/lib.esnext.promise.d.ts",
+      "./node_modules/typescript/lib/lib.esnext.string.d.ts",
+      "./node_modules/typescript/lib/lib.scripthost.d.ts",
+      "./node_modules/vue/dist/vue.d.ts",
+      [
+        "./src/app.vue.ts",
+        [
+          {
+            "file": "./src/app.vue.ts",
+            "start": 44,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/about/cz.about.vue.ts",
+        [
+          {
+            "file": "./src/components/about/cz.about.vue.ts",
+            "start": 40,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/account/cz.login.vue.ts",
+        [
+          {
+            "file": "./src/components/account/cz.login.vue.ts",
+            "start": 101,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/components/account/cz.login.vue.ts",
+            "start": 292,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property '$route' does not exist on type 'CzLogin'."
+          },
+          {
+            "file": "./src/components/account/cz.login.vue.ts",
+            "start": 406,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof User'."
+          }
+        ]
+      ],
+      [
+        "./src/components/authorize/cz.authorize.vue.ts",
+        [
+          {
+            "file": "./src/components/authorize/cz.authorize.vue.ts",
+            "start": 58,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/components/authorize/cz.authorize.vue.ts",
+            "start": 467,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property '$route' does not exist on type 'CzAuthorize'."
+          },
+          {
+            "file": "./src/components/authorize/cz.authorize.vue.ts",
+            "start": 587,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof User'."
+          }
+        ]
+      ],
+      [
+        "./src/components/base/cs.header-nav.vue.ts",
+        [
+          {
+            "file": "./src/components/base/cs.header-nav.vue.ts",
+            "start": 66,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/base/cz.footer.vue.ts",
+        [
+          {
+            "file": "./src/components/base/cz.footer.vue.ts",
+            "start": 66,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/contact/cz.contact.vue.ts",
+        [
+          {
+            "file": "./src/components/contact/cz.contact.vue.ts",
+            "start": 40,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/home/cz.home.vue.ts",
+        [
+          {
+            "file": "./src/components/home/cz.home.vue.ts",
+            "start": 141,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/new-submission/cz.new-submission.vue.ts",
+        [
+          {
+            "file": "./src/components/new-submission/cz.new-submission.vue.ts",
+            "start": 149,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/components/new-submission/cz.new-submission.vue.ts",
+            "start": 224,
+            "length": 17,
+            "messageText": "Cannot find module '@jsonforms/vue2' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/components/new-submission/cz.new-submission.vue.ts",
+            "start": 277,
+            "length": 25,
+            "messageText": "Cannot find module '@jsonforms/vue2-vanilla' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/recommendations/cz.recommendations.vue.ts",
+        [
+          {
+            "file": "./src/components/recommendations/cz.recommendations.vue.ts",
+            "start": 77,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/components/resources/cz.resources.vue.ts",
+        [
+          {
+            "file": "./src/components/resources/cz.resources.vue.ts",
+            "start": 94,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      "./src/components/submissions/constants.ts",
+      [
+        "./src/components/submissions/cz.submissions.vue.ts",
+        [
+          {
+            "file": "./src/components/submissions/cz.submissions.vue.ts",
+            "start": 182,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/components/submissions/cz.submissions.vue.ts",
+            "start": 1662,
+            "length": 3,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'all' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/components/submissions/cz.submissions.vue.ts",
+            "start": 1745,
+            "length": 3,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'all' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/components/submissions/cz.submissions.vue.ts",
+            "start": 2438,
+            "length": 9,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property '$nextTick' does not exist on type 'CzSubmissions'."
+          }
+        ]
+      ],
+      "./src/components/submissions/submissions.mock.ts",
+      "./src/components/submissions/types.ts",
+      "./src/components/submit/constants.ts",
+      [
+        "./src/components/submit/cz.submit.vue.ts",
+        [
+          {
+            "file": "./src/components/submit/cz.submit.vue.ts",
+            "start": 87,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/components/submit/cz.submit.vue.ts",
+            "start": 527,
+            "length": 7,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property '$router' does not exist on type 'CzSubmit'."
+          },
+          {
+            "file": "./src/components/submit/cz.submit.vue.ts",
+            "start": 603,
+            "length": 7,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property '$router' does not exist on type 'CzSubmit'."
+          }
+        ]
+      ],
+      "./src/constants.ts",
+      [
+        "./src/main.ts",
+        [
+          {
+            "file": "./src/main.ts",
+            "start": 63,
+            "length": 6,
+            "messageText": "Cannot find module 'vuex' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 90,
+            "length": 16,
+            "messageText": "Cannot find module '@vuex-orm/core' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 130,
+            "length": 32,
+            "messageText": "Cannot find module 'vuex-orm-plugin-date-attribute' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 196,
+            "length": 21,
+            "messageText": "Cannot find module 'vuex-persistedstate' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 241,
+            "length": 13,
+            "messageText": "Cannot find module 'vue-cookies' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 579,
+            "length": 22,
+            "messageText": "Cannot find module '@vue/composition-api' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 620,
+            "length": 7,
+            "messageText": "Cannot find module 'buefy' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 650,
+            "length": 12,
+            "messageText": "Cannot find module 'vue-router' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 907,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'config' does not exist on type 'typeof import(\"/Users/scootna/projects/dsp/dspfront/node_modules/vue/dist/vue\")'."
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 940,
+            "length": 3,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'use' does not exist on type 'typeof import(\"/Users/scootna/projects/dsp/dspfront/node_modules/vue/dist/vue\")'."
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 1177,
+            "length": 3,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'use' does not exist on type 'typeof import(\"/Users/scootna/projects/dsp/dspfront/node_modules/vue/dist/vue\")'."
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 1204,
+            "length": 3,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'use' does not exist on type 'typeof import(\"/Users/scootna/projects/dsp/dspfront/node_modules/vue/dist/vue\")'."
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 1223,
+            "length": 3,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'use' does not exist on type 'typeof import(\"/Users/scootna/projects/dsp/dspfront/node_modules/vue/dist/vue\")'."
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 1243,
+            "length": 3,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'use' does not exist on type 'typeof import(\"/Users/scootna/projects/dsp/dspfront/node_modules/vue/dist/vue\")'."
+          },
+          {
+            "file": "./src/main.ts",
+            "start": 1437,
+            "length": 3,
+            "code": 2351,
+            "category": 1,
+            "messageText": {
+              "messageText": "This expression is not constructable.",
+              "category": 1,
+              "code": 2351,
+              "next": [
+                {
+                  "messageText": "Type 'typeof import(\"/Users/scootna/projects/dsp/dspfront/node_modules/vue/dist/vue\")' has no construct signatures.",
+                  "category": 1,
+                  "code": 2761
+                }
+              ]
+            }
+          }
+        ]
+      ],
+      [
+        "./src/models/orm.ts",
+        [
+          {
+            "file": "./src/models/orm.ts",
+            "start": 20,
+            "length": 16,
+            "messageText": "Cannot find module '@vuex-orm/core' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      "./src/models/persistedpaths.ts",
+      [
+        "./src/models/repository.model.ts",
+        [
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 22,
+            "length": 16,
+            "messageText": "Cannot find module '@vuex-orm/core' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 573,
+            "length": 5,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'store' does not exist on type 'typeof Repository'."
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 665,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Repository'."
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 693,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Repository'."
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 724,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Repository'."
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 759,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Repository'."
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 794,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Repository'."
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 821,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Repository'."
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 850,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Repository'."
+          },
+          {
+            "file": "./src/models/repository.model.ts",
+            "start": 1047,
+            "length": 5,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'query' does not exist on type 'typeof Repository'."
+          }
+        ]
+      ],
+      [
+        "./src/models/submission.model.ts",
+        [
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 143,
+            "length": 16,
+            "messageText": "Cannot find module '@vuex-orm/core' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 622,
+            "length": 5,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'store' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 919,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'number' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 948,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 981,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 1011,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 1089,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 1122,
+            "length": 4,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'attr' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 1517,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 1766,
+            "length": 14,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'insertOrUpdate' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 1810,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof Submission'."
+          },
+          {
+            "file": "./src/models/submission.model.ts",
+            "start": 1898,
+            "length": 3,
+            "messageText": "Catch clause variable cannot have a type annotation.",
+            "category": 1,
+            "code": 1196
+          }
+        ]
+      ],
+      [
+        "./src/models/user.model.ts",
+        [
+          {
+            "file": "./src/models/user.model.ts",
+            "start": 109,
+            "length": 16,
+            "messageText": "Cannot find module '@vuex-orm/core' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/models/user.model.ts",
+            "start": 160,
+            "length": 7,
+            "messageText": "Cannot find module 'buefy' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/models/user.model.ts",
+            "start": 559,
+            "length": 5,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'store' does not exist on type 'typeof User'."
+          },
+          {
+            "file": "./src/models/user.model.ts",
+            "start": 1251,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof User'."
+          },
+          {
+            "file": "./src/models/user.model.ts",
+            "start": 1542,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof User'."
+          },
+          {
+            "file": "./src/models/user.model.ts",
+            "start": 1674,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof User'."
+          },
+          {
+            "file": "./src/models/user.model.ts",
+            "start": 1893,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof User'."
+          }
+        ]
+      ],
+      [
+        "./src/models/zenodo.model.ts",
+        [
+          {
+            "file": "./src/models/zenodo.model.ts",
+            "start": 972,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'insert' does not exist on type 'typeof Zenodo'."
+          },
+          {
+            "file": "./src/models/zenodo.model.ts",
+            "start": 1375,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'update' does not exist on type 'typeof Zenodo'."
+          },
+          {
+            "file": "./src/models/zenodo.model.ts",
+            "start": 3435,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof Zenodo'."
+          },
+          {
+            "file": "./src/models/zenodo.model.ts",
+            "start": 3556,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof Zenodo'."
+          },
+          {
+            "file": "./src/models/zenodo.model.ts",
+            "start": 4861,
+            "length": 3,
+            "messageText": "Catch clause variable cannot have a type annotation.",
+            "category": 1,
+            "code": 1196
+          },
+          {
+            "file": "./src/models/zenodo.model.ts",
+            "start": 4957,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof Zenodo'."
+          },
+          {
+            "file": "./src/models/zenodo.model.ts",
+            "start": 5852,
+            "length": 3,
+            "code": 2349,
+            "category": 1,
+            "messageText": {
+              "messageText": "This expression is not callable.",
+              "category": 1,
+              "code": 2349,
+              "next": [
+                {
+                  "messageText": "Each member of the union type '(<U>(callbackfn: (value: any, index: number, array: any[]) => U, thisArg?: any) => U[]) | (<U>(callbackfn: (value: { name: string; data: any; }, index: number, array: { name: string; data: any; }[]) => U, thisArg?: any) => U[])' has signatures, but none of those signatures are compatible with each other.",
+                  "category": 1,
+                  "code": 2758
+                }
+              ]
+            }
+          }
+        ]
+      ],
+      [
+        "./src/renderers/cz.input.renderer.vue.ts",
+        [
+          {
+            "file": "./src/renderers/cz.input.renderer.vue.ts",
+            "start": 142,
+            "length": 22,
+            "messageText": "Cannot find module '@vue/composition-api' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/renderers/cz.input.renderer.vue.ts",
+            "start": 218,
+            "length": 17,
+            "messageText": "Cannot find module '@jsonforms/vue2' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/renderers/cz.input.renderer.vue.ts",
+            "start": 597,
+            "length": 12,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'handleChange' does not exist on type '{ onChange(value: string): void; }'."
+          },
+          {
+            "file": "./src/renderers/cz.input.renderer.vue.ts",
+            "start": 626,
+            "length": 7,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'control' does not exist on type '{ onChange(value: string): void; }'."
+          }
+        ]
+      ],
+      [
+        "./src/renderers/cz.list-input-object.renderer.vue.ts",
+        [
+          {
+            "file": "./src/renderers/cz.list-input-object.renderer.vue.ts",
+            "start": 155,
+            "length": 22,
+            "messageText": "Cannot find module '@vue/composition-api' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/renderers/cz.list-input-object.renderer.vue.ts",
+            "start": 231,
+            "length": 17,
+            "messageText": "Cannot find module '@jsonforms/vue2' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/renderers/cz.list-input-object.renderer.vue.ts",
+            "start": 602,
+            "length": 12,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'handleChange' does not exist on type '{ onChange(value: any): void; }'."
+          },
+          {
+            "file": "./src/renderers/cz.list-input-object.renderer.vue.ts",
+            "start": 631,
+            "length": 7,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'control' does not exist on type '{ onChange(value: any): void; }'."
+          }
+        ]
+      ],
+      [
+        "./src/renderers/cz.list-input-primitive.renderer.vue.ts",
+        [
+          {
+            "file": "./src/renderers/cz.list-input-primitive.renderer.vue.ts",
+            "start": 153,
+            "length": 22,
+            "messageText": "Cannot find module '@vue/composition-api' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/renderers/cz.list-input-primitive.renderer.vue.ts",
+            "start": 229,
+            "length": 17,
+            "messageText": "Cannot find module '@jsonforms/vue2' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/renderers/cz.list-input-primitive.renderer.vue.ts",
+            "start": 657,
+            "length": 12,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'handleChange' does not exist on type '{ onChange(values: any): void; }'."
+          },
+          {
+            "file": "./src/renderers/cz.list-input-primitive.renderer.vue.ts",
+            "start": 686,
+            "length": 7,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'control' does not exist on type '{ onChange(values: any): void; }'."
+          }
+        ]
+      ],
+      [
+        "./src/renderers/cz.select.renderer.vue.ts",
+        [
+          {
+            "file": "./src/renderers/cz.select.renderer.vue.ts",
+            "start": 147,
+            "length": 22,
+            "messageText": "Cannot find module '@vue/composition-api' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/renderers/cz.select.renderer.vue.ts",
+            "start": 223,
+            "length": 17,
+            "messageText": "Cannot find module '@jsonforms/vue2' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/renderers/cz.select.renderer.vue.ts",
+            "start": 594,
+            "length": 12,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'handleChange' does not exist on type '{ onChange(value: any): void; }'."
+          },
+          {
+            "file": "./src/renderers/cz.select.renderer.vue.ts",
+            "start": 623,
+            "length": 7,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'control' does not exist on type '{ onChange(value: any): void; }'."
+          }
+        ]
+      ],
+      [
+        "./src/renderers/renderer.vue.ts",
+        [
+          {
+            "file": "./src/renderers/renderer.vue.ts",
+            "start": 219,
+            "length": 22,
+            "messageText": "Cannot find module '@vue/composition-api' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/router.ts",
+        [
+          {
+            "file": "./src/router.ts",
+            "start": 22,
+            "length": 12,
+            "messageText": "Cannot find module 'vue-router' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/router.ts",
+            "start": 452,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof User'."
+          },
+          {
+            "file": "./src/router.ts",
+            "start": 1008,
+            "length": 6,
+            "code": 2339,
+            "category": 1,
+            "messageText": "Property 'commit' does not exist on type 'typeof User'."
+          }
+        ]
+      ],
+      [
+        "./src/routes.ts",
+        [
+          {
+            "file": "./src/routes.ts",
+            "start": 28,
+            "length": 12,
+            "messageText": "Cannot find module 'vue-router' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      [
+        "./src/scott.vue.ts",
+        [
+          {
+            "file": "./src/scott.vue.ts",
+            "start": 75,
+            "length": 24,
+            "messageText": "Cannot find module 'vue-property-decorator' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/scott.vue.ts",
+            "start": 150,
+            "length": 17,
+            "messageText": "Cannot find module '@jsonforms/vue2' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          },
+          {
+            "file": "./src/scott.vue.ts",
+            "start": 203,
+            "length": 25,
+            "messageText": "Cannot find module '@jsonforms/vue2-vanilla' or its corresponding type declarations.",
+            "category": 1,
+            "code": 2307
+          }
+        ]
+      ],
+      "./src/shims-vue.d.ts"
+    ]
+  },
+  "version": "3.9.9"
+}
