@@ -1,179 +1,174 @@
 <template>
-  <div v-if="loggedIn">
-    <p>{{message}}</p>
-    <a href="/api/logout" class="button">Logout</a>
-    <br>
-    <a href="/api/authorize/zenodo" class="button">Authorize Zenodo</a>
-    <br>
-    <button @click="create()">Create</button>
-    <br>
-    <input v-model="recordId">
-    <button @click="read()">Show</button>
-    <div v-if="edit">
-      <button @click="save()">Save</button>
-      <h1>{{ repository }}</h1>
-      <SimpleFileUpload></SimpleFileUpload>
-      <div class="myform">
-        <json-forms
-          :data="data"
-          :renderers="renderers"
-          :schema="schema"
-          :uischema="uischema"
-          @change="onChange"
-        />
-      </div>
-    </div>
-  </div>
-  <div v-else>
-    <a href="/api/login" class="button">Login</a>
+  <div class="page-container">
+    <md-app md-waterfall md-mode="overlap">
+      <md-app-toolbar class="md-primary md-layout md-alignment-top-center">
+        <div class="md-toolbar-row md-layout-item content">
+          <router-link :to="{ path: `/` }">
+            <img class="logo" :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network logo">
+          </router-link>
+          <div class="spacer"></div>
+          <div id="nav-items" class="has-space-right md-elevation-2">
+            <router-link to="/">
+              <md-button :class="{'is-active md-raised md-accent': isPathActive('/')}" :md-ripple="false">Home</md-button>
+            </router-link>
+            <router-link v-for="path of paths" :key="path.to" :to="path.to">
+              <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button>
+            </router-link>
+          </div>
+          <router-link v-if="!isLoggedIn" to="/login"><md-button class="md-raised">Log In</md-button></router-link>
+          <md-button v-else class="md-raised" @click="logOut()">Log Out</md-button>
+        </div>
+      </md-app-toolbar>
+
+      <md-app-content id="main-content" class="md-layout-item">
+        <router-view v-if="!isLoading" name="content" />
+      </md-app-content>
+
+      <md-app-content id="footer">
+        <router-view name="footer" /> 
+      </md-app-content>
+    </md-app>
+
+    <md-snackbar :md-position="position" :md-duration="isInfinity ? Infinity : duration" :md-active.sync="showSnackbar" md-persistent>
+      <span>Connection timeout. Showing limited messages!</span>
+      <md-button class="md-primary" @click="showSnackbar = false">Retry</md-button>
+    </md-snackbar>
+
+    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import axios from "axios";
-import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue";
-import {
-  defaultStyles,
-  mergeStyles,
-  vanillaRenderers,
-} from "@jsonforms/vue-vanilla";
-import SimpleFileUpload from "@/SimpleFileUpload.vue";
+  import { Component, Vue } from 'vue-property-decorator'
+  import { setupRouteGuards } from './router'
+  import CzFooter from '@/components/base/cz.footer.vue'
+  import CzHeaderNav from '@/components/base/cs.header-nav.vue'
+  import User from '@/models/user.model'
+  import Zenodo from '@/models/zenodo.model'
+  import HydroShare from './models/hydroshare.model'
+  
+  @Component({
+    name: 'app',
+    components: { CzFooter, CzHeaderNav },
+  })
+  export default class App extends Vue {
+    protected isLoading = true
 
-// mergeStyles combines all classes from both styles definitions into one
-const myStyles = mergeStyles(defaultStyles, { control: { label: "mylabel" } });
+    protected showSnackbar = false
+    protected position = 'center'
+    protected duration = 4000
+    protected isInfinity = false
 
-const renderers = [
-  ...vanillaRenderers,
-  // here you can add custom renderers
-];
+    protected paths = [
+      { to: '/submissions', label: 'My Submissions'},
+      { to: '/submit', label: 'Submit Data'},
+      { to: '/resources', label: 'Resources'},
+      { to: '/about', label: 'About'},
+      { to: '/contact', label: 'Contact'},
+    ]
 
-export default defineComponent({
-  name: "DSP",
-  components: {
-    SimpleFileUpload,
-    JsonForms,
-  },
-  data() {
-    return {
-      // freeze renderers for performance gains
-      renderers: Object.freeze(renderers),
-      data: {},
-      repository: "Zenodo",
-      schema: this.getSchema(),
-      recordId: "",
-      edit: false,
-      message: "",
-      loggedIn: false,
-      uischema: null,
-    };
-  },
-  methods: {
-    onChange(event: JsonFormsChangeEvent) {
-      this.data = event.data;
-    },
-    async checkAuthorization() {
-      const status = await axios.get("/api")
-          .then((resp) => {
-            return true;
-          })
-          .catch((error) => {
-            return false;
-          });
-      this.loggedIn = status;
-    },
-    async getSchema(){
-      const resp = await axios.get("/api/schema/zenodo.json");
-      this.schema = resp.data;
-    },
-    async getAccessToken(){
-      return await axios.get("/api/access_token/zenodo/").then((resp) => {
-        return resp.data.token;
-      })
-        .catch((error) => {
-          this.message = error.message;
-          throw error;
-        }
-      );
-    },
-    async create(){
-      const token = await this.getAccessToken();
-      await axios.post("https://sandbox.zenodo.org/api/deposit/depositions", {},
-          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
-          .then((resp) => {
-            this.recordId = resp.data.record_id;
-            this.edit = true;
-          })
-          .catch((error) => {
-            this.data = {}
-            this.edit = false;
-            this.message = error.message;
-          });
-    },
-    async save(){
-      const token = await this.getAccessToken();
-      await axios.put("https://sandbox.zenodo.org/api/deposit/depositions/" + this.recordId,
-          {metadata: this.data},
-          {headers: {"Content-Type": "application/json"}, params: {"access_token": token}})
-          .then(async (resp) => {
-            await this.read();
-          }).catch((error) => {
-            this.message = error.message;
-          });
-    },
-    async read(){
-      const token = await this.getAccessToken();
-      await axios.get("https://sandbox.zenodo.org/api/deposit/depositions/" + this.recordId,
-          {params: {"access_token": token}})
-      .then((resp) => {
-        this.data = resp.data.metadata;
-        this.edit = true;
-      })
-      .catch((error) => {
-        this.data = {}
-        this.edit = false;
-        this.message = error.message;
-      });
+    protected get isLoggedIn() {
+      return User.$state.isLoggedIn
     }
-  },
-  created: function() {
-    this.checkAuthorization();
-  },
-  provide() {
-    return {
-      styles: myStyles,
-    };
-  },
-});
+
+    protected logOut() {
+      User.logOut()
+    }
+
+    protected isPathActive(path: string) {
+      const matchedRoute = this.$router.match(path)
+      const isActive = this.$route.matched.some(r => r.name === matchedRoute.name)
+
+      if (isActive) {
+        return true
+      }
+      // Check if the route is active pending a redirect
+      else if (this.$router.currentRoute.query.next) {
+        const matchedNextRoute = this.$router.match(this.$router.currentRoute.query.next as string)
+        return matchedNextRoute.name === matchedRoute.name
+      }
+
+      return false  // default
+    }
+
+    async created() {
+      document.title = 'CZ Hub'
+      
+      // Check for Authorization cookie instead. 
+      // const isAuthorized = this.$cookies.get('Authorization')
+
+      // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
+      // Reproducible if the server is restarted
+      
+      // if (isAuthorized && !User.$state.isLoggedIn) {
+      await User.checkAuthorization()
+      // Guards are setup after checking authorization because they depend on user logged in status
+      setupRouteGuards()
+      // }
+      
+      if (User.$state.isLoggedIn) {
+        await Promise.all([
+          Zenodo.init(),
+          HydroShare.init()
+        ])
+      }
+
+      this.isLoading = false
+    }
+  }
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-  margin-left: 120px;
-  margin-right: 120px;
-}
+<style lang="scss" scoped>
+  .md-toolbar.md-overlap-off .logo {
+    max-height: 7rem;
+    margin-top: unset;
+    padding: 1rem 0;
+  }
 
-.mylabel {
-  color: darkslategrey;
-}
+  .md-toolbar {
+    // background: linear-gradient(-45deg, rgb(52, 107, 184) 0%, rgba(28,206,234,0.82) 100%);
+  }
 
-.vertical-layout {
-  margin-left: 10px;
-  margin-right: 10px;
-}
+  .logo {
+    max-height: 117px;
+    transition: max-height 0.25s ease;
+    will-change: max-height, margin-top;
+    margin-top: -6rem;
+  }
 
-.myform {
-  width: 640px;
-  margin: 0 auto;
-}
+  .md-app {
+    height: 100vh;
+  }
 
-.text-area {
-  min-height: 80px;
-}
+  /deep/ .md-app-scroller {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  #footer {
+    width: 100%;
+    margin: 0;
+    min-height: unset;
+    margin-top: 4rem;
+    background: var(--md-theme-default-primary);
+    box-shadow: none;
+  }
+
+  #nav-items {
+    background: var(--md-theme-default-background, #fff);
+    border-radius: 2rem;
+    overflow: hidden;
+
+    a.router-link-exact-active .md-button::before,
+    .md-button.is-active::before {
+      background-color: currentColor;
+      opacity: .12;
+    }
+
+    .md-button {
+      margin: 0;
+      border-radius: 0;
+    }
+  }
 </style>

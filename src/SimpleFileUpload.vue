@@ -1,6 +1,5 @@
 <template>
 <div class="example-full">
-
   <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
 		<h3>Drop files to upload</h3>
   </div>
@@ -233,12 +232,16 @@
 </style>
 
 <script>
-import FileUpload from 'vue-upload-component'
+// import FileUpload from 'vue-upload-component'
 import axios from "axios";
+
+const sprintf = require('sprintf-js').sprintf;
 export default {
   components: {
-    FileUpload,
+    // FileUpload,
   },
+
+  props: ["loadFiles"],
 
   data() {
     return {
@@ -256,12 +259,15 @@ export default {
       thread: 3,
       name: 'file',
       customAction: async (file, component) => {
+        const recordUrl = this.$parent.fileCreateUrl
         const token = await this.$parent.getAccessToken()
-        const url = 'https://sandbox.zenodo.org/api/deposit/depositions/' + this.$parent.recordId + "/files"
+        const recordId = this.$parent.recordId
+
+        const url = sprintf(recordUrl, recordId)
         const form = new window.FormData()
         form.append(this.name, file.file, file.file.name || file.file.filename  || file.name)
         await axios.post(url, form, {headers: {'Content-Type': 'multipart/form-data'}, params: {"access_token": token}}).then((resp) => {
-          file.response.id = resp.data.id
+          file.response.id = resp.data.file_name ? resp.data.file_name : resp.data.id
         })
       },
 
@@ -284,6 +290,10 @@ export default {
     }
   },
 
+  created: function() {
+    this.showRecord()
+  },
+
   watch: {
 
     'addData.show'(show) {
@@ -293,25 +303,32 @@ export default {
         this.addData.content = ''
       }
     },
-  },
-
-  async created() {
-    await this.listFiles()
-    //this.files = files
+    'loadFiles'(load) {
+      if(load){
+        this.showRecord()
+      }
+    },
   },
 
   methods: {
+    showRecord() {
+      this.listFiles()
+      this.$emit('finishedListFiles')
+    },
     async listFiles() {
-      const url = "https://sandbox.zenodo.org/api/deposit/depositions/" + this.$parent.recordId + "/files"
+      const filesUrl = this.$parent.fileReadUrl
+      const recordId = this.$parent.recordId
+
+      const url = sprintf(filesUrl, recordId)
       const token = await this.$parent.getAccessToken()
       return await axios.get(url, {params: {"access_token": token}}).then((resp) => {
         const files = []
-        const respData = resp.data
+        const respData = this.$parent.filesKey ? resp.data[this.$parent.filesKey] : resp.data
         respData.forEach((f, index) => {
           files.push({
-            "name": f.filename,
-            "size": f.filesize,
-            "response": {"id": f.id},
+            "name": f.file_name ? f.file_name : f.filename,
+            "size": f.size ? f.size : f.filesize,
+            "response": {"id": f.file_name ? f.file_name : f.id},
             "upload": false,
             "active": false,
             "progress": '0.00',
@@ -324,7 +341,7 @@ export default {
             "putAction": null,
             "postAction": null,
             "timeout": null,
-            "id": f.id,
+            "id": f.file_name ? f.file_name : f.id,
             "file": null,
             "data": null,
             "headers": null})
@@ -334,7 +351,9 @@ export default {
     },
     async deleteFile(file) {
       // 899159
-      const url = "https://sandbox.zenodo.org/api/deposit/depositions/" + this.$parent.recordId + "/files/" + file.response.id
+      const fileUrl = this.$parent.fileDeleteUrl
+      const recordId = this.$parent.recordId
+      const url = sprintf(fileUrl, recordId, file.response.id)
       const token = await this.$parent.getAccessToken()
       await axios.delete(url, {params: {"access_token": token}}).then((resp) => {
         if(!this.$refs.upload.remove(file.id)){
