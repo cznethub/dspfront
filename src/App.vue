@@ -61,8 +61,8 @@
 
     protected paths = [
       { to: '/submissions', label: 'My Submissions'},
-      { to: '/submit', label: 'Submit Data'},
       { to: '/resources', label: 'Resources'},
+      { to: '/submit', label: 'Submit Data'},
       { to: '/about', label: 'About'},
       { to: '/contact', label: 'Contact'},
     ]
