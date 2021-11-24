@@ -17,7 +17,6 @@
           </div>
           <router-link v-if="!isLoggedIn" to="/login"><md-button class="md-raised">Log In</md-button></router-link>
           <md-button v-else class="md-raised" @click="logOut()">Log Out</md-button>
-          <md-button class="md-raised" @click="toast()">Toast</md-button>
         </div>
       </md-app-toolbar>
 
@@ -64,7 +63,7 @@
     protected isLoading = true
     protected onToast!: Subscription
 
-    protected snackbar: Partial<IToast> & { isActive: boolean, isInfinite: boolean } = {
+    protected snackbar: IToast & { isActive: boolean, isInfinite: boolean } = {
       message: '',
       duration: DEFAULT_TOAST_DURATION,
       position: 'center',
@@ -137,15 +136,6 @@
 
     beforeDestroy() {
       this.onToast.unsubscribe()
-    }
-
-    toast() {
-      CzNotification.toast({ 
-        message: "Hi!", 
-        duration: 10000, 
-        position: 'center', 
-        isInfinite: true
-      })
     }
   }
 </script>
