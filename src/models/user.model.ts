@@ -1,8 +1,7 @@
-import { DEFAULT_TOAST_DURATION } from '@/constants'
 import { router } from '@/router'
 import { Model } from '@vuex-orm/core'
-import { ToastProgrammatic } from 'buefy'
 import axios from "axios"
+import CzNotification from './notifications.model'
 
 export interface ICzCurrentUserState {
   orcid: string
@@ -18,7 +17,6 @@ export interface IUserState {
 
 export default class User extends Model {
   static entity = 'users'
-  
   
   static fields () {
     return {}
@@ -47,15 +45,13 @@ export default class User extends Model {
 
   static async checkAuthorization() {
     try {
-      const response = await axios.get("/api")
+      const response = await axios.get('/api')
       
       if (response.status === 200) {
         if (!User.$state.isLoggedIn) {
           // Just logged in
-          ToastProgrammatic.open({
-            message: 'You have logged in!',
-            type: 'is-success',
-            duration: DEFAULT_TOAST_DURATION
+          CzNotification.toast({ 
+            message: 'You have logged in!', 
           })
 
           await User.commit((state) => {
@@ -66,7 +62,6 @@ export default class User extends Model {
         }
       }
       else {
-        
         // Something went wrong, authorization may be invalid
         User.commit((state) => {
           state.isLoggedIn = false
@@ -82,17 +77,18 @@ export default class User extends Model {
 
   static async logOut() {
     try {
-      const response = await axios.get("/api/logout")
+      const response = await axios.get('/api/logout')
       if (response.status === 200) {
         await User.commit((state) => {
           state.isLoggedIn = false
         })
+
         if (router.currentRoute.meta?.hasLoggedInGuard) {
           router.push({ path: '/' })
         }
-        ToastProgrammatic.open({
-          message: 'You have logged out!',
-          duration: DEFAULT_TOAST_DURATION
+
+        CzNotification.toast({ 
+          message: 'You have logged out!', 
         })
       }
     }
