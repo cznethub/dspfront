@@ -9,6 +9,7 @@
   import { listInputObjectRenderer } from './cz.list-input-object.renderer.vue'
   import { enumControlRenderer } from './cz.enum-control.renderer.vue'
   import { selectRenderer } from './cz.select.renderer.vue'
+  import { arrayListRenderer } from './array/ArrayListRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -18,6 +19,7 @@
     inputDateRenderer,
     selectRenderer,
     enumControlRenderer,
+    arrayListRenderer,
     // listInputObjectRenderer,
   ]
 </script>

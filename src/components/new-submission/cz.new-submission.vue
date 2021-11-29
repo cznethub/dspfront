@@ -21,7 +21,7 @@
       <div class="container" style="min-height: 20rem;">
         <b-loading :is-full-page="false" :active="isLoading" />
 
-        <div v-if="!isLoading" style="max-width: 60rem;">
+        <div v-if="!isLoading">
           <b-field>
             <b-upload v-model="dropFiles" multiple drag-drop expanded>
               <section class="section">

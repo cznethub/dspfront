@@ -39,6 +39,7 @@ import {
   MdChips,
   MdDatepicker,
   MdSpeedDial,
+  MdDivider,
 } from 'vue-material/dist/components'
 
 /** Material modules */
@@ -60,6 +61,7 @@ Vue.use(MdCheckbox)
 Vue.use(MdChips)
 Vue.use(MdDatepicker)
 Vue.use(MdSpeedDial)
+Vue.use(MdDivider)
 
 // https://github.com/vuematerial/vue-material/issues/2285
 Vue.config.errorHandler = (err, vm, info) => {
