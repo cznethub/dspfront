@@ -29,14 +29,9 @@
       </md-app-content>
     </md-app>
 
-    <md-snackbar
-      :md-active.sync="snackbar.isActive"
-      :md-position="snackbar.position"
-      :md-persistent="snackbar.isPersistent"
-      :md-duration="snackbar.isInfinite ? Infinity : snackbar.duration"
-    >
-      <span>{{ snackbar.message }}</span>
-      <md-button class="md-primary" @click="snackbar.isActive = false">Dismiss</md-button>
+    <md-snackbar :md-position="position" :md-duration="isInfinity ? Infinity : duration" :md-active.sync="showSnackbar" md-persistent>
+      <span>Connection timeout. Showing limited messages!</span>
+      <md-button class="md-primary" @click="showSnackbar = false">Retry</md-button>
     </md-snackbar>
 
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
@@ -46,9 +41,6 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
   import { setupRouteGuards } from './router'
-  import { Subscription } from 'rxjs'
-  import { DEFAULT_TOAST_DURATION } from './constants'
-  import CzNotification, { IToast } from './models/notifications.model'
   import CzFooter from '@/components/base/cz.footer.vue'
   import CzHeaderNav from '@/components/base/cs.header-nav.vue'
   import User from '@/models/user.model'
@@ -61,21 +53,16 @@
   })
   export default class App extends Vue {
     protected isLoading = true
-    protected onToast!: Subscription
 
-    protected snackbar: IToast & { isActive: boolean, isInfinite: boolean } = {
-      message: '',
-      duration: DEFAULT_TOAST_DURATION,
-      position: 'center',
-      isActive: false,
-      isInfinite: false,
-      // isPersistent: false,
-    }
+    protected showSnackbar = false
+    protected position = 'center'
+    protected duration = 4000
+    protected isInfinity = false
 
     protected paths = [
       { to: '/submissions', label: 'My Submissions'},
-      { to: '/resources', label: 'Resources'},
       { to: '/submit', label: 'Submit Data'},
+      { to: '/resources', label: 'Resources'},
       { to: '/about', label: 'About'},
       { to: '/contact', label: 'Contact'},
     ]
@@ -106,11 +93,6 @@
 
     async created() {
       document.title = 'CZ Hub'
-
-      this.onToast = CzNotification.toast$.subscribe((toast: IToast) => {
-        this.snackbar = { ...this.snackbar, ...toast }
-        this.snackbar.isActive = true
-      })
       
       // Check for Authorization cookie instead. 
       // const isAuthorized = this.$cookies.get('Authorization')
@@ -132,10 +114,6 @@
       }
 
       this.isLoading = false
-    }
-
-    beforeDestroy() {
-      this.onToast.unsubscribe()
     }
   }
 </script>

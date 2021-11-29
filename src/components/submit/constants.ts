@@ -1,17 +1,17 @@
 import { EnumRepositoryKeys, IRepository } from "@/components/submissions/types";
 
 export const repoMetadata: { [key: string]: IRepository } = {
-  [EnumRepositoryKeys.hydroshare]: {
-    key: EnumRepositoryKeys.hydroshare,
-    name: 'HydroShare',
-    logoSrc: require('@/assets/img/hydroshare.png'),
-    description: 'HydroShare is a general-purpose domain repository the primarily serves the water science community. HydroShare is operated by the Consortium of Universities for the Advancement of Hydrologic Science, Inc. (CUAHSI). Data types include geographic feature, geographic raster, multidimensional, time series, model programs, model instances, and generic data types.',
-  },
   [EnumRepositoryKeys.zenodo]: {
     key: EnumRepositoryKeys.zenodo,
     name: 'Zenodo',
     logoSrc: require('@/assets/img/zenodo.png'),
     description: 'Zenodo is a general-purpose, domain-agnostic repository that serves as a "catch-all" repository for EC funded research. Zenodo is operated by CERN in partnership with the OpenAIRE project.',
+  },
+  [EnumRepositoryKeys.hydroshare]: {
+    key: EnumRepositoryKeys.hydroshare,
+    name: 'HydroShare',
+    logoSrc: require('@/assets/img/hydroshare.png'),
+    description: 'HydroShare is a general-purpose domain repository the primarily serves the water science community. HydroShare is operated by the Consortium of Universities for the Advancement of Hydrologic Science, Inc. (CUAHSI). Data types include geographic feature, geographic raster, multidimensional, time series, model programs, model instances, and generic data types.',
   },
   // earthChemLibrary: {
   //   key: 'earthChemLibrary',

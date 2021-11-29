@@ -52,11 +52,11 @@
             ref="form"
           />
         </div>
-        <div class="has-space-top-2x md-layout md-alignment-center-right">
-          <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
-          <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
+        <div class="has-space-top-2x level is-justify-content-flex-end">
+          <b-button @click="save()" class="has-space-right" size="is-medium" :disabled="isSaving">
             {{ isSaving ? 'Saving...' : 'Save' }}
-          </md-button>
+          </b-button>
+          <b-button size="is-medium" type="is-primary">Submit</b-button>
         </div>
       </div>
     </section>
@@ -205,9 +205,6 @@
 </script>
 
 <style lang="scss" scoped>
-  .cz-new-submission {
-    padding: 2rem;
-  }
   /deep/ .vertical-layout-item {
     margin: 1rem 0;
 

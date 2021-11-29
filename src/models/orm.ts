@@ -4,7 +4,6 @@ import Submission from '@/models/submission.model'
 import Repository from './repository.model'
 import Zenodo from './zenodo.model'
 import HydroShare from './hydroshare.model'
-import CzNotification from './notifications.model'
 
 /**
  * Register all the Models here.
@@ -12,12 +11,9 @@ import CzNotification from './notifications.model'
  */
 
 const db = new VuexORM.Database()
-
 db.register(User)
 db.register(Submission)
 db.register(Repository)
 db.register(Zenodo)
 db.register(HydroShare)
-db.register(CzNotification)
-
 export const orm = db
