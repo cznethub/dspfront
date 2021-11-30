@@ -65,8 +65,8 @@ import {
   RendererProps
 } from '@jsonforms/vue2'
 import { useVanillaArrayControl } from "@jsonforms/vue2-vanilla"
-import ArrayListElement from './ArrayListElement.vue'
 import { Drag, Drop, DropList } from 'vue-easy-dnd'
+import ArrayListElement from './ArrayListElement.vue'
 
 const controlRenderer = defineComponent({
   name: 'array-list-renderer',

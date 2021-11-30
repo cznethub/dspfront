@@ -1,14 +1,14 @@
 <template>
-    <md-chips 
-      @input="onChange" 
-      v-model="tags"
-      :md-placeholder="control.label"
-      @keydown.native="onKeyDown"
-      class="md-primary shake-on-error"
-      ref="chips"
-    > 
-      <div class="md-helper-text">{{ control.description }}</div>
-    </md-chips>
+  <md-chips 
+    @input="onChange" 
+    v-model="tags"
+    @keydown.native="onKeyDown"
+    class="md-primary shake-on-error"
+    ref="chips"
+  > 
+    <label>{{ control.label }}</label>
+    <div class="md-helper-text">{{ control.description }}</div>
+  </md-chips>
 </template>
 
 <script lang="ts">
