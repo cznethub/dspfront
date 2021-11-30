@@ -150,12 +150,15 @@ hr {
   flex: 1 1 auto;
 }
 
-.md-button {
-  
+.md-button:not(.md-icon-button) {
   margin: 0;
   padding: 0 0.75rem;
 }
 
 .md-button:not(.md-fab) {
   border-radius: 2rem;
+}
+
+.md-button[disabled] {
+  opacity: 0.5;
 }
