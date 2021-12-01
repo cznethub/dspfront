@@ -22,24 +22,24 @@
         <b-loading :is-full-page="false" :active="isLoading" />
 
         <div v-if="!isLoading">
-          <b-field>
+          <div class="upload-drop-area has-space-bottom">
             <b-upload v-model="dropFiles" multiple drag-drop expanded>
               <section class="section">
                 <div class="content has-text-centered">
-                  <p>
-                    <b-icon icon="upload" size="is-large"></b-icon>
-                  </p>
-                  <p class="is-size-4">Drop your files here or click to upload</p>
+                  <md-icon>attach_file</md-icon>
+                  <p>Drop your files here or click to upload</p>
                 </div>
               </section>
             </b-upload>
-          </b-field>
+          </div>
 
-          <div class="tags">
-            <span v-for="(file, index) in dropFiles" :key="index" class="tag is-primary is-size-4">
-              {{ file.name }}
-              <button class="delete is-small" type="button" @click="deleteDropFile(index)"></button>
-            </span>
+          <div v-if="dropFiles.length" class="upload-file-list">
+            <transition-group name="list-items" tag="div">
+              <md-chip v-for="(file, index) in dropFiles"
+                :key="`${file.name}-${index}`" class="md-primary list-items-item" md-deletable @md-delete="deleteDropFile(index)">
+                {{ file.name }}
+              </md-chip>
+            </transition-group>
           </div>
 
           <json-forms
@@ -208,6 +208,7 @@
   .cz-new-submission {
     padding: 2rem;
   }
+  
   /deep/ .vertical-layout-item {
     margin: 1rem 0;
 
@@ -228,5 +229,34 @@
 
   .md-dialog /deep/.md-dialog-container {
     max-width: 100rem;
+  }
+
+  .upload-drop-area {
+    border: 1px dashed #DDD;
+    border-radius: 0.5rem;
+    cursor: pointer;
+
+    /deep/ input[type=file] {
+      display: none;
+    }
+  }
+
+  .upload-file-list .md-chip {
+    margin: 0.5rem;
+  }
+
+  .list-items {
+    transition: all 1s;
+  }
+
+  .list-items-enter,
+  .list-items-leave-to
+  /* .list-complete-leave-active below version 2.1.8 */ {
+    opacity: 0;
+    // transform: translateY(30px);
+  }
+
+  .list-items-leave-active {
+    position: absolute;
   }
 </style>

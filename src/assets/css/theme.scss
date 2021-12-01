@@ -213,10 +213,14 @@ hr {
   &.md-chips {
     padding-top: 16px;
 
-    & > input {
-      flex-basis: 100%;
-      flex-shrink: 0;
+    .md-helper-text {
+      margin-bottom: 1rem;
     }
+
+    // & > input {
+    //   flex-basis: 100%;
+    //   flex-shrink: 0;
+    // }
   }
 
   &.md-required label:after {
@@ -231,5 +235,11 @@ hr {
     top: unset;
     right: unset;
     line-height: 1em;
+  }
+}
+
+.cz-field {
+  div.md-subheading {
+    color: inherit;
   }
 }

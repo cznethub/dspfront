@@ -1,9 +1,9 @@
 <template>
-  <div v-if="control.visible">
+  <div v-if="control.visible" class="cz-field">
     <div class="md-layout md-alignment-center-space-between has-space-bottom">
-      <h4 class="md-subheading">{{ control.label }}</h4>
+      <div class="md-subheading">{{ control.label }}</div>
 
-      <md-button class="md-icon-button md-raised md-accent" @click="addButtonClick" :class="styles.arrayList.addButton">
+      <md-button class="md-fab md-raised md-accent md-mini" @click="addButtonClick" :class="styles.arrayList.addButton">
         <md-icon>add</md-icon>
       </md-button>
     </div>
