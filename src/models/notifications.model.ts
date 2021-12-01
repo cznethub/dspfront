@@ -10,9 +10,19 @@ export interface IToast {
   // isPersistent?: boolean // Currently has no effect
 }
 
+export interface IDialog {
+  title: string
+  content: string
+  confirmText: string
+  cancelText: string
+  onConfirm: () => any
+  onCancel?: () => any
+}
+
 export default class CzNotification extends Model {
   static entity = 'cz-notification'
   static toast$ = new Subject<IToast>()
+  static dialog$ = new Subject<IDialog>()
 
   static toast(params: IToast) {
     this.toast$.next({
@@ -22,5 +32,9 @@ export default class CzNotification extends Model {
       isInfinite: !!params.isInfinite,
       // isPersistent: params.isPersistent !== undefined ? params.isPersistent : true,
     })
+  }
+
+  static openDialog(params: IDialog) {
+    this.dialog$.next(params)
   }
 }

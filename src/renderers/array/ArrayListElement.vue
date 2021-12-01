@@ -27,6 +27,7 @@
 declare type CompType<_S, V> = V
 import { defineComponent } from '@vue/composition-api'
 import { Styles } from "@jsonforms/vue2-vanilla"
+import CzNotification from '@/models/notifications.model'
 
 const listItem = defineComponent({
   name: 'array-list-element',
@@ -35,6 +36,11 @@ const listItem = defineComponent({
       required: false,
       type: String,
       default: ''
+    },
+    needsConfirmToDelete: {
+      required: false,
+      type: Boolean,
+      default: true
     },
     moveUpEnabled: {
       required: false,
@@ -84,8 +90,23 @@ const listItem = defineComponent({
     },
     deleteClicked(event: Event): void {
       event.stopPropagation()
-      // @ts-ignore
-      this.delete?.()
+
+      if (this.needsConfirmToDelete) {
+        CzNotification.openDialog({
+          title: 'Delete this item?',
+          content: 'Are you sure you want to delete this  item?',
+          confirmText: 'Delete',
+          cancelText: 'Cancel',
+          onConfirm: () => {
+            // @ts-ignore
+            this.delete?.()
+          }
+        })
+      }
+      else {
+        // @ts-ignore
+        this.delete?.()
+      }
     },
   }
 })

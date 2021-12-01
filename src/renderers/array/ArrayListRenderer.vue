@@ -12,7 +12,7 @@
       :items="control.data || []"
       @reorder="reorderElements($event.from, $event.to)"
     >
-      <template v-slot:item="{item, index}">
+      <template v-slot:item="{ item, index }">
         <drag class="item" :key="index">
           <array-list-element
             class="list-complete-item"
@@ -102,7 +102,7 @@ const controlRenderer = defineComponent({
           return
       } // Already at the top or bottom.
       this.control.data.splice(newIndex, 0, this.control.data.splice(index, 1)[0])
-    }
+    },
   }
 })
 

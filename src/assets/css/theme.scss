@@ -165,6 +165,7 @@ hr {
 
 .md-field {
   // display: block;
+  flex-wrap: wrap;
 
   &::after, &::before {
     content: none;
@@ -181,18 +182,25 @@ hr {
 
   .md-input, .md-textarea {
     border: 1px solid var(--text-mute);
-    border-radius: 0.25rem;
+    border-radius: 0.5rem;
     padding-left: 0.5rem;
     width: 100%;
   }
 
+  & > .md-helper-text {
+    position: static;
+    flex-basis: 100%;
+    flex-shrink: 0;
+    height: unset;
+  }
+
   &.md-datepicker {
     max-width: 40rem;
+    flex-wrap: wrap;
 
     & > input {
       margin-left: 0 !important;
       padding-left: 4rem;
-      
     }
 
     & > i.md-date-icon {

@@ -29,6 +29,7 @@ import {
   MdIcon,
   MdCard,
   MdDialog,
+  MdDialogConfirm,
   MdSnackbar,
   MdField,
   MdMenu,
@@ -51,6 +52,7 @@ Vue.use(MdApp)
 Vue.use(MdIcon)
 Vue.use(MdCard)
 Vue.use(MdDialog)
+Vue.use(MdDialogConfirm)
 Vue.use(MdSnackbar)
 Vue.use(MdField)
 Vue.use(MdMenu)
