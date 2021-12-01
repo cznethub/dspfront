@@ -1,12 +1,14 @@
 <template>
   <div v-if="control.visible" class="cz-field">
-    <div class="md-layout md-alignment-center-space-between has-space-bottom">
+    <div class="md-layout md-alignment-bottom-space-between has-space-bottom">
       <div class="md-subheading">{{ control.label }}</div>
 
       <md-button class="md-fab md-raised md-accent md-mini" @click="addButtonClick" :class="styles.arrayList.addButton">
         <md-icon>add</md-icon>
       </md-button>
     </div>
+
+    <hr>
 
     <drop-list name="list-complete" class="list-elements-container" 
       :items="control.data || []"

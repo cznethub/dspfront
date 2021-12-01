@@ -208,7 +208,7 @@
   .cz-new-submission {
     padding: 2rem;
   }
-  
+
   /deep/ .vertical-layout-item {
     margin: 1rem 0;
 
@@ -243,6 +243,92 @@
 
   .upload-file-list .md-chip {
     margin: 0.5rem;
+  }
+
+  /deep/ .md-field {
+    // display: block;
+    flex-wrap: wrap;
+
+    &::after, &::before {
+      content: none;
+    }
+
+    label {
+      top: -6px !important;
+      font-size: 16px !important;
+      color: inherit !important;
+      left: 0 !important;
+      pointer-events: unset !important;
+      cursor: unset !important;
+    }
+
+    .md-input,
+    .md-textarea {
+      border: 1px solid var(--text-mute);
+      border-radius: 0.5rem;
+      padding-left: 0.5rem;
+      width: 100%;
+    }
+
+    .md-menu.md-select {
+      flex: 1 1 auto;
+
+      & > .md-icon {
+        position: absolute;
+        right: 0;
+        top: 2rem;
+      }
+    }
+
+    & > .md-helper-text {
+      position: static;
+      flex-basis: 100%;
+      flex-shrink: 0;
+      height: unset;
+    }
+
+    &.md-datepicker {
+      max-width: 40rem;
+      flex-wrap: wrap;
+
+      & > input {
+        margin-left: 0 !important;
+        padding-left: 4rem;
+      }
+
+      & > i.md-date-icon {
+        position: absolute;
+        left: 4px;
+        overflow: hidden;
+      }
+    }
+
+    &.md-chips {
+      padding-top: 16px;
+
+      .md-helper-text {
+        margin-bottom: 1rem;
+      }
+
+      // & > input {
+      //   flex-basis: 100%;
+      //   flex-shrink: 0;
+      // }
+    }
+
+    &.md-required label:after {
+      content: "(required)";
+      color: red;
+      font-size: 11px;
+      margin-left: 4px;
+      vertical-align: middle;
+      
+      transform: none;
+      position: unset;
+      top: unset;
+      right: unset;
+      line-height: 1em;
+    }
   }
 
   .list-items {
