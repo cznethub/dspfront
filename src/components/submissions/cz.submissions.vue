@@ -294,4 +294,8 @@ import Repository from '@/models/repository.model'
       }
     }
   }
+
+  .cz-submissions--header .md-card {
+    background: var(--md-theme-default-background-variant, #fafafa)
+  }
 </style>
