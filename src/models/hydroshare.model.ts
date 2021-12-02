@@ -1,8 +1,9 @@
 
 import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { router } from '@/router';
-import axios from "axios"
+import axios, { AxiosRequestConfig } from "axios"
 import Repository from './repository.model'
+import Submission from './submission.model';
 
 const sprintf = require('sprintf-js').sprintf
 
@@ -33,6 +34,7 @@ export default class HydroShare extends Repository {
 
   static async createSubmission(data?: any): Promise<{ recordId: string, formMetadata: any} | null> {
     console.info("HydroShare: Creating submission...")
+    
     const hydroShare = this.get()
     
     if (hydroShare) {
@@ -40,6 +42,7 @@ export default class HydroShare extends Repository {
         const depositionMetadata = data
           ? { metadata: data }
           : { }
+
         const resp = await axios.post(
           hydroShare.urls?.createUrl || '',
           {},
@@ -49,19 +52,23 @@ export default class HydroShare extends Repository {
           }
         )
 
-        console.log(resp)
+        console.log("Initial created record: ", resp)
 
         if (resp.status === 201) {
           // resp.links
-          const recordId = resp.data.record_id
+          const recordId = resp.data.resource_id
+          await this.updateRecord(recordId, depositionMetadata)
+          
           const formMetadata = await this.read(recordId)
-
+          console.log(formMetadata)
           // Save to CZHub
-          const czResp = await axios.get(`/api/draft/${this.entity}/${recordId}`)
+          Submission.insertOrUpdate(formMetadata)
+
+          // const czResp = await axios.get(`/api/draft/${this.entity}/${recordId}`)
           // console.log(czResp)
-
+          
           // TODO: insert into Submission model
-
+          
           return { recordId, formMetadata }
         }
         else {
@@ -130,6 +137,26 @@ export default class HydroShare extends Repository {
       //   this.edit = false;
       //   this.message = error.message;
       // });
+    }
+  }
+
+  private static async updateRecord(recordId: string, formMetadata: any) {
+    const hydroShare = this.get()
+    console.log(formMetadata)
+    if (hydroShare) {
+      const url = sprintf(hydroShare.urls?.updateUrl, recordId)
+
+      // TODO: this request is failing with internal server error
+      const resp = await axios.put(
+        url,
+        formMetadata.metadata,
+        { 
+          headers: { "Content-Type": "application/json"},
+          params: { "access_token": this.accessToken },
+        } as AxiosRequestConfig
+      )
+
+      console.log(resp)
     }
   }
 }

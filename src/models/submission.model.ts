@@ -56,9 +56,10 @@ export default class Submission extends Model implements ISubmission {
       this.commit((state) => {
         return state.isFetching = true
       })
-      let resp = await axios.get('/api/submissions')
+      const resp = await axios.get('/api/submissions')
       if (resp.status === 200) {
         let data = resp.data as any[]
+        console.log(data)
         data = data.map(this.getInsertData)
         this.insertOrUpdate({ data })
       }

@@ -4,10 +4,10 @@
       <cz-submission :submissionId="+submissionId"/>
     </template>
     <template v-else>
-      <div class="cz-submissions--header">
+      <div class="cz-submissions--header has-space-bottom-2x">
         <h1 class="md-display-1">My Submissions</h1>
         <hr>
-        <div class="md-layout md-alignment-center-space-between">
+        <div v-if="!isFetching && submissions.length" class="md-layout md-alignment-center-space-between">
           <md-card style="flex-grow: 1; margin-right: 2rem;">
             <md-card-content id="filters" class="md-layout">
               <md-field class="md-layout-item">
@@ -44,72 +44,93 @@
         </div>
       </div>
 
-      <div>
-        <div class="md-layout md-alignment-center-space-between">
-          <h3 class="md-title has-space-bottom">{{ submissions.length }} Total Submissions</h3>
-          <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
+      <template v-if="isFetching">
+        <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+      </template>
+      <template v-else>
+        <div v-if="submissions.length">
+          <div class="md-layout md-alignment-center-space-between">
+            <h3 class="md-title has-space-bottom">{{ submissions.length }} Total Submissions</h3>
+            <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
+          </div>
+
+          <md-card class="panel">
+            <md-toolbar class="md-layout md-alignment-center-space-between" md-elevation="0">
+              <md-button class="md-raised">Export Submissions</md-button>
+              <!-- <hr class="is-hidden-tablet"> -->
+              <div class="md-layout-item md-layout md-alignment-center-flex-end md-size-50 md-small-size-100 md-gutter">
+                <md-field class="md-layout-item">
+                  <label for="sorts">Sort</label>
+                  <md-select v-model="currentSort.defaultSort" id="sorts" md-dense>
+                    <md-option v-for="sort in sortOptions" :value="sort" :key="sort">{{ enumSubmissionSorts[sort] }}</md-option>
+                  </md-select>
+                </md-field>
+
+                <md-field class="md-layout-item">
+                  <md-select v-model="currentSort.defaultSortDirection" md-dense>
+                    <md-option v-for="direction in sortDirectionOptions" :value="direction" :key="direction">{{ enumSortDirections[direction] }}</md-option>
+                  </md-select>
+                </md-field>
+              </div>
+            </md-toolbar>
+
+            <md-card-content v-if="!isFetching">
+              <md-table v-model="filteredSubmissions" :md-sort="currentSort.defaultSort" :md-sort-order="currentSort.defaultSortDirection" ref="submissionsTable">
+                <md-table-row slot="md-table-row" slot-scope="{ item }">
+                  <md-table-cell>
+                    <b>Title: </b> <span class="md-subheading">{{ item.title }}</span>
+                    <p class="has-text-left"><b>Authors: </b>{{ item.authors.join(', ')}}</p>
+                    <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[item.repository].name }}</p>
+                    <p class="has-text-left"><b>Submission Date: </b>{{ item.date.toLocaleDateString() }}</p>
+                    <p class="has-text-left"><b>Status: </b>{{ enumSubmissionStatus[item.status] }}</p>
+                    <p class="has-text-left"><b>Identifier: </b>{{ item.identifier }}</p>
+                  </md-table-cell>
+
+                  <md-table-cell>
+                    <div class="md-layout actions" style="flex-direction: column;">
+                      <md-button class="md-raised md-accent" expanded size="is-medium" type="is-primary">View Record In Repository</md-button>
+                      <!-- <md-button class="md-raised md-primary" expanded size="is-medium">Edit Submission</md-button> -->
+                      <!-- <md-button class="md-raised md-primary" expanded size="is-medium">Update Record</md-button> -->
+                      <md-button class="md-raised md-primary" expanded size="is-medium" @click="goToSubmission(item.id)">View</md-button>
+                    </div>
+                  </md-table-cell>
+                </md-table-row>
+
+                <!-- TODO: this feature is not released yet -->
+                <!-- https://www.creative-tim.com/vuematerial/components/table -->
+                <md-table-pagination
+                  :md-page-size="5"
+                  :md-page-options="[5, 10, 15, 20]"
+                  :md-update="updatePagination"
+                  :md-data="filteredSubmissions"
+                  :md-paginated-data.sync="paginatedSubmissions" />
+    <!-- 
+                <md-table-empty-state
+                  md-label="No submissions found"
+                  :md-description="`No submissions found for this '${filters.searchStr}' query. Try a different search term or create a new submissions.`">
+                  <md-button class="md-primary md-raised" @click="null">Create New Submission</md-button>
+                </md-table-empty-state> -->
+              </md-table>
+            </md-card-content>
+          </md-card>
         </div>
 
-        <md-card class="panel">
-          <md-toolbar class="md-layout md-alignment-center-space-between" md-elevation="0">
-            <md-button class="md-raised">Export Submissions</md-button>
-            <!-- <hr class="is-hidden-tablet"> -->
-            <div class="md-layout-item md-layout md-alignment-center-flex-end md-size-50 md-small-size-100 md-gutter">
-              <md-field class="md-layout-item">
-                <label for="sorts">Sort</label>
-                <md-select v-model="currentSort.defaultSort" id="sorts" md-dense>
-                  <md-option v-for="sort in sortOptions" :value="sort" :key="sort">{{ enumSubmissionSorts[sort] }}</md-option>
-                </md-select>
-              </md-field>
+        <md-empty-state
+          v-else
+          md-icon="devices_other"
+          md-label="Create your first submission"
+          md-description="Assemble your data files and metadata using our templates and submit directly to a supported repository.">
+          <md-speed-dial md-direction="bottom">
+            <md-speed-dial-target>
+              <md-icon>add</md-icon>
+            </md-speed-dial-target>
 
-              <md-field class="md-layout-item">
-                <md-select v-model="currentSort.defaultSortDirection" md-dense>
-                  <md-option v-for="direction in sortDirectionOptions" :value="direction" :key="direction">{{ enumSortDirections[direction] }}</md-option>
-                </md-select>
-              </md-field>
-            </div>
-          </md-toolbar>
-
-          <md-card-content v-if="!isFetching">
-            <md-table v-model="filteredSubmissions" :md-sort="currentSort.defaultSort" :md-sort-order="currentSort.defaultSortDirection" ref="submissionsTable">
-              <md-table-row slot="md-table-row" slot-scope="{ item }">
-                <md-table-cell>
-                  <b>Title: </b> <span class="md-subheading">{{ item.title }}</span>
-                  <p class="has-text-left"><b>Authors: </b>{{ item.authors.join(', ')}}</p>
-                  <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[item.repository].name }}</p>
-                  <p class="has-text-left"><b>Submission Date: </b>{{ item.date.toLocaleDateString() }}</p>
-                  <p class="has-text-left"><b>Status: </b>{{ enumSubmissionStatus[item.status] }}</p>
-                  <p class="has-text-left"><b>Identifier: </b>{{ item.identifier }}</p>
-                </md-table-cell>
-
-                <md-table-cell>
-                  <div class="md-layout actions" style="flex-direction: column;">
-                    <md-button class="md-raised md-accent" expanded size="is-medium" type="is-primary">View Record In Repository</md-button>
-                    <!-- <md-button class="md-raised md-primary" expanded size="is-medium">Edit Submission</md-button> -->
-                    <!-- <md-button class="md-raised md-primary" expanded size="is-medium">Update Record</md-button> -->
-                    <md-button class="md-raised md-primary" expanded size="is-medium" @click="goToSubmission(item.id)">View</md-button>
-                  </div>
-                </md-table-cell>
-              </md-table-row>
-
-              <!-- TODO: this feature is not released yet -->
-              <!-- https://www.creative-tim.com/vuematerial/components/table -->
-              <md-table-pagination
-                :md-page-size="5"
-                :md-page-options="[5, 10, 15, 20]"
-                :md-update="updatePagination"
-                :md-data="filteredSubmissions"
-                :md-paginated-data.sync="paginatedSubmissions" />
-  <!-- 
-              <md-table-empty-state
-                md-label="No submissions found"
-                :md-description="`No submissions found for this '${filters.searchStr}' query. Try a different search term or create a new submissions.`">
-                <md-button class="md-primary md-raised" @click="null">Create New Submission</md-button>
-              </md-table-empty-state> -->
-            </md-table>
-          </md-card-content>
-        </md-card>
-      </div>
+            <md-speed-dial-content>
+              <md-button  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</md-button>
+            </md-speed-dial-content>
+          </md-speed-dial>
+        </md-empty-state>
+      </template>
     </template>
   </div>
 </template>
@@ -306,7 +327,19 @@
       button {
         width: 100%;
       }
+
+      button + button {
+        margin-top: 1rem;
+      }
     }
+  }
+
+  .md-empty-state .md-speed-dial-content {
+    position: absolute;
+    top: 6rem;
+    align-items: flex-end;
+    width: 12rem;
+    left: -3rem;
   }
 
   .cz-submissions--header .md-card {

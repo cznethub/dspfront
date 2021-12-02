@@ -41,6 +41,8 @@ import {
   MdDatepicker,
   MdSpeedDial,
   MdDivider,
+  MdEmptyState,
+  MdProgress,
 } from 'vue-material/dist/components'
 
 /** Material modules */
@@ -64,6 +66,8 @@ Vue.use(MdChips)
 Vue.use(MdDatepicker)
 Vue.use(MdSpeedDial)
 Vue.use(MdDivider)
+Vue.use(MdEmptyState)
+Vue.use(MdProgress)
 
 // https://github.com/vuematerial/vue-material/issues/2285
 Vue.config.errorHandler = (err, vm, info) => {
