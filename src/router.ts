@@ -50,7 +50,7 @@ export function setupRouteGuards() {
   router.beforeEach((to, from, next) => {
     if (to.meta?.hasAccessTokenGuard) {
       let activeRepository: typeof Repository | null = null
-      let key = to.params.repository
+      const key = to.params.repository
 
       switch (key) {
         case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;

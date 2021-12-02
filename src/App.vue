@@ -116,6 +116,9 @@
     }
 
     protected isPathActive(path: string) {
+      if (path === '/' && this.$route.path !== '/') {
+        return false
+      }
       const matchedRoute = this.$router.match(path)
       const isActive = this.$route.matched.some(r => r.name === matchedRoute.name)
 

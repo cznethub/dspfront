@@ -12,6 +12,7 @@ import CzRecommendations from '@/components/recommendations/cz.recommendations.v
 import CzSubmissions from '@/components/submissions/cz.submissions.vue'
 import CzLogin from '@/components/account/cz.login.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
+import CzSubmission from '@/components/submission/cz.submission.vue'
 import CzAuthorize from '@/components/authorize/cz.authorize.vue'
 
 export const routes: RouteConfig[] = [
@@ -49,12 +50,20 @@ export const routes: RouteConfig[] = [
   },
   {
     name: 'submissions',
-    path: '/submissions',
+    path: '/submissions/:id?',
     components: {
       content: CzSubmissions,
       footer: CzFooter
     },
-    meta: { hasLoggedInGuard: true }
+    meta: { hasLoggedInGuard: true },
+  },
+  {
+    name: 'about',
+    path: '/about',
+    components: {
+      content: CzAbout,
+      footer: CzFooter
+    },
   },
   {
     name: 'submit',
