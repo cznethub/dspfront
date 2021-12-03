@@ -46,8 +46,8 @@
           <p class="has-text-mute">The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will create a metadata record for the dataset within the HydroShare repository to ensure that your data can still be discovered with all of the other CZCN research products.</p>
           <md-button class="md-raised md-accent">Register</md-button>
         </div>
-        <!-- <md-icon class="md-size-4x md-layout-item md-size-50">post_add</md-icon> -->
-        <img class="md-layout-item md-size-50 md-small-size-100" :src="require('@/assets/img/placeholder.png')" alt="">
+        <md-icon class="md-size-5x md-layout-item" style="font-size: 20rem !important;">cloud_done</md-icon>
+        <!-- <img class="md-layout-item md-size-50 md-small-size-100" :src="require('@/assets/img/placeholder.png')" alt=""> -->
       </section>
     </template>
     <template v-else>

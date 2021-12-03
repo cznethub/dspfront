@@ -7,7 +7,7 @@
             <img class="logo" :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network logo">
           </router-link>
           <div class="spacer"></div>
-          <div id="nav-items" class="has-space-right md-elevation-2">
+          <div class="nav-items has-space-right md-elevation-2 md-medium-hide">
             <router-link to="/">
               <md-button :class="{'is-active md-raised md-accent': isPathActive('/')}" :md-ripple="false">Home</md-button>
             </router-link>
@@ -15,8 +15,12 @@
               <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button>
             </router-link>
           </div>
-          <router-link v-if="!isLoggedIn" to="/login"><md-button class="md-raised">Log In</md-button></router-link>
-          <md-button v-else class="md-raised" @click="logOut()">Log Out</md-button>
+          <router-link v-if="!isLoggedIn" to="/login" class="md-medium-hide"><md-button class="md-raised">Log In</md-button></router-link>
+          <md-button v-else class="md-raised md-medium-hide" @click="logOut()">Log Out</md-button>
+
+          <md-button class="md-icon-button md-raised mobile-nav-trigger" @click="showMobileNavigation = true">
+            <md-icon>menu</md-icon>
+          </md-button>
         </div>
       </md-app-toolbar>
 
@@ -48,6 +52,48 @@
       @md-cancel="dialog.onCancel"
       @md-confirm="dialog.onConfirm" />
 
+    <md-drawer class="mobile-nav-items" :md-active.sync="showMobileNavigation" md-swipeable>
+      <md-toolbar class="md-transparent" md-elevation="0">
+        <div style="width: 100%;">
+          <router-link :to="{ path: `/` }">
+            <img :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network logo">
+          </router-link>
+          <hr>
+        </div>
+      </md-toolbar>
+
+      <md-list class="nav-items">
+        <router-link to="/" tag="div">
+          <md-list-item>
+            <md-icon>home</md-icon>
+            <span class="md-list-item-text">Home</span>
+          </md-list-item>
+        </router-link>
+
+        <router-link v-for="path of paths" :key="path.to" :to="path.to">
+          <!-- <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button> -->
+          <md-list-item :class="{'is-active': isPathActive(path.to)}">
+            <md-icon>{{ path.icon }}</md-icon>
+            <span class="md-list-item-text">{{ path.label }}</span>
+          </md-list-item>
+        </router-link>
+
+        <md-divider></md-divider>
+
+        <router-link v-if="!isLoggedIn" to="/login">
+          <md-list-item :class="{'is-active': isPathActive('/login')}">
+            <md-icon>login</md-icon>
+            <span class="md-list-item-text">Log In</span>
+          </md-list-item>
+        </router-link>
+
+        <md-list-item v-else @click="logOut()">
+          <md-icon>logout</md-icon>
+          <span class="md-list-item-text">Log Out</span>
+        </md-list-item>
+      </md-list>
+    </md-drawer>
+
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
   </div>
 </template>
@@ -71,6 +117,7 @@
     protected isLoading = true
     protected onToast!: Subscription
     protected onOpenDialog!: Subscription
+    protected showMobileNavigation = false
 
     protected snackbar: IToast & { isActive: boolean, isInfinite: boolean } = {
       message: '',
@@ -92,11 +139,11 @@
     }
 
     protected paths = [
-      { to: '/submissions', label: 'My Submissions'},
-      { to: '/resources', label: 'Resources'},
-      { to: '/submit', label: 'Submit Data'},
-      { to: '/about', label: 'About'},
-      { to: '/contact', label: 'Contact'},
+      { to: '/submissions', label: 'My Submissions', icon: 'collections_bookmark' },
+      { to: '/resources', label: 'Resources', icon: 'local_library' },
+      { to: '/submit', label: 'Submit Data', icon: 'upload_file' },
+      { to: '/about', label: 'About', icon: 'help' },
+      { to: '/contact', label: 'Contact', icon: 'contact_page' },
     ]
 
     protected get isLoggedIn() {
@@ -214,7 +261,7 @@
     box-shadow: none;
   }
 
-  #nav-items {
+  .nav-items {
     background: var(--md-theme-default-background, #fff);
     border-radius: 2rem;
     overflow: hidden;
@@ -228,6 +275,28 @@
     .md-button {
       margin: 0;
       border-radius: 0;
+    }
+
+    /deep/ .md-list-item .md-list-item-content {
+      color: inherit;
+    }
+
+    /deep/ .md-list-item.is-active .md-list-item-content,
+    /deep/ .router-link-exact-active .md-list-item-content {
+      color: var(--md-theme-default-text-primary-on-accent, #fff) !important;
+      background-color: var(--md-theme-default-accent, #0277bd);
+
+      .md-icon {
+        color: var(--md-theme-default-text-primary-on-accent, #fff) !important;
+      }
+    }
+  }
+
+  @media screen and (min-width: 1279px) {
+    /deep/ .md-list.nav-items,
+    /deep/ .md-drawer.mobile-nav-items,
+    .mobile-nav-trigger {
+      display: none;
     }
   }
 </style>

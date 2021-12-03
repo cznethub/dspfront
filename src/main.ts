@@ -43,6 +43,7 @@ import {
   MdDivider,
   MdEmptyState,
   MdProgress,
+  MdDrawer,
 } from 'vue-material/dist/components'
 
 /** Material modules */
@@ -68,6 +69,7 @@ Vue.use(MdSpeedDial)
 Vue.use(MdDivider)
 Vue.use(MdEmptyState)
 Vue.use(MdProgress)
+Vue.use(MdDrawer)
 
 // https://github.com/vuematerial/vue-material/issues/2285
 Vue.config.errorHandler = (err, vm, info) => {
