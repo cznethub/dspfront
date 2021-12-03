@@ -1,6 +1,6 @@
 <template>
   <div class="cz-new-submission">
-    <h1 class="md-display-1">New Submission</h1>
+    <h1 class="md-display-1">{{ formTitle }}</h1>
     <hr>
     <section class="section">
       <div class="container">
@@ -9,7 +9,7 @@
           <div>
             <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
             <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
-              {{ isSaving ? 'Saving...' : 'Save' }}
+              {{ isSaving ? 'Saving...' : submitText }}
             </md-button>
           </div>
         </div>
@@ -86,6 +86,7 @@
   import Repository from '@/models/repository.model'
   import HydroShare from '@/models/hydroshare.model'
   import Zenodo from '@/models/zenodo.model'
+import CzNotification from '@/models/notifications.model'
 
   const sprintf = require('sprintf-js').sprintf
 
@@ -109,6 +110,10 @@
     protected dropFiles: File[] = []
     protected showUISchema = false
     protected usedUISchema = {}
+
+    protected get isEditMode() {
+      return this.$route.params.id !== undefined
+    }
 
     protected get schema() {
       return this.activeRepository?.get()?.schema
@@ -136,6 +141,14 @@
       }
     }
 
+    protected get formTitle() {
+      return this.isEditMode ? 'Edit Submission' : 'New Submission'
+    }
+
+    protected get submitText() {
+      return this.isEditMode ? 'Save Changes' : 'Save'
+    }
+
     created() {
       this.data = this.schemaDefaults
       const routeRepositoryKey = this.$route.params.repository as EnumRepositoryKeys
@@ -145,6 +158,27 @@
         if (EnumRepositoryKeys[routeRepositoryKey]) {
           this.setActiveRepository(routeRepositoryKey)
         }
+      }
+
+      if (this.isEditMode) {
+        this.recordId = ''  // TODO: get the recordId and update it here
+        this.loadExistingSubmission()
+      }
+    }
+
+    protected async loadExistingSubmission() {
+      console.info('CzNewSubmission: reading existing record...')
+      const submission = await this.activeRepository?.read(this.recordId)
+
+      console.log(submission)
+
+      if (submission?.recordId) {
+        this.data = {
+          ...this.data,
+          ...submission?.formMetadata.metadata,
+        }
+        this.links = submission?.formMetadata.links // Has useful links, i.e: bucket for upload
+        this.recordId = submission?.recordId
       }
     }
 
@@ -161,10 +195,12 @@
     protected async save() {
       this.isSaving = true
 
+      let submission
+
       // If first time saving, create a new record
       if (!this.recordId) {
         console.info('CzNewSubmission: creating new record...')
-        const submission = await this.activeRepository?.createSubmission(this.data)
+        submission = await this.activeRepository?.createSubmission(this.data)
 
         if (submission?.recordId) {
           this.data = {
@@ -176,15 +212,25 @@
         }
       }
       else {
-        this.activeRepository?.updateMetadata(this.data, this.recordId)
+        console.info('CzNewSubmission: Saving to existing record...')
+        this.activeRepository?.updateRepositoryRecord(this.recordId, this.data)
       }
 
       // If files have been selected for upload, upload them
       if (this.dropFiles.length) {
         const url = sprintf(this.activeRepository?.get()?.urls?.fileCreateUrl, this.recordId) 
-        this.activeRepository?.uploadFiles(url, this.dropFiles)
+        await this.activeRepository?.uploadFiles(url, this.dropFiles)
       }
 
+      // Indicate that changes have been saved
+      CzNotification.toast({
+        message: 'Your submission has been saved!'
+      })
+
+      if (!this.isEditMode && submission) {
+        this.$router.push({ name: 'submissions', params: { id: submission.id.toString()}})
+      }
+      
       this.isSaving = false
     }
 

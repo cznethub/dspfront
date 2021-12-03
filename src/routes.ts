@@ -75,7 +75,7 @@ export const routes: RouteConfig[] = [
     children: [
       {
         name: 'submit.repository',
-        path: ':repository',
+        path: ':repository/:id?',
         components: {
           default: CzNewSubmission,
         },

@@ -21,7 +21,7 @@ export enum EnumSubmissionStatus {
 export enum EnumRepositoryKeys {
   hydroshare = 'hydroshare',
   zenodo = 'zenodo',
-  // earthChemLibrary = 'earthChemLibrary',
+  earthChemLibrary = 'earthChemLibrary',
   // openTopography = 'openTopography',
   // sesar = 'sesar',
   // other = 'other'
@@ -45,6 +45,7 @@ export interface IRepositoryUrls {
   createUrl: string
   updateUrl: string // To update metadata
   readUrl: string
+  deleteUrl: string,
   fileCreateUrl: string
   fileDeleteUrl: string
   fileReadUrl: string
@@ -62,4 +63,5 @@ export interface IRepository {
   schema?: any,
   uischema?: any
   schemaDefaults?: any
+  isDisabled?: boolean
 }

@@ -1,8 +1,9 @@
 
 import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { router } from '@/router';
-import axios from "axios"
+import axios, { AxiosRequestConfig } from "axios"
 import Repository from './repository.model'
+import Submission from './submission.model';
 
 const sprintf = require('sprintf-js').sprintf
 
@@ -40,6 +41,7 @@ export default class Zenodo extends Repository {
         const depositionMetadata = data
           ? { metadata: data }
           : { }
+        
         const resp = await axios.post(
           zenodo.urls?.createUrl || '',
           depositionMetadata,
@@ -55,10 +57,11 @@ export default class Zenodo extends Repository {
           const formMetadata = await this.read(recordId)
 
           // Save to CZHub
-          const czResp = await axios.get(`/api/draft/${this.entity}/${recordId}`)
-          // console.log(czResp)
+          const czHubRecord = await axios.get(`/api/draft/${this.entity}/${recordId}`)
+          console.log(czHubRecord)
 
-          // TODO: insert into Submission model
+          Submission.insertOrUpdate({ data: Submission.getRepoApiInsertData(formMetadata, this.entity)})
+
           return { recordId, formMetadata }
         }
         else {
@@ -106,8 +109,28 @@ export default class Zenodo extends Repository {
     // TODO: indicate to Cz api that files were uploaded
   }
 
-  private static async read(recordId: string) {
+  static async deleteRecord(recordId: string) {
     const zenodo = this.get()
+    
+    if (zenodo) {
+      const url = sprintf(zenodo.urls?.deleteUrl, recordId)
+
+      await axios.delete(
+        url,
+        { 
+          headers: { "Content-Type": "application/json"},
+          params: { "access_token": this.accessToken },
+        } as AxiosRequestConfig
+      )
+
+      // Delete on CZHub
+      await axios.delete(`/api/draft/${this.entity}/${recordId}`)
+    }
+  }
+
+  static async read(recordId: string) {
+    const zenodo = this.get()
+    
     if (zenodo) {
       const url = sprintf(zenodo.urls?.readUrl, recordId)
       const resp = await axios.get(url, { params: { "access_token": this.accessToken } })
@@ -115,18 +138,27 @@ export default class Zenodo extends Repository {
         return resp.data
       }
       else {
-        return {}
+        return { }
       }
-      // .then((resp) => {
-      //   this.data = this.metadataKey ? resp.data["metadata"] : resp.data;
-      //   this.edit = true;
-      //   this.loadFiles = true
-      // })
-      // .catch((error) => {
-      //   this.data = {}
-      //   this.edit = false;
-      //   this.message = error.message;
-      // });
+    }
+  }
+
+  static async updateRepositoryRecord(recordId: string, metadata: any) {
+    const hydroShare = this.get()
+    if (hydroShare) {
+      const url = sprintf(hydroShare.urls?.updateUrl, recordId)
+
+      await axios.put(
+        url,
+        metadata,
+        { 
+          headers: { "Content-Type": "application/json"},
+          params: { "access_token": this.accessToken },
+        } as AxiosRequestConfig
+      )
+
+      // Save to CZHub
+      await this.updateCzHubRecord(recordId)
     }
   }
 }

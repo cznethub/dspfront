@@ -2,6 +2,26 @@ import { ISubmission, EnumSubmissionStatus, EnumRepositoryKeys } from '@/compone
 import { Model } from '@vuex-orm/core'
 import axios from "axios"
 
+export interface IApiRecordHs {
+  abstract: string
+  additional_metadata: any
+  awards: any[]
+  citation: string
+  contributors: []
+  created: string
+  creators: any[]
+  identifier: string
+  language: string
+  modified: string
+  relations: []
+  rights: { statement: string, url: string }
+  sources: any[]
+  subjects: any[]
+  title: string
+  type: string
+  url: string
+}
+
 export default class Submission extends Model implements ISubmission {
   // This is the name used as module name of the Vuex Store.
   static entity = 'submissions'
@@ -51,12 +71,38 @@ export default class Submission extends Model implements ISubmission {
     }
   }
 
+  static getRepoApiInsertData(apiRecord: IApiRecordHs, repositoryKey: string): Partial<ISubmission> {
+    if (repositoryKey === EnumRepositoryKeys.hydroshare) {
+      return {
+        title: apiRecord.title,
+        authors: apiRecord.creators,
+        repository: EnumRepositoryKeys.hydroshare,
+        date: new Date(apiRecord.modified || apiRecord.created),
+        identifier: apiRecord.identifier,
+      }
+    }
+    else if (repositoryKey === EnumRepositoryKeys.zenodo) {
+      // TODO: add zenodo transormations
+      return {
+        title: apiRecord.title,
+        // authors: apiRecord.creators,
+        repository: EnumRepositoryKeys.zenodo,
+        date: new Date(apiRecord.modified || apiRecord.created),
+        identifier: apiRecord.identifier,
+      }
+    }
+    
+    return {}
+  }
+
   static async fetchSubmissions() {
     try {
       this.commit((state) => {
         return state.isFetching = true
       })
+      
       const resp = await axios.get('/api/submissions')
+
       if (resp.status === 200) {
         let data = resp.data as any[]
         console.log(data)

@@ -2,6 +2,7 @@ import { Model } from '@vuex-orm/core'
 import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
 import { repoMetadata } from "@/components/submit/constants";
 import axios from "axios";
+import Submission from './submission.model';
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
@@ -129,6 +130,7 @@ export default class Repository extends Model implements IRepository {
         createUrl: resp.data.create,
         updateUrl: resp.data.update,
         readUrl: resp.data.read,
+        deleteUrl: '',
         fileCreateUrl: resp.data.file_create,
         fileDeleteUrl: resp.data.file_delete,
         fileReadUrl: resp.data.file_read,
@@ -168,5 +170,14 @@ export default class Repository extends Model implements IRepository {
     return Repository.query().where('key', this.entity).withAll().first()
   }
 
+  static async updateCzHubRecord(recordId: string) {
+    const response = await axios.get(`/api/draft/${this.entity}/${recordId}`) // TODO: (bug) getting an id null in this response
+    const inserted = await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
+    return inserted.submissions[0]
+  }
+
   protected static createSubmission: (data?: any) => Promise<{ recordId: string, formMetadata: any} | null>
+  protected static deleteRecord: (recordId: string) => Promise<any>
+  protected static read: (recordId: string) => Promise<any>
+  protected static updateRepositoryRecord: (recordId: string, metadata: any) => Promise<any>
 }

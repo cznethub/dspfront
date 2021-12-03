@@ -1,7 +1,7 @@
 <template>
   <div class="cz-submissions">
     <template v-if="submissionId !== undefined" >
-      <cz-submission :submissionId="+submissionId"/>
+      <cz-submission :submissionId="+submissionId" @edit="goToEditSubmission($event)"/>
     </template>
     <template v-else>
       <div class="cz-submissions--header has-space-bottom-2x">
@@ -88,10 +88,11 @@
 
                   <md-table-cell>
                     <div class="md-layout actions" style="flex-direction: column;">
-                      <md-button class="md-raised md-accent" expanded size="is-medium" type="is-primary">View Record In Repository</md-button>
+                      <md-button class="md-raised md-accent" expanded size="is-medium" type="is-primary"><md-icon>open_in_new</md-icon> View In Repository</md-button>
                       <!-- <md-button class="md-raised md-primary" expanded size="is-medium">Edit Submission</md-button> -->
-                      <!-- <md-button class="md-raised md-primary" expanded size="is-medium">Update Record</md-button> -->
-                      <md-button class="md-raised md-primary" expanded size="is-medium" @click="goToSubmission(item.id)">View</md-button>
+                      <md-button class="md-raised" @click="goToSubmission(item.id)">View</md-button>
+                      <md-button class="md-raised" @click="onUpdateRecord(item)"><md-icon>sync</md-icon> Update Record</md-button>
+                      <md-button class="md-raised" @click="goToEditSubmission(item)"><md-icon>edit</md-icon> Edit</md-button>
                     </div>
                   </md-table-cell>
                 </md-table-row>
@@ -142,6 +143,8 @@
   import CzSubmission from '@/components/submission/cz.submission.vue'
   import Submission from '@/models/submission.model'
   import Repository from '@/models/repository.model'
+import HydroShare from '@/models/hydroshare.model'
+import Zenodo from '@/models/zenodo.model'
 
   @Component({
     name: 'cz-submissions',
@@ -204,6 +207,16 @@
       return this.$route.params.id
     }
 
+    // TODO: add to a mixin and reuse
+    protected get activeRepository() {
+      const key = Repository.$state.submittingTo
+      switch (key) {
+        case EnumRepositoryKeys.hydroshare: return HydroShare
+        case EnumRepositoryKeys.zenodo: return Zenodo
+        default: return HydroShare
+      }
+    }
+
     protected searchOnTable() {
       const data = this.submissions
       // const data = SUBMISSIONS // TESTING
@@ -248,6 +261,17 @@
 
     protected goToSubmission(submissionId: number){
       this.$router.push({ name: 'submissions', params: { id: submissionId.toString() }})
+    }
+
+    protected goToEditSubmission(submission: ISubmission) {
+      const repo: IRepository = repoMetadata[submission.repository]
+      this.$router.push({ name: 'submit.repository', params: { repository: repo.key, id: submission.id.toString() }})
+    }
+
+    protected async onUpdateRecord(submission: ISubmission) {
+      // TODO: use the recordId to update the data in the submission
+      const recordId = ''
+      await this.activeRepository.updateCzHubRecord(recordId)
     }
 
     // TODO: move to mixin and reuse

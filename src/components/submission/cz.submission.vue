@@ -5,7 +5,7 @@
     <div v-if="submission">
       <div class="md-layout md-alignment-center-right actions">
         <md-button class="md-raised" @click="onDelete"><md-icon>delete</md-icon> Delete</md-button>
-        <md-button class="md-raised"><md-icon>edit</md-icon> Edit</md-button>
+        <md-button class="md-raised" @click="$emit('edit', submission)"><md-icon>edit</md-icon> Edit</md-button>
         <md-button class="md-raised md-accent"><md-icon>open_in_new</md-icon> View In Repository</md-button>
       </div>
 
@@ -22,9 +22,12 @@
 <script lang="ts">
   import { Component, Vue, Prop } from 'vue-property-decorator'
   import { repoMetadata } from '../submit/constants'
-  import { EnumSubmissionStatus } from '@/components/submissions/types'
+  import { EnumRepositoryKeys, EnumSubmissionStatus } from '@/components/submissions/types'
   import Submission from '@/models/submission.model'
   import CzNotification from '@/models/notifications.model'
+  import Repository from '@/models/repository.model'
+  import HydroShare from '@/models/hydroshare.model'
+  import Zenodo from '@/models/zenodo.model'
 
   @Component({
     name: 'cz-submission',
@@ -40,6 +43,16 @@
       return Submission.find(this.submissionId)
     }
 
+    // TODO: add to a mixin and reuse
+    protected get activeRepository() {
+      const key = Repository.$state.submittingTo
+      switch (key) {
+        case EnumRepositoryKeys.hydroshare: return HydroShare
+        case EnumRepositoryKeys.zenodo: return Zenodo
+        default: return Zenodo
+      }
+    }
+
     protected onDelete() {
       CzNotification.openDialog({
         title: 'Delete this submission?',
@@ -47,7 +60,7 @@
         confirmText: 'Delete',
         cancelText: 'Cancel',
         onConfirm: () => {
-          
+          this.activeRepository.deleteRecord(this.submissionId.toString())
         }
       })
     }

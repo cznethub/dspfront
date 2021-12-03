@@ -1,5 +1,5 @@
 
-import { EnumRepositoryKeys } from '@/components/submissions/types'
+import { EnumRepositoryKeys, ISubmission } from '@/components/submissions/types'
 import { router } from '@/router';
 import axios, { AxiosRequestConfig } from "axios"
 import Repository from './repository.model'
@@ -17,31 +17,14 @@ export default class HydroShare extends Repository {
     }
   }
 
-  static async updateMetadata(data: { [key: string]: any }, recordId?: string) {
-    const hydroShare = this.get()
-    if (hydroShare) {
-      const url = sprintf(hydroShare.urls?.readUrl, recordId)
-      const resp = await axios.put(
-        url, 
-        JSON.stringify(data),
-        { 
-          headers: {"Content-Type": "application/json"}, 
-          params: { access_token: this.accessToken },
-        },
-      )
-    }
-  }
-
-  static async createSubmission(data?: any): Promise<{ recordId: string, formMetadata: any} | null> {
+  static async createSubmission(data?: any): Promise<{ recordId: string, czHubRecordId: number, formMetadata: any } | null> {
     console.info("HydroShare: Creating submission...")
     
     const hydroShare = this.get()
     
     if (hydroShare) {
       try {
-        const depositionMetadata = data
-          ? { metadata: data }
-          : { }
+        const depositionMetadata = data || {}
 
         const resp = await axios.post(
           hydroShare.urls?.createUrl || '',
@@ -52,24 +35,17 @@ export default class HydroShare extends Repository {
           }
         )
 
-        console.log("Initial created record: ", resp)
-
         if (resp.status === 201) {
           // resp.links
           const recordId = resp.data.resource_id
-          await this.updateRecord(recordId, depositionMetadata)
-          
+          await this.updateRepositoryRecord(recordId, depositionMetadata)
           const formMetadata = await this.read(recordId)
-          console.log(formMetadata)
-          // Save to CZHub
-          Submission.insertOrUpdate(formMetadata)
 
-          // const czResp = await axios.get(`/api/draft/${this.entity}/${recordId}`)
-          // console.log(czResp)
+          const data = Submission.getRepoApiInsertData(formMetadata, this.entity)
+          const inserted = await Submission.insert({ data })
+          console.log(inserted)
           
-          // TODO: insert into Submission model
-          
-          return { recordId, formMetadata }
+          return { recordId, formMetadata, czHubRecordId: 0 }
         }
         else {
           // Unexpected response
@@ -115,48 +91,60 @@ export default class HydroShare extends Repository {
     const resp: PromiseSettledResult<any>[] = await Promise.allSettled(promises)
     // TODO: indicate to Cz api that files were uploaded
   }
-
-  private static async read(recordId: string) {
+  
+  static async deleteRecord(recordId: string) {
     const hydroShare = this.get()
-    if (hydroShare) {
-      const url = sprintf(hydroShare.urls?.readUrl, recordId)
-      const resp = await axios.get(url, { params: { "access_token": this.accessToken } })
-      if (resp.status === 200) {
-        return resp.data
-      }
-      else {
-        return {}
-      }
-      // .then((resp) => {
-      //   this.data = this.metadataKey ? resp.data["metadata"] : resp.data;
-      //   this.edit = true;
-      //   this.loadFiles = true
-      // })
-      // .catch((error) => {
-      //   this.data = {}
-      //   this.edit = false;
-      //   this.message = error.message;
-      // });
-    }
-  }
 
-  private static async updateRecord(recordId: string, formMetadata: any) {
-    const hydroShare = this.get()
-    console.log(formMetadata)
     if (hydroShare) {
-      const url = sprintf(hydroShare.urls?.updateUrl, recordId)
+      const url = sprintf(hydroShare.urls?.deleteUrl, recordId)
 
-      // TODO: this request is failing with internal server error
-      const resp = await axios.put(
+      await axios.delete(
         url,
-        formMetadata.metadata,
         { 
           headers: { "Content-Type": "application/json"},
           params: { "access_token": this.accessToken },
         } as AxiosRequestConfig
       )
 
-      console.log(resp)
+      // Delete on CZHub
+      await axios.delete(`/api/draft/${this.entity}/${recordId}`)
+    }
+  }
+
+  /** Reads a record from the repository */
+  static async read(recordId: string) {
+    const hydroShare = this.get()
+
+    if (hydroShare) {
+      const url = sprintf(hydroShare.urls?.readUrl, recordId)
+      const resp = await axios.get(url, { params: { "access_token": this.accessToken } })
+
+      if (resp.status === 200) {
+        return resp.data
+      }
+      else {
+        return {}
+      }
+    }
+  }
+
+  /** Updates the record in the repository. After that the record is updated in CzHub as well. */
+  static async updateRepositoryRecord(recordId: string, metadata: any) {
+    const hydroShare = this.get()
+    if (hydroShare) {
+      const url = sprintf(hydroShare.urls?.updateUrl, recordId)
+
+      await axios.put(
+        url,
+        metadata,
+        { 
+          headers: { "Content-Type": "application/json"},
+          params: { "access_token": this.accessToken },
+        } as AxiosRequestConfig
+      )
+
+      // Save to CZHub
+      await this.updateCzHubRecord(recordId)
     }
   }
 }
