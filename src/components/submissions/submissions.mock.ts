@@ -1,5 +1,5 @@
 import { repoMetadata } from "../submit/constants";
-import { ISubmission, EnumSubmissionStatus } from "./types";
+import { ISubmission } from "./types";
 
 const titles = [
   'A really awesome dataset',
@@ -16,11 +16,6 @@ const repos = [
   // repoMetadata.other.name,
 ]
 
-const status = [
-  EnumSubmissionStatus.draft,
-  EnumSubmissionStatus.submitted,
-]
-
 const numberOfSubmissions = 50
 
 export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmissions)).map((el, index) => {
@@ -30,7 +25,6 @@ export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmis
     authors: [getRandomElementFromArray(['Jeffery S. Horsburgh', 'Scott Black', 'Kerstin Lehnert'])],
     repository: getRandomElementFromArray(repos),
     date: getRandomDate(),
-    status: getRandomElementFromArray(status),
     identifier: 'http://doi.org/hs.xxxxxxx.123456789',
     url: 'https://beta.hydroshare.org/resource/72693ac3f5a146fca3b26aee2deefb4a/'
   }

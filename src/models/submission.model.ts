@@ -1,10 +1,6 @@
-import { ISubmission, EnumSubmissionStatus, EnumRepositoryKeys } from '@/components/submissions/types'
+import { ISubmission, EnumRepositoryKeys } from '@/components/submissions/types'
 import { Model } from '@vuex-orm/core'
 import axios from "axios"
-// import HydroShare from './hydroshare.model'
-// import Zenodo from './zenodo.model'
-
-const sprintf = require('sprintf-js').sprintf
 
 export interface IApiRecordHs {
   abstract: string
@@ -45,7 +41,6 @@ export default class Submission extends Model implements ISubmission {
   public authors!: string[]
   public repository!: EnumRepositoryKeys
   public date!: Date
-  public status!: EnumSubmissionStatus
   public identifier!: string
   public url!: string
 
@@ -69,7 +64,6 @@ export default class Submission extends Model implements ISubmission {
       authors: this.attr([]),
       // @ts-ignore
       date: this.date(null),
-      status: this.attr(''),
       identifier: this.attr(''),
       url: this.attr('')
     }
@@ -82,7 +76,6 @@ export default class Submission extends Model implements ISubmission {
       authors: [],
       repository: apiSubmission.repo_type,
       date: apiSubmission.submitted,
-      status: apiSubmission.status,
       identifier: apiSubmission.identifier,
       url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
     }

@@ -3,7 +3,6 @@ export interface ISubmission {
   authors: string[]
   repository: EnumRepositoryKeys
   date: Date
-  status: EnumSubmissionStatus
   identifier: string
   url: string
 }
@@ -11,11 +10,6 @@ export interface ISubmission {
 export interface IFolder {
   folders?: IFolder[]
   files?: any[]
-}
-
-export enum EnumSubmissionStatus {
-  draft = 'Draft',
-  submitted = 'Submitted'
 }
 
 export enum EnumRepositoryKeys {

@@ -17,13 +17,6 @@
               </md-field>
 
               <md-field class="md-layout-item">
-                <label for="status">Status</label>
-                <md-select v-model="filters.statusOptions" multiple id="status" md-dense>
-                  <md-option v-for="(status, index) of statusOptions" :key="index" :value="status">{{ enumSubmissionStatus[status] }}</md-option>
-                </md-select>
-              </md-field>
-
-              <md-field class="md-layout-item">
                 <label for="repository">Repository</label>
                 <md-select v-model="filters.repoOptions" multiple id="repository" md-dense>
                   <md-option v-for="(repo, index) of repoOptions" :key="index" :value="repo">{{ repoMetadata[repo].name }}</md-option>
@@ -82,7 +75,6 @@
                     <p class="has-text-left"><b>Authors: </b>{{ item.authors.join(', ')}}</p>
                     <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[item.repository].name }}</p>
                     <p class="has-text-left"><b>Submission Date: </b>{{ item.date.toLocaleDateString() }}</p>
-                    <p class="has-text-left"><b>Status: </b>{{ enumSubmissionStatus[item.status] }}</p>
                     <p class="has-text-left"><b>Identifier: </b>{{ item.identifier }}</p>
                   </md-table-cell>
 
@@ -143,7 +135,7 @@
 
 <script lang="ts">
   import { Component, Vue, Ref, Watch } from 'vue-property-decorator'
-  import { EnumSubmissionStatus, ISubmission, EnumSubmissionSorts, EnumSortDirections, EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
+  import { ISubmission, EnumSubmissionSorts, EnumSortDirections, EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
   import { repoMetadata } from '../submit/constants'
   import CzSubmission from '@/components/submission/cz.submission.vue'
   import Submission from '@/models/submission.model'
@@ -165,13 +157,11 @@
     }
 
     protected filters: {
-      statusOptions: string[],
       repoOptions: string[],
       searchStr: string
-    } = { statusOptions: [], repoOptions: [], searchStr: '' }
+    } = { repoOptions: [], searchStr: '' }
 
     protected repoMetadata = repoMetadata
-    protected enumSubmissionStatus = EnumSubmissionStatus
     protected enumSubmissionSorts = EnumSubmissionSorts
     protected enumSortDirections = EnumSortDirections
     protected filteredSubmissions: ISubmission[] = []
@@ -179,10 +169,6 @@
 
     protected get isFetching() {
       return Submission.$state.isFetching
-    }
-
-    protected get statusOptions() {
-      return Object.keys(EnumSubmissionStatus)
     }
 
     protected get repoOptions() {
@@ -226,17 +212,10 @@
     protected searchOnTable() {
       const data = this.submissions
       // const data = SUBMISSIONS // TESTING
-      const filteredStatus = this.filters.statusOptions //.map(s => EnumSubmissionStatus[s])
       const filteredRepos = this.filters.repoOptions //.map(r => repoMetadata[r].name)
       const query = this.filters.searchStr.toLowerCase().trim()
 
       this.filteredSubmissions = data.filter((d) => {
-        // Filter by status
-        if (filteredStatus.length) {
-          if (!filteredStatus.includes(d.status)) {
-            return false
-          }
-        }
 
         // Filter by repository
         if (filteredRepos.length) {

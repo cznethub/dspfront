@@ -13,7 +13,6 @@
       <p class="has-text-left"><b>Authors: </b>{{ submission.authors.join(', ')}}</p>
       <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[submission.repository].name }}</p>
       <p class="has-text-left"><b>Submission Date: </b>{{ submission.date.toLocaleDateString() }}</p>
-      <p class="has-text-left"><b>Status: </b>{{ enumSubmissionStatus[submission.status] }}</p>
       <p class="has-text-left"><b>Identifier: </b>{{ submission.identifier }}</p>
     </div>
   </div>
@@ -22,7 +21,7 @@
 <script lang="ts">
   import { Component, Vue, Prop } from 'vue-property-decorator'
   import { repoMetadata } from '../submit/constants'
-  import { EnumRepositoryKeys, EnumSubmissionStatus } from '@/components/submissions/types'
+  import { EnumRepositoryKeys } from '@/components/submissions/types'
   import Submission from '@/models/submission.model'
   import CzNotification from '@/models/notifications.model'
   import Repository from '@/models/repository.model'
@@ -35,7 +34,6 @@
   })
   export default class CzSubmission extends Vue {
     @Prop({ required: true }) identifier!: string
-    protected enumSubmissionStatus = EnumSubmissionStatus
     protected repoMetadata = repoMetadata
     protected isDeleting = false
 
