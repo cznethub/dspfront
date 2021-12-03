@@ -270,8 +270,7 @@ import Zenodo from '@/models/zenodo.model'
 
     protected async onUpdateRecord(submission: ISubmission) {
       // TODO: use the recordId to update the data in the submission
-      const recordId = ''
-      await this.activeRepository.updateCzHubRecord(recordId)
+      await this.activeRepository.updateCzHubRecord(submission.identifier)
     }
 
     // TODO: move to mixin and reuse

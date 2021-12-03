@@ -107,7 +107,7 @@ export default class HydroShare extends Repository {
       )
 
       // Delete on CZHub
-      await axios.delete(`/api/draft/${this.entity}/${recordId}`)
+      await axios.delete(`/api/submit/${this.entity}/${recordId}`)
     }
   }
 
