@@ -57,7 +57,7 @@ export default class Zenodo extends Repository {
           const formMetadata = await this.read(recordId)
 
           // Save to CZHub
-          const czHubRecord = await axios.get(`/api/draft/${this.entity}/${recordId}`)
+          const czHubRecord = await axios.put(`/api/submit/${this.entity}/${recordId}`)
           console.log(czHubRecord)
 
           Submission.insertOrUpdate({ data: Submission.getRepoApiInsertData(formMetadata, this.entity)})
@@ -124,7 +124,7 @@ export default class Zenodo extends Repository {
       )
 
       // Delete on CZHub
-      await axios.delete(`/api/draft/${this.entity}/${recordId}`)
+      await axios.delete(`/api/submit/${this.entity}/${recordId}`)
     }
   }
 

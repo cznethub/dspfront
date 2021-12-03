@@ -171,7 +171,7 @@ export default class Repository extends Model implements IRepository {
   }
 
   static async updateCzHubRecord(recordId: string) {
-    const response = await axios.get(`/api/draft/${this.entity}/${recordId}`) // TODO: (bug) getting an id null in this response
+    const response = await axios.put(`/api/submit/${this.entity}/${recordId}`) // TODO: (bug) getting an id null in this response
     const inserted = await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
     return inserted.submissions[0]
   }
