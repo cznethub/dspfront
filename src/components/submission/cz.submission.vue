@@ -4,7 +4,7 @@
     <hr>
     <div v-if="submission">
       <div class="md-layout md-alignment-center-right actions">
-        <md-button class="md-raised" @click="onDelete"><md-icon>delete</md-icon> Delete</md-button>
+        <md-button class="md-raised" @click="onDelete" :disabled="isDeleting"><md-icon>delete</md-icon> {{ isDeleting ? 'Deleting...' : 'Delete' }}</md-button>
         <md-button class="md-raised" @click="$emit('edit', submission)"><md-icon>edit</md-icon> Edit</md-button>
         <md-button class="md-raised md-accent"><md-icon>open_in_new</md-icon> View In Repository</md-button>
       </div>
@@ -34,13 +34,13 @@
     components: { },
   })
   export default class CzSubmission extends Vue {
-    @Prop({ required: true }) submissionId!: number
+    @Prop({ required: true }) identifier!: string
     protected enumSubmissionStatus = EnumSubmissionStatus
     protected repoMetadata = repoMetadata
+    protected isDeleting = false
 
     protected get submission() {
-      console.log(Submission.find(this.submissionId))
-      return Submission.find(this.submissionId)
+      return Submission.find([this.identifier, this.activeRepository.entity])
     }
 
     // TODO: add to a mixin and reuse
@@ -59,8 +59,10 @@
         content: 'Are you sure you want to delete this submission?',
         confirmText: 'Delete',
         cancelText: 'Cancel',
-        onConfirm: () => {
-          this.activeRepository.deleteRecord(this.submissionId.toString())
+        onConfirm: async () => {
+          this.isDeleting = true
+          await this.activeRepository.deleteRecord(this.identifier)
+          this.isDeleting = false
         }
       })
     }

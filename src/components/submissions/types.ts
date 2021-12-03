@@ -1,11 +1,11 @@
 export interface ISubmission {
-  id: number,
   title: string
   authors: string[]
   repository: EnumRepositoryKeys
   date: Date
   status: EnumSubmissionStatus
   identifier: string
+  url: string
 }
 
 export interface IFolder {
@@ -51,6 +51,7 @@ export interface IRepositoryUrls {
   fileReadUrl: string
   accessTokenUrl: string
   authorizeUrl: string
+  viewUrl: string
 }
 
 export interface IRepository {

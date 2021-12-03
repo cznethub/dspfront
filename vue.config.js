@@ -67,8 +67,6 @@ const chainWebpack = (config) => {
       })
 }
 
-console.log(chainWebpack)
-
 module.exports = {
   chainWebpack,
   configureWebpack,

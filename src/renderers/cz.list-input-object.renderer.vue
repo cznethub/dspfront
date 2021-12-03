@@ -25,7 +25,7 @@
       }
     },
     created() {
-      console.log(this.control)
+      // console.log(this.control)
     },
     methods: {
       onChange(value) {

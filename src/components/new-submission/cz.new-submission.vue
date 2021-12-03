@@ -6,8 +6,9 @@
       <div class="container">
         <div class="md-layout md-alignment-center-space-between">
           <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
-          <div>
-            <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
+          <div class="form-controls">
+            <!-- <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button> -->
+            <md-button v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</md-button>
             <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
               {{ isSaving ? 'Saving...' : submitText }}
             </md-button>
@@ -19,8 +20,6 @@
 
     <section class="section">
       <div class="container" style="min-height: 20rem;">
-        <b-loading :is-full-page="false" :active="isLoading" />
-
         <div v-if="!isLoading">
           <div class="upload-drop-area has-space-bottom">
             <b-upload v-model="dropFiles" multiple drag-drop expanded>
@@ -52,10 +51,14 @@
             ref="form"
           />
         </div>
-        <div class="has-space-top-2x md-layout md-alignment-center-right">
-          <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
+
+        <md-progress-spinner v-else md-mode="indeterminate"></md-progress-spinner>
+
+        <div v-if="!isLoading" class="form-controls has-space-top-2x md-layout md-alignment-center-right">
+          <!-- <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button> -->
+          <md-button v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</md-button>
           <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
-            {{ isSaving ? 'Saving...' : 'Save' }}
+            {{ isSaving ? 'Saving...' : submitText }}
           </md-button>
         </div>
       </div>
@@ -86,7 +89,8 @@
   import Repository from '@/models/repository.model'
   import HydroShare from '@/models/hydroshare.model'
   import Zenodo from '@/models/zenodo.model'
-import CzNotification from '@/models/notifications.model'
+  import CzNotification from '@/models/notifications.model'
+  import Submission from '@/models/submission.model'
 
   const sprintf = require('sprintf-js').sprintf
 
@@ -150,6 +154,7 @@ import CzNotification from '@/models/notifications.model'
     }
 
     created() {
+      this.isLoading = true
       this.data = this.schemaDefaults
       const routeRepositoryKey = this.$route.params.repository as EnumRepositoryKeys
       
@@ -161,25 +166,32 @@ import CzNotification from '@/models/notifications.model'
       }
 
       if (this.isEditMode) {
-        this.recordId = ''  // TODO: get the recordId and update it here
+        const identifier = this.$route.params.id
+        const submission = Submission.find([identifier, this.activeRepository.entity])
+        this.recordId = submission?.identifier || ''  // TODO: get the recordId and update it here
         this.loadExistingSubmission()
       }
+      else {
+        this.isLoading = false
+      }
+    }
+
+    protected goToSubmission() {
+      this.$router.push({ name: 'submissions', params: { id: this.recordId, repository: this.activeRepository.entity } })
     }
 
     protected async loadExistingSubmission() {
       console.info('CzNewSubmission: reading existing record...')
-      const submission = await this.activeRepository?.read(this.recordId)
+      const repositoryRecord = await this.activeRepository?.read(this.recordId)
 
-      console.log(submission)
-
-      if (submission?.recordId) {
+      if (repositoryRecord) {
         this.data = {
           ...this.data,
-          ...submission?.formMetadata.metadata,
+          ...repositoryRecord,
         }
-        this.links = submission?.formMetadata.links // Has useful links, i.e: bucket for upload
-        this.recordId = submission?.recordId
+        // this.links = repositoryRecord?.formMetadata.links // Has useful links, i.e: bucket for upload
       }
+      this.isLoading = false
     }
 
     protected onShowUISchema() {
@@ -213,7 +225,7 @@ import CzNotification from '@/models/notifications.model'
       }
       else {
         console.info('CzNewSubmission: Saving to existing record...')
-        this.activeRepository?.updateRepositoryRecord(this.recordId, this.data)
+        await this.activeRepository?.updateRepositoryRecord(this.recordId, this.data)
       }
 
       // If files have been selected for upload, upload them
@@ -224,12 +236,10 @@ import CzNotification from '@/models/notifications.model'
 
       // Indicate that changes have been saved
       CzNotification.toast({
-        message: 'Your submission has been saved!'
+        message: this.isEditMode ? 'Your changes have been saved' : 'Your submission has been saved!'
       })
 
-      if (!this.isEditMode && submission) {
-        this.$router.push({ name: 'submissions', params: { id: submission.id.toString()}})
-      }
+      this.$router.push({ name: 'submissions', params: { id: this.recordId, repository: this.activeRepository.entity } })
       
       this.isSaving = false
     }
@@ -239,6 +249,7 @@ import CzNotification from '@/models/notifications.model'
     }
 
     protected onChange(event: JsonFormsChangeEvent) {
+      console.log(this.jsonForm)
       this.data = event.data
     }
 
@@ -390,5 +401,11 @@ import CzNotification from '@/models/notifications.model'
 
   .list-items-leave-active {
     position: absolute;
+  }
+
+  .form-controls {
+    button + button {
+      margin-left: 1rem;
+    }
   }
 </style>

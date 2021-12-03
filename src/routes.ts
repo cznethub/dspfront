@@ -50,7 +50,7 @@ export const routes: RouteConfig[] = [
   },
   {
     name: 'submissions',
-    path: '/submissions/:id?',
+    path: '/submissions/:repository?/:id?',
     components: {
       content: CzSubmissions,
       footer: CzFooter

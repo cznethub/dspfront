@@ -1,7 +1,7 @@
 <template>
   <div class="cz-submissions">
-    <template v-if="submissionId !== undefined" >
-      <cz-submission :submissionId="+submissionId" @edit="goToEditSubmission($event)"/>
+    <template v-if="identifier !== undefined" >
+      <cz-submission :identifier="identifier" @edit="goToEditSubmission($event)"/>
     </template>
     <template v-else>
       <div class="cz-submissions--header has-space-bottom-2x">
@@ -88,10 +88,15 @@
 
                   <md-table-cell>
                     <div class="md-layout actions" style="flex-direction: column;">
-                      <md-button class="md-raised md-accent" expanded size="is-medium" type="is-primary"><md-icon>open_in_new</md-icon> View In Repository</md-button>
+                      <md-button :href="item.url" target="_blank" class="md-raised md-accent" expanded size="is-medium" type="is-primary">
+                        <md-icon>open_in_new</md-icon> View In Repository
+                      </md-button>
                       <!-- <md-button class="md-raised md-primary" expanded size="is-medium">Edit Submission</md-button> -->
-                      <md-button class="md-raised" @click="goToSubmission(item.id)">View</md-button>
-                      <md-button class="md-raised" @click="onUpdateRecord(item)"><md-icon>sync</md-icon> Update Record</md-button>
+                      <md-button class="md-raised" @click="goToSubmission(item)">View</md-button>
+                      <md-button class="md-raised" @click="onUpdateRecord(item)" 
+                        :disabled="isUpdating[`${item.repository}-${item.identifier}`]">
+                        <md-icon>sync</md-icon> {{ isUpdating[`${item.repository}-${item.identifier}`] ? 'Updating...' : 'Update Record'}}
+                      </md-button>
                       <md-button class="md-raised" @click="goToEditSubmission(item)"><md-icon>edit</md-icon> Edit</md-button>
                     </div>
                   </md-table-cell>
@@ -143,8 +148,8 @@
   import CzSubmission from '@/components/submission/cz.submission.vue'
   import Submission from '@/models/submission.model'
   import Repository from '@/models/repository.model'
-import HydroShare from '@/models/hydroshare.model'
-import Zenodo from '@/models/zenodo.model'
+  import HydroShare from '@/models/hydroshare.model'
+  import Zenodo from '@/models/zenodo.model'
 
   @Component({
     name: 'cz-submissions',
@@ -152,6 +157,7 @@ import Zenodo from '@/models/zenodo.model'
   })
   export default class CzSubmissions extends Vue {
     @Ref('submissionsTable') submissionsTable
+    protected isUpdating: {[key: string]: boolean} = {}
 
     protected currentSort = {
       defaultSort: 'title',
@@ -203,7 +209,7 @@ import Zenodo from '@/models/zenodo.model'
       console.log('pagination has updated', page, pageSize, sort, sortOrder);
     }
 
-    protected get submissionId() {
+    protected get identifier() {
       return this.$route.params.id
     }
 
@@ -259,18 +265,19 @@ import Zenodo from '@/models/zenodo.model'
       this.filteredSubmissions = this.submissions
     }
 
-    protected goToSubmission(submissionId: number){
-      this.$router.push({ name: 'submissions', params: { id: submissionId.toString() }})
+    protected goToSubmission(submission: Submission){
+      this.$router.push({ name: 'submissions', params: { id: submission.identifier, repository: submission.repository }})
     }
 
     protected goToEditSubmission(submission: ISubmission) {
       const repo: IRepository = repoMetadata[submission.repository]
-      this.$router.push({ name: 'submit.repository', params: { repository: repo.key, id: submission.id.toString() }})
+      this.$router.push({ name: 'submit.repository', params: { repository: repo.key, id: submission.identifier }})
     }
 
     protected async onUpdateRecord(submission: ISubmission) {
-      // TODO: use the recordId to update the data in the submission
-      await this.activeRepository.updateCzHubRecord(submission.identifier)
+      this.$set(this.isUpdating, `${submission.repository}-${submission.identifier}`, true)
+      await this.activeRepository.updateCzHubRecord(submission.identifier, submission.repository)
+      this.$set(this.isUpdating, `${submission.repository}-${submission.identifier}`, false)
     }
 
     // TODO: move to mixin and reuse
@@ -301,6 +308,12 @@ import Zenodo from '@/models/zenodo.model'
       this.$nextTick(() => {
         this.searchOnTable()
       })
+    }
+
+    @Watch('submissions')
+    onSubmissionsChange() {
+      // Used to propagate changes when submissions are deleted
+      this.searchOnTable()
     }
   }
 </script>
@@ -361,8 +374,8 @@ import Zenodo from '@/models/zenodo.model'
     position: absolute;
     top: 6rem;
     align-items: flex-end;
-    width: 12rem;
-    left: -3rem;
+    width: 18rem;
+    left: -6rem;
   }
 
   .cz-submissions--header .md-card {

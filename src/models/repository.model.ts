@@ -1,8 +1,10 @@
 import { Model } from '@vuex-orm/core'
 import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
 import { repoMetadata } from "@/components/submit/constants";
+import { router } from '@/router';
 import axios from "axios";
 import Submission from './submission.model';
+import CzNotification from './notifications.model';
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
@@ -136,6 +138,7 @@ export default class Repository extends Model implements IRepository {
         fileReadUrl: resp.data.file_read,
         accessTokenUrl: resp.data.access_token,
         authorizeUrl: resp.data.authorize_url,
+        viewUrl: resp.data.view_url
       }
     }
     catch(e) {
@@ -170,10 +173,15 @@ export default class Repository extends Model implements IRepository {
     return Repository.query().where('key', this.entity).withAll().first()
   }
 
-  static async updateCzHubRecord(recordId: string) {
-    const response = await axios.put(`/api/submit/${this.entity}/${recordId}`) // TODO: (bug) getting an id null in this response
-    const inserted = await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
-    return inserted.submissions[0]
+  static async updateCzHubRecord(recordId: string, repository: string) {
+    const response = await axios.put(`/api/submit/${repository}/${recordId}`) // TODO: (bug) the data returned here is outdated if record modified in repo site
+    await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
+  }
+
+  static async deleteSubmission(recordId) {
+    await Submission.delete([recordId, this.entity])
+    CzNotification.toast({ message: 'Your submission has been deleted' })
+    router.push({ path: '/submissions' })
   }
 
   protected static createSubmission: (data?: any) => Promise<{ recordId: string, formMetadata: any} | null>

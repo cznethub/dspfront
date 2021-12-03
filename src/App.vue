@@ -108,6 +108,7 @@
   import User from '@/models/user.model'
   import Zenodo from '@/models/zenodo.model'
   import HydroShare from './models/hydroshare.model'
+import Submission from './models/submission.model'
   
   @Component({
     name: 'app',
@@ -183,6 +184,8 @@
 
     async created() {
       document.title = 'CZ Hub'
+
+      Submission.fetchSubmissions()
 
       this.onToast = CzNotification.toast$.subscribe((toast: IToast) => {
         this.snackbar = { ...this.snackbar, ...toast }
@@ -279,6 +282,7 @@
 
     /deep/ .md-list-item .md-list-item-content {
       color: inherit;
+      cursor: pointer;
     }
 
     /deep/ .md-list-item.is-active .md-list-item-content,
@@ -295,6 +299,7 @@
   @media screen and (min-width: 1279px) {
     /deep/ .md-list.nav-items,
     /deep/ .md-drawer.mobile-nav-items,
+
     .mobile-nav-trigger {
       display: none;
     }

@@ -1,6 +1,10 @@
 import { ISubmission, EnumSubmissionStatus, EnumRepositoryKeys } from '@/components/submissions/types'
 import { Model } from '@vuex-orm/core'
 import axios from "axios"
+// import HydroShare from './hydroshare.model'
+// import Zenodo from './zenodo.model'
+
+const sprintf = require('sprintf-js').sprintf
 
 export interface IApiRecordHs {
   abstract: string
@@ -22,17 +26,28 @@ export interface IApiRecordHs {
   url: string
 }
 
+// temporary workaround to circular dependecy error
+function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
+  if (repo === EnumRepositoryKeys.hydroshare) {
+    return `https://beta.hydroshare.org/resource/${identifier}`
+  }
+  else if (repo === EnumRepositoryKeys.zenodo) {
+    return  `https://sandbox.zenodo.org/deposit/${identifier}`
+  }
+  return ''
+}
+
 export default class Submission extends Model implements ISubmission {
   // This is the name used as module name of the Vuex Store.
   static entity = 'submissions'
-  static primaryKey = 'id'
-  public id!: number
+  static primaryKey = ['identifier', 'repository']
   public title!: string
   public authors!: string[]
   public repository!: EnumRepositoryKeys
   public date!: Date
   public status!: EnumSubmissionStatus
   public identifier!: string
+  public url!: string
 
   static get $state() {
     return this.store().state.entities[this.entity]
@@ -55,22 +70,25 @@ export default class Submission extends Model implements ISubmission {
       // @ts-ignore
       date: this.date(null),
       status: this.attr(''),
-      identifier: this.attr('')
+      identifier: this.attr(''),
+      url: this.attr('')
     }
   }
 
+  // Used to transform submission data that comes from CzHub database
   static getInsertData(apiSubmission): ISubmission {
     return {
-      id: apiSubmission.id,
       title: apiSubmission.title,
       authors: [],
       repository: apiSubmission.repo_type,
       date: apiSubmission.submitted,
       status: apiSubmission.status,
       identifier: apiSubmission.identifier,
+      url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
     }
   }
 
+  // Used to transform submission data that comes from the repository
   static getRepoApiInsertData(apiRecord: IApiRecordHs, repositoryKey: string): Partial<ISubmission> {
     if (repositoryKey === EnumRepositoryKeys.hydroshare) {
       return {
@@ -79,20 +97,22 @@ export default class Submission extends Model implements ISubmission {
         repository: EnumRepositoryKeys.hydroshare,
         date: new Date(apiRecord.modified || apiRecord.created),
         identifier: apiRecord.identifier,
+        url: `https://beta.hydroshare.org/resource/${apiRecord.identifier}` // TODO: Get from model after fixing circular dependency issue
       }
     }
     else if (repositoryKey === EnumRepositoryKeys.zenodo) {
       // TODO: add zenodo transormations
       return {
         title: apiRecord.title,
-        // authors: apiRecord.creators,
+        authors: apiRecord.creators,
         repository: EnumRepositoryKeys.zenodo,
         date: new Date(apiRecord.modified || apiRecord.created),
         identifier: apiRecord.identifier,
+        url: `https://sandbox.zenodo.org/deposit/${apiRecord.identifier}` // TODO: Use from model after fixing circular dependency issue
       }
     }
     
-    return {}
+    return { }
   }
 
   static async fetchSubmissions() {
@@ -105,7 +125,6 @@ export default class Submission extends Model implements ISubmission {
 
       if (resp.status === 200) {
         let data = resp.data as any[]
-        console.log(data)
         data = data.map(this.getInsertData)
         this.insertOrUpdate({ data })
       }

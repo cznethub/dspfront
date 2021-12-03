@@ -3,7 +3,6 @@ import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { router } from '@/router';
 import axios, { AxiosRequestConfig } from "axios"
 import Repository from './repository.model'
-import Submission from './submission.model';
 
 const sprintf = require('sprintf-js').sprintf
 
@@ -32,7 +31,7 @@ export default class Zenodo extends Repository {
     }
   }
 
-  static async createSubmission(data?: any): Promise<{ recordId: string, formMetadata: any} | null> {
+  static async createSubmission(data?: any): Promise<{ recordId: string, formMetadata: any } | null> {
     console.info("Zenodo: Creating submission...")
     const zenodo = this.get()
     
@@ -54,14 +53,8 @@ export default class Zenodo extends Repository {
         if (resp.status === 201) {
           // resp.links
           const recordId = resp.data.record_id
+          await this.updateRepositoryRecord(recordId, data || {})
           const formMetadata = await this.read(recordId)
-
-          // Save to CZHub
-          const czHubRecord = await axios.put(`/api/submit/${this.entity}/${recordId}`)
-          console.log(czHubRecord)
-
-          Submission.insertOrUpdate({ data: Submission.getRepoApiInsertData(formMetadata, this.entity)})
-
           return { recordId, formMetadata }
         }
         else {
@@ -124,7 +117,13 @@ export default class Zenodo extends Repository {
       )
 
       // Delete on CZHub
-      await axios.delete(`/api/submit/${this.entity}/${recordId}`)
+      const response = await axios.delete(`/api/submit/${this.entity}/${recordId}`)
+      if (response.status === 200) {
+        await this.deleteSubmission(recordId)
+        // await Submission.delete([recordId, this.entity])
+        // CzNotification.toast({ message: 'Your submission has been deleted' })
+        // router.push({ path: '/submissions' })
+      }
     }
   }
 
@@ -144,9 +143,9 @@ export default class Zenodo extends Repository {
   }
 
   static async updateRepositoryRecord(recordId: string, metadata: any) {
-    const hydroShare = this.get()
-    if (hydroShare) {
-      const url = sprintf(hydroShare.urls?.updateUrl, recordId)
+    const zenodo = this.get()
+    if (zenodo) {
+      const url = sprintf(zenodo.urls?.updateUrl, recordId)
 
       await axios.put(
         url,
@@ -158,7 +157,7 @@ export default class Zenodo extends Repository {
       )
 
       // Save to CZHub
-      await this.updateCzHubRecord(recordId)
+      await this.updateCzHubRecord(recordId, this.entity)
     }
   }
 }
