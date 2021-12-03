@@ -104,9 +104,9 @@ export default class Repository extends Model implements IRepository {
 
     // If we don't have an access token stored, fetch one using the accessTokenUrl
     // TODO: also check if it expired, and if so refresh it
-    if (!(this.isAuthorized) && repository?.urls?.accessTokenUrl) {
+    // if (!(this.isAuthorized) && repository?.urls?.accessTokenUrl) {
       await this.fetchAccessToken()
-    }
+    // }
   }
 
   protected static async getJson(jsonUrl: string | undefined) {
@@ -156,7 +156,7 @@ export default class Repository extends Model implements IRepository {
         if (resp.status === 200) {
           const token = resp.data.access_token // TODO: also need its expiration date!
           this.commit((state) => {
-            state.accessToken = token
+            state.accessToken = token || ''
           })
         }
       }
