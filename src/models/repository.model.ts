@@ -77,7 +77,7 @@ export default class Repository extends Model implements IRepository {
     }
 
     // Fetch urls and schemas
-    const repository = this.get()
+    // const repository = this.get()
     console.info(`${this.entity}: fetching schemas...`)
     const urls: IRepositoryUrls | undefined = await this.getUrls()
 

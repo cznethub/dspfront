@@ -2,6 +2,7 @@
 import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { router } from '@/router';
 import axios, { AxiosRequestConfig } from "axios"
+import CzNotification from './notifications.model';
 import Repository from './repository.model'
 
 const sprintf = require('sprintf-js').sprintf
@@ -64,9 +65,13 @@ export default class Zenodo extends Repository {
       }
       catch(e: any) {
         if (e.response.status === 401) {
-          // Token has expired
+          // Token has expired or is invalid
           this.commit((state) => {
             state.accessToken = ''
+          })
+          
+          CzNotification.toast({
+            message: 'Authorization token is invalid or has expired.'
           })
           router.push({ path: '/authorize', query: { repo: this.entity, next: `/submit/${this.entity}` } })
           
@@ -76,6 +81,7 @@ export default class Zenodo extends Repository {
         else {
           console.error("Zenodo: failed to create submission. ", e.response)
         }
+        throw(e)
       }
     }
     return null

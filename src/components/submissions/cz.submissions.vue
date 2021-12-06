@@ -8,9 +8,9 @@
         <h1 class="md-display-1">My Submissions</h1>
         <hr>
         <div v-if="!isFetching && submissions.length" class="md-layout md-alignment-center-space-between">
-          <md-card style="flex-grow: 1; margin-right: 2rem;">
+          <div style="flex-grow: 1; margin-right: 2rem;">
             <md-card-content id="filters" class="md-layout">
-              <md-field class="md-layout-item">
+              <md-field class="md-layout-item" md-clearable>
                 <md-icon>search</md-icon>
                 <label>Search by Title and Author</label>
                 <md-input v-model="filters.searchStr"></md-input>
@@ -23,7 +23,7 @@
                 </md-select>
               </md-field>
             </md-card-content>
-          </md-card>
+          </div>
 
           <md-speed-dial md-direction="bottom">
             <md-speed-dial-target>
@@ -96,11 +96,15 @@
 
                 <!-- TODO: this feature is not released yet -->
                 <!-- https://www.creative-tim.com/vuematerial/components/table -->
+                
                 <md-table-pagination
-                  :md-page-size="5"
+                  ref="paginator"
+                  @update:md-page-size="onCurrentPageSizeChanged"
+                  :md-page="currentPage"
                   :md-page-options="[5, 10, 15, 20]"
+                  :md-total="filteredSubmissions.length"
                   :md-update="updatePagination"
-                  :md-data="filteredSubmissions"
+                  :md-data="paginatedSubmissions"
                   :md-paginated-data.sync="paginatedSubmissions" />
     <!-- 
                 <md-table-empty-state
@@ -149,6 +153,7 @@
   })
   export default class CzSubmissions extends Vue {
     @Ref('submissionsTable') submissionsTable
+    @Ref('paginator') paginator
     protected isUpdating: {[key: string]: boolean} = {}
 
     protected currentSort = {
@@ -166,6 +171,8 @@
     protected enumSortDirections = EnumSortDirections
     protected filteredSubmissions: ISubmission[] = []
     protected paginatedSubmissions: ISubmission[] = []
+    protected currentPage = 1
+    protected currentPageSize = 5
 
     protected get isFetching() {
       return Submission.$state.isFetching
@@ -216,7 +223,6 @@
       const query = this.filters.searchStr.toLowerCase().trim()
 
       this.filteredSubmissions = data.filter((d) => {
-
         // Filter by repository
         if (filteredRepos.length) {
           if (!filteredRepos.includes(d.repository)) {
@@ -236,12 +242,37 @@
 
         return true
       })
+
+      this.$nextTick(() => {
+        if (!this.paginator) {
+          return []
+        }
+        const start = (this.currentPage - 1) * this.paginator.currentPageSize
+        const end = start + this.paginator.currentPageSize
+        this.paginatedSubmissions = this.filteredSubmissions.slice(start, end)
+      })
     }
 
     async created() {
       await Submission.fetchSubmissions()
       // this.filteredSubmissions = SUBMISSIONS // Uncomment this if you want to test with mock data
       this.filteredSubmissions = this.submissions
+
+      // Implement missing functionality for WIP components.
+      // https://www.creative-tim.com/vuematerial/components/table
+      this.$nextTick(()=> {
+        const that = this
+        this.paginator.goToNext = () => {
+          const maxPages = Math.ceil(that.filteredSubmissions.length / that.paginator.currentPageSize)
+          that.currentPage = Math.min(that.currentPage + 1, maxPages)
+          that.searchOnTable()
+        }
+        this.paginator.goToPrevious = () => {
+          const minPages = 1
+          that.currentPage = Math.max(that.currentPage - 1, minPages)
+          that.searchOnTable()
+        }
+      })
     }
 
     protected goToSubmission(submission: Submission){
@@ -293,6 +324,11 @@
     onSubmissionsChange() {
       // Used to propagate changes when submissions are deleted
       this.searchOnTable()
+    }
+
+    @Watch('paginator.currentPageSize', { deep: true })
+    onCurrentPageSizeChanged(oldVal, newVal) {
+      console.log(oldVal, newVal)
     }
   }
 </script>

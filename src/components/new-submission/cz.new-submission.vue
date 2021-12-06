@@ -212,7 +212,13 @@
       // If first time saving, create a new record
       if (!this.recordId) {
         console.info('CzNewSubmission: creating new record...')
-        submission = await this.activeRepository?.createSubmission(this.data)
+        try {
+          submission = await this.activeRepository?.createSubmission(this.data)
+        }
+        catch(e) {
+          this.isSaving = false
+          return
+        }
 
         if (submission?.recordId) {
           this.data = {

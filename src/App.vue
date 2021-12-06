@@ -205,8 +205,6 @@ import Submission from './models/submission.model'
       
       // if (isAuthorized && !User.$state.isLoggedIn) {
       await User.checkAuthorization()
-      // Guards are setup after checking authorization because they depend on user logged in status
-      setupRouteGuards()
       // }
       
       if (User.$state.isLoggedIn) {
@@ -216,6 +214,10 @@ import Submission from './models/submission.model'
         ])
       }
 
+      // Guards are setup after checking authorization and loading access tokens
+      // because they depend on user logged in status
+      setupRouteGuards()
+      
       this.isLoading = false
     }
 

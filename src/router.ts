@@ -55,7 +55,7 @@ export function setupRouteGuards() {
       switch (key) {
         case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;
         case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
-        default: activeRepository = Zenodo
+        default: activeRepository = HydroShare
       }
 
       if (!(activeRepository?.$state.accessToken)) {
@@ -70,7 +70,7 @@ export function setupRouteGuards() {
     }
   })
 
-  checkNextOnce() // Check if a redirect was set
+  checkGuardsOnce()
 }
 
 /** Call before navigating to an external url to save the next route in state and navigate to it after callback url */
@@ -83,10 +83,8 @@ export function saveNextRoute() {
   }
 }
 
-/** Call this manually immediately after guards are setup to perform a pending redirect.
- * Useful if the guards were being setup when the redirect was needed. 
- * */
-function checkNextOnce() {
+// Call this manually immediately after guards are setup to check guards on the page that loaded on app start.
+function checkGuardsOnce() {
   const nextRoute = User.$state.next
   if (nextRoute) {
     // Consume the redirect
@@ -95,4 +93,22 @@ function checkNextOnce() {
     })
     router.push({ path: nextRoute })
   }
+  else if (router.currentRoute.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
+    router.push({ name: 'login', query: { next: router.currentRoute.path } })
+  }
+  else if (router.currentRoute.meta?.hasAccessTokenGuard) {
+    let activeRepository: typeof Repository | null = null
+    const key = router.currentRoute.params.repository
+
+    switch (key) {
+      case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;
+      case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
+      default: activeRepository = HydroShare
+    }
+
+    if (!(activeRepository?.$state.accessToken)) {
+      router.push({ name: 'authorize', query: { next: router.currentRoute.path } })
+    }
+  }
+  
 }

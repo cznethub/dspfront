@@ -2,6 +2,7 @@
 import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { router } from '@/router';
 import axios, { AxiosRequestConfig } from "axios"
+import CzNotification from './notifications.model';
 import Repository from './repository.model'
 
 const sprintf = require('sprintf-js').sprintf
@@ -51,6 +52,9 @@ export default class HydroShare extends Repository {
           this.commit((state) => {
             state.accessToken = ''
           })
+          CzNotification.toast({
+            message: 'Authorization token is invalid or has expired.'
+          })
           router.push({ path: '/authorize', query: { repo: this.entity, next: `/submit/${this.entity}` } })
           
           console.info("HydroShare: Authorization token is invalid or has expired.")
@@ -59,6 +63,7 @@ export default class HydroShare extends Repository {
         else {
           console.error("HydroShare: failed to create submission. ", e.response)
         }
+        throw(e)
       }
     }
     return null

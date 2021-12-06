@@ -46,6 +46,10 @@ import {
   MdDrawer,
 } from 'vue-material/dist/components'
 
+// TODO: vue-material is a dead  repo. Need to switch to vuetify
+// https://github.com/vuematerial/vue-material/issues/1962
+// https://github.com/vuetifyjs/vuetify
+
 /** Material modules */
 Vue.use(MdButton)
 Vue.use(MdContent)
