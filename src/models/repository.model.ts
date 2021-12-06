@@ -174,8 +174,8 @@ export default class Repository extends Model implements IRepository {
   }
 
   static async updateCzHubRecord(recordId: string, repository: string) {
-    const response = await axios.put(`/api/submit/${repository}/${recordId}`) // TODO: (bug) the data returned here is outdated if record modified in repo site
-    await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
+    const response = await axios.put(`/api/submit/${repository}/${recordId}`)
+    const inserted = await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
   }
 
   static async deleteSubmission(recordId) {

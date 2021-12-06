@@ -81,33 +81,6 @@ export default class Submission extends Model implements ISubmission {
     }
   }
 
-  // Used to transform submission data that comes from the repository
-  static getRepoApiInsertData(apiRecord: IApiRecordHs, repositoryKey: string): Partial<ISubmission> {
-    if (repositoryKey === EnumRepositoryKeys.hydroshare) {
-      return {
-        title: apiRecord.title,
-        authors: apiRecord.creators,
-        repository: EnumRepositoryKeys.hydroshare,
-        date: new Date(apiRecord.modified || apiRecord.created),
-        identifier: apiRecord.identifier,
-        url: `https://beta.hydroshare.org/resource/${apiRecord.identifier}` // TODO: Get from model after fixing circular dependency issue
-      }
-    }
-    else if (repositoryKey === EnumRepositoryKeys.zenodo) {
-      // TODO: add zenodo transormations
-      return {
-        title: apiRecord.title,
-        authors: apiRecord.creators,
-        repository: EnumRepositoryKeys.zenodo,
-        date: new Date(apiRecord.modified || apiRecord.created),
-        identifier: apiRecord.identifier,
-        url: `https://sandbox.zenodo.org/deposit/${apiRecord.identifier}` // TODO: Use from model after fixing circular dependency issue
-      }
-    }
-    
-    return { }
-  }
-
   static async fetchSubmissions() {
     try {
       this.commit((state) => {

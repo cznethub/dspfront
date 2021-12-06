@@ -54,7 +54,8 @@ export default class Zenodo extends Repository {
         if (resp.status === 201) {
           // resp.links
           const recordId = resp.data.record_id
-          await this.updateRepositoryRecord(recordId, data || {})
+          await this.updateCzHubRecord(recordId, this.entity)
+          // await this.updateRepositoryRecord(recordId, depositionMetadata)
           const formMetadata = await this.read(recordId)
           return { recordId, formMetadata }
         }
@@ -155,7 +156,7 @@ export default class Zenodo extends Repository {
 
       await axios.put(
         url,
-        metadata,
+        { metadata: metadata },
         { 
           headers: { "Content-Type": "application/json"},
           params: { "access_token": this.accessToken },

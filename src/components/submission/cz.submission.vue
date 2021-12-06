@@ -38,7 +38,7 @@
     protected isDeleting = false
 
     protected get submission() {
-      return Submission.find([this.identifier, this.activeRepository.entity])
+      return Submission.find([this.identifier.toString(), this.activeRepository.entity])
     }
 
     // TODO: add to a mixin and reuse
@@ -64,6 +64,8 @@
         }
       })
     }
+
+
   }
 </script>
 

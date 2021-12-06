@@ -260,19 +260,21 @@
 
       // Implement missing functionality for WIP components.
       // https://www.creative-tim.com/vuematerial/components/table
-      this.$nextTick(()=> {
-        const that = this
-        this.paginator.goToNext = () => {
-          const maxPages = Math.ceil(that.filteredSubmissions.length / that.paginator.currentPageSize)
-          that.currentPage = Math.min(that.currentPage + 1, maxPages)
-          that.searchOnTable()
-        }
-        this.paginator.goToPrevious = () => {
-          const minPages = 1
-          that.currentPage = Math.max(that.currentPage - 1, minPages)
-          that.searchOnTable()
-        }
-      })
+      if (!this.identifier) {
+        this.$nextTick(()=> {
+          const that = this
+          this.paginator.goToNext = () => {
+            const maxPages = Math.ceil(that.filteredSubmissions.length / that.paginator.currentPageSize)
+            that.currentPage = Math.min(that.currentPage + 1, maxPages)
+            that.searchOnTable()
+          }
+          this.paginator.goToPrevious = () => {
+            const minPages = 1
+            that.currentPage = Math.max(that.currentPage - 1, minPages)
+            that.searchOnTable()
+          }
+        })
+      }
     }
 
     protected goToSubmission(submission: Submission){

@@ -255,7 +255,6 @@
     }
 
     protected onChange(event: JsonFormsChangeEvent) {
-      console.log(this.jsonForm)
       this.data = event.data
     }
 
