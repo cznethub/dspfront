@@ -12,7 +12,7 @@
       <b>Title: </b> <span class="md-subheading">{{ submission.title }}</span>
       <p class="has-text-left"><b>Authors: </b>{{ submission.authors.join(', ')}}</p>
       <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[submission.repository].name }}</p>
-      <p class="has-text-left"><b>Submission Date: </b>{{ submission.date.toLocaleDateString() }}</p>
+      <p class="has-text-left"><b>Submission Date: </b>{{ new Date(submission.date).toLocaleString() }}</p>
       <p class="has-text-left"><b>Identifier: </b>{{ submission.identifier }}</p>
     </div>
   </div>

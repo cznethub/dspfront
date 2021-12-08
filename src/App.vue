@@ -63,20 +63,16 @@
       </md-toolbar>
 
       <md-list class="nav-items">
-        <router-link to="/" tag="div">
-          <md-list-item>
-            <md-icon>home</md-icon>
-            <span class="md-list-item-text">Home</span>
-          </md-list-item>
-        </router-link>
+        <md-list-item @click="goToPath('/')" :class="{'is-active': isPathActive('/')}">
+          <md-icon>home</md-icon>
+          <span class="md-list-item-text">Home</span>
+        </md-list-item>
 
-        <router-link v-for="path of paths" :key="path.to" :to="path.to">
-          <!-- <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button> -->
-          <md-list-item :class="{'is-active': isPathActive(path.to)}">
-            <md-icon>{{ path.icon }}</md-icon>
-            <span class="md-list-item-text">{{ path.label }}</span>
-          </md-list-item>
-        </router-link>
+        <!-- <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button> -->
+        <md-list-item v-for="path of paths" :key="path.to" @click="goToPath(path.to)" :class="{'is-active': isPathActive(path.to)}">
+          <md-icon>{{ path.icon }}</md-icon>
+          <span class="md-list-item-text">{{ path.label }}</span>
+        </md-list-item>
 
         <md-divider></md-divider>
 
@@ -180,6 +176,11 @@ import Submission from './models/submission.model'
       }
 
       return false  // default
+    }
+
+    protected goToPath(path: string) {
+      this.showMobileNavigation = false
+      this.$router.push({ path })
     }
 
     async created() {

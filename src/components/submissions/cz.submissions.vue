@@ -256,7 +256,6 @@
     async created() {
       // TODO: avoid making this call again if app loading from this page
       await Submission.fetchSubmissions()
-      console.log(Submission.all())
       // this.filteredSubmissions = SUBMISSIONS // Uncomment this if you want to test with mock data
       this.filteredSubmissions = this.submissions
 
