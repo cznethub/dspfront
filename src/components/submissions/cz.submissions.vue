@@ -74,7 +74,7 @@
                     <b>Title: </b> <span class="md-subheading">{{ item.title }}</span>
                     <p class="has-text-left"><b>Authors: </b>{{ item.authors.join(', ')}}</p>
                     <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[item.repository].name }}</p>
-                    <p class="has-text-left"><b>Submission Date: </b>{{ item.date.toLocaleDateString() }}</p>
+                    <p class="has-text-left"><b>Submission Date: </b>{{ new Date(item.date).toLocaleString() }}</p>
                     <p class="has-text-left"><b>Identifier: </b>{{ item.identifier }}</p>
                   </md-table-cell>
 
@@ -254,7 +254,9 @@
     }
 
     async created() {
+      // TODO: avoid making this call again if app loading from this page
       await Submission.fetchSubmissions()
+      console.log(Submission.all())
       // this.filteredSubmissions = SUBMISSIONS // Uncomment this if you want to test with mock data
       this.filteredSubmissions = this.submissions
 

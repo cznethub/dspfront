@@ -2,7 +2,7 @@ export interface ISubmission {
   title: string
   authors: string[]
   repository: EnumRepositoryKeys
-  date: Date
+  date: number
   identifier: string
   url: string
 }

@@ -6,7 +6,6 @@ import '@/assets/css/global.scss'
 
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
-import datePlugin from 'vuex-orm-plugin-date-attribute'
 import createPersistedState from 'vuex-persistedstate'
 import VueCookies from 'vue-cookies'
 import VueCompositionAPI from '@vue/composition-api'
@@ -85,7 +84,6 @@ Vue.config.errorHandler = (err, vm, info) => {
   }
 }
 
-VuexORM.use(datePlugin)
 Vue.config.productionTip = false
 Vue.use(Vuex)
 
