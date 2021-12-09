@@ -104,7 +104,7 @@
   import User from '@/models/user.model'
   import Zenodo from '@/models/zenodo.model'
   import HydroShare from './models/hydroshare.model'
-import Submission from './models/submission.model'
+  import Submission from './models/submission.model'
   
   @Component({
     name: 'app',
@@ -186,7 +186,10 @@ import Submission from './models/submission.model'
     async created() {
       document.title = 'CZ Hub'
 
-      Submission.fetchSubmissions()
+      if (this.$route.name !== 'submissions') {
+        // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
+        Submission.fetchSubmissions()
+      }
 
       this.onToast = CzNotification.toast$.subscribe((toast: IToast) => {
         this.snackbar = { ...this.snackbar, ...toast }
