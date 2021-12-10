@@ -3,9 +3,9 @@
     <div class="md-layout md-alignment-bottom-space-between has-space-bottom">
       <div class="md-subheading">{{ control.label }}</div>
 
-      <md-button class="md-fab md-raised md-accent md-mini" @click="addButtonClick" :class="styles.arrayList.addButton">
-        <md-icon>add</md-icon>
-      </md-button>
+      <v-btn class="md-fab md-raised md-accent md-mini" @click="addButtonClick" :class="styles.arrayList.addButton">
+        <v-icon>add</v-icon>
+      </v-btn>
     </div>
 
     <hr>

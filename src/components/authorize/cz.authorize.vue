@@ -9,12 +9,12 @@
         <div class="md-subhead">Permission is needed to post to this repository</div>
       </md-card-header>
       <md-card-content class="">
-        <md-button @click="goToAuthorizePage()" class="md-raised md-accent">
+        <v-btn @click="goToAuthorizePage()" class="md-raised md-accent">
           <div class="level">
             <i class="fas fa-key has-space-right is-size-3" />
             <span>Authorize</span>
           </div>
-        </md-button>
+        </v-btn>
         <p class="">Follow the instructions on the next page to allow CZnet to submit to this repository.</p>
       </md-card-content>
     </md-card>

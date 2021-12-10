@@ -10,8 +10,20 @@
         <div v-if="!isFetching && submissions.length" class="md-layout md-alignment-center-space-between">
           <div style="flex-grow: 1; margin-right: 2rem;">
             <md-card-content id="filters" class="md-layout">
-              <md-field class="md-layout-item" md-clearable>
-                <md-icon>search</md-icon>
+              <v-text-field label="Search by Title and Author" v-model="filters.searchStr" dense outlined />
+
+              <v-select
+                v-model="filters.repoOptions"
+                :items="repoOptions"
+                label="Repository"
+                chips
+                multiple
+                dense outlined
+              />
+
+
+              <!-- <md-field class="md-layout-item" md-clearable>
+                <v-icon>search</v-icon>
                 <label>Search by Title and Author</label>
                 <md-input v-model="filters.searchStr"></md-input>
               </md-field>
@@ -21,17 +33,17 @@
                 <md-select v-model="filters.repoOptions" multiple id="repository" md-dense>
                   <md-option v-for="(repo, index) of repoOptions" :key="index" :value="repo">{{ repoMetadata[repo].name }}</md-option>
                 </md-select>
-              </md-field>
+              </md-field> -->
             </md-card-content>
           </div>
 
           <md-speed-dial md-direction="bottom">
             <md-speed-dial-target>
-              <md-icon>add</md-icon>
+              <v-icon>add</v-icon>
             </md-speed-dial-target>
 
             <md-speed-dial-content>
-              <md-button  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</md-button>
+              <v-btn  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</v-btn>
             </md-speed-dial-content>
           </md-speed-dial>
         </div>
@@ -49,7 +61,7 @@
 
           <md-card class="panel">
             <md-toolbar class="md-layout md-alignment-center-space-between" md-elevation="0">
-              <md-button class="md-raised">Export Submissions</md-button>
+              <v-btn class="md-raised">Export Submissions</v-btn>
               <!-- <hr class="is-hidden-tablet"> -->
               <div class="md-layout-item md-layout md-alignment-center-flex-end md-size-50 md-small-size-100 md-gutter">
                 <md-field class="md-layout-item">
@@ -80,16 +92,16 @@
 
                   <md-table-cell>
                     <div class="md-layout actions" style="flex-direction: column;">
-                      <md-button :href="item.url" target="_blank" class="md-raised md-accent" expanded size="is-medium" type="is-primary">
-                        <md-icon>open_in_new</md-icon> View In Repository
-                      </md-button>
-                      <!-- <md-button class="md-raised md-primary" expanded size="is-medium">Edit Submission</md-button> -->
-                      <md-button class="md-raised" @click="goToSubmission(item)">View</md-button>
-                      <md-button class="md-raised" @click="onUpdateRecord(item)" 
+                      <v-btn :href="item.url" target="_blank" class="md-raised md-accent" expanded size="is-medium" type="is-primary">
+                        <v-icon>open_in_new</v-icon> View In Repository
+                      </v-btn>
+                      <!-- <v-btn class="md-raised md-primary" expanded size="is-medium">Edit Submission</v-btn> -->
+                      <v-btn class="md-raised" @click="goToSubmission(item)">View</v-btn>
+                      <v-btn class="md-raised" @click="onUpdateRecord(item)" 
                         :disabled="isUpdating[`${item.repository}-${item.identifier}`]">
-                        <md-icon>sync</md-icon> {{ isUpdating[`${item.repository}-${item.identifier}`] ? 'Updating...' : 'Update Record'}}
-                      </md-button>
-                      <md-button class="md-raised" @click="goToEditSubmission(item)"><md-icon>edit</md-icon> Edit</md-button>
+                        <v-icon>sync</v-icon> {{ isUpdating[`${item.repository}-${item.identifier}`] ? 'Updating...' : 'Update Record'}}
+                      </v-btn>
+                      <v-btn class="md-raised" @click="goToEditSubmission(item)"><v-icon>edit</v-icon> Edit</v-btn>
                     </div>
                   </md-table-cell>
                 </md-table-row>
@@ -110,7 +122,7 @@
                 <md-table-empty-state
                   md-label="No submissions found"
                   :md-description="`No submissions found for this '${filters.searchStr}' query. Try a different search term or create a new submissions.`">
-                  <md-button class="md-primary md-raised" @click="null">Create New Submission</md-button>
+                  <v-btn class="md-primary md-raised" @click="null">Create New Submission</v-btn>
                 </md-table-empty-state> -->
               </md-table>
             </md-card-content>
@@ -119,16 +131,16 @@
 
         <md-empty-state
           v-else
-          md-icon="devices_other"
+          v-icon="devices_other"
           md-label="Create your first submission"
           md-description="Assemble your data files and metadata using our templates and submit directly to a supported repository.">
           <md-speed-dial md-direction="bottom">
             <md-speed-dial-target>
-              <md-icon>add</md-icon>
+              <v-icon>add</v-icon>
             </md-speed-dial-target>
 
             <md-speed-dial-content>
-              <md-button  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</md-button>
+              <v-btn  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</v-btn>
             </md-speed-dial-content>
           </md-speed-dial>
         </md-empty-state>
@@ -359,7 +371,7 @@
     align-content: flex-end;
   }
   
-  .actions .md-button {
+  .actions .v-btn {
     margin: 1rem 0;
     max-width: 30rem;
   }

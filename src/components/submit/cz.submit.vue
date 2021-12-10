@@ -7,7 +7,7 @@
           <h1 class="md-display-2 has-text-white">Submit Data</h1>
           <h2 class="md-display-1 has-text-white has-space-top-2x has-space-bottom">Not sure which repository to use?</h2>
           <router-link to="/recommendations">
-            <md-button class="md-raised">Help Me Decide</md-button>
+            <v-btn class="md-raised">Help Me Decide</v-btn>
           </router-link>
         </div>
       </div>
@@ -44,9 +44,9 @@
         <div class="md-layout-item md-size-50 md-small-size-100 has-space-bottom-2x">
           <h1 class="md-display-1">Register a product submitted to another repository</h1>
           <p class="has-text-mute">The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will create a metadata record for the dataset within the HydroShare repository to ensure that your data can still be discovered with all of the other CZCN research products.</p>
-          <md-button class="md-raised md-accent">Register</md-button>
+          <v-btn class="md-raised md-accent">Register</v-btn>
         </div>
-        <md-icon class="md-size-5x md-layout-item" style="font-size: 20rem !important;">cloud_done</md-icon>
+        <v-icon class="md-size-5x md-layout-item" style="font-size: 20rem !important;">cloud_done</v-icon>
         <!-- <img class="md-layout-item md-size-50 md-small-size-100" :src="require('@/assets/img/placeholder.png')" alt=""> -->
       </section>
     </template>

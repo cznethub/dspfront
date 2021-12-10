@@ -3,19 +3,19 @@
   --text-mute-darker: #575f6d;
 }
 
-@import "~vue-material/dist/theme/engine"; // Import the theme engine
-@include md-register-theme("default", (
-  primary: md-get-palette-color(bluegrey, 100), // The primary color of your application
-  accent: md-get-palette-color(lightblue, 800), // The accent or secondary color
-  theme: light
-));
+// @import "~vue-material/dist/theme/engine"; // Import the theme engine
+// @include md-register-theme("default", (
+//   primary: md-get-palette-color(bluegrey, 100), // The primary color of your application
+//   accent: md-get-palette-color(lightblue, 800), // The accent or secondary color
+//   theme: light
+// ));
 
-@include md-register-theme("grey-card", (
-  primary: md-get-palette-color(grey, 50)
-));
+// @include md-register-theme("grey-card", (
+//   primary: md-get-palette-color(grey, 50)
+// ));
 
 
-@import "~vue-material/dist/theme/all"; // Apply the theme
+// @import "~vue-material/dist/theme/all"; // Apply the theme
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
 html {
@@ -31,35 +31,35 @@ section {
   padding: 4rem 0;
 }
 
-.md-theme-default a:not(.md-button) {
-  color: var(--md-theme-default-accent);
-  // font-weight: 500;
+// .md-theme-default a:not(.v-btn) {
+//   color: var(--md-theme-default-accent);
+//   // font-weight: 500;
 
-  &:hover {
-    color: rgba(0, 0, 0, 0.87);
-  }
-}
+//   &:hover {
+//     color: rgba(0, 0, 0, 0.87);
+//   }
+// }
 
-.content,
-#main-content {
-  max-width: 1280px;
-  width: 100%;
-  min-height: initial;
-}
+// .content,
+// #main-content {
+//   max-width: 1280px;
+//   width: 100%;
+//   min-height: initial;
+// }
 
-#main-content {
-  // padding: 2vw;
-  min-height: 85vh;
-}
+// #main-content {
+//   // padding: 2vw;
+//   min-height: 85vh;
+// }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  margin: 0;
-}
+// h1,
+// h2,
+// h3,
+// h4,
+// h5,
+// h6 {
+//   margin: 0;
+// }
 
 .full-height {
   height: 100%;
@@ -89,13 +89,13 @@ h6 {
   color: #FFF !important;
 }
 
-hr {
-  background-color: whitesmoke;
-  border: none;
-  display: block;
-  height: 2px;
-  margin: 1.5rem 0;
-}
+// hr {
+//   background-color: whitesmoke;
+//   border: none;
+//   display: block;
+//   height: 2px;
+//   margin: 1.5rem 0;
+// }
 
 // .has-background-dark--gradient {
 //   background: linear-gradient(180deg, #0D0F15 0%, #1A1D27 100%);
@@ -150,21 +150,21 @@ hr {
   flex: 1 1 auto;
 }
 
-.md-button:not(.md-icon-button) {
-  margin: 0;
-  padding: 0 0.75rem;
-}
+// .v-btn:not(.v-icon-button) {
+//   margin: 0;
+//   padding: 0 0.75rem;
+// }
 
-.md-button:not(.md-fab) {
-  border-radius: 2rem;
-}
+// .v-btn:not(.md-fab) {
+//   border-radius: 2rem;
+// }
 
-.md-button[disabled] {
-  opacity: 0.5;
-}
+// .v-btn[disabled] {
+//   opacity: 0.5;
+// }
 
 .cz-field {
-  div.md-subheading {
-    color: inherit;
-  }
+  // div.md-subheading {
+  //   color: inherit;
+  // }
 }

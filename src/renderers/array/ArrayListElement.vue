@@ -2,17 +2,17 @@
   <md-card>
     <!-- <md-card-header v-if="label">{{ label }}</md-card-header> -->
     <md-card-actions>
-      <md-button class="md-icon-button" @click="moveUpClicked" :disabled="!moveUpEnabled">
-        <md-icon>arrow_upward</md-icon>
-      </md-button>
+      <v-btn class="v-icon-button" @click="moveUpClicked" :disabled="!moveUpEnabled">
+        <v-icon>arrow_upward</v-icon>
+      </v-btn>
 
-      <md-button class="md-icon-button" @click="moveDownClicked" :disabled="!moveDownEnabled">
-        <md-icon>arrow_downward</md-icon>
-      </md-button>
+      <v-btn class="v-icon-button" @click="moveDownClicked" :disabled="!moveDownEnabled">
+        <v-icon>arrow_downward</v-icon>
+      </v-btn>
 
-      <md-button class="md-icon-button" @click="deleteClicked">
-        <md-icon>delete</md-icon>
-      </md-button>
+      <v-btn class="v-icon-button" @click="deleteClicked">
+        <v-icon>delete</v-icon>
+      </v-btn>
     </md-card-actions>
 
     <md-divider></md-divider>

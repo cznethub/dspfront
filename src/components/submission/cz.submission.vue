@@ -4,9 +4,9 @@
     <hr>
     <div v-if="submission">
       <div class="md-layout md-alignment-center-right actions">
-        <md-button class="md-raised" @click="onDelete" :disabled="isDeleting"><md-icon>delete</md-icon> {{ isDeleting ? 'Deleting...' : 'Delete' }}</md-button>
-        <md-button class="md-raised" @click="$emit('edit', submission)"><md-icon>edit</md-icon> Edit</md-button>
-        <md-button class="md-raised md-accent"><md-icon>open_in_new</md-icon> View In Repository</md-button>
+        <v-btn class="md-raised" @click="onDelete" :disabled="isDeleting"><v-icon>delete</v-icon> {{ isDeleting ? 'Deleting...' : 'Delete' }}</v-btn>
+        <v-btn class="md-raised" @click="$emit('edit', submission)"><v-icon>edit</v-icon> Edit</v-btn>
+        <v-btn class="md-raised md-accent"><v-icon>open_in_new</v-icon> View In Repository</v-btn>
       </div>
 
       <b>Title: </b> <span class="md-subheading">{{ submission.title }}</span>

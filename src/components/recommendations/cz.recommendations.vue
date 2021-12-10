@@ -9,7 +9,7 @@
       <div id="options-grid" class="">
         <md-card class="md-layout-item md-small-size-100 md-primary" md-theme="grey-card" md-with-hover>
           <md-card-content class="has-text-centered">
-          <md-icon class="md-size-2x md-layout-item">add_circle_outline</md-icon>
+          <v-icon class="md-size-2x md-layout-item">add_circle_outline</v-icon>
           <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">I have geospatial data</h3>
           <p class="has-text-mute has-text-centered">Learn more about formats, best practices, and repositories for geospatial data.</p>
           </md-card-content>
@@ -17,7 +17,7 @@
 
         <md-card class="md-layout-item md-small-size-100 md-primary" md-theme="grey-card" md-with-hover>
           <md-card-content class="has-text-centered">
-          <md-icon class="md-size-2x md-layout-item">add_circle_outline</md-icon>
+          <v-icon class="md-size-2x md-layout-item">add_circle_outline</v-icon>
           <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">My data are derived from
 
 physical samples</h3>
@@ -27,7 +27,7 @@ physical samples</h3>
 
         <md-card class="md-layout-item md-small-size-100 md-primary" md-theme="grey-card" md-with-hover>
           <md-card-content class="has-text-centered">
-          <md-icon class="md-size-2x md-layout-item">add_circle_outline</md-icon>
+          <v-icon class="md-size-2x md-layout-item">add_circle_outline</v-icon>
           <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">I want to submit multiple
 
 types of data together</h3>
@@ -42,7 +42,7 @@ types of data together</h3>
     <section class="has-text-centered">
       <h1 class="has-space-bottom-2x md-display-1">Not Sure? Let us Help You Decide</h1>
       <p class="has-text-mute has-space-bottom-2x">Click the button below to begin an interactive questionnaire that will help us identify which data formats, best practices, and repository is right for your data. </p>
-      <md-button class="md-raised md-accent">Repository Recommendations</md-button>
+      <v-btn class="md-raised md-accent">Repository Recommendations</v-btn>
     </section>
   </div>
 </template>

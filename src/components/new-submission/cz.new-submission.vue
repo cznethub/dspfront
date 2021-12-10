@@ -7,11 +7,11 @@
         <div class="md-layout md-alignment-center-space-between">
           <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
           <div class="form-controls">
-            <!-- <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button> -->
-            <md-button v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</md-button>
-            <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
+            <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</v-btn> -->
+            <v-btn v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</v-btn>
+            <v-btn class="md-raised md-accent" @click="save()" :disabled="isSaving">
               {{ isSaving ? 'Saving...' : submitText }}
-            </md-button>
+            </v-btn>
           </div>
         </div>
         <p><b>Instructions</b>: Fill in the required fields (marked with *). Press the "Save" button to save your upload for later editing. When the form is complete, click the "Submit" button to upload your submission to the repository.</p>
@@ -25,7 +25,7 @@
             <b-upload v-model="dropFiles" multiple drag-drop expanded>
               <section class="section">
                 <div class="content has-text-centered">
-                  <md-icon>attach_file</md-icon>
+                  <v-icon>attach_file</v-icon>
                   <p>Drop your files here or click to upload</p>
                 </div>
               </section>
@@ -55,11 +55,11 @@
         <md-progress-spinner v-else md-mode="indeterminate"></md-progress-spinner>
 
         <div v-if="!isLoading" class="form-controls has-space-top-2x md-layout md-alignment-center-right">
-          <!-- <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button> -->
-          <md-button v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</md-button>
-          <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
+          <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</v-btn> -->
+          <v-btn v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</v-btn>
+          <v-btn class="md-raised md-accent" @click="save()" :disabled="isSaving">
             {{ isSaving ? 'Saving...' : submitText }}
-          </md-button>
+          </v-btn>
         </div>
       </div>
     </section>
@@ -335,7 +335,7 @@
     .md-menu.md-select {
       flex: 1 1 auto;
 
-      & > .md-icon {
+      & > .v-icon {
         position: absolute;
         right: 0;
         top: 2rem;

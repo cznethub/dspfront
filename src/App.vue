@@ -1,97 +1,89 @@
 <template>
-  <div class="page-container">
-    <md-app md-waterfall md-mode="overlap">
-      <md-app-toolbar class="md-primary md-layout md-alignment-top-center">
-        <div class="md-toolbar-row md-layout-item content">
-          <router-link :to="{ path: `/` }">
-            <img class="logo" :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network logo">
-          </router-link>
-          <div class="spacer"></div>
-          <div class="nav-items has-space-right md-elevation-2 md-medium-hide">
-            <router-link to="/">
-              <md-button :class="{'is-active md-raised md-accent': isPathActive('/')}" :md-ripple="false">Home</md-button>
-            </router-link>
-            <router-link v-for="path of paths" :key="path.to" :to="path.to">
-              <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button>
-            </router-link>
-          </div>
-          <router-link v-if="!isLoggedIn" to="/login" class="md-medium-hide"><md-button class="md-raised">Log In</md-button></router-link>
-          <md-button v-else class="md-raised md-medium-hide" @click="logOut()">Log Out</md-button>
-
-          <md-button class="md-icon-button md-raised mobile-nav-trigger" @click="showMobileNavigation = true">
-            <md-icon>menu</md-icon>
-          </md-button>
-        </div>
-      </md-app-toolbar>
-
-      <md-app-content id="main-content" class="md-layout-item">
-        <router-view v-if="!isLoading" name="content" />
-      </md-app-content>
-
-      <md-app-content id="footer">
-        <router-view name="footer" /> 
-      </md-app-content>
-    </md-app>
-
-    <md-snackbar
-      :md-active.sync="snackbar.isActive"
-      :md-position="snackbar.position"
-      :md-persistent="snackbar.isPersistent"
-      :md-duration="snackbar.isInfinite ? Infinity : snackbar.duration"
-    >
-      <span>{{ snackbar.message }}</span>
-      <md-button class="md-primary" @click="snackbar.isActive = false">Dismiss</md-button>
-    </md-snackbar>
-
-    <md-dialog-confirm
-      :md-active.sync="dialog.isActive"
-      :md-title="dialog.title"
-      :md-content="dialog.content"
-      :md-confirm-text="dialog.confirmText"
-      :md-cancel-text="dialog.cancelText"
-      @md-cancel="dialog.onCancel"
-      @md-confirm="dialog.onConfirm" />
-
-    <md-drawer class="mobile-nav-items" :md-active.sync="showMobileNavigation" md-swipeable>
-      <md-toolbar class="md-transparent" md-elevation="0">
-        <div style="width: 100%;">
-          <router-link :to="{ path: `/` }">
-            <img :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network logo">
-          </router-link>
-          <hr>
-        </div>
-      </md-toolbar>
-
-      <md-list class="nav-items">
-        <md-list-item @click="goToPath('/')" :class="{'is-active': isPathActive('/')}">
-          <md-icon>home</md-icon>
-          <span class="md-list-item-text">Home</span>
-        </md-list-item>
-
-        <!-- <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button> -->
-        <md-list-item v-for="path of paths" :key="path.to" @click="goToPath(path.to)" :class="{'is-active': isPathActive(path.to)}">
-          <md-icon>{{ path.icon }}</md-icon>
-          <span class="md-list-item-text">{{ path.label }}</span>
-        </md-list-item>
-
-        <md-divider></md-divider>
-
-        <router-link v-if="!isLoggedIn" to="/login">
-          <md-list-item :class="{'is-active': isPathActive('/login')}">
-            <md-icon>login</md-icon>
-            <span class="md-list-item-text">Log In</span>
-          </md-list-item>
+    <v-app md-waterfall md-mode="overlap" app class="page-container">
+      <v-app-bar class="" color="bluegrey" fixed prominent elevate-on-scroll app >
+        <router-link :to="{ path: `/` }" tag="img" class="logo" :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network logo">
         </router-link>
+        <div class="spacer"></div>
+        <div class="nav-items has-space-right md-elevation-2 md-medium-hide">
+          <router-link to="/">
+            <v-btn :class="{'is-active md-raised md-accent': isPathActive('/')}" :md-ripple="false">Home</v-btn>
+          </router-link>
+          <router-link v-for="path of paths" :key="path.to" :to="path.to">
+            <v-btn :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</v-btn>
+          </router-link>
+        </div>
+        <router-link v-if="!isLoggedIn" to="/login" class="md-medium-hide"><v-btn class="md-raised">Log In</v-btn></router-link>
+        <v-btn v-else class="md-raised md-medium-hide" @click="logOut()">Log Out</v-btn>
 
-        <md-list-item v-else @click="logOut()">
-          <md-icon>logout</md-icon>
-          <span class="md-list-item-text">Log Out</span>
-        </md-list-item>
-      </md-list>
-    </md-drawer>
+        <v-app-bar-nav-icon @click.stop="showMobileNavigation = true">
+          <v-icon>menu</v-icon>
+        </v-app-bar-nav-icon>
+      </v-app-bar>
 
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
-  </div>
+      <v-navigation-drawer class="mobile-nav-items" :v-model="showMobileNavigation" app>
+        <v-list nav dense class="nav-items">
+          <v-list-item-group>
+            <v-list-item @click="goToPath('/')" :class="{'is-active': isPathActive('/')}">
+              <v-icon>home</v-icon>
+              <span class="md-list-item-text">Home</span>
+            </v-list-item>
+
+            <v-list-item v-for="path of paths" :key="path.to" @click="goToPath(path.to)" :class="{'is-active': isPathActive(path.to)}">
+              <v-icon>{{ path.icon }}</v-icon>
+              <span class="md-list-item-text">{{ path.label }}</span>
+            </v-list-item>
+          </v-list-item-group>
+
+          <v-list-group>
+            <router-link v-if="!isLoggedIn" to="/login">
+              <v-list-item :class="{'is-active': isPathActive('/login')}">
+                <v-icon>login</v-icon>
+                <span class="md-list-item-text">Log In</span>
+              </v-list-item>
+            </router-link>
+
+            <v-list-item v-else @click="logOut()">
+              <v-icon>logout</v-icon>
+              <span class="md-list-item-text">Log Out</span>
+            </v-list-item>
+          </v-list-group>
+        </v-list>
+      </v-navigation-drawer>
+
+      <v-main id="main-content" class="md-layout-item">
+
+        <v-container>
+          <v-sheet elevation="2">
+            <router-view v-if="!isLoading" name="content" />
+          </v-sheet>
+        </v-container>
+      </v-main>
+
+      <v-footer>
+        <router-view name="footer" /> 
+      </v-footer>
+    
+      <!-- <md-snackbar
+        :md-active.sync="snackbar.isActive"
+        :md-position="snackbar.position"
+        :md-persistent="snackbar.isPersistent"
+        :md-duration="snackbar.isInfinite ? Infinity : snackbar.duration"
+      >
+        <span>{{ snackbar.message }}</span>
+        <v-btn class="md-primary" @click="snackbar.isActive = false">Dismiss</v-btn>
+      </md-snackbar> -->
+
+      <!-- <md-dialog-confirm
+        :md-active.sync="dialog.isActive"
+        :md-title="dialog.title"
+        :md-content="dialog.content"
+        :md-confirm-text="dialog.confirmText"
+        :md-cancel-text="dialog.cancelText"
+        @md-cancel="dialog.onCancel"
+        @md-confirm="dialog.onConfirm" /> -->
+
+      <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
+    </v-app>
 </template>
 
 <script lang="ts">
@@ -234,32 +226,30 @@
 </script>
 
 <style lang="scss" scoped>
-  .md-toolbar.md-overlap-off .logo {
-    max-height: 7rem;
-    margin-top: unset;
-    padding: 1rem 0;
-  }
+  // .md-toolbar.md-overlap-off .logo {
+  //   max-height: 7rem;
+  //   margin-top: unset;
+  //   padding: 1rem 0;
+  // }
 
-  .md-toolbar {
-    // background: linear-gradient(-45deg, rgb(52, 107, 184) 0%, rgba(28,206,234,0.82) 100%);
-  }
+  // .md-toolbar {
+  //   // background: linear-gradient(-45deg, rgb(52, 107, 184) 0%, rgba(28,206,234,0.82) 100%);
+  // }
 
   .logo {
-    max-height: 117px;
-    transition: max-height 0.25s ease;
-    will-change: max-height, margin-top;
-    margin-top: -6rem;
+    max-height: 100%;
+    cursor: pointer;
   }
 
   .md-app {
     height: 100vh;
   }
 
-  /deep/ .md-app-scroller {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+  // /deep/ .md-app-scroller {
+  //   display: flex;
+  //   flex-direction: column;
+  //   align-items: center;
+  // }
 
   #footer {
     width: 100%;
@@ -275,13 +265,13 @@
     border-radius: 2rem;
     overflow: hidden;
 
-    a.router-link-exact-active .md-button::before,
-    .md-button.is-active::before {
+    a.router-link-exact-active .v-btn::before,
+    .v-btn.is-active::before {
       background-color: currentColor;
       opacity: .12;
     }
 
-    .md-button {
+    .v-btn {
       margin: 0;
       border-radius: 0;
     }
@@ -296,18 +286,18 @@
       color: var(--md-theme-default-text-primary-on-accent, #fff) !important;
       background-color: var(--md-theme-default-accent, #0277bd);
 
-      .md-icon {
+      .v-icon {
         color: var(--md-theme-default-text-primary-on-accent, #fff) !important;
       }
     }
   }
 
-  @media screen and (min-width: 1279px) {
-    /deep/ .md-list.nav-items,
-    /deep/ .md-drawer.mobile-nav-items,
+  // @media screen and (min-width: 1279px) {
+  //   /deep/ .md-list.nav-items,
+  //   /deep/ .md-drawer.mobile-nav-items,
 
-    .mobile-nav-trigger {
-      display: none;
-    }
-  }
+  //   .mobile-nav-trigger {
+  //     display: none;
+  //   }
+  // }
 </style>

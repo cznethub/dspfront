@@ -6,7 +6,7 @@
       <h2>Repository Recommendations</h2>
       <p class="has-text-mute">If you aren't sure which repository to use, visit our repository recommendation system to get help.</p>
       <router-link to="/recommendations">
-        <md-button class="md-raised md-accent">Help Me Decide</md-button>
+        <v-btn class="md-raised md-accent">Help Me Decide</v-btn>
       </router-link>
     </section>
 
@@ -22,7 +22,7 @@
         <div id="data-templates" class="md-layout-item md-layout" style="flex-direction: column;">
           <div class="md-layout-item md-layout">
             <!-- <img class="md-layout-item" :src="require('@/assets/img/placeholder.png')" alt="" style="flex: 0;"> -->
-            <md-icon class="md-size-4x md-layout-item" style="color: #87AAAA;">layers</md-icon>
+            <v-icon class="md-size-4x md-layout-item" style="color: #87AAAA;">layers</v-icon>
             <div class="md-layout-item">
               <h4 class="has-text-weight-bold ">Geospatial Data</h4>
               <p class="has-text-mute">Geospatial data include geographic feature and raster datasets.</p>
@@ -30,7 +30,7 @@
           </div>
 
           <div class="md-layout-item md-layout">
-            <md-icon class="md-size-4x md-layout-item" style="color: #BCCC9A;">timeline</md-icon>
+            <v-icon class="md-size-4x md-layout-item" style="color: #BCCC9A;">timeline</v-icon>
             <div class="md-layout-item">
               <h4 class="has-text-weight-bold">Sensor Time Series Data</h4>
               <p class="has-text-mute">Sensor datasets typically consist of time series of observations from sensors deployed in the environment.</p>
@@ -38,7 +38,7 @@
           </div>
 
           <div class="md-layout-item md-layout">
-            <md-icon class="md-size-4x md-layout-item" style="color: #C37B89;">account_tree</md-icon>
+            <v-icon class="md-size-4x md-layout-item" style="color: #C37B89;">account_tree</v-icon>
             <div class="md-layout-item">
               <h4 class="has-text-weight-bold">Data Derived from Samples</h4>
               <p class="has-text-mute">Access best practices, recommendations, formats, and repository recommendations for geospatial data.</p>
@@ -83,7 +83,7 @@
       margin: 1.5rem 0;
     }
 
-    img, .md-icon {
+    img, .v-icon {
       margin-right: 3rem;
       flex: 0;
     }

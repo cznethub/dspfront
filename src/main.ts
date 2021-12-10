@@ -18,6 +18,7 @@ import { router } from './router'
 import { orm } from '@/models/orm'
 import { persistedPaths } from './models/persistedPaths'
 import { APP_NAME } from './constants'
+import vuetify from '@/plugins/vuetify'
 
 import { 
   MdButton,
@@ -112,5 +113,6 @@ Vue.use(Buefy, {
 new Vue({
   router,
   store,
+  vuetify,
   render: (h) => h(App),
 }).$mount('#app')
