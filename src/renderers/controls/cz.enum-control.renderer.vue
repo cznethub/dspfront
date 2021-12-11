@@ -1,75 +1,81 @@
 <template>
-  <md-chips 
-    @input="onChange" 
+  <v-combobox
     v-model="tags"
-    @keydown.native="onKeyDown"
-    class="md-primary shake-on-error"
-    ref="chips"
-  > 
-    <label>{{ control.label }}</label>
-    <div class="md-helper-text">{{ control.description }}</div>
-  </md-chips>
+    @input="onChange"
+    :label="control.label"
+    :hint="control.description"
+    :delimiters="[',']"
+    :error-messages="control.errors"
+    :menu-props="{ openOnClick: false }"
+    clearable
+    small-chips
+    multiple
+    no-filter
+    outlined
+  >
+    <template v-slot:selection="{ attrs, item }">
+      <v-chip
+        v-bind="attrs"
+        close
+        @click:close="remove(item)"
+      >
+        <strong>{{ item }}</strong>
+      </v-chip>
+    </template>
+  </v-combobox>
 </template>
 
 <script lang="ts">
-  import { isPrimitiveArrayControl, JsonFormsRendererRegistryEntry, rankWith } from '@jsonforms/core'
-  import { defineComponent } from '@vue/composition-api'
-  import { rendererProps, useJsonFormsControl } from '@jsonforms/vue2'
-  import { MdChips } from 'vue-material/dist/components'
+import {
+  isPrimitiveArrayControl,
+  JsonFormsRendererRegistryEntry,
+  rankWith,
+} from "@jsonforms/core"
+import { defineComponent } from "@vue/composition-api"
+import { rendererProps, useJsonFormsControl } from "@jsonforms/vue2"
 
-  // https://www.npmjs.com/package/@jsonforms/vue2
+// https://www.npmjs.com/package/@jsonforms/vue2
 
-  const controlRenderer = defineComponent({
-    name: 'control-renderer',
-    props: {
-      ...rendererProps()
+const controlRenderer = defineComponent({
+  name: "control-renderer",
+  props: {
+    ...rendererProps(),
+  },
+  setup(props: any) {
+    const tags: string[] =[]
+    return {
+      tags,
+      ...useJsonFormsControl(props),
+    };
+  },
+  created() {
+    // console.log(this.control)
+    this.tags = this.control.schema.default
+  },
+  methods: {
+    onChange() {
+      // Prevent inserting duplicates and trim values
+      this.tags = this.tags
+        .filter(tag => !!tag.trim())
+        .map(tag => tag.trim())
+      this.tags = [...(new Set(this.tags))]
+      this.handleChange(this.control.path, this.tags)
     },
-    setup(props: any) {
-      const tags = []
-      return {
-        tags,
-        ...useJsonFormsControl(props),
-      }
+    remove(item: string) {
+      this.tags.splice(this.tags.indexOf(item), 1)
+      this.onChange()
     },
-    created() {
-      // console.log(this.control)
-      this.tags = this.control.schema.default
-    },
-    methods: {
-      onChange(values) {
-        this.handleChange(
-          this.control.path,
-          values
-        )
-      },
-      onKeyDown(e) {
-        const delimeters = [
-          'Comma',
-        ]
-        if (delimeters.includes(e.code)) {
-          const chips = this.$refs.chips as MdChips
+  },
+});
+export default controlRenderer;
 
-          if (chips) {
-            const newKeyword = chips.inputValue
-            if (newKeyword) {
-              chips.insertChip(newKeyword)
-              e.preventDefault()
-            }
-          }
-        }
-      }
-    }
-  })
-  export default controlRenderer
-
-  export const enumControlRenderer: JsonFormsRendererRegistryEntry = {
-    renderer: controlRenderer,
-    tester: rankWith(3, isPrimitiveArrayControl)
-  }
+export const enumControlRenderer: JsonFormsRendererRegistryEntry = {
+  renderer: controlRenderer,
+  tester: rankWith(3, isPrimitiveArrayControl),
+};
 </script>
 
 <style lang="scss" scoped>
-  
 </style>
 
 

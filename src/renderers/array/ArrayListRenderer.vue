@@ -1,10 +1,10 @@
 <template>
-  <div v-if="control.visible" class="cz-field">
-    <div class="md-layout md-alignment-bottom-space-between has-space-bottom">
-      <div class="md-subheading">{{ control.label }}</div>
+  <div v-if="control.visible" class="">
+    <div class="">
+      <div class="">{{ control.label }}</div>
 
-      <v-btn class="md-fab md-raised md-accent md-mini" @click="addButtonClick" :class="styles.arrayList.addButton">
-        <v-icon>add</v-icon>
+      <v-btn fab small color="primary" @click="addButtonClick" :class="styles.arrayList.addButton">
+        <v-icon>mdi-plus</v-icon>
       </v-btn>
     </div>
 
@@ -14,7 +14,7 @@
       :items="control.data || []"
       @reorder="reorderElements($event.from, $event.to)"
     >
-      <template v-slot:item="{ item, index }">
+      <template v-slot:item="{ index }">
         <drag class="item" :key="index">
           <array-list-element
             class="list-complete-item"
@@ -122,7 +122,7 @@ export const arrayListRenderer: JsonFormsRendererRegistryEntry = {
     grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
     gap: 2rem;
 
-    /deep/ .md-card {
+    ::v-deep .v-card {
       margin: 0;
     }
   }

@@ -17,23 +17,23 @@
 
         <div class="has-space-bottom-2x">
           <div class="repositories">
-            <md-card v-for="repo of repoMetadata" :key="repo.key" @click.native="submitTo(repo)" class="md-primary" md-theme="grey-card" :md-with-hover="!repo.isDisabled">
-              <md-card-media class="md-layout md-alignment-center-center" style="height: 10rem; padding: 2rem;">
+            <v-card v-for="repo of repoMetadata" :key="repo.key" @click.native="submitTo(repo)" class="md-primary" md-theme="grey-card" :md-with-hover="!repo.isDisabled">
+              <div class="md-layout md-alignment-center-center" style="height: 10rem; padding: 2rem;">
                 <img :src="repo.logoSrc" :alt="repo.name" class="md-layout-item">
-              </md-card-media>
-              <md-card-header>
+              </div>
+              <div>
                 <div class="md-title">{{ repo.name }}</div>
                 
-              </md-card-header>
-              <md-card-content class="has-text-mute">
+              </div>
+              <div class="has-text-mute">
                 <div>{{ repo.description }}</div>
                 
                 <template v-if="repo.isDisabled">
                   <hr>
-                  <md-chip>Coming soon...</md-chip>
+                  <v-chip>Coming soon...</v-chip>
                 </template>
-              </md-card-content>
-            </md-card>
+              </div>
+            </v-card>
           </div>
         </div>
       </section>
@@ -111,7 +111,7 @@
     justify-content: space-around;
     gap: 2rem;
 
-    .md-card-media {
+    .v-card-media {
       background: linear-gradient(135deg, #f1f3f5 0%, var(--md-theme-default-primary) 100%);
 
       img {

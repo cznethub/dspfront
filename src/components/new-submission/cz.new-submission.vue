@@ -7,7 +7,7 @@
         <div class="md-layout md-alignment-center-space-between">
           <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
           <div class="form-controls">
-            <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</v-btn> -->
+            <v-btn v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</v-btn>
             <v-btn v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</v-btn>
             <v-btn class="md-raised md-accent" @click="save()" :disabled="isSaving">
               {{ isSaving ? 'Saving...' : submitText }}
@@ -25,7 +25,7 @@
             <b-upload v-model="dropFiles" multiple drag-drop expanded>
               <section class="section">
                 <div class="content has-text-centered">
-                  <v-icon>attach_file</v-icon>
+                  <v-icon>mdi-file</v-icon>
                   <p>Drop your files here or click to upload</p>
                 </div>
               </section>
@@ -33,11 +33,18 @@
           </div>
 
           <div v-if="dropFiles.length" class="upload-file-list">
-            <transition-group name="list-items" tag="div">
-              <md-chip v-for="(file, index) in dropFiles"
-                :key="`${file.name}-${index}`" class="md-primary list-items-item" md-deletable @md-delete="deleteDropFile(index)">
-                {{ file.name }}
-              </md-chip>
+            <transition-group name="list-files">
+              <v-chip
+                v-for="(file, index) in dropFiles"
+                :key="`${file.name}-${index}`"
+                class="list-files-item"
+                close
+                color="secondary"
+                @click:close="deleteDropFile(index)"
+              >
+                <v-icon left>mdi-file</v-icon>
+                <strong>{{ file.name }}</strong>
+              </v-chip>
             </transition-group>
           </div>
 
@@ -52,10 +59,13 @@
           />
         </div>
 
-        <md-progress-spinner v-else md-mode="indeterminate"></md-progress-spinner>
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        />
 
         <div v-if="!isLoading" class="form-controls has-space-top-2x md-layout md-alignment-center-right">
-          <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</v-btn> -->
+          <v-btn v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</v-btn>
           <v-btn v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</v-btn>
           <v-btn class="md-raised md-accent" @click="save()" :disabled="isSaving">
             {{ isSaving ? 'Saving...' : submitText }}
@@ -64,17 +74,28 @@
       </div>
     </section>
 
-    <md-dialog v-if="isDevMode" :md-active.sync="showUISchema" :md-fullscreen="true">
-      <md-dialog-title>UI Schema</md-dialog-title>
-      <div class="schema-wrapper">
-        <json-viewer
-          :value="usedUISchema"
-          :expand-depth="5"
-          copyable
-          expanded
-          sort />
-      </div>
-    </md-dialog>
+    <v-dialog v-if="isDevMode" v-model="showUISchema">
+      <v-card>
+        <v-card-title>
+          UI Schema
+        </v-card-title>
+        <v-card-text>
+          <div class="schema-wrapper">
+            <json-viewer
+              :value="usedUISchema"
+              :expand-depth="5"
+              copyable
+              expanded
+              sort />
+          </div>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="showUISchema = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -271,13 +292,13 @@
     padding: 2rem;
   }
 
-  /deep/ .vertical-layout-item {
-    margin: 1rem 0;
+  // ::v-deep .vertical-layout-item {
+  //   margin: 1rem 0;
 
-    select {
-      width: 100%;
-    }
-  }
+  //   select {
+  //     width: 100%;
+  //   }
+  // }
 
   .schema-wrapper {
     width: 100rem;
@@ -289,16 +310,16 @@
     min-height: 75vh;
   }
 
-  .md-dialog /deep/.md-dialog-container {
-    max-width: 100rem;
-  }
+  // .md-dialog ::v-deep.md-dialog-container {
+  //   max-width: 100rem;
+  // }
 
   .upload-drop-area {
     border: 1px dashed #DDD;
     border-radius: 0.5rem;
     cursor: pointer;
 
-    /deep/ input[type=file] {
+    ::v-deep input[type=file] {
       display: none;
     }
   }
@@ -307,104 +328,104 @@
     margin: 0.5rem;
   }
 
-  /deep/ .md-field {
-    // display: block;
-    flex-wrap: wrap;
+  // ::v-deep .md-field {
+  //   // display: block;
+  //   flex-wrap: wrap;
 
-    &::after, &::before {
-      content: none;
-    }
+  //   &::after, &::before {
+  //     content: none;
+  //   }
 
-    label {
-      top: -6px !important;
-      font-size: 16px !important;
-      color: inherit !important;
-      left: 0 !important;
-      pointer-events: unset !important;
-      cursor: unset !important;
-    }
+    // label {
+    //   top: -6px !important;
+    //   font-size: 16px !important;
+    //   color: inherit !important;
+    //   left: 0 !important;
+    //   pointer-events: unset !important;
+    //   cursor: unset !important;
+    // }
 
-    .md-input,
-    .md-textarea {
-      border: 1px solid var(--text-mute);
-      border-radius: 0.5rem;
-      padding-left: 0.5rem;
-      width: 100%;
-    }
+    // .md-input,
+    // .md-textarea {
+    //   border: 1px solid var(--text-mute);
+    //   border-radius: 0.5rem;
+    //   padding-left: 0.5rem;
+    //   width: 100%;
+    // }
 
-    .md-menu.md-select {
-      flex: 1 1 auto;
+    // .md-menu.md-select {
+    //   flex: 1 1 auto;
 
-      & > .v-icon {
-        position: absolute;
-        right: 0;
-        top: 2rem;
-      }
-    }
+    //   & > .v-icon {
+    //     position: absolute;
+    //     right: 0;
+    //     top: 2rem;
+    //   }
+    // }
 
-    & > .md-helper-text {
-      position: static;
-      flex-basis: 100%;
-      flex-shrink: 0;
-      height: unset;
-    }
+  //   & > .md-helper-text {
+  //     position: static;
+  //     flex-basis: 100%;
+  //     flex-shrink: 0;
+  //     height: unset;
+  //   }
 
-    &.md-datepicker {
-      max-width: 40rem;
-      flex-wrap: wrap;
+  //   &.md-datepicker {
+  //     max-width: 40rem;
+  //     flex-wrap: wrap;
 
-      & > input {
-        margin-left: 0 !important;
-        padding-left: 4rem;
-      }
+  //     & > input {
+  //       margin-left: 0 !important;
+  //       padding-left: 4rem;
+  //     }
 
-      & > i.md-date-icon {
-        position: absolute;
-        left: 4px;
-        overflow: hidden;
-      }
-    }
+  //     & > i.md-date-icon {
+  //       position: absolute;
+  //       left: 4px;
+  //       overflow: hidden;
+  //     }
+  //   }
 
-    &.md-chips {
-      padding-top: 16px;
+  //   &.md-chips {
+  //     padding-top: 16px;
 
-      .md-helper-text {
-        margin-bottom: 1rem;
-      }
+  //     .md-helper-text {
+  //       margin-bottom: 1rem;
+  //     }
 
-      // & > input {
-      //   flex-basis: 100%;
-      //   flex-shrink: 0;
-      // }
-    }
+  //     // & > input {
+  //     //   flex-basis: 100%;
+  //     //   flex-shrink: 0;
+  //     // }
+  //   }
 
-    &.md-required label:after {
-      content: "(required)";
-      color: red;
-      font-size: 11px;
-      margin-left: 4px;
-      vertical-align: middle;
+  //   &.md-required label:after {
+  //     content: "(required)";
+  //     color: red;
+  //     font-size: 11px;
+  //     margin-left: 4px;
+  //     vertical-align: middle;
       
-      transform: none;
-      position: unset;
-      top: unset;
-      right: unset;
-      line-height: 1em;
-    }
-  }
+  //     transform: none;
+  //     position: unset;
+  //     top: unset;
+  //     right: unset;
+  //     line-height: 1em;
+  //   }
+  // }
 
-  .list-items {
+  .list-files {
     transition: all 1s;
   }
 
-  .list-items-enter,
-  .list-items-leave-to
+  .list-files-enter,
+  .list-files-leave-to
   /* .list-complete-leave-active below version 2.1.8 */ {
     opacity: 0;
     // transform: translateY(30px);
   }
 
-  .list-items-leave-active {
+  .list-files-leave-active {
     position: absolute;
   }
 

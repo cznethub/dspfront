@@ -1,26 +1,27 @@
 <template>
-  <md-card>
-    <!-- <md-card-header v-if="label">{{ label }}</md-card-header> -->
-    <md-card-actions>
-      <v-btn class="v-icon-button" @click="moveUpClicked" :disabled="!moveUpEnabled">
-        <v-icon>arrow_upward</v-icon>
+  <v-card>
+    <!-- <v-card-header v-if="label">{{ label }}</v-card-header> -->
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn elevation="1" fab small @click="moveUpClicked" :disabled="!moveUpEnabled">
+        <v-icon>mdi-arrow-up</v-icon>
       </v-btn>
 
-      <v-btn class="v-icon-button" @click="moveDownClicked" :disabled="!moveDownEnabled">
-        <v-icon>arrow_downward</v-icon>
+      <v-btn elevation="1" fab small @click="moveDownClicked" :disabled="!moveDownEnabled">
+        <v-icon>mdi-arrow-down</v-icon>
       </v-btn>
 
-      <v-btn class="v-icon-button" @click="deleteClicked">
-        <v-icon>delete</v-icon>
+      <v-btn elevation="1" fab small @click="deleteClicked">
+        <v-icon>mdi-delete</v-icon>
       </v-btn>
-    </md-card-actions>
+    </v-card-actions>
 
-    <md-divider></md-divider>
+    <v-divider></v-divider>
 
-    <md-card-content>
+    <v-card-text>
       <slot></slot>
-    </md-card-content>
-  </md-card>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script lang="ts">

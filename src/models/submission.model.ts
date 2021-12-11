@@ -1,6 +1,7 @@
 import { ISubmission, EnumRepositoryKeys } from '@/components/submissions/types'
 import { Model } from '@vuex-orm/core'
 import axios from "axios"
+import User from './user.model'
 
 export interface IApiRecordHs {
   abstract: string
@@ -94,6 +95,10 @@ export default class Submission extends Model implements ISubmission {
         let data = resp.data as any[]
         data = data.map(this.getInsertData)
         this.insertOrUpdate({ data })
+      }
+      else if (resp.status === 401) {
+        // User has been logged out
+        User.logOut()
       }
       this.commit((state) => {
         return state.isFetching = false

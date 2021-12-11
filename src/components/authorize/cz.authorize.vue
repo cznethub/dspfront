@@ -1,14 +1,14 @@
 <template>
   <div class="cz-authorize">
-    <md-card class="has-text-centered">
-      <md-card-media class="md-layout md-alignment-center-center" style="height: 10rem; padding: 2rem;">
+    <v-card class="has-text-centered">
+      <div class="md-layout md-alignment-center-center" style="height: 10rem; padding: 2rem;">
         <img :src="activeRepository.get().logoSrc" :alt="activeRepository.name" class="md-layout-item">
-      </md-card-media>
-      <md-card-header class="">
+      </div> -->
+      <div class="">
         <div class="md-title">Submit to {{ activeRepository.name }}</div>
         <div class="md-subhead">Permission is needed to post to this repository</div>
-      </md-card-header>
-      <md-card-content class="">
+      </div>
+      <div class="">
         <v-btn @click="goToAuthorizePage()" class="md-raised md-accent">
           <div class="level">
             <i class="fas fa-key has-space-right is-size-3" />
@@ -16,8 +16,8 @@
           </div>
         </v-btn>
         <p class="">Follow the instructions on the next page to allow CZnet to submit to this repository.</p>
-      </md-card-content>
-    </md-card>
+      </div>
+    </v-card>
   </div>
 </template>
 
@@ -66,10 +66,10 @@
     height: 100%;
   }
   
-  .md-card {
+  .v-card {
     max-width: 40rem;
 
-    .md-card-media {
+    .v-card-media {
       background: linear-gradient(135deg, #f1f3f5 0%, var(--md-theme-default-primary) 100%);
 
       img {

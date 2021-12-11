@@ -9,7 +9,7 @@
         <hr>
         <div v-if="!isFetching && submissions.length" class="md-layout md-alignment-center-space-between">
           <div style="flex-grow: 1; margin-right: 2rem;">
-            <md-card-content id="filters" class="md-layout">
+            <div id="filters" class="md-layout">
               <v-text-field label="Search by Title and Author" v-model="filters.searchStr" dense outlined />
 
               <v-select
@@ -20,24 +20,11 @@
                 multiple
                 dense outlined
               />
-
-
-              <!-- <md-field class="md-layout-item" md-clearable>
-                <v-icon>search</v-icon>
-                <label>Search by Title and Author</label>
-                <md-input v-model="filters.searchStr"></md-input>
-              </md-field>
-
-              <md-field class="md-layout-item">
-                <label for="repository">Repository</label>
-                <md-select v-model="filters.repoOptions" multiple id="repository" md-dense>
-                  <md-option v-for="(repo, index) of repoOptions" :key="index" :value="repo">{{ repoMetadata[repo].name }}</md-option>
-                </md-select>
-              </md-field> -->
-            </md-card-content>
+            </div>
           </div>
 
-          <md-speed-dial md-direction="bottom">
+          <!-- TODO: replace for menu -->
+          <!-- <md-speed-dial md-direction="bottom">
             <md-speed-dial-target>
               <v-icon>add</v-icon>
             </md-speed-dial-target>
@@ -45,12 +32,15 @@
             <md-speed-dial-content>
               <v-btn  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</v-btn>
             </md-speed-dial-content>
-          </md-speed-dial>
+          </md-speed-dial> -->
         </div>
       </div>
 
       <template v-if="isFetching">
-        <md-progress-spinner md-mode="indeterminate"></md-progress-spinner>
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        />
       </template>
       <template v-else>
         <div v-if="submissions.length">
@@ -59,27 +49,26 @@
             <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
           </div>
 
-          <md-card class="panel">
-            <md-toolbar class="md-layout md-alignment-center-space-between" md-elevation="0">
+          <v-card class="panel">
+            <div class="">
               <v-btn class="md-raised">Export Submissions</v-btn>
-              <!-- <hr class="is-hidden-tablet"> -->
-              <div class="md-layout-item md-layout md-alignment-center-flex-end md-size-50 md-small-size-100 md-gutter">
-                <md-field class="md-layout-item">
-                  <label for="sorts">Sort</label>
-                  <md-select v-model="currentSort.defaultSort" id="sorts" md-dense>
-                    <md-option v-for="sort in sortOptions" :value="sort" :key="sort">{{ enumSubmissionSorts[sort] }}</md-option>
-                  </md-select>
-                </md-field>
+              <div>
+                <v-select v-model="currentSort.defaultSort" outlined :items="sortOptions" label="Sort">
+                  <template v-slot:item="{ item, on }">
+                    <v-list-item v-on="on" :value="item">{{ enumSubmissionSorts[item] }}</v-list-item>
+                  </template>
+                </v-select>
 
-                <md-field class="md-layout-item">
-                  <md-select v-model="currentSort.defaultSortDirection" md-dense>
-                    <md-option v-for="direction in sortDirectionOptions" :value="direction" :key="direction">{{ enumSortDirections[direction] }}</md-option>
-                  </md-select>
-                </md-field>
+                <!-- TODO: replace for toggle icons -->
+                <v-select v-model="currentSort.defaultSortDirection" outlined :items="sortDirectionOptions" label="Sort">
+                  <template v-slot:item="{ item, on }">
+                    <v-list-item v-on="on" :value="item">{{ enumSortDirections[item] }}</v-list-item>
+                  </template>
+                </v-select>
               </div>
-            </md-toolbar>
+            </div>
 
-            <md-card-content v-if="!isFetching">
+            <div v-if="!isFetching">
               <md-table v-model="filteredSubmissions" :md-sort="currentSort.defaultSort" :md-sort-order="currentSort.defaultSortDirection" ref="submissionsTable">
                 <md-table-row slot="md-table-row" slot-scope="{ item }">
                   <md-table-cell>
@@ -125,11 +114,11 @@
                   <v-btn class="md-primary md-raised" @click="null">Create New Submission</v-btn>
                 </md-table-empty-state> -->
               </md-table>
-            </md-card-content>
-          </md-card>
+            </div>
+          </v-card>
         </div>
 
-        <md-empty-state
+        <!-- <md-empty-state
           v-else
           v-icon="devices_other"
           md-label="Create your first submission"
@@ -143,7 +132,7 @@
               <v-btn  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</v-btn>
             </md-speed-dial-content>
           </md-speed-dial>
-        </md-empty-state>
+        </md-empty-state> -->
       </template>
     </template>
   </div>
@@ -352,7 +341,7 @@
     padding: 1rem;
   }
 
-  .md-card {
+  .v-card {
     margin: 0;
   }
 
@@ -376,9 +365,9 @@
     max-width: 30rem;
   }
 
-  /deep/ .md-table-head {
-    display: none;
-  }
+  // ::v-deep .md-table-head {
+  //   display: none;
+  // }
 
   .md-speed-dial {
     position: relative;
@@ -407,7 +396,7 @@
     left: -6rem;
   }
 
-  .cz-submissions--header .md-card {
+  .cz-submissions--header .v-card {
     background: var(--md-theme-default-background-variant, #fafafa)
   }
 </style>
