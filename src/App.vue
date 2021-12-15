@@ -1,44 +1,35 @@
 <template>
-  <v-app md-waterfall app>
+  <v-app app>
     <v-app-bar class="" color="bluegrey" fixed prominent elevate-on-scroll app>
-      <router-link
-        :to="{ path: `/` }"
-        tag="img"
-        class="logo"
-        :src="require('@/assets/img/CZN_Logo.png')"
-        alt="Critical Zone Network logo"
-      >
-      </router-link>
-      <div class="spacer"></div>
-      <div class="nav-items has-space-right md-elevation-2 md-medium-hide">
-        <router-link to="/">
-          <v-btn
-            :class="{ 'is-active md-raised md-accent': isPathActive('/') }"
-            :md-ripple="false"
-            >Home</v-btn
-          >
+      <v-container class="d-flex align-end" style="height: 100%">
+        <router-link
+          :to="{ path: `/` }"
+          :src="require('@/assets/img/CZN_Logo.png')"
+          tag="img"
+          class="logo"
+          alt="Critical Zone Network logo"
+        >
         </router-link>
-        <router-link v-for="path of paths" :key="path.to" :to="path.to">
-          <v-btn
-            :class="{ 'is-active md-raised md-accent': isPathActive(path.to) }"
-            :md-ripple="false"
-            >{{ path.label }}</v-btn
-          >
-        </router-link>
-      </div>
-      <router-link v-if="!isLoggedIn" to="/login" class="md-medium-hide"
-        ><v-btn class="md-raised">Log In</v-btn></router-link
-      >
-      <v-btn v-else class="md-raised md-medium-hide" @click="logOut()"
-        >Log Out</v-btn
-      >
+        <div class="spacer"></div>
+        <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
+          <router-link to="/" tag="div"  :class="{ 'is-active': isPathActive('/') }">
+            <v-btn :elevation="0" :color="isPathActive('/') ? 'primary' : ''">Home</v-btn>
+          </router-link>
+          <router-link v-for="path of paths" :key="path.to" :to="path.to" tag="div" :class="{ 'is-active': isPathActive(path.to) }">
+            <v-btn :elevation="0" :color="isPathActive(path.to) ? 'primary' : ''">{{ path.label }}</v-btn>
+          </router-link>
+        </v-card>
 
-      <v-app-bar-nav-icon @click.stop="showMobileNavigation = true">
-        <v-icon>menu</v-icon>
-      </v-app-bar-nav-icon>
+        <template v-if="!$vuetify.breakpoint.mdAndDown">
+          <router-link v-if="!isLoggedIn" to="/login" class=""><v-btn class="">Log In</v-btn></router-link>
+          <v-btn v-else class="" @click="logOut()">Log Out</v-btn>
+        </template>
+
+        <v-app-bar-nav-icon @click.stop="showMobileNavigation = true" v-if="$vuetify.breakpoint.mdAndDown" />
+      </v-container>
     </v-app-bar>
 
-    <v-main id="main-content" class="md-layout-item">
+    <v-main id="main-content" class="">
       <v-container>
         <v-sheet elevation="2">
           <router-view v-if="!isLoading" name="content" />
@@ -63,7 +54,7 @@
             :class="{ 'is-active': isPathActive('/') }"
           >
             <v-icon>home</v-icon>
-            <span class="md-list-item-text">Home</span>
+            <span class="">Home</span>
           </v-list-item>
 
           <v-list-item
@@ -73,7 +64,7 @@
             :class="{ 'is-active': isPathActive(path.to) }"
           >
             <v-icon>{{ path.icon }}</v-icon>
-            <span class="md-list-item-text">{{ path.label }}</span>
+            <span class="">{{ path.label }}</span>
           </v-list-item>
         </v-list-item-group>
 
@@ -83,13 +74,13 @@
           <router-link v-if="!isLoggedIn" to="/login">
             <v-list-item :class="{ 'is-active': isPathActive('/login') }">
               <v-icon>login</v-icon>
-              <span class="md-list-item-text">Log In</span>
+              <span class="">Log In</span>
             </v-list-item>
           </router-link>
 
           <v-list-item v-else @click="logOut()">
             <v-icon>logout</v-icon>
-            <span class="md-list-item-text">Log Out</span>
+            <span class="">Log Out</span>
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -115,14 +106,6 @@
       v-model="dialog.isActive"
       persistent
       width="500"
-      @md-cancel="
-        dialog.onCancel();
-        dialog.isActive = false;
-      "
-      @md-confirm="
-        dialog.onConfirm();
-        dialog.isActive = false;
-      "
     >
       <v-card>
         <v-card-title>{{ dialog.title }}</v-card-title>
@@ -303,43 +286,21 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss" scoped>
-// .md-toolbar.md-overlap-off .logo {
-//   max-height: 7rem;
-//   margin-top: unset;
-//   padding: 1rem 0;
-// }
-
-// .md-toolbar {
-//   // background: linear-gradient(-45deg, rgb(52, 107, 184) 0%, rgba(28,206,234,0.82) 100%);
-// }
-
 .logo {
   max-height: 100%;
   cursor: pointer;
 }
-
-.md-app {
-  height: 100vh;
-}
-
-// ::v-deep .md-app-scroller {
-//   display: flex;
-//   flex-direction: column;
-//   align-items: center;
-// }
 
 #footer {
   width: 100%;
   margin: 0;
   min-height: unset;
   margin-top: 4rem;
-  background: var(--md-theme-default-primary);
   box-shadow: none;
 }
 
 .nav-items {
-  background: var(--md-theme-default-background, #fff);
-  border-radius: 2rem;
+  border-radius: 2rem !important;
   overflow: hidden;
 
   a.router-link-exact-active .v-btn::before,
@@ -352,29 +313,5 @@ export default class App extends Vue {
     margin: 0;
     border-radius: 0;
   }
-
-  ::v-deep .md-list-item .md-list-item-content {
-    color: inherit;
-    cursor: pointer;
-  }
-
-  ::v-deep .md-list-item.is-active .md-list-item-content,
-  ::v-deep .router-link-exact-active .md-list-item-content {
-    color: var(--md-theme-default-text-primary-on-accent, #fff) !important;
-    background-color: var(--md-theme-default-accent, #0277bd);
-
-    .v-icon {
-      color: var(--md-theme-default-text-primary-on-accent, #fff) !important;
-    }
-  }
 }
-
-// @media screen and (min-width: 1279px) {
-//   ::v-deep .md-list.nav-items,
-//   ::v-deep .md-drawer.mobile-nav-items,
-
-//   .mobile-nav-trigger {
-//     display: none;
-//   }
-// }
 </style>
