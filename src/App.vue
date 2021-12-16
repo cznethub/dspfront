@@ -1,6 +1,6 @@
 <template>
   <v-app app>
-    <v-app-bar class="" color="bluegrey" fixed prominent elevate-on-scroll app>
+    <v-app-bar color="#cfd8dc" prominent elevate-on-scroll fixed>
       <v-container class="d-flex align-end" style="height: 100%">
         <router-link
           :to="{ path: `/` }"
@@ -13,10 +13,10 @@
         <div class="spacer"></div>
         <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
           <router-link to="/" tag="div"  :class="{ 'is-active': isPathActive('/') }">
-            <v-btn :elevation="0" :color="isPathActive('/') ? 'primary' : ''">Home</v-btn>
+            <v-btn :elevation="0" :color="isPathActive('/') ? 'primary' : '#FFF'">Home</v-btn>
           </router-link>
           <router-link v-for="path of paths" :key="path.to" :to="path.to" tag="div" :class="{ 'is-active': isPathActive(path.to) }">
-            <v-btn :elevation="0" :color="isPathActive(path.to) ? 'primary' : ''">{{ path.label }}</v-btn>
+            <v-btn :elevation="0" :color="isPathActive(path.to) ? 'primary' : '#FFF'">{{ path.label }}</v-btn>
           </router-link>
         </v-card>
 
@@ -29,7 +29,7 @@
       </v-container>
     </v-app-bar>
 
-    <v-main id="main-content" class="">
+    <v-main app>
       <v-container>
         <v-sheet elevation="2">
           <router-view v-if="!isLoading" name="content" />
@@ -44,8 +44,8 @@
     <v-navigation-drawer
       class="mobile-nav-items"
       v-model="showMobileNavigation"
-      app
       temporary
+      app
     >
       <v-list nav dense class="nav-items">
         <v-list-item-group>
@@ -312,6 +312,7 @@ export default class App extends Vue {
   .v-btn {
     margin: 0;
     border-radius: 0;
+    height: 39px !important;
   }
 }
 </style>

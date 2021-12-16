@@ -25,24 +25,24 @@
         </div>
 
         <div id="features-1" class="md-layout has-space-top-2x md-alignment-top-center">
-          <div class="md-layout-item md-layout md-gutter">
-            <v-icon class="md-size-2x md-layout-item">check_circle_outline</v-icon>
+          <div class="">
+            <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
             <div class="md-layout-item">
               <h3 class="md-headline">Which repository?</h3>
               <p class="has-text-mute">Use the Portal's repository recommendation system to determine which repository is right for submitting your research products.</p>
             </div>
           </div>
 
-          <div class="md-layout-item md-layout md-gutter">
-            <v-icon class="md-size-2x md-layout-item">check_circle_outline</v-icon>
+          <div class="">
+            <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
             <div class="md-layout-item">
               <h3 class="md-headline">Which format?</h3>
               <p class="has-text-mute">Use CZ community recommendations to decide on formats and conventions for your data files.</p>
             </div>
           </div>
 
-          <div class="md-layout-item md-layout md-gutter">
-            <v-icon class="md-size-2x md-layout-item">check_circle_outline</v-icon>
+          <div class="">
+            <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
             <div class="md-layout-item">
               <h3 class="md-headline">Which metadata?</h3>
               <p class="has-text-mute">Use the Portal's submission tools to ensure your metadata are complete and that your data are well described.</p>
@@ -149,17 +149,17 @@
   }
 
   #features-1 {
-    .v-icon {
-      flex: 0;
-      margin: 0;
-      margin-top: 1rem;
-    }
+    // .v-icon {
+    //   flex: 0;
+    //   margin: 0;
+    //   margin-top: 1rem;
+    // }
 
-    & > .md-layout-item {
-      flex-basis: 38rem;
-      flex-grow: 0;
-      padding: 2rem;
-    }
+    // & > .md-layout-item {
+    //   flex-basis: 38rem;
+    //   flex-grow: 0;
+    //   padding: 2rem;
+    // }
   }
 
   #features-2 {
