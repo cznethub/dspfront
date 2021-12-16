@@ -14,6 +14,7 @@ export const router = new VueRouter({
   }
 })
 
+/** Guards are executed in the order they appear in this array */
 const guards: ((to, from?) => RawLocation | null)[] = [
   // hasNextRouteGuard
   (to, from?): RawLocation | null =>  {
@@ -28,6 +29,7 @@ const guards: ((to, from?) => RawLocation | null)[] = [
 
     return null
   },
+
   // hasLoggedInGuard
   (to, from?): RawLocation | null => {
     if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
@@ -36,6 +38,7 @@ const guards: ((to, from?) => RawLocation | null)[] = [
 
     return null
   },
+
   // hasAccessTokenGuard
   (to, from?): RawLocation | null => {
     if (to.meta?.hasAccessTokenGuard) {
@@ -57,7 +60,6 @@ const guards: ((to, from?) => RawLocation | null)[] = [
   }
 ]
 
-/** Guards are executed in the order they are created */
 export function setupRouteGuards() {
   router.beforeEach((to, from, next) => {
     console.log("Router beforeEach: ", to)
@@ -96,12 +98,13 @@ function checkGuardsOnce() {
   for (let i = 0; i < guards.length; i++) {
     const r = guards[i](router.currentRoute)
     if (r) {
+      // Some guard activated
       activatedGuardRoute = r
       break
     }
   }
   if (activatedGuardRoute) {
-    router.push(activatedGuardRoute as RawLocation)
+    router.push(activatedGuardRoute)
   }
 }
 
