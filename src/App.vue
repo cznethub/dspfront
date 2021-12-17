@@ -21,7 +21,7 @@
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
-          <router-link v-if="!isLoggedIn" to="/login" class=""><v-btn class="">Log In</v-btn></router-link>
+          <router-link v-if="!isLoggedIn" to="/login" class="" tag="div"><v-btn class="">Log In</v-btn></router-link>
           <v-btn v-else class="" @click="logOut()">Log Out</v-btn>
         </template>
 

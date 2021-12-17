@@ -10,22 +10,20 @@
       <template v-if="!isLoggedIn">
         <div>
           <h2 class=" has-text-white has-space-top-2x has-space-bottom">Ready to Submit Data?</h2>
-          <router-link to="login">
-            <v-btn class="">Log In</v-btn>
-          </router-link>
+          <router-link to="/login" tag="v-btn">Log In</router-link>
         </div>
       </template>
     </section>
 
     <section class="">
       <div class="">
-        <div class="" style="flex-direction: column;">
-          <h1 class=" has-space-bottom">Submit Your Research Products</h1>
+        <div class="has-text-centered d-flex flex-column align-center">
+          <h1 class="has-space-bottom">Submit Your Research Products</h1>
           <p class="has-text-mute has-text-centered">Created for the Critical Zone Collaborative Network (CZCN), this Data Submission Portal provides tools for determining which repository to use for data submission along with enhanced submission tools to encourage data standards, complete metadata, and high-quality submissions.</p>
         </div>
 
-        <div id="features-1" class="has-space-top-2x ">
-          <div class="">
+        <div id="features-1" class="has-space-top-2x d-flex flex-wrap justify-center">
+          <div class="d-flex align-start">
             <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
             <div class="">
               <h3 class="">Which repository?</h3>
@@ -33,7 +31,7 @@
             </div>
           </div>
 
-          <div class="">
+          <div class="d-flex align-start">
             <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
             <div class="">
               <h3 class="">Which format?</h3>
@@ -41,7 +39,7 @@
             </div>
           </div>
 
-          <div class="">
+          <div class="d-flex align-start">
             <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
             <div class="">
               <h3 class="">Which metadata?</h3>
@@ -55,50 +53,48 @@
     <hr>
 
     <section class="has-text-centered">
-      <h1 class=" has-space-bottom-2x">What do you want to do?</h1>
-      <div id="features-2" class=" ">
+      <h1 class="has-space-bottom-2x">What do you want to do?</h1>
+      <div id="features-2" class="d-flex flex-wrap justify-center">
         <div class="">
-          <v-icon class=" ">post_add</v-icon>
+          <v-icon class=" ">mdi-book-plus</v-icon>
           <h3 class=" has-space-bottom has-space-top">Submit Data Products</h3>
-          <p class="has-text-mute">Assemble your data files and metadata using our templates and submit directly to a supported repository.</p>
+          <div class="has-text-mute">Assemble your data files and metadata using our templates and submit directly to a supported repository.</div>
         </div>
         <div class="">
-          <v-icon class=" ">travel_explore</v-icon>
+          <v-icon class=" ">mdi-arrow-decision</v-icon>
           <h3 class=" has-space-bottom has-space-top">Find the Right Repository</h3>
-          <p class="has-text-mute">Don't know which repository to use? Use our repository recommendation system to decide which repository is the best place for your data.</p>
+          <div class="has-text-mute">Don't know which repository to use? Use our repository recommendation system to decide which repository is the best place for your data.</div>
         </div>
         <div class="">
-          <v-icon class=" ">find_in_page</v-icon>
+          <v-icon class=" ">mdi-database-search</v-icon>
           <h3 class=" has-space-bottom has-space-top">Explore CZCN Data</h3>
-          <p class="has-text-mute">All products submitted via this Portal are  cataloged for browsing and discovery via the <a href="https://www.hydroshare.org/" target="_blank">HydroShare repository</a>. </p>
+          <div class="has-text-mute">All products submitted via this Portal are  cataloged for browsing and discovery via the <a href="https://www.hydroshare.org/" target="_blank">HydroShare repository</a>. </div>
         </div>
       </div>
     </section>
 
     <hr>
 
-    <section class="">
-      <div class=" ">
-        <h1 class=" has-space-bottom-2x">Make your Data FAIR</h1>
+    <section class="d-flex align-center">
+      <div class="">
+        <h1 class="has-space-bottom-2x">Make your Data FAIR</h1>
         <p class="has-text-mute">This Data Submission Portal works with reputable Earth Science repositories to ensure that research products you submit are <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and <u>R</u>eusable.</p>
       </div>
 
-      <div class="  ">
+      <div class="">
         <img :src="require('@/assets/img/fair.png')" alt="">
       </div>
     </section>
 
-    <hr>
+    <v-divider></v-divider>
 
     <section>
-      <h1 class=" has-space-bottom  has-text-centered">Supported Repositories</h1>
-      <div class="">
+      <h1 class="has-space-bottom has-text-centered">Supported Repositories</h1>
+      <div class="d-flex justify-center">
         <p class="has-text-mute has-text-centered">Data submitted via this Portal are deposited in multiple repositories. Click the links below to learn more about each of the supported repositories.</p>
       </div>
-      <div class="repos   has-space-bottom-2x">
-        <div v-for="repo of supportedRepositories" :key="repo.key" class=" ">
-          <img :src="repo.logoSrc" :alt="repo.name">
-        </div>
+      <div class="repos has-space-bottom-2x d-flex flex-wrap align-center justify-center">
+        <img v-for="repo of supportedRepositories" :key="repo.key" :src="repo.logoSrc" :alt="repo.name">
       </div>
     </section>
   </div>
@@ -147,25 +143,25 @@
   }
 
   #features-1 {
-    // .v-icon {
-    //   flex: 0;
-    //   margin: 0;
-    //   margin-top: 1rem;
-    // }
+    .v-icon {
+      flex: 0;
+      margin: 0;
+      margin-top: 1rem;
+    }
 
-    // & > . {
-    //   flex-basis: 38rem;
-    //   flex-grow: 0;
-    //   padding: 2rem;
-    // }
+    & > div {
+      flex-basis: 38rem;
+      flex-grow: 0;
+      padding: 2rem;
+    }
   }
 
   #features-2 {
-    // & > . {
-    //   flex-basis: 40rem;
-    //   flex-grow: 0;
-    //   padding: 2rem;
-    // }
+    & > div {
+      flex-basis: 40rem;
+      flex-grow: 0;
+      padding: 2rem;
+    }
 
     // .:nth-child(1) .v-icon {
     //   color: #AFB9C8;
@@ -179,8 +175,14 @@
   }
 
   .repos {
-    & > div {
-      max-width: 30rem;
+    // display: flex;
+    gap: 2rem 4rem;
+    // flex-wrap: wrap;
+    // align-items: center;
+    // justify-content: center;
+
+    img {
+      height: 5rem;
     }
   }
 </style>
