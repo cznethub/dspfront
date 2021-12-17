@@ -50,7 +50,7 @@
       </div>
     </section>
 
-    <hr>
+    <v-divider/>
 
     <section class="has-text-centered">
       <h1 class="has-space-bottom-2x">What do you want to do?</h1>
@@ -73,24 +73,24 @@
       </div>
     </section>
 
-    <hr>
+    <v-divider/>
 
-    <section class="d-flex align-center">
-      <div class="">
+    <section class="d-flex align-center flex-wrap">
+      <div>
         <h1 class="has-space-bottom-2x">Make your Data FAIR</h1>
         <p class="has-text-mute">This Data Submission Portal works with reputable Earth Science repositories to ensure that research products you submit are <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and <u>R</u>eusable.</p>
       </div>
 
-      <div class="">
+      <div class="has-space-top-2x">
         <img :src="require('@/assets/img/fair.png')" alt="">
       </div>
     </section>
 
-    <v-divider></v-divider>
+    <v-divider/>
 
     <section>
       <h1 class="has-space-bottom has-text-centered">Supported Repositories</h1>
-      <div class="d-flex justify-center">
+      <div class="d-flex justify-center has-space-bottom-2x">
         <p class="has-text-mute has-text-centered">Data submitted via this Portal are deposited in multiple repositories. Click the links below to learn more about each of the supported repositories.</p>
       </div>
       <div class="repos has-space-bottom-2x d-flex flex-wrap align-center justify-center">
