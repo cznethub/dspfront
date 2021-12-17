@@ -11,7 +11,7 @@
       <div class="">
         <v-btn @click="goToAuthorizePage()" class=" ">
           <div class="level">
-            <i class="fas fa-key has-space-right is-size-3" />
+            <i class="fas fa-key has-space-right" />
             <span>Authorize</span>
           </div>
         </v-btn>
