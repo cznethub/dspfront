@@ -1,12 +1,12 @@
 <template>
   <div class="cz-resources">
-    <h1 class="md-display-1">Resources</h1>
+    <h1 class="">Resources</h1>
     <hr>
     <section class="has-text-centered">
       <h2>Repository Recommendations</h2>
       <p class="has-text-mute">If you aren't sure which repository to use, visit our repository recommendation system to get help.</p>
       <router-link to="/recommendations">
-        <v-btn class="md-raised md-accent">Help Me Decide</v-btn>
+        <v-btn class=" ">Help Me Decide</v-btn>
       </router-link>
     </section>
 
@@ -18,28 +18,28 @@
         <p class="has-text-mute">Access best practices, recommendations, suggested formats and rep﻿ository recommendations for the data types listed below.</p>
       </div>
 
-      <div class="md-layout md-alignment-top-center has-space-bottom-2x">
-        <div id="data-templates" class="md-layout-item md-layout" style="flex-direction: column;">
-          <div class="md-layout-item md-layout">
-            <!-- <img class="md-layout-item" :src="require('@/assets/img/placeholder.png')" alt="" style="flex: 0;"> -->
-            <v-icon class="md-size-4x md-layout-item" style="color: #87AAAA;">layers</v-icon>
-            <div class="md-layout-item">
+      <div class=" has-space-bottom-2x">
+        <div id="data-templates" class=" " style="flex-direction: column;">
+          <div class=" ">
+            <!-- <img class="" :src="require('@/assets/img/placeholder.png')" alt="" style="flex: 0;"> -->
+            <v-icon class=" " style="color: #87AAAA;">layers</v-icon>
+            <div class="">
               <h4 class="has-text-weight-bold ">Geospatial Data</h4>
               <p class="has-text-mute">Geospatial data include geographic feature and raster datasets.</p>
             </div>
           </div>
 
-          <div class="md-layout-item md-layout">
-            <v-icon class="md-size-4x md-layout-item" style="color: #BCCC9A;">timeline</v-icon>
-            <div class="md-layout-item">
+          <div class=" ">
+            <v-icon class=" " style="color: #BCCC9A;">timeline</v-icon>
+            <div class="">
               <h4 class="has-text-weight-bold">Sensor Time Series Data</h4>
               <p class="has-text-mute">Sensor datasets typically consist of time series of observations from sensors deployed in the environment.</p>
             </div>
           </div>
 
-          <div class="md-layout-item md-layout">
-            <v-icon class="md-size-4x md-layout-item" style="color: #C37B89;">account_tree</v-icon>
-            <div class="md-layout-item">
+          <div class=" ">
+            <v-icon class=" " style="color: #C37B89;">account_tree</v-icon>
+            <div class="">
               <h4 class="has-text-weight-bold">Data Derived from Samples</h4>
               <p class="has-text-mute">Access best practices, recommendations, formats, and repository recommendations for geospatial data.</p>
             </div>
@@ -76,12 +76,6 @@
   #data-templates {
     max-width: 65rem;
     margin-top: 4rem;
-
-    & > div.md-layout {
-      justify-content: flex-start;
-      align-items: center;
-      margin: 1.5rem 0;
-    }
 
     img, .v-icon {
       margin-right: 3rem;

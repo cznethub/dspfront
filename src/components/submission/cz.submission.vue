@@ -1,15 +1,15 @@
 <template>
   <div class="cz-submission">
-    <h1 class="md-display-1">Submission</h1>
+    <h1 class="">Submission</h1>
     <hr>
     <div v-if="submission">
-      <div class="md-layout md-alignment-center-right actions">
-        <v-btn class="md-raised" @click="onDelete" :disabled="isDeleting"><v-icon>delete</v-icon> {{ isDeleting ? 'Deleting...' : 'Delete' }}</v-btn>
-        <v-btn class="md-raised" @click="$emit('edit', submission)"><v-icon>edit</v-icon> Edit</v-btn>
-        <v-btn class="md-raised md-accent"><v-icon>open_in_new</v-icon> View In Repository</v-btn>
+      <div class=" actions">
+        <v-btn class="" @click="onDelete" :disabled="isDeleting"><v-icon>delete</v-icon> {{ isDeleting ? 'Deleting...' : 'Delete' }}</v-btn>
+        <v-btn class="" @click="$emit('edit', submission)"><v-icon>edit</v-icon> Edit</v-btn>
+        <v-btn class=" "><v-icon>open_in_new</v-icon> View In Repository</v-btn>
       </div>
 
-      <b>Title: </b> <span class="md-subheading">{{ submission.title }}</span>
+      <b>Title: </b> <span class="ing">{{ submission.title }}</span>
       <p class="has-text-left"><b>Authors: </b>{{ submission.authors.join(', ')}}</p>
       <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[submission.repository].name }}</p>
       <p class="has-text-left"><b>Submission Date: </b>{{ new Date(submission.date).toLocaleString() }}</p>

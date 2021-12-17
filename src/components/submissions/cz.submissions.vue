@@ -5,11 +5,11 @@
     </template>
     <template v-else>
       <div class="cz-submissions--header has-space-bottom-2x">
-        <h1 class="md-display-1">My Submissions</h1>
+        <h1 class="">My Submissions</h1>
         <hr>
-        <div v-if="!isFetching && submissions.length" class="md-layout md-alignment-center-space-between">
+        <div v-if="!isFetching && submissions.length" class="">
           <div style="flex-grow: 1; margin-right: 2rem;">
-            <div id="filters" class="md-layout">
+            <div id="filters" class="">
               <v-text-field label="Search by Title and Author" v-model="filters.searchStr" dense outlined />
 
               <v-select
@@ -24,15 +24,7 @@
           </div>
 
           <!-- TODO: replace for menu -->
-          <!-- <md-speed-dial md-direction="bottom">
-            <md-speed-dial-target>
-              <v-icon>add</v-icon>
-            </md-speed-dial-target>
-
-            <md-speed-dial-content>
-              <v-btn  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</v-btn>
-            </md-speed-dial-content>
-          </md-speed-dial> -->
+           <!-- @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }} -->
         </div>
       </div>
 
@@ -44,14 +36,14 @@
       </template>
       <template v-else>
         <div v-if="submissions.length">
-          <div class="md-layout md-alignment-center-space-between">
-            <h3 class="md-title has-space-bottom">{{ submissions.length }} Total Submissions</h3>
+          <div class="">
+            <h3 class=" has-space-bottom">{{ submissions.length }} Total Submissions</h3>
             <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
           </div>
 
           <v-card class="panel">
             <div class="">
-              <v-btn class="md-raised">Export Submissions</v-btn>
+              <v-btn class="">Export Submissions</v-btn>
               <div>
                 <v-select v-model="currentSort.defaultSort" outlined :items="sortOptions" label="Sort">
                   <template v-slot:item="{ item, on }">
@@ -69,70 +61,10 @@
             </div>
 
             <div v-if="!isFetching">
-              <md-table v-model="filteredSubmissions" :md-sort="currentSort.defaultSort" :md-sort-order="currentSort.defaultSortDirection" ref="submissionsTable">
-                <md-table-row slot="md-table-row" slot-scope="{ item }">
-                  <md-table-cell>
-                    <b>Title: </b> <span class="md-subheading">{{ item.title }}</span>
-                    <p class="has-text-left"><b>Authors: </b>{{ item.authors.join(', ')}}</p>
-                    <p class="has-text-left"><b>Submission Repository: </b>{{ repoMetadata[item.repository].name }}</p>
-                    <p class="has-text-left"><b>Submission Date: </b>{{ new Date(item.date).toLocaleString() }}</p>
-                    <p class="has-text-left"><b>Identifier: </b>{{ item.identifier }}</p>
-                  </md-table-cell>
-
-                  <md-table-cell>
-                    <div class="md-layout actions" style="flex-direction: column;">
-                      <v-btn :href="item.url" target="_blank" class="md-raised md-accent" expanded size="is-medium" type="is-primary">
-                        <v-icon>open_in_new</v-icon> View In Repository
-                      </v-btn>
-                      <!-- <v-btn class="md-raised md-primary" expanded size="is-medium">Edit Submission</v-btn> -->
-                      <v-btn class="md-raised" @click="goToSubmission(item)">View</v-btn>
-                      <v-btn class="md-raised" @click="onUpdateRecord(item)" 
-                        :disabled="isUpdating[`${item.repository}-${item.identifier}`]">
-                        <v-icon>sync</v-icon> {{ isUpdating[`${item.repository}-${item.identifier}`] ? 'Updating...' : 'Update Record'}}
-                      </v-btn>
-                      <v-btn class="md-raised" @click="goToEditSubmission(item)"><v-icon>edit</v-icon> Edit</v-btn>
-                    </div>
-                  </md-table-cell>
-                </md-table-row>
-
-                <!-- TODO: this feature is not released yet -->
-                <!-- https://www.creative-tim.com/vuematerial/components/table -->
-                
-                <md-table-pagination
-                  ref="paginator"
-                  @update:md-page-size="onCurrentPageSizeChanged"
-                  :md-page="currentPage"
-                  :md-page-options="[5, 10, 15, 20]"
-                  :md-total="filteredSubmissions.length"
-                  :md-update="updatePagination"
-                  :md-data="paginatedSubmissions"
-                  :md-paginated-data.sync="paginatedSubmissions" />
-    <!-- 
-                <md-table-empty-state
-                  md-label="No submissions found"
-                  :md-description="`No submissions found for this '${filters.searchStr}' query. Try a different search term or create a new submissions.`">
-                  <v-btn class="md-primary md-raised" @click="null">Create New Submission</v-btn>
-                </md-table-empty-state> -->
-              </md-table>
+              TABLE HERE
             </div>
           </v-card>
         </div>
-
-        <!-- <md-empty-state
-          v-else
-          v-icon="devices_other"
-          md-label="Create your first submission"
-          md-description="Assemble your data files and metadata using our templates and submit directly to a supported repository.">
-          <md-speed-dial md-direction="bottom">
-            <md-speed-dial-target>
-              <v-icon>add</v-icon>
-            </md-speed-dial-target>
-
-            <md-speed-dial-content>
-              <v-btn  v-for="(repo, index) in repoOptions" :key="index" class="md-default" @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }}</v-btn>
-            </md-speed-dial-content>
-          </md-speed-dial>
-        </md-empty-state> -->
       </template>
     </template>
   </div>
@@ -346,14 +278,7 @@
   }
 
   #filters {
-    // max-width: 60rem;
-    & > .md-field {
-      margin: 0 1rem;
-    }
-  }
 
-  .md-toolbar {
-    padding: 1rem;
   }
 
   .actions {
@@ -365,38 +290,7 @@
     max-width: 30rem;
   }
 
-  // ::v-deep .md-table-head {
-  //   display: none;
-  // }
-
-  .md-speed-dial {
-    position: relative;
-
-    .md-speed-dial-content {
-      position: absolute;
-      top: 6rem;
-      right: 0;
-      align-items: flex-end;
-
-      button {
-        width: 100%;
-      }
-
-      button + button {
-        margin-top: 1rem;
-      }
-    }
-  }
-
-  .md-empty-state .md-speed-dial-content {
-    position: absolute;
-    top: 6rem;
-    align-items: flex-end;
-    width: 18rem;
-    left: -6rem;
-  }
-
   .cz-submissions--header .v-card {
-    background: var(--md-theme-default-background-variant, #fafafa)
+
   }
 </style>

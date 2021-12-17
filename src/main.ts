@@ -1,8 +1,5 @@
 import '@jsonforms/vue2-vanilla/vanilla.css';
-import 'vue-material/dist/vue-material.min.css'
-// import 'buefy/dist/buefy.css'
 import '@/assets/css/global.scss'
-// import 'vue-material/dist/theme/default.css'
 
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
@@ -20,70 +17,15 @@ import { persistedPaths } from './models/persistedPaths'
 import { APP_NAME } from './constants'
 import vuetify from '@/plugins/vuetify'
 
-import { 
-  MdButton,
-  MdContent,
-  MdTabs,
-  MdToolbar,
-  MdApp,
-  MdIcon,
-  MdCard,
-  MdDialog,
-  MdDialogConfirm,
-  MdSnackbar,
-  MdField,
-  MdMenu,
-  MdList,
-  MdTable,
-  MdRipple,
-  MdCheckbox,
-  MdChips,
-  MdDatepicker,
-  MdSpeedDial,
-  MdDivider,
-  MdEmptyState,
-  MdProgress,
-  MdDrawer,
-} from 'vue-material/dist/components'
-
-// TODO: vue-material is a dead  repo. Need to switch to vuetify
-// https://github.com/vuematerial/vue-material/issues/1962
-// https://github.com/vuetifyjs/vuetify
-
-/** Material modules */
-Vue.use(MdButton)
-Vue.use(MdContent)
-Vue.use(MdTabs)
-Vue.use(MdToolbar)
-Vue.use(MdApp)
-Vue.use(MdIcon)
-Vue.use(MdCard)
-Vue.use(MdDialog)
-Vue.use(MdDialogConfirm)
-Vue.use(MdSnackbar)
-Vue.use(MdField)
-Vue.use(MdMenu)
-Vue.use(MdList)
-Vue.use(MdTable)
-Vue.use(MdRipple)
-Vue.use(MdCheckbox)
-Vue.use(MdChips)
-Vue.use(MdDatepicker)
-Vue.use(MdSpeedDial)
-Vue.use(MdDivider)
-Vue.use(MdEmptyState)
-Vue.use(MdProgress)
-Vue.use(MdDrawer)
-
-// https://github.com/vuematerial/vue-material/issues/2285
-Vue.config.errorHandler = (err, vm, info) => {
-  if (process.env.NODE_ENV !== 'production') {
-    // Show any error but this one
-    if (err.message !== "Cannot read properties of undefined (reading 'badInput')") {
-      console.error(err)
-    }
-  }
-}
+// Uncomment to filter out errors
+// Vue.config.errorHandler = (err, vm, info) => {
+//   if (process.env.NODE_ENV !== 'production') {
+//     // Show any error but this one
+//     if (err.message !== "Some error you want to leave out") {
+//       console.error(err)
+//     }
+//   }
+// }
 
 Vue.config.productionTip = false
 Vue.use(Vuex)

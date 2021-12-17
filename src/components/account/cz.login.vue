@@ -1,21 +1,21 @@
 <template>
-  <div class="cz-login md-layout md-alignment-center-center">
-    <div id="panel-left" class="md-layout-item has-text-centered md-small-hide has-text-shadow"
+  <div class="cz-login">
+    <div id="panel-left" class="has-text-centered has-text-shadow"
       :style="{ 'background-image': 'linear-gradient(rgb(0 52 82 / 31%), rgba(0, 0, 0, 0)), url(' + require('@/assets/img/bg-3.png') + ')' }">
-      <h1 class="md-display-1 has-text-white">Critical Zone Collaborative Network</h1>
-      <h3 class="has-text-mute has-space-bottom md-headline has-space-top has-text-white">Data Submission Portal</h3>
+      <h1 class="has-text-white">Critical Zone Collaborative Network</h1>
+      <h3 class="has-text-mute has-space-bottom has-space-top has-text-white">Data Submission Portal</h3>
     </div>
 
-    <div id="panel-right" class="md-layout-item md-layout md-alignment-center-center">
-      <div class="md-title has-space-bottom">Log In</div>
+    <div id="panel-right" class="">
+      <div class=" has-space-bottom">Log In</div>
 
-      <v-btn @click="goToOrcidLogin()" class="md-raised md-accent has-space-bottom-2x">
+      <v-btn @click="goToOrcidLogin()" class="has-space-bottom-2x">
         <i class="fab fa-orcid has-space-right is-size-3" />
         <span>Log In Using ORCID</span>
       </v-btn>
       <p class="">User accounts in the Data Submission Portal are managed using your ORCID® iD. An ORCID iD is a persistent digital identifier that you own and control and that distinguishes you from every other researcher.</p>
       <p class="">If you have an ORCID already, click the button above to get started. If you don't have an ORCID yet, getting one is easy. Visit <a href="https://orcid.org" target="_blank">https://orcid.org</a> to register and get your unique ORCID iD.</p>
-      <img class="md-size-60 md-layout-item" :src="require('@/assets/img/orcid.png')" alt="ORCID">
+      <img class="" :src="require('@/assets/img/orcid.png')" alt="ORCID">
     </div>
   </div>
 </template>

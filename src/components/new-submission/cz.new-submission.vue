@@ -1,15 +1,15 @@
 <template>
   <div class="cz-new-submission">
-    <h1 class="md-display-1">{{ formTitle }}</h1>
+    <h1 class="">{{ formTitle }}</h1>
     <hr>
     <section class="section">
       <div class="container">
-        <div class="md-layout md-alignment-center-space-between">
+        <div class="">
           <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
           <div class="form-controls">
-            <v-btn v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</v-btn>
-            <v-btn v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</v-btn>
-            <v-btn class="md-raised md-accent" @click="save()" :disabled="isSaving">
+            <v-btn v-if="isDevMode" @click="onShowUISchema()" class="">UI Schema</v-btn>
+            <v-btn v-if="isEditMode" @click="goToSubmission()" class="">Cancel</v-btn>
+            <v-btn class=" " @click="save()" :disabled="isSaving">
               {{ isSaving ? 'Saving...' : submitText }}
             </v-btn>
           </div>
@@ -64,10 +64,10 @@
           color="primary"
         />
 
-        <div v-if="!isLoading" class="form-controls has-space-top-2x md-layout md-alignment-center-right">
-          <v-btn v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</v-btn>
-          <v-btn v-if="isEditMode" @click="goToSubmission()" class="md-raised">Cancel</v-btn>
-          <v-btn class="md-raised md-accent" @click="save()" :disabled="isSaving">
+        <div v-if="!isLoading" class="form-controls has-space-top-2x ">
+          <v-btn v-if="isDevMode" @click="onShowUISchema()" class="">UI Schema</v-btn>
+          <v-btn v-if="isEditMode" @click="goToSubmission()" class="">Cancel</v-btn>
+          <v-btn class=" " @click="save()" :disabled="isSaving">
             {{ isSaving ? 'Saving...' : submitText }}
           </v-btn>
         </div>
@@ -292,14 +292,6 @@
     padding: 2rem;
   }
 
-  // ::v-deep .vertical-layout-item {
-  //   margin: 1rem 0;
-
-  //   select {
-  //     width: 100%;
-  //   }
-  // }
-
   .schema-wrapper {
     width: 100rem;
     max-width: 100%;
@@ -310,10 +302,6 @@
     min-height: 75vh;
   }
 
-  // .md-dialog ::v-deep.md-dialog-container {
-  //   max-width: 100rem;
-  // }
-
   .upload-drop-area {
     border: 1px dashed #DDD;
     border-radius: 0.5rem;
@@ -323,96 +311,6 @@
       display: none;
     }
   }
-
-  .upload-file-list .md-chip {
-    margin: 0.5rem;
-  }
-
-  // ::v-deep .md-field {
-  //   // display: block;
-  //   flex-wrap: wrap;
-
-  //   &::after, &::before {
-  //     content: none;
-  //   }
-
-    // label {
-    //   top: -6px !important;
-    //   font-size: 16px !important;
-    //   color: inherit !important;
-    //   left: 0 !important;
-    //   pointer-events: unset !important;
-    //   cursor: unset !important;
-    // }
-
-    // .md-input,
-    // .md-textarea {
-    //   border: 1px solid var(--text-mute);
-    //   border-radius: 0.5rem;
-    //   padding-left: 0.5rem;
-    //   width: 100%;
-    // }
-
-    // .md-menu.md-select {
-    //   flex: 1 1 auto;
-
-    //   & > .v-icon {
-    //     position: absolute;
-    //     right: 0;
-    //     top: 2rem;
-    //   }
-    // }
-
-  //   & > .md-helper-text {
-  //     position: static;
-  //     flex-basis: 100%;
-  //     flex-shrink: 0;
-  //     height: unset;
-  //   }
-
-  //   &.md-datepicker {
-  //     max-width: 40rem;
-  //     flex-wrap: wrap;
-
-  //     & > input {
-  //       margin-left: 0 !important;
-  //       padding-left: 4rem;
-  //     }
-
-  //     & > i.md-date-icon {
-  //       position: absolute;
-  //       left: 4px;
-  //       overflow: hidden;
-  //     }
-  //   }
-
-  //   &.md-chips {
-  //     padding-top: 16px;
-
-  //     .md-helper-text {
-  //       margin-bottom: 1rem;
-  //     }
-
-  //     // & > input {
-  //     //   flex-basis: 100%;
-  //     //   flex-shrink: 0;
-  //     // }
-  //   }
-
-  //   &.md-required label:after {
-  //     content: "(required)";
-  //     color: red;
-  //     font-size: 11px;
-  //     margin-left: 4px;
-  //     vertical-align: middle;
-      
-  //     transform: none;
-  //     position: unset;
-  //     top: unset;
-  //     right: unset;
-  //     line-height: 1em;
-  //   }
-  // }
 
   .list-files {
     transition: all 1s;

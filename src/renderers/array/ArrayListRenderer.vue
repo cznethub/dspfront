@@ -44,7 +44,7 @@
       
     </drop-list>
 
-    <div v-if="noData" class="md-caption">
+    <div v-if="noData">
       Click on the '+' button above to add items.
     </div>
   </div>
@@ -127,7 +127,7 @@ export const arrayListRenderer: JsonFormsRendererRegistryEntry = {
     }
   }
   
-  .md-subheading {
+  .ing {
     color: rgba(0, 0, 0, 0.54);
   }
 

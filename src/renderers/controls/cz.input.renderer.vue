@@ -15,8 +15,8 @@
       :value="control.data"
       size="is-medium" 
     />
-    <span class="md-helper-text">{{ control.description }}</span>
-    <span v-for="(error, index) in control.errors" :key="index" class="md-error">{{ error }}</span> -->
+    <span>{{ control.description }}</span>
+    <span v-for="(error, index) in control.errors" :key="index">{{ error }}</span> -->
   </v-text-field>
 </template>
 
@@ -48,15 +48,6 @@
         )
         // console.log(this.control)
       },
-      // getValidationClass (fieldName) {
-      //   const field = this.$v.form[fieldName]
-
-      //   if (field) {
-      //     return {
-      //       'md-invalid': field.$invalid && field.$dirty
-      //     }
-      //   }
-      // }
     }
   })
   export default controlRenderer

@@ -2,20 +2,6 @@
   --text-mute: #9699AF;
   --text-mute-darker: #575f6d;
 }
-
-// @import "~vue-material/dist/theme/engine"; // Import the theme engine
-// @include md-register-theme("default", (
-//   primary: md-get-palette-color(bluegrey, 100), // The primary color of your application
-//   accent: md-get-palette-color(lightblue, 800), // The accent or secondary color
-//   theme: light
-// ));
-
-// @include md-register-theme("grey-card", (
-//   primary: md-get-palette-color(grey, 50)
-// ));
-
-
-// @import "~vue-material/dist/theme/all"; // Apply the theme
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
 html {
@@ -68,7 +54,6 @@ section {
   transition: color 0.15s ease;
 
   &:hover {
-    color: var(--md-default-accent) !important;
   }
 }
 

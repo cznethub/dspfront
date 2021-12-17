@@ -1,15 +1,15 @@
 <template>
   <div class="cz-authorize">
     <v-card class="has-text-centered">
-      <div class="md-layout md-alignment-center-center" style="height: 10rem; padding: 2rem;">
-        <img :src="activeRepository.get().logoSrc" :alt="activeRepository.name" class="md-layout-item">
+      <div class="" style="height: 10rem; padding: 2rem;">
+        <img :src="activeRepository.get().logoSrc" :alt="activeRepository.name" class="">
       </div> -->
       <div class="">
-        <div class="md-title">Submit to {{ activeRepository.name }}</div>
-        <div class="md-subhead">Permission is needed to post to this repository</div>
+        <div class="">Submit to {{ activeRepository.name }}</div>
+        <div class="">Permission is needed to post to this repository</div>
       </div>
       <div class="">
-        <v-btn @click="goToAuthorizePage()" class="md-raised md-accent">
+        <v-btn @click="goToAuthorizePage()" class=" ">
           <div class="level">
             <i class="fas fa-key has-space-right is-size-3" />
             <span>Authorize</span>
@@ -70,8 +70,6 @@
     max-width: 40rem;
 
     .v-card-media {
-      background: linear-gradient(135deg, #f1f3f5 0%, var(--md-theme-default-primary) 100%);
-
       img {
         height: 100%;
         flex: 0;

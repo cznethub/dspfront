@@ -10,7 +10,7 @@ export const router = new VueRouter({
   mode: 'history',
   routes,
   scrollBehavior(to, from, savedPosition) {
-    document.getElementsByClassName('md-app-container')[0]?.scrollTo({ left: 0, top: 0});
+    document.getElementsByClassName('v-main')[0]?.scrollTo({ left: 0, top: 0});
   }
 })
 

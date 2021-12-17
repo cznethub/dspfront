@@ -1,6 +1,6 @@
 <template>
   <v-app app>
-    <v-app-bar color="#cfd8dc" prominent elevate-on-scroll fixed>
+    <v-app-bar color="#cfd8dc" prominent elevate-on-scroll fixed app>
       <v-container class="d-flex align-end" style="height: 100%">
         <router-link
           :to="{ path: `/` }"
@@ -94,7 +94,6 @@
 
       <template v-slot:action="{ attrs }">
         <v-btn
-          class="md-primary"
           @click="snackbar.isActive = false"
           v-bind="attrs"
           >Dismiss</v-btn

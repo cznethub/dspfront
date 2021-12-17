@@ -1,12 +1,12 @@
 <template>
-  <div class="cz-about md-layout md-alignment-center-center">
-    <div id="panel-left" class="md-layout-item has-text-centered md-small-hide has-text-shadow"
+  <div class="cz-about">
+    <div id="panel-left" class="has-text-centered has-text-shadow"
       :style="{ 'background-image': 'linear-gradient(rgb(0 52 82 / 31%), rgba(0, 0, 0, 0)), url(' + require('@/assets/img/bg-4.png') + ')' }">
     </div>
-    <div id="panel-right" class="md-layout-item md-layout md-alignment-center-center">
-      <h1 class="md-display-1">About the Critical Zone Collaborative Network</h1>
+    <div id="panel-right" class="">
+      <h1 class="">About the Critical Zone Collaborative Network</h1>
     <hr>
-    <div class="md-headline">
+    <div class="">
       The Critical Zone Collaborative Network (CZNet) is the next phase of NSF’s Critical Zone research program, comprised of nine Thematic Cluster study areas with a wide range of geological, climatic, and land use settings that provide an opportunity to better understand the evolution and function of the critical zone.
     </div>
     <p>
