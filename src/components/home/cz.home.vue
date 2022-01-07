@@ -135,7 +135,6 @@
     padding-top: 9rem;
     padding-bottom: 9rem;
     margin-bottom: 2rem;
-    min-height: 50rem;
   }
 
   section {

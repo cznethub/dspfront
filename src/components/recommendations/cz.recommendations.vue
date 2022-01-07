@@ -5,39 +5,39 @@
       <h3 class="">Find the Best Repository for Your Research Products</h3>
     </div>
 
-    <section>
+    <v-container>
       <div id="options-grid" class="">
         <v-card class="  " >
-          <div class="has-text-centered">
-          <v-icon class=" ">add_circle_outline</v-icon>
-          <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">I have geospatial data</h3>
-          <p class="has-text-mute has-text-centered">Learn more about formats, best practices, and repositories for geospatial data.</p>
-          </div>
+          <v-card-text class="has-text-centered">
+            <v-icon>mdi-plus-circle-outline</v-icon>
+            <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">I have geospatial data</h3>
+            <p class="has-text-mute has-text-centered">Learn more about formats, best practices, and repositories for geospatial data.</p>
+          </v-card-text>
         </v-card>
 
         <v-card class="  " >
-          <div class="has-text-centered">
-          <v-icon class=" ">add_circle_outline</v-icon>
-          <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">My data are derived from
+          <v-card-text class="has-text-centered">
+            <v-icon>mdi-plus-circle-outline</v-icon>
+            <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">My data are derived from
 
-physical samples</h3>
-          <p class="has-text-mute has-text-centered">Learn more about registering physical samples and submitting data derived from samples.</p>
-          </div>
+  physical samples</h3>
+            <p class="has-text-mute has-text-centered">Learn more about registering physical samples and submitting data derived from samples.</p>
+          </v-card-text>
         </v-card>
 
         <v-card class="  " >
-          <div class="has-text-centered">
-          <v-icon class=" ">add_circle_outline</v-icon>
-          <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">I want to submit multiple
+          <v-card-text class="has-text-centered">
+            <v-icon>mdi-plus-circle-outline</v-icon>
+            <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">I want to submit multiple
 
-types of data together</h3>
-          <p class="has-text-mute has-text-centered">Learn more about best practices for assembling multiple datasets for a project or publication. </p>
-          </div>
+  types of data together</h3>
+            <p class="has-text-mute has-text-centered">Learn more about best practices for assembling multiple datasets for a project or publication. </p>
+          </v-card-text>
         </v-card>
       </div>
-    </section>
+    </v-container>
 
-    <hr>
+    <v-divider />
 
     <section class="has-text-centered">
       <h1 class="has-space-bottom-2x ">Not Sure? Let us Help You Decide</h1>
@@ -63,7 +63,7 @@ types of data together</h3>
 
   #options-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(35rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
     gap: 2rem;
   }
 
