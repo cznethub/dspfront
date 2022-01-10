@@ -6,11 +6,19 @@
     <template v-else>
       <div class="cz-submissions--header has-space-bottom-2x">
         <h1 class="">My Submissions</h1>
-        <hr>
-        <div v-if="!isFetching && submissions.length" class="">
-          <div style="flex-grow: 1; margin-right: 2rem;">
-            <div id="filters" class="">
-              <v-text-field label="Search by Title and Author" v-model="filters.searchStr" dense outlined />
+        <v-divider/>
+        <div v-if="!isFetching && submissions.length">
+          <div>
+            <div class="d-flex">
+              <v-text-field
+                v-model="filters.searchStr"
+                dense
+                clearable
+                outlined
+                hide-details
+                prepend-inner-icon="mdi-magnify"
+                label="Search..."
+              />
 
               <v-select
                 v-model="filters.repoOptions"
@@ -19,7 +27,11 @@
                 chips
                 multiple
                 dense outlined
-              />
+              >
+                <template v-slot:item="{ item }">
+                  {{ repoMetadata[item].name }}
+                </template>
+              </v-select>
             </div>
           </div>
 
@@ -38,30 +50,109 @@
         <div v-if="submissions.length">
           <div class="">
             <h3 class=" has-space-bottom">{{ submissions.length }} Total Submissions</h3>
-            <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ filteredSubmissions.length }} Results</p>
+            <p v-if="isAnyFilterAcitve" class="has-text-mute">{{ currentItems.length }} Results</p>
           </div>
 
-          <v-card class="panel">
-            <div class="">
-              <v-btn class="">Export Submissions</v-btn>
-              <div>
-                <v-select v-model="currentSort.defaultSort" outlined :items="sortOptions" label="Sort">
-                  <template v-slot:item="{ item, on }">
-                    <v-list-item v-on="on" :value="item">{{ enumSubmissionSorts[item] }}</v-list-item>
-                  </template>
-                </v-select>
-
-                <!-- TODO: replace for toggle icons -->
-                <v-select v-model="currentSort.defaultSortDirection" outlined :items="sortDirectionOptions" label="Sort">
-                  <template v-slot:item="{ item, on }">
-                    <v-list-item v-on="on" :value="item">{{ enumSortDirections[item] }}</v-list-item>
-                  </template>
-                </v-select>
-              </div>
-            </div>
-
+          <v-card class="">
             <div v-if="!isFetching">
-              TABLE HERE
+              <v-data-iterator
+                :items="submissions"
+                :items-per-page.sync="itemsPerPage"
+                :page.sync="page"
+                :search="filters.searchStr"
+                :sort-by="sortBy.toLowerCase()"
+                :sort-desc="sortDesc === 'desc'"
+                @current-items="currentItems = $event"
+                item-key="identifier"
+                hide-default-footer
+              >
+                <template v-slot:header>
+                  <v-toolbar elevation="0">
+                    <template v-if="$vuetify.breakpoint.mdAndUp">
+                      <v-btn class="">Export Submissions</v-btn>
+                      <v-spacer></v-spacer>
+                      <v-select
+                        v-model="sortBy"
+                        :items="sortOptions"
+                        dense
+                        outlined
+                        hide-details
+                        label="Sort by"
+                      />
+                      <v-btn-toggle
+                        v-model="sortDesc"
+                        mandatory
+                      >
+                        <v-btn v-for="sort of sortDirectionOptions" :key="sort" large depressed :value="sort">
+                          <span>{{ sort }}</span>
+                        </v-btn>
+                      </v-btn-toggle>
+                    </template>
+                  </v-toolbar>
+                </template>
+
+                <template v-slot:default="{ items }">
+                  <v-divider/>
+                  <div v-for="item in items" :key="item.identifier">
+                    <div  class="table-item d-flex justify-space-between">
+                      <div>
+                        <div class="text-h6">{{ item.title }}</div>
+                        <div class="text-body-1"><b>Authors: </b>{{ item.identifier }}</div>
+                        <div class="text-body-1"><b>Submission Repository: </b>{{ repoMetadata[item.repository].name }}</div>
+                        <div class="text-body-1"><b>Submission Date: </b>{{ new Date(item.date).toLocaleString() }}</div>
+                        <div class="text-body-1"><b>Identifier: </b>{{ item.identifier }}</div>
+                      </div>
+                      <div class="d-flex flex-column">
+                        <v-btn :href="item.url" target="_blank">View In Repository</v-btn>
+                        <v-btn @click="goToEditSubmission(item)">Edit</v-btn>
+                        <v-btn @click="onUpdateRecord(item)" :disabled="isUpdating[`${item.repository}-${item.identifier}`]">Update Record</v-btn>
+                      </div>
+                    </div>
+                    <v-divider/>
+                  </div>
+                </template>
+
+                <template v-slot:footer>
+                  <div class="footer d-flex justify-space-between">
+                    <div>
+                      <span class="grey--text">Items per page</span>
+                      <v-menu offset-y>
+                        <template v-slot:activator="{ on, attrs }">
+                          <v-btn
+                            text
+                            v-bind="attrs"
+                            v-on="on"
+                          >
+                            {{ itemsPerPage }}
+                            <v-icon>mdi-chevron-down</v-icon>
+                          </v-btn>
+                        </template>
+                        <v-list>
+                          <v-list-item
+                            v-for="(number, index) in itemsPerPageArray"
+                            :key="index"
+                            @click="itemsPerPage = number"
+                          >
+                            <v-list-item-title>{{ number }}</v-list-item-title>
+                          </v-list-item>
+                        </v-list>
+                      </v-menu>
+                    </div>
+
+                    <div v-if="numberOfPages">
+                      <span class="mr-4 grey--text">
+                        Page {{ page }} of {{ numberOfPages }}
+                      </span>
+                      <v-btn small fab @click="formerPage" :disabled="page <= 1">
+                        <v-icon>mdi-chevron-left</v-icon>
+                      </v-btn>
+                      <v-btn small fab @click="nextPage" :disabled="page >= numberOfPages">
+                        <v-icon>mdi-chevron-right</v-icon>
+                      </v-btn>
+                    </div>
+                  </div>
+                </template>
+              </v-data-iterator>
             </div>
           </v-card>
         </div>
@@ -71,7 +162,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue, Ref, Watch } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-property-decorator'
   import { ISubmission, EnumSubmissionSorts, EnumSortDirections, EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
   import { repoMetadata } from '../submit/constants'
   import CzSubmission from '@/components/submission/cz.submission.vue'
@@ -85,27 +176,22 @@
     components: { CzSubmission },
   })
   export default class CzSubmissions extends Vue {
-    @Ref('submissionsTable') submissionsTable
-    @Ref('paginator') paginator
     protected isUpdating: {[key: string]: boolean} = {}
-
-    protected currentSort = {
-      defaultSort: 'title',
-      defaultSortDirection: 'asc'
-    }
 
     protected filters: {
       repoOptions: string[],
       searchStr: string
     } = { repoOptions: [], searchStr: '' }
 
+    protected itemsPerPage = 10
+    protected itemsPerPageArray = [10, 25, 50]
+    protected page = 1
+    protected sortDesc = false
+    protected sortBy = 'title'
     protected repoMetadata = repoMetadata
     protected enumSubmissionSorts = EnumSubmissionSorts
     protected enumSortDirections = EnumSortDirections
-    protected filteredSubmissions: ISubmission[] = []
-    protected paginatedSubmissions: ISubmission[] = []
-    protected currentPage = 1
-    protected currentPageSize = 5
+    protected currentItems = []
 
     protected get isFetching() {
       return Submission.$state.isFetching
@@ -124,7 +210,7 @@
     }
 
     protected get isAnyFilterAcitve() {
-      return Object.keys(this.filters).find(key => this.filters[key].length)
+      return Object.keys(this.filters).find(key => this.filters[key] && this.filters[key].length)
     }
 
     protected get submissions(): ISubmission[] {
@@ -139,6 +225,13 @@
       return this.$route.params.id
     }
 
+    protected get numberOfPages () {
+      if (this.isAnyFilterAcitve) {
+        return Math.ceil(this.currentItems.length / this.itemsPerPage)
+      }
+      return Math.ceil(this.submissions.length / this.itemsPerPage)
+    }
+
     // TODO: add to a mixin and reuse
     protected get activeRepository() {
       const key = Repository.$state.submittingTo
@@ -149,65 +242,16 @@
       }
     }
 
-    protected searchOnTable() {
-      const data = this.submissions
-      // const data = SUBMISSIONS // TESTING
-      const filteredRepos = this.filters.repoOptions //.map(r => repoMetadata[r].name)
-      const query = this.filters.searchStr.toLowerCase().trim()
+    protected nextPage () {
+      if (this.page + 1 <= this.numberOfPages) this.page += 1
+    }
 
-      this.filteredSubmissions = data.filter((d) => {
-        // Filter by repository
-        if (filteredRepos.length) {
-          if (!filteredRepos.includes(d.repository)) {
-            return false
-          }
-        }
-
-        // Filter by search query
-        if (query) {
-          const occursInTitle = d.title.toLowerCase().indexOf(query) >= 0
-          const occursInAuthors= d.authors.some(a => a.toLowerCase().indexOf(query) >= 0)
-          
-          if (!occursInTitle && !occursInAuthors) {
-            return false
-          }
-        }
-
-        return true
-      })
-
-      this.$nextTick(() => {
-        if (!this.paginator) {
-          return []
-        }
-        const start = (this.currentPage - 1) * this.paginator.currentPageSize
-        const end = start + this.paginator.currentPageSize
-        this.paginatedSubmissions = this.filteredSubmissions.slice(start, end)
-      })
+    protected formerPage () {
+      if (this.page - 1 >= 1) this.page -= 1
     }
 
     async created() {
       await Submission.fetchSubmissions()
-      // this.filteredSubmissions = SUBMISSIONS // Uncomment this if you want to test with mock data
-      this.filteredSubmissions = this.submissions
-
-      // Implement missing functionality for WIP components.
-      // https://www.creative-tim.com/vuematerial/components/table
-      if (!this.identifier) {
-        this.$nextTick(()=> {
-          const that = this
-          this.paginator.goToNext = () => {
-            const maxPages = Math.ceil(that.filteredSubmissions.length / that.paginator.currentPageSize)
-            that.currentPage = Math.min(that.currentPage + 1, maxPages)
-            that.searchOnTable()
-          }
-          this.paginator.goToPrevious = () => {
-            const minPages = 1
-            that.currentPage = Math.max(that.currentPage - 1, minPages)
-            that.searchOnTable()
-          }
-        })
-      }
     }
 
     protected goToSubmission(submission: Submission){
@@ -239,32 +283,6 @@
         state.submittingTo = key
       })
     }
-    // =================
-
-    @Watch('currentSort', { deep: true })
-    protected onDefaultSortChanged(newSort, oldSort) {
-      this.$nextTick(() => {
-        this.submissionsTable.sortTable()
-      })
-    }
-
-    @Watch('filters', { deep: true })
-    protected onFiltersChanged(newFilters, oldFilters) {
-      this.$nextTick(() => {
-        this.searchOnTable()
-      })
-    }
-
-    @Watch('submissions')
-    onSubmissionsChange() {
-      // Used to propagate changes when submissions are deleted
-      this.searchOnTable()
-    }
-
-    @Watch('paginator.currentPageSize', { deep: true })
-    onCurrentPageSizeChanged(oldVal, newVal) {
-      console.log(oldVal, newVal)
-    }
   }
 </script>
 
@@ -279,6 +297,14 @@
 
   #filters {
 
+  }
+
+  .footer {
+    padding: 1rem;
+  }
+
+  .table-item {
+    padding: 1rem;
   }
 
   .actions {

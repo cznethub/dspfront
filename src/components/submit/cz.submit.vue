@@ -56,7 +56,7 @@
       </v-container>
     </template>
     <template v-else>
-      <router-view></router-view>
+      <router-view />
     </template>
   </div>
 </template>
@@ -99,7 +99,6 @@
 </script>
 
 <style lang="scss" scoped>
-
   section {
     padding: 4rem 0;
   }

@@ -174,8 +174,13 @@ export default class Repository extends Model implements IRepository {
   }
 
   static async updateCzHubRecord(recordId: string, repository: string) {
-    const response = await axios.put(`/api/submit/${repository}/${recordId}`)
-    const inserted = await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
+    try {
+      const response = await axios.put(`/api/submit/${repository}/${recordId}`)
+      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
+    }
+    catch(e) {
+      CzNotification.toast({ message: 'Failed to update record' })
+    }
   }
 
   static async deleteSubmission(recordId) {
