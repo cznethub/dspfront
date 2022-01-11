@@ -22,31 +22,31 @@
           <p class="has-text-mute has-text-centered">Created for the Critical Zone Collaborative Network (CZCN), this Data Submission Portal provides tools for determining which repository to use for data submission along with enhanced submission tools to encourage data standards, complete metadata, and high-quality submissions.</p>
         </div>
 
-        <div id="features-1" class="has-space-top-2x d-flex flex-wrap justify-center">
-          <div class="d-flex align-start">
-            <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
+        <v-row id="features-1" justify="center" align="baseline" class="has-space-top-2x">
+          <v-col class="d-flex align-start">
+            <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
             <div class="">
               <h3 class="">Which repository?</h3>
               <p class="has-text-mute">Use the Portal's repository recommendation system to determine which repository is right for submitting your research products.</p>
             </div>
-          </div>
+          </v-col>
 
-          <div class="d-flex align-start">
+          <v-col class="d-flex align-start">
             <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
             <div class="">
               <h3 class="">Which format?</h3>
               <p class="has-text-mute">Use CZ community recommendations to decide on formats and conventions for your data files.</p>
             </div>
-          </div>
+          </v-col>
 
-          <div class="d-flex align-start">
+          <v-col class="d-flex align-start">
             <v-icon class="">mdi-checkbox-marked-circle-outline</v-icon>
             <div class="">
               <h3 class="">Which metadata?</h3>
               <p class="has-text-mute">Use the Portal's submission tools to ensure your metadata are complete and that your data are well described.</p>
             </div>
-          </div>
-        </div>
+          </v-col>
+        </v-row>
       </div>
     </section>
 
@@ -54,23 +54,23 @@
 
     <section class="has-text-centered">
       <h1 class="has-space-bottom-2x">What do you want to do?</h1>
-      <div id="features-2" class="d-flex flex-wrap justify-center">
-        <div class="">
-          <v-icon class=" ">mdi-book-plus</v-icon>
-          <h3 class=" has-space-bottom has-space-top">Submit Data Products</h3>
+      <v-row id="features-2" justify="center">
+        <v-col class="">
+          <v-icon>mdi-book-plus</v-icon>
+          <h3 class="has-space-bottom">Submit Data Products</h3>
           <div class="has-text-mute">Assemble your data files and metadata using our templates and submit directly to a supported repository.</div>
-        </div>
-        <div class="">
+        </v-col>
+        <v-col class="">
           <v-icon class=" ">mdi-arrow-decision</v-icon>
-          <h3 class=" has-space-bottom has-space-top">Find the Right Repository</h3>
+          <h3 class="has-space-bottom">Find the Right Repository</h3>
           <div class="has-text-mute">Don't know which repository to use? Use our repository recommendation system to decide which repository is the best place for your data.</div>
-        </div>
-        <div class="">
+        </v-col>
+        <v-col class="">
           <v-icon class=" ">mdi-database-search</v-icon>
-          <h3 class=" has-space-bottom has-space-top">Explore CZCN Data</h3>
+          <h3 class=" has-space-bottom">Explore CZCN Data</h3>
           <div class="has-text-mute">All products submitted via this Portal are  cataloged for browsing and discovery via the <a href="https://www.hydroshare.org/" target="_blank">HydroShare repository</a>. </div>
-        </div>
-      </div>
+        </v-col>
+      </v-row>
     </section>
 
     <v-divider/>
@@ -145,11 +145,12 @@
     .v-icon {
       flex: 0;
       margin: 0;
-      margin-top: 1rem;
+      font-size: 5rem;
+      margin-right: 1rem;
     }
 
     & > div {
-      flex-basis: 38rem;
+      flex-basis: 30rem;
       flex-grow: 0;
       padding: 2rem;
     }
@@ -157,9 +158,13 @@
 
   #features-2 {
     & > div {
-      flex-basis: 40rem;
+      flex-basis: 30rem;
       flex-grow: 0;
-      padding: 2rem;
+      padding: 1rem;
+    }
+
+    .v-icon {
+      font-size: 5rem;
     }
 
     // .:nth-child(1) .v-icon {

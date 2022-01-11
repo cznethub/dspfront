@@ -18,7 +18,10 @@
             <template  v-for="repo of repoMetadata">
               <v-hover :key="repo.key">
                 <template v-slot:default="{ hover }">
-                  <v-card  @click.native="submitTo(repo)" class="has-cursor-pointer transition-swing" :class="`elevation-${ hover ? 12 : 2 }`">
+                  <v-card  @click.native="submitTo(repo)"
+                    :disabled="repo.isDisabled"
+                    class="has-cursor-pointer transition-swing" 
+                    :class="`elevation-${ hover ? 12 : 2 }`">
                     <v-card-title class="v-card-media justify-center">
                       <img :src="repo.logoSrc" :alt="repo.name">
                     </v-card-title>
