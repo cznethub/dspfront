@@ -1,15 +1,15 @@
 <template>
   <div class="cz-about d-flex">
-    <div id="panel-left" class="has-text-centered has-text-shadow flex-grow-1"
+    <div id="panel-left" class="text-center has-text-shadow flex-grow-1"
       :style="{ 'background-image': 'linear-gradient(rgb(0 52 82 / 31%), rgba(0, 0, 0, 0)), url(' + require('@/assets/img/bg-4.png') + ')' }">
     </div>
-    <v-container id="panel-right" class="">
-      <h1 class="">About the Critical Zone Collaborative Network</h1>
-      <v-divider />
-      <div class="">
+    <v-container id="panel-right">
+      <div class="text-h4">About the Critical Zone Collaborative Network</div>
+      <v-divider class="has-space-bottom" />
+      <p class="text-body-1">
         The Critical Zone Collaborative Network (CZNet) is the next phase of NSF’s Critical Zone research program, comprised of nine Thematic Cluster study areas with a wide range of geological, climatic, and land use settings that provide an opportunity to better understand the evolution and function of the critical zone.
-      </div>
-      <p>
+      </p>
+      <p class="text-body-1">
         The CZNet builds upon the outcomes of the Critical Zone Observatories (CZO) to address significant interdisciplinary scientific questions at the regional and national scale, and develop predictive models of complex CZ phenomena.
 
   The nine Thematic Clusters represent an array of CZ locations selected on the basis of a unifying scientific theme. Each Cluster has several geographic locations encompassing multiple of watersheds that facilitate investigations of environmental gradients relevant to the Cluster research theme. CZNet showcases convergent science and multidisciplinary teams.

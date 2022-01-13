@@ -1,12 +1,12 @@
 <template>
   <div class="cz-submission">
-    <h1 class="">Submission</h1>
+    <h1 >Submission</h1>
     <hr>
     <div v-if="submission">
       <div class=" actions">
-        <v-btn class="" @click="onDelete" :disabled="isDeleting"><v-icon>delete</v-icon> {{ isDeleting ? 'Deleting...' : 'Delete' }}</v-btn>
-        <v-btn class="" @click="$emit('edit', submission)"><v-icon>edit</v-icon> Edit</v-btn>
-        <v-btn class=" "><v-icon>open_in_new</v-icon> View In Repository</v-btn>
+        <v-btn  @click="onDelete" :disabled="isDeleting"><v-icon>delete</v-icon> {{ isDeleting ? 'Deleting...' : 'Delete' }}</v-btn>
+        <v-btn  @click="$emit('edit', submission)"><v-icon>edit</v-icon> Edit</v-btn>
+        <v-btn ><v-icon>open_in_new</v-icon> View In Repository</v-btn>
       </div>
 
       <b>Title: </b> <span class="ing">{{ submission.title }}</span>

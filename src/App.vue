@@ -21,8 +21,8 @@
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
-          <router-link v-if="!isLoggedIn" to="/login" class="" tag="div"><v-btn class="">Log In</v-btn></router-link>
-          <v-btn v-else class="" @click="logOut()">Log Out</v-btn>
+          <v-btn v-if="!isLoggedIn" to="/login" rounded>Log In</v-btn>
+          <v-btn v-else rounded @click="logOut()">Log Out</v-btn>
         </template>
 
         <v-app-bar-nav-icon @click.stop="showMobileNavigation = true" v-if="$vuetify.breakpoint.mdAndDown" />
@@ -54,7 +54,7 @@
             :class="{ 'is-active': isPathActive('/') }"
           >
             <v-icon>home</v-icon>
-            <span class="">Home</span>
+            <span >Home</span>
           </v-list-item>
 
           <v-list-item
@@ -64,7 +64,7 @@
             :class="{ 'is-active': isPathActive(path.to) }"
           >
             <v-icon>{{ path.icon }}</v-icon>
-            <span class="">{{ path.label }}</span>
+            <span >{{ path.label }}</span>
           </v-list-item>
         </v-list-item-group>
 
@@ -74,13 +74,13 @@
           <router-link v-if="!isLoggedIn" to="/login">
             <v-list-item :class="{ 'is-active': isPathActive('/login') }">
               <v-icon>login</v-icon>
-              <span class="">Log In</span>
+              <span >Log In</span>
             </v-list-item>
           </router-link>
 
           <v-list-item v-else @click="logOut()">
             <v-icon>logout</v-icon>
-            <span class="">Log Out</span>
+            <span >Log Out</span>
           </v-list-item>
         </v-list-item-group>
       </v-list>

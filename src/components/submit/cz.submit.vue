@@ -1,17 +1,17 @@
 <template>
   <div class="cz-submit">
     <template v-if="isInSubmitLandingPage">
-      <div class="banner has-text-centered has-text-shadow"
+      <div class="banner text-center"
         :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.35), rgba(28, 37, 65, 0.3)), url(' + require('@/assets/img/bg-1.jpg') + ')' }">
-        <div class="">
-          <h1 class="has-text-white">Submit Data</h1>
-          <h2 class="has-text-white has-space-top-2x has-space-bottom">Not sure which repository to use?</h2>
-          <router-link to="/recommendations" tag="v-btn">Help Me Decide</router-link>
+        <div>
+          <div class="has-text-white text-h2 has-text-shadow">Submit Data</div>
+          <div class="has-text-white has-space-top-2x has-space-bottom text-h4 has-text-shadow">Not sure which repository to use?</div>
+          <v-btn to="/recommendations">Help Me Decide</v-btn>
         </div>
       </div>
 
       <v-container>
-        <h1 class=" has-space-bottom-2x has-text-centered has-space-top-2x">Submit to a Supported Repository</h1>
+        <div class="text-h4 has-space-bottom-2x text-center has-space-top-2x">Submit to a Supported Repository</div>
 
         <div class="has-space-bottom-2x">
           <div class="repositories justify-space-around">
@@ -20,21 +20,21 @@
                 <template v-slot:default="{ hover }">
                   <v-card  @click.native="submitTo(repo)"
                     :disabled="repo.isDisabled"
-                    class="has-cursor-pointer transition-swing" 
+                    class="has-cursor-pointer transition-swing"
                     :class="`elevation-${ hover ? 12 : 2 }`">
                     <v-card-title class="v-card-media justify-center">
                       <img :src="repo.logoSrc" :alt="repo.name">
                     </v-card-title>
 
                     <v-card-title>
-                      <div class="">{{ repo.name }}</div>
+                      <div class="text-h4">{{ repo.name }}</div>
                     </v-card-title>
 
-                    <v-card-text class="has-text-mute">
-                      <div>{{ repo.description }}</div>
+                    <v-card-text class="text--secondary">
+                      <div class="text-subtitle-1">{{ repo.description }}</div>
                       
                       <template v-if="repo.isDisabled">
-                        <v-divider />
+                        <v-divider class="has-space-top has-space-bottom" />
                         <v-chip>Coming soon...</v-chip>
                       </template>
                     </v-card-text>
@@ -50,11 +50,11 @@
 
       <v-container class="d-flex">
         <div class="has-space-bottom-2x">
-          <h1 class="">Register a product submitted to another repository</h1>
-          <p class="has-text-mute">The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will create a metadata record for the dataset within the HydroShare repository to ensure that your data can still be discovered with all of the other CZCN research products.</p>
-          <v-btn class=" ">Register</v-btn>
+          <div class="text-h4 has-space-bottom-2x has-space-top-2x">Register a product submitted to another repository</div>
+          <p class="text--secondary text-subtitle-1">The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will create a metadata record for the dataset within the HydroShare repository to ensure that your data can still be discovered with all of the other CZCN research products.</p>
+          <v-btn>Register</v-btn>
         </div>
-        <v-icon style="font-size: 10rem;">mdi-cloud</v-icon>
+        <div class="d-flex justify-center flex-grow-1"><v-icon style="font-size: 10rem;">mdi-cloud</v-icon></div>
         <!-- <img class="  " :src="require('@/assets/img/placeholder.png')" alt=""> -->
       </v-container>
     </template>

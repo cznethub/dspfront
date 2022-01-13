@@ -1,15 +1,15 @@
 <template>
   <div class="cz-new-submission">
-    <h1 class="">{{ formTitle }}</h1>
+    <h1 >{{ formTitle }}</h1>
     <hr>
     <section class="section">
       <div class="container">
-        <div class="">
+        <div>
           <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
           <div class="form-controls">
-            <v-btn v-if="isDevMode" @click="onShowUISchema()" class="">UI Schema</v-btn>
-            <v-btn v-if="isEditMode" @click="goToSubmission()" class="">Cancel</v-btn>
-            <v-btn class=" " @click="save()" :disabled="isSaving">
+            <v-btn v-if="isDevMode" @click="onShowUISchema()" >UI Schema</v-btn>
+            <v-btn v-if="isEditMode" @click="goToSubmission()" >Cancel</v-btn>
+            <v-btn  @click="save()" :disabled="isSaving">
               {{ isSaving ? 'Saving...' : submitText }}
             </v-btn>
           </div>
@@ -24,7 +24,7 @@
           <div class="upload-drop-area has-space-bottom">
             <b-upload v-model="dropFiles" multiple drag-drop expanded>
               <section class="section">
-                <div class="content has-text-centered">
+                <div class="content text-center">
                   <v-icon>mdi-file</v-icon>
                   <p>Drop your files here or click to upload</p>
                 </div>
@@ -65,9 +65,9 @@
         />
 
         <div v-if="!isLoading" class="form-controls has-space-top-2x ">
-          <v-btn v-if="isDevMode" @click="onShowUISchema()" class="">UI Schema</v-btn>
-          <v-btn v-if="isEditMode" @click="goToSubmission()" class="">Cancel</v-btn>
-          <v-btn class=" " @click="save()" :disabled="isSaving">
+          <v-btn v-if="isDevMode" @click="onShowUISchema()" >UI Schema</v-btn>
+          <v-btn v-if="isEditMode" @click="goToSubmission()" >Cancel</v-btn>
+          <v-btn  @click="save()" :disabled="isSaving">
             {{ isSaving ? 'Saving...' : submitText }}
           </v-btn>
         </div>

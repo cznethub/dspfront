@@ -1,7 +1,7 @@
 <template>
-  <div v-if="control.visible" class="">
-    <div class="">
-      <div class="">{{ control.label }}</div>
+  <div v-if="control.visible" >
+    <div>
+      <div>{{ control.label }}</div>
 
       <v-btn fab small color="primary" @click="addButtonClick" :class="styles.arrayList.addButton">
         <v-icon>mdi-plus</v-icon>

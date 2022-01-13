@@ -7,13 +7,14 @@
       />
     </template>
     <template v-else>
-      <div class="cz-submissions--header has-space-bottom-2x">
-        <h1 class="">My Submissions</h1>
-        <v-divider />
+      <div class="cz-submissions--header">
+        <div class="text-h4">My Submissions</div>
+        <v-divider class="has-space-bottom" />
         <div v-if="!isFetching && submissions.length">
-          <div class="d-flex">
+          <div class="d-flex align-center">
             <div class="d-flex">
               <v-text-field
+                class="ma-1"
                 v-model="filters.searchStr"
                 dense
                 clearable
@@ -27,6 +28,7 @@
                 v-model="filters.repoOptions"
                 :items="repoOptions"
                 :itemText="'test'"
+                class="ma-1"
                 clearable
                 label="Repository"
                 chips
@@ -55,7 +57,7 @@
               direction="bottom"
             >
               <template v-slot:activator>
-                <v-btn color="primary">
+                <v-btn color="primary" rounded>
                   <v-icon>mdi-plus</v-icon>
                   New Submission
                 </v-btn>
@@ -77,16 +79,16 @@
       </template>
       <template v-else>
         <div v-if="submissions.length">
-          <div class="">
-            <h3 class="has-space-bottom">
+          <div>
+            <div class="has-space-bottom text-h6">
               {{ submissions.length }} Total Submissions
-            </h3>
-            <p v-if="isAnyFilterAcitve" class="has-text-mute">
+            </div>
+            <p v-if="isAnyFilterAcitve" class="text--secondary">
               {{ currentItems.length }} Results
             </p>
           </div>
 
-          <v-card class="">
+          <v-card >
             <div v-if="!isFetching">
               <v-data-iterator
                 :items="submissions"
@@ -100,24 +102,33 @@
                 hide-default-footer
               >
                 <template v-slot:header>
-                  <v-toolbar elevation="0" color="blue-grey lighten-2" class="mb-1">
+                  <v-toolbar elevation="0" class="has-bg-light-gray">
                     <template v-if="$vuetify.breakpoint.mdAndUp">
-                      <v-btn>Export Submissions</v-btn>
+                      <v-btn rounded>Export Submissions</v-btn>
                       <v-spacer></v-spacer>
                       <v-select
-                        v-model="sortBy"
                         :items="sortOptions"
+                        v-model="sortBy"
+                        class="mr-1"
+                        :item-text="'test'"
                         outlined
                         dense
                         hide-details
                         label="Sort by"
-                      />
+                      >
+                        <template v-slot:item="data">
+                          <v-list-item-content>
+                            <v-list-item-title>
+                              {{ data.item.replace(/^./, data.item[0].toUpperCase()) }}
+                            </v-list-item-title>
+                          </v-list-item-content>
+                        </template>
+                      </v-select>
                       <v-btn-toggle v-model="sortDesc" mandatory>
                         <v-btn
                           v-for="sort of sortDirectionOptions"
                           :value="sort"
                           :key="sort" depressed
-                          color="blue-grey lighten-1"
                         >
                           <v-icon v-if="sort === 'asc'">mdi-sort-ascending</v-icon>
                           <v-icon v-else>mdi-sort-descending</v-icon>
@@ -136,32 +147,32 @@
                           {{ item.title }}
                         </div>
                         <div class="text-body-1">
-                          <b>Authors: </b>{{ item.authors.join(", ") }}
+                          <b class="mr-1">Authors: </b>{{ item.authors.join(", ") }}
                         </div>
                         <div class="text-body-1">
-                          <b>Submission Repository: </b
-                          >{{ repoMetadata[item.repository].name }}
+                          <b class="mr-1">Submission Repository: </b><span class="text-body-2">{{ repoMetadata[item.repository].name }}</span>
                         </div>
                         <div class="text-body-1">
-                          <b>Submission Date: </b
-                          >{{ new Date(item.date).toLocaleString() }}
+                          <b class="mr-1">Submission Date: </b
+                          ><span class="text-body-2">{{ new Date(item.date).toLocaleString() }}</span>
                         </div>
                         <div class="text-body-1">
-                          <b>Identifier: </b>{{ item.identifier }}
+                          <b class="mr-1">Identifier: </b><span class="text-body-2">{{ item.identifier }}</span>
                         </div>
                       </div>
                       <div class="d-flex flex-column actions">
-                        <v-btn :href="item.url" target="_blank" color="primary">
-                          <v-icon>mdi-open-in-new</v-icon> View In Repository
+                        <v-btn :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
+                          <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
                         </v-btn>
-                        <v-btn @click="goToEditSubmission(item)">
-                          <v-icon>mdi-pencil</v-icon> Edit
+                        <v-btn @click="goToEditSubmission(item)" rounded>
+                          <v-icon class="mr-1">mdi-pencil</v-icon> Edit
                         </v-btn>
                         <v-btn
+                          rounded
                           @click="onUpdateRecord(item)"
                           :disabled="isUpdating[`${item.repository}-${item.identifier}`]">
                             <v-icon v-if="isUpdating[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
-                            <v-icon v-else>mdi-update</v-icon> Update Record
+                            <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                           </v-btn>
                       </div>
                     </div>
@@ -172,7 +183,7 @@
                 <template v-slot:footer>
                   <div class="footer d-flex justify-space-between">
                     <div>
-                      <span class="grey--text">Items per page</span>
+                      <span class="grey--text text-body-2 mr-1">Items per page</span>
                       <v-menu offset-y>
                         <template v-slot:activator="{ on, attrs }">
                           <v-btn text v-bind="attrs" v-on="on">
@@ -193,23 +204,13 @@
                     </div>
 
                     <div v-if="numberOfPages">
-                      <span class="mr-4 grey--text">
+                      <span class="mr-4 grey--text text-body-2">
                         Page {{ page }} of {{ numberOfPages }}
                       </span>
-                      <v-btn
-                        small
-                        fab
-                        @click="formerPage"
-                        :disabled="page <= 1"
-                      >
+                      <v-btn class="mr-2" small fab @click="formerPage" :disabled="page <= 1">
                         <v-icon>mdi-chevron-left</v-icon>
                       </v-btn>
-                      <v-btn
-                        small
-                        fab
-                        @click="nextPage"
-                        :disabled="page >= numberOfPages"
-                      >
+                      <v-btn small fab @click="nextPage" :disabled="page >= numberOfPages">
                         <v-icon>mdi-chevron-right</v-icon>
                       </v-btn>
                     </div>

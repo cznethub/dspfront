@@ -1,48 +1,56 @@
 <template>
   <div class="cz-recommendations">
-    <div class="banner has-text-centered">
-      <h1 class="has-space-bottom ">Repository Recommendations</h1>
-      <h3 class="">Find the Best Repository for Your Research Products</h3>
+    <div class="banner text-center has-bg-light-gray">
+      <div class="has-space-bottom text-h4">Repository Recommendations</div>
+      <div class="text-h5">Find the Best Repository for Your Research Products</div>
     </div>
 
     <v-container>
-      <div id="options-grid" class="">
-        <v-card class="  " >
-          <v-card-text class="has-text-centered">
-            <v-icon>mdi-plus-circle-outline</v-icon>
-            <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">I have geospatial data</h3>
-            <p class="has-text-mute has-text-centered">Learn more about formats, best practices, and repositories for geospatial data.</p>
-          </v-card-text>
-        </v-card>
+      <div id="options-grid">
+        <v-hover>
+          <template v-slot:default="{ hover }">
+            <v-card :class="`elevation-${ hover ? 12 : 2 } has-cursor-pointer transition-swing`">
+              <v-card-text class="text-center">
+                <v-icon>mdi-plus-circle-outline</v-icon>
+                <div class="has-text-weight-medium has-space-bottom text-center has-space-top spacer text-h6">I have geospatial data</div>
+                <p class="text--secondary text-center text-subtitle-1">Learn more about formats, best practices, and repositories for geospatial data.</p>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
 
-        <v-card class="  " >
-          <v-card-text class="has-text-centered">
-            <v-icon>mdi-plus-circle-outline</v-icon>
-            <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">My data are derived from
+        <v-hover>
+          <template v-slot:default="{ hover }">
+            <v-card :class="`elevation-${ hover ? 12 : 2 } has-cursor-pointer transition-swing`">
+              <v-card-text class="text-center">
+                <v-icon>mdi-plus-circle-outline</v-icon>
+                <div class="has-text-weight-medium has-space-bottom text-center has-space-top spacer text-h6">My data are derived from physical samples</div>
+                <p class="text--secondary text-center text-subtitle-1">Learn more about registering physical samples and submitting data derived from samples.</p>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
 
-  physical samples</h3>
-            <p class="has-text-mute has-text-centered">Learn more about registering physical samples and submitting data derived from samples.</p>
-          </v-card-text>
-        </v-card>
-
-        <v-card class="  " >
-          <v-card-text class="has-text-centered">
-            <v-icon>mdi-plus-circle-outline</v-icon>
-            <h3 class="has-text-weight-medium has-space-bottom has-text-centered has-space-top spacer">I want to submit multiple
-
-  types of data together</h3>
-            <p class="has-text-mute has-text-centered">Learn more about best practices for assembling multiple datasets for a project or publication. </p>
-          </v-card-text>
-        </v-card>
+        <v-hover>
+          <template v-slot:default="{ hover }">
+            <v-card :class="`elevation-${ hover ? 12 : 2 } has-cursor-pointer transition-swing`">
+              <v-card-text class="text-center">
+                <v-icon>mdi-plus-circle-outline</v-icon>
+                <div class="has-text-weight-medium has-space-bottom text-center has-space-top spacer text-h6">I want to submit multiple types of data together</div>
+                <p class="text--secondary text-center text-subtitle-1">Learn more about best practices for assembling multiple datasets for a project or publication. </p>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
       </div>
     </v-container>
 
     <v-divider />
 
-    <section class="has-text-centered">
+    <section class="text-center">
       <h1 class="has-space-bottom-2x ">Not Sure? Let us Help You Decide</h1>
-      <p class="has-text-mute has-space-bottom-2x">Click the button below to begin an interactive questionnaire that will help us identify which data formats, best practices, and repository is right for your data. </p>
-      <v-btn class=" ">Repository Recommendations</v-btn>
+      <p class="text--secondary has-space-bottom-2x">Click the button below to begin an interactive questionnaire that will help us identify which data formats, best practices, and repository is right for your data. </p>
+      <v-btn color="primary">Repository Recommendations</v-btn>
     </section>
   </div>
 </template>
@@ -62,14 +70,13 @@
 <style lang="scss" scoped>
 
   #options-grid {
+    padding: 2rem;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
     gap: 2rem;
-  }
 
-  .banner {
-    padding: 6rem 4rem;
-    background: #cfd8dc3b;
-    margin-bottom: 0;
+    .v-icon {
+      font-size: 5rem;
+    }
   }
 </style>
