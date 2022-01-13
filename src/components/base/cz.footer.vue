@@ -1,33 +1,33 @@
 <template>
-  <footer class="cz-footer text--secondary d-flex flex-column align-center full-width body-2">
-    <v-container>
-      <div class="d-lg-flex justify-space-between full-width">
-        <div class="has-space-bottom-2x">
-          <div class="has-space-bottom text-h6">Contact Us</div>
-          <router-link to="/contact">Contact</router-link>
-          <p>Learn more about the <a href="#">CZCN</a> and <a href="#">CZ Hub</a></p>
-          <p>Visit <a href="#">cuahsi.org</a></p>
-        </div>
-
-        <div class="has-space-bottom-2x">
-          <div class="has-space-bottom text-h6">Get Started</div>
-          <router-link to="/login">Log In</router-link>
-        </div>
-
-        <div>
-          <div class="has-space-bottom text-h6">Open Source</div>
-          <p>The Data Submission Portal is Open Source. Find us on GitHub.</p>
-          <p>Report a bug <a href="#">here</a></p>
-          <p>This is Version X.X.X of the Data Submission Portal</p>
-        </div>
+  <v-container flat class="cz-footer text--secondary d-flex flex-column align-center full-width body-2">
+    <div class="d-lg-flex justify-space-between full-width">
+      <div class="has-space-bottom-2x">
+        <div class="has-space-bottom text-h6">Contact Us</div>
+        <router-link to="/contact">Contact</router-link>
+        <p>Learn more about the <a href="#">CZCN</a> and <a href="#">CZ Hub</a></p>
+        <p>Visit <a href="#">cuahsi.org</a></p>
       </div>
 
-      <div class="text-center d-flex flex-column align-center has-space-top-2x">
-        <p>(c) 2021 CUAHSI. ﻿This material is based upon work supported by the National Science Foundation (NSF) under awards 2012893, 2012593, and 2012748.<br>
-        Any opinions, findings, conclusions, or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the NSF.</p>
+      <div class="has-space-bottom-2x">
+        <div class="has-space-bottom text-h6">Get Started</div>
+        <router-link to="/login">Log In</router-link>
       </div>
-    </v-container>
-  </footer>
+
+      <div>
+        <div class="has-space-bottom text-h6">Open Source</div>
+        <p>The Data Submission Portal is Open Source. Find us on GitHub.</p>
+        <p>Report a bug <a href="#">here</a></p>
+        <p>This is Version X.X.X of the Data Submission Portal</p>
+      </div>
+    </div>
+
+    <v-divider></v-divider>
+
+    <div class="text-center d-flex flex-column align-center has-space-top-2x">
+      <p>(c) 2021 CUAHSI. ﻿This material is based upon work supported by the National Science Foundation (NSF) under awards 2012893, 2012593, and 2012748.<br>
+      Any opinions, findings, conclusions, or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the NSF.</p>
+    </div>
+  </v-container>
 </template>
 
 <script lang="ts">

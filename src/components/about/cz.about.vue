@@ -1,6 +1,6 @@
 <template>
   <div class="cz-about d-flex">
-    <div id="panel-left" class="text-center has-text-shadow flex-grow-1"
+    <div id="panel-left" class="text-center has-text-shadow flex-grow-1 hidden-sm-and-down"
       :style="{ 'background-image': 'linear-gradient(rgb(0 52 82 / 31%), rgba(0, 0, 0, 0)), url(' + require('@/assets/img/bg-4.png') + ')' }">
     </div>
     <v-container id="panel-right">

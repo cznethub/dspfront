@@ -42,7 +42,7 @@ export const routes: RouteConfig[] = [
   },
   {
     name: 'recommendations',
-    path: '/recommendations',
+    path: '/resources/recommendations',
     components: {
       content: CzRecommendations,
       footer: CzFooter

@@ -12,12 +12,8 @@
         </router-link>
         <div class="spacer"></div>
         <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
-          <router-link to="/" tag="div"  :class="{ 'is-active': isPathActive('/') }">
-            <v-btn :elevation="0" :color="isPathActive('/') ? 'primary' : '#FFF'">Home</v-btn>
-          </router-link>
-          <router-link v-for="path of paths" :key="path.to" :to="path.to" tag="div" :class="{ 'is-active': isPathActive(path.to) }">
-            <v-btn :elevation="0" :color="isPathActive(path.to) ? 'primary' : '#FFF'">{{ path.label }}</v-btn>
-          </router-link>
+          <v-btn to="/" :elevation="0" active-class="is-active">Home</v-btn>
+          <v-btn v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
@@ -41,46 +37,39 @@
       <router-view name="footer" />
     </v-footer>
 
-    <v-navigation-drawer
-      class="mobile-nav-items"
-      v-model="showMobileNavigation"
-      temporary
-      app
-    >
+    <v-navigation-drawer class="mobile-nav-items" v-model="showMobileNavigation" temporary app>
       <v-list nav dense class="nav-items">
-        <v-list-item-group>
-          <v-list-item
-            @click="goToPath('/')"
-            :class="{ 'is-active': isPathActive('/') }"
-          >
-            <v-icon>home</v-icon>
-            <span >Home</span>
+        <v-list-item-group class="text-body-1">
+          <v-list-item @click="showMobileNavigation = false" to="/" active-class="is-active">
+            <v-icon class="mr-2">mdi-home</v-icon>
+            <span>Home</span>
           </v-list-item>
 
           <v-list-item
             v-for="path of paths"
             :key="path.to"
-            @click="goToPath(path.to)"
-            :class="{ 'is-active': isPathActive(path.to) }"
+            :to="path.to"
+            @click="showMobileNavigation = false"
+            active-class="is-active"
           >
-            <v-icon>{{ path.icon }}</v-icon>
+            <v-icon class="mr-2">{{ path.icon }}</v-icon>
             <span >{{ path.label }}</span>
           </v-list-item>
         </v-list-item-group>
 
-        <v-divider></v-divider>
+        <v-divider class="my-4"></v-divider>
 
-        <v-list-item-group>
+        <v-list-item-group class="text-body-1">
           <router-link v-if="!isLoggedIn" to="/login">
-            <v-list-item :class="{ 'is-active': isPathActive('/login') }">
-              <v-icon>login</v-icon>
-              <span >Log In</span>
+            <v-list-item active-class="is-active">
+              <v-icon class="mr-2">mdi-login</v-icon>
+              <span>Log In</span>
             </v-list-item>
           </router-link>
 
           <v-list-item v-else @click="logOut()">
-            <v-icon>logout</v-icon>
-            <span >Log Out</span>
+            <v-icon class="mr-2">mdi-logout</v-icon>
+            <span>Log Out</span>
           </v-list-item>
         </v-list-item-group>
       </v-list>
@@ -157,10 +146,10 @@ import Submission from "./models/submission.model";
   components: { CzFooter },
 })
 export default class App extends Vue {
-  protected isLoading = true;
-  protected onToast!: Subscription;
-  protected onOpenDialog!: Subscription;
-  protected showMobileNavigation = false;
+  protected isLoading = true
+  protected onToast!: Subscription
+  protected onOpenDialog!: Subscription
+  protected showMobileNavigation = false
 
   protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
     message: "",
@@ -169,7 +158,7 @@ export default class App extends Vue {
     isActive: false,
     isInfinite: false,
     // isPersistent: false,
-  };
+  }
 
   protected dialog: IDialog & { isActive: boolean } = {
     title: "",
@@ -179,19 +168,15 @@ export default class App extends Vue {
     isActive: false,
     onConfirm: () => {},
     onCancel: () => {},
-  };
+  }
 
   protected paths = [
-    {
-      to: "/submissions",
-      label: "My Submissions",
-      icon: "collections_bookmark",
-    },
-    { to: "/resources", label: "Resources", icon: "local_library" },
-    { to: "/submit", label: "Submit Data", icon: "upload_file" },
-    { to: "/about", label: "About", icon: "help" },
-    { to: "/contact", label: "Contact", icon: "contact_page" },
-  ];
+    { to: "/submissions", label: "My Submissions", icon: "mdi-bookmark-multiple" },
+    { to: "/resources", label: "Resources", icon: "mdi-library" },
+    { to: "/submit", label: "Submit Data", icon: "mdi-book-plus" },
+    { to: "/about", label: "About", icon: "mdi-help" },
+    { to: "/contact", label: "Contact", icon: "mdi-book-open-blank-variant" },
+  ]
 
   protected get isLoggedIn() {
     return User.$state.isLoggedIn;
@@ -206,53 +191,25 @@ export default class App extends Vue {
       onConfirm: () => {
         User.logOut();
       },
-    });
-  }
-
-  protected isPathActive(path: string) {
-    if (path === "/" && this.$route.path !== "/") {
-      return false;
-    }
-    const matchedRoute = this.$router.match(path);
-    const isActive = this.$route.matched.some(
-      (r) => r.name === matchedRoute.name
-    );
-
-    if (isActive) {
-      return true;
-    }
-    // Check if the route is active pending a redirect
-    else if (this.$router.currentRoute.query.next) {
-      const matchedNextRoute = this.$router.match(
-        this.$router.currentRoute.query.next as string
-      );
-      return matchedNextRoute.name === matchedRoute.name;
-    }
-
-    return false; // default
-  }
-
-  protected goToPath(path: string) {
-    this.showMobileNavigation = false;
-    this.$router.push({ path });
+    })
   }
 
   async created() {
-    document.title = "CZ Hub";
+    document.title = "CZ Hub"
 
     if (this.$route.name !== "submissions") {
       // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
-      Submission.fetchSubmissions();
+      Submission.fetchSubmissions()
     }
 
     this.onToast = CzNotification.toast$.subscribe((toast: IToast) => {
-      this.snackbar = { ...this.snackbar, ...toast };
-      this.snackbar.isActive = true;
+      this.snackbar = { ...this.snackbar, ...toast }
+      this.snackbar.isActive = true
     });
 
     this.onOpenDialog = CzNotification.dialog$.subscribe((dialog: IDialog) => {
-      this.dialog = { ...this.dialog, ...dialog };
-      this.dialog.isActive = true;
+      this.dialog = { ...this.dialog, ...dialog }
+      this.dialog.isActive = true
     });
 
     // Check for Authorization cookie instead.
@@ -262,7 +219,7 @@ export default class App extends Vue {
     // Reproducible if the server is restarted
 
     // if (isAuthorized && !User.$state.isLoggedIn) {
-    await User.checkAuthorization();
+    await User.checkAuthorization()
     // }
 
     if (User.$state.isLoggedIn) {
@@ -271,15 +228,15 @@ export default class App extends Vue {
 
     // Guards are setup after checking authorization and loading access tokens
     // because they depend on user logged in status
-    setupRouteGuards();
+    setupRouteGuards()
 
     this.isLoading = false;
   }
 
   beforeDestroy() {
     // Good practice
-    this.onToast.unsubscribe();
-    this.onOpenDialog.unsubscribe();
+    this.onToast.unsubscribe()
+    this.onOpenDialog.unsubscribe()
   }
 }
 </script>
@@ -302,16 +259,16 @@ export default class App extends Vue {
   border-radius: 2rem !important;
   overflow: hidden;
 
-  a.router-link-exact-active .v-btn::before,
-  .v-btn.is-active::before {
-    background-color: currentColor;
-    opacity: 0.12;
-  }
-
   .v-btn {
     margin: 0;
     border-radius: 0;
     height: 39px !important;
   }
+}
+
+.nav-items .v-btn.is-active,
+.mobile-nav-items .v-list-item.is-active {
+  background-color: #1976d2;
+  color: #FFF;
 }
 </style>

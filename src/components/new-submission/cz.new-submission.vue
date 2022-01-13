@@ -1,25 +1,22 @@
 <template>
   <div class="cz-new-submission">
-    <h1 >{{ formTitle }}</h1>
+    <h1 class="text-h4">{{ formTitle }}</h1>
     <hr>
-    <section class="section">
-      <div class="container">
-        <div>
-          <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
-          <div class="form-controls">
-            <v-btn v-if="isDevMode" @click="onShowUISchema()" >UI Schema</v-btn>
-            <v-btn v-if="isEditMode" @click="goToSubmission()" >Cancel</v-btn>
-            <v-btn  @click="save()" :disabled="isSaving">
-              {{ isSaving ? 'Saving...' : submitText }}
-            </v-btn>
-          </div>
-        </div>
-        <p><b>Instructions</b>: Fill in the required fields (marked with *). Press the "Save" button to save your upload for later editing. When the form is complete, click the "Submit" button to upload your submission to the repository.</p>
+    <div class="d-flex align-center my-4">
+      <v-img :src="activeRepository.get().logoSrc" width="5rem" :alt="activeRepository.get().name"></v-img>
+      <v-spacer></v-spacer>
+      <div class="form-controls">
+        <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded>UI Schema</v-btn>
+        <v-btn v-if="isEditMode" @click="goToSubmission()" rounded>Cancel</v-btn>
+        <v-btn @click="save()" color="primary" :disabled="isSaving" rounded>
+          {{ isSaving ? 'Saving...' : submitText }}
+        </v-btn>
       </div>
-    </section>
+    </div>
+    <div class="text-subtitle-1"><b>Instructions</b>: Fill in the required fields (marked with *). Press the "Save" button to save your upload for later editing. When the form is complete, click the "Submit" button to upload your submission to the repository.</div>
 
     <section class="section">
-      <div class="container" style="min-height: 20rem;">
+      <div class="container">
         <div v-if="!isLoading">
           <div class="upload-drop-area has-space-bottom">
             <b-upload v-model="dropFiles" multiple drag-drop expanded>
@@ -60,14 +57,16 @@
         </div>
 
         <v-progress-circular
+          v-else
           indeterminate
           color="primary"
         />
 
-        <div v-if="!isLoading" class="form-controls has-space-top-2x ">
-          <v-btn v-if="isDevMode" @click="onShowUISchema()" >UI Schema</v-btn>
-          <v-btn v-if="isEditMode" @click="goToSubmission()" >Cancel</v-btn>
-          <v-btn  @click="save()" :disabled="isSaving">
+        <!-- TODO: MOVE INTO COMPONENT AND REUSE -->
+        <div v-if="!isLoading" class="form-controls has-space-top-2x text-right">
+          <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded>UI Schema</v-btn>
+          <v-btn v-if="isEditMode" @click="goToSubmission()" rounded>Cancel</v-btn>
+          <v-btn @click="save()" color="primary" :disabled="isSaving" rounded>
             {{ isSaving ? 'Saving...' : submitText }}
           </v-btn>
         </div>

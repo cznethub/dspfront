@@ -1,6 +1,6 @@
 <template>
   <div class="cz-submission">
-    <h1 >Submission</h1>
+    <h1>Submission</h1>
     <hr>
     <div v-if="submission">
       <div class=" actions">

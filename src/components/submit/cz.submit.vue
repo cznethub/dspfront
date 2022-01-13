@@ -6,7 +6,7 @@
         <div>
           <div class="has-text-white text-h2 has-text-shadow">Submit Data</div>
           <div class="has-text-white has-space-top-2x has-space-bottom text-h4 has-text-shadow">Not sure which repository to use?</div>
-          <v-btn to="/recommendations">Help Me Decide</v-btn>
+          <v-btn to="/resources/recommendations">Help Me Decide</v-btn>
         </div>
       </div>
 
@@ -54,7 +54,7 @@
           <p class="text--secondary text-subtitle-1">The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will create a metadata record for the dataset within the HydroShare repository to ensure that your data can still be discovered with all of the other CZCN research products.</p>
           <v-btn>Register</v-btn>
         </div>
-        <div class="d-flex justify-center flex-grow-1"><v-icon style="font-size: 10rem;">mdi-cloud</v-icon></div>
+        <div class="d-flex justify-center flex-grow-1 ml-4"><v-icon style="font-size: 10rem;">mdi-cloud</v-icon></div>
         <!-- <img class="  " :src="require('@/assets/img/placeholder.png')" alt=""> -->
       </v-container>
     </template>

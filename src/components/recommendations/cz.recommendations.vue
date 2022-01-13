@@ -47,9 +47,9 @@
 
     <v-divider />
 
-    <section class="text-center">
-      <h1 class="has-space-bottom-2x ">Not Sure? Let us Help You Decide</h1>
-      <p class="text--secondary has-space-bottom-2x">Click the button below to begin an interactive questionnaire that will help us identify which data formats, best practices, and repository is right for your data. </p>
+    <section class="d-flex flex-column align-center">
+      <div class="text-h4 mb-4">Not Sure? Let us Help You Decide</div>
+      <p class="text--secondary mb-4 text-center">Click the button below to begin an interactive questionnaire that will help us identify which data formats, best practices, and repository is right for your data. </p>
       <v-btn color="primary">Repository Recommendations</v-btn>
     </section>
   </div>
