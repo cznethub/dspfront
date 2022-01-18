@@ -105,7 +105,7 @@ export default class Submission extends Model implements ISubmission {
       })
     }
     catch(e: any) {
-      if (e.response.status === 401) {
+      if (e.response && e.response.status === 401) {
         // Unauthorized
       }
       console.error(e)

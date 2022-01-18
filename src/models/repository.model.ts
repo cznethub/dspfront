@@ -183,14 +183,13 @@ export default class Repository extends Model implements IRepository {
     }
   }
 
-  static async deleteSubmission(recordId) {
-    await Submission.delete([recordId, this.entity])
+  static async deleteSubmission(identifier: string, repository: string) {
+    await Submission.delete([identifier, repository])
     CzNotification.toast({ message: 'Your submission has been deleted' })
-    router.push({ path: '/submissions' })
   }
 
   protected static createSubmission: (data?: any) => Promise<{ recordId: string, formMetadata: any} | null>
-  protected static deleteRecord: (recordId: string) => Promise<any>
+  protected static deleteRecord: (recordId: string, repository: string) => Promise<any>
   protected static read: (recordId: string) => Promise<any>
   protected static updateRepositoryRecord: (recordId: string, metadata: any) => Promise<any>
 }

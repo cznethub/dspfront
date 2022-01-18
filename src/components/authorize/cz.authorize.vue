@@ -1,22 +1,23 @@
 <template>
-  <div class="cz-authorize">
+  <div class="cz-authorize mb-2">
     <v-card class="text-center">
-      <div  style="height: 10rem; padding: 2rem;">
-        <img :src="activeRepository.get().logoSrc" :alt="activeRepository.name" >
-      </div> -->
-      <div>
-        <div>Submit to {{ activeRepository.name }}</div>
-        <div>Permission is needed to post to this repository</div>
-      </div>
-      <div>
-        <v-btn @click="goToAuthorizePage()" >
-          <div class="level">
-            <i class="fas fa-key has-space-right" />
-            <span>Authorize</span>
-          </div>
+      <v-card-title class="v-card-media">
+        <v-img :src="activeRepository.get().logoSrc" :alt="activeRepository.name" width="100%" height="8rem" contain />
+      </v-card-title>
+      <v-divider></v-divider>
+      <v-card-title class="justify-center">
+        <div class="text-h4">Submit to {{ activeRepository.name }}</div>
+        <div class="text-body-1 mb-4">Permission is needed to post to this repository</div>
+      </v-card-title>
+      <v-card-text class="d-flex flex-column align-center">
+        <v-btn @click="goToAuthorizePage()" color="primary" class="mb-4">
+          <i class="fas fa-key mr-2" />Authorize
         </v-btn>
-        <p >Follow the instructions on the next page to allow CZnet to submit to this repository.</p>
-      </div>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-text>
+        <p class="text-subtitle">Follow the instructions on the next page to allow CZnet to submit to this repository.</p>
+      </v-card-text>
     </v-card>
   </div>
 </template>
@@ -68,6 +69,10 @@
   
   .v-card {
     max-width: 40rem;
+
+    .v-card-media {
+      background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);
+    }
 
     .v-card-media {
       img {

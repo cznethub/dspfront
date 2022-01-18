@@ -1,16 +1,18 @@
 <template>
   <div v-if="control.visible" >
-    <div>
+    <div class="d-flex">
       <div>{{ control.label }}</div>
+
+      <v-spacer></v-spacer>
 
       <v-btn fab small color="primary" @click="addButtonClick" :class="styles.arrayList.addButton">
         <v-icon>mdi-plus</v-icon>
       </v-btn>
     </div>
 
-    <hr>
+    <v-divider></v-divider>
 
-    <drop-list name="list-complete" class="list-elements-container" 
+    <drop-list name="list-complete" class="list-elements-container mt-4" 
       :items="control.data || []"
       @reorder="reorderElements($event.from, $event.to)"
     >

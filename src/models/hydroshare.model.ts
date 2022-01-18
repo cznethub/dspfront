@@ -90,7 +90,7 @@ export default class HydroShare extends Repository {
     // TODO: indicate to Cz api that files were uploaded
   }
   
-  static async deleteRecord(recordId: string) {
+  static async deleteRecord(identifier: string, repository: string) {
     const hydroShare = this.get()
 
     if (hydroShare) {
@@ -106,9 +106,9 @@ export default class HydroShare extends Repository {
       // )
 
       // Delete on CZHub
-      const response = await axios.delete(`/api/submit/${this.entity}/${recordId}`)
+      const response = await axios.delete(`/api/submit/${this.entity}/${identifier}`)
       if (response.status === 200) {
-        await this.deleteSubmission(recordId)
+        await this.deleteSubmission(identifier, repository)
         // await Submission.delete([recordId, this.entity])
         // CzNotification.toast({ message: 'Your submission has been deleted' })
         // router.push({ path: '/submissions' })

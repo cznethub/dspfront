@@ -1,7 +1,7 @@
 <template>
   <v-app app>
-    <v-app-bar color="#cfd8dc" prominent elevate-on-scroll fixed app>
-      <v-container class="d-flex align-end" style="height: 100%">
+    <v-app-bar color="blue-grey lighten-4" prominent elevate-on-scroll fixed app>
+      <v-container class="d-flex align-end full-height">
         <router-link
           :to="{ path: `/` }"
           :src="require('@/assets/img/CZN_Logo.png')"
@@ -18,7 +18,7 @@
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
           <v-btn v-if="!isLoggedIn" to="/login" rounded>Log In</v-btn>
-          <v-btn v-else rounded @click="logOut()">Log Out</v-btn>
+          <v-btn v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
         </template>
 
         <v-app-bar-nav-icon @click.stop="showMobileNavigation = true" v-if="$vuetify.breakpoint.mdAndDown" />
@@ -26,8 +26,8 @@
     </v-app-bar>
 
     <v-main app>
-      <v-container>
-        <v-sheet elevation="2">
+      <v-container id="main-container">
+        <v-sheet :elevation="$route.meta.hideMainSheet ? 0 : 2">
           <router-view v-if="!isLoading" name="content" />
         </v-sheet>
       </v-container>

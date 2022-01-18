@@ -187,8 +187,9 @@
 
       if (this.isEditMode) {
         const identifier = this.$route.params.id
-        const submission = Submission.find([identifier, this.activeRepository.entity])
-        this.recordId = submission?.identifier || ''  // TODO: get the recordId and update it here
+        // const submission = Submission.find([identifier, this.activeRepository.entity])
+        // this.recordId = submission?.identifier || ''  // TODO: get the recordId and update it here
+        this.recordId = identifier
         this.loadExistingSubmission()
       }
       else {
@@ -265,7 +266,7 @@
         message: this.isEditMode ? 'Your changes have been saved' : 'Your submission has been saved!'
       })
 
-      this.$router.push({ name: 'submissions', params: { id: this.recordId, repository: this.activeRepository.entity } })
+      this.$router.push({ name: 'submissions' })
       
       this.isSaving = false
     }

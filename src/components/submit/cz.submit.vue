@@ -116,8 +116,8 @@
     grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
     gap: 2rem;
 
-    .v-card-media {
-      background: linear-gradient(135deg, #f1f3f5 0%, var(--text-mute) 100%);
+    ::v-deep .v-card-media {
+      background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);
       height: 10rem; 
       padding: 2rem;
 
