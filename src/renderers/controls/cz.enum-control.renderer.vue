@@ -19,7 +19,7 @@
         close
         @click:close="remove(item)"
       >
-        <strong>{{ item }}</strong>
+        {{ item }}
       </v-chip>
     </template>
   </v-combobox>

@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card outlined>
     <!-- <v-card-header v-if="label">{{ label }}</v-card-header> -->
     <v-card-actions>
       <v-spacer></v-spacer>
@@ -11,7 +11,7 @@
         <v-icon>mdi-arrow-down</v-icon>
       </v-btn>
 
-      <v-btn elevation="1" fab small @click="deleteClicked">
+      <v-btn elevation="1" fab small @click="deleteClicked" color="#ff6961" style="color: #FFF;">
         <v-icon>mdi-delete</v-icon>
       </v-btn>
     </v-card-actions>

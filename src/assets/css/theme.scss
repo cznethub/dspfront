@@ -98,3 +98,24 @@ section {
 p {
   max-width: 70rem;
 }
+
+.cz-fieldset {
+  background-color: #fff;
+  color: rgba(0,0,0,.87);
+  border: thin solid rgba(0,0,0,.12);
+  border-color: rgb(158, 158, 158);
+  border-radius: 4px;
+  padding: 1rem;
+  position: relative;
+
+  legend {
+    font-size: 16px;
+    letter-spacing: .0125em;
+    line-height: 2rem;
+    word-break: break-all;
+    color: rgba(0, 0, 0, 0.6);
+    background: #FFF;
+    transform: scale(0.75);
+    font-weight: normal;
+  }
+}

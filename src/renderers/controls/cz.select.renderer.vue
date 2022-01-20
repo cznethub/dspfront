@@ -6,6 +6,7 @@
     :label="control.label"
     :disabled="!control.enabled"
     :value="control.schema.default"
+    outlined
   >
   </v-select>
 </template>

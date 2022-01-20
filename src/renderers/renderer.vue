@@ -10,6 +10,8 @@
   import { enumControlRenderer } from './controls/cz.enum-control.renderer.vue'
   import { selectRenderer } from './controls/cz.select.renderer.vue'
   import { arrayListRenderer } from './array/ArrayListRenderer.vue'
+  import { groupRenderer } from './layouts/GroupRenderer.vue'
+  import { numberControlRenderer } from './controls/NumberControlRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -20,6 +22,8 @@
     selectRenderer,
     enumControlRenderer,
     arrayListRenderer,
+    groupRenderer,
+    numberControlRenderer
     // listInputObjectRenderer,
   ]
 </script>

@@ -1,55 +1,52 @@
 <template>
-  <div v-if="control.visible" >
-    <div class="d-flex">
-      <div>{{ control.label }}</div>
+  <fieldset v-if="control.visible" class="cz-fieldset my-3" outlined>
+    <legend>{{ control.label }}</legend>
 
-      <v-spacer></v-spacer>
+    <v-btn fab small color="primary" @click="addButtonClick" :class="styles.arrayList.addButton" class="btn-add">
+      <v-icon>mdi-plus</v-icon>
+    </v-btn>
 
-      <v-btn fab small color="primary" @click="addButtonClick" :class="styles.arrayList.addButton">
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
+    <div>
+      <drop-list name="list-complete" class="list-elements-container mt-4" 
+        :items="control.data || []"
+        @reorder="reorderElements($event.from, $event.to)"
+      >
+        <template v-slot:item="{ index }">
+          <drag class="item" :key="index">
+            <array-list-element
+              class="list-complete-item"
+              :styles="styles"
+              :moveUp="moveUp(control.path, index)"
+              :moveDown="moveDown(control.path, index)"
+              :delete="removeItems(control.path, [index])"
+              :moveUpEnabled="index > 0"
+              :moveDownEnabled="index < control.data.length - 1"
+              :label="childLabelForIndex(index)"
+            >
+              <dispatch-renderer
+                :schema="control.schema"
+                :uischema="childUiSchema"
+                :path="composePaths(control.path, `${index}`)"
+                :enabled="control.enabled"
+                :renderers="control.renderers"
+                :cells="control.cells"
+              />
+            </array-list-element>
+          </drag>
+        </template>
+
+        <template v-slot:feedback="{data}">
+          <div class="item feedback" :key="data">{{data}}</div>
+        </template>
+        
+      </drop-list>
+
+      <v-alert v-if="noData"  @click="addButtonClick" class="text-subtitle-2 has-cursor-pointer"
+        type="info" color="grey" colored-border border="left" outlined>
+        <span class="text-subtitle-1 grey--text">Click here or use the '+' button above to add items</span>
+      </v-alert>
     </div>
-
-    <v-divider></v-divider>
-
-    <drop-list name="list-complete" class="list-elements-container mt-4" 
-      :items="control.data || []"
-      @reorder="reorderElements($event.from, $event.to)"
-    >
-      <template v-slot:item="{ index }">
-        <drag class="item" :key="index">
-          <array-list-element
-            class="list-complete-item"
-            :styles="styles"
-            :moveUp="moveUp(control.path, index)"
-            :moveDown="moveDown(control.path, index)"
-            :delete="removeItems(control.path, [index])"
-            :moveUpEnabled="index > 0"
-            :moveDownEnabled="index < control.data.length - 1"
-            :label="childLabelForIndex(index)"
-          >
-            <dispatch-renderer
-              :schema="control.schema"
-              :uischema="childUiSchema"
-              :path="composePaths(control.path, `${index}`)"
-              :enabled="control.enabled"
-              :renderers="control.renderers"
-              :cells="control.cells"
-            />
-          </array-list-element>
-        </drag>
-      </template>
-
-      <template v-slot:feedback="{data}">
-        <div class="item feedback" :key="data">{{data}}</div>
-      </template>
-      
-    </drop-list>
-
-    <div v-if="noData">
-      Click on the '+' button above to add items.
-    </div>
-  </div>
+  </fieldset>
 </template>
 
 <script lang="ts">
@@ -121,16 +118,12 @@ export const arrayListRenderer: JsonFormsRendererRegistryEntry = {
 <style lang="scss" scoped>
   .list-elements-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
     gap: 2rem;
 
     ::v-deep .v-card {
       margin: 0;
     }
-  }
-  
-  .ing {
-    color: rgba(0, 0, 0, 0.54);
   }
 
   .list-complete-item {
@@ -144,5 +137,28 @@ export const arrayListRenderer: JsonFormsRendererRegistryEntry = {
 
   .list-complete-leave-active {
     // position: absolute;
+  }
+
+  .list-title {
+    position: absolute;
+    top: -2.3rem;
+    width: 100%;
+
+    & > label {
+      color: rgba(0,0,0,.6);
+      background: #FFF;
+      transform: scale(0.75);
+      font-weight: normal;
+    }
+  }
+
+  .v-alert {
+    border-color: #9e9e9e !important;
+  }
+
+  .btn-add {
+    position: absolute;
+    top: -2.2rem;
+    right: 1rem;
   }
 </style>
