@@ -47,12 +47,12 @@
                 </b-upload>
               </div>
 
-              <div v-if="dropFiles.length" class="upload-file-list">
+              <div v-if="dropFiles.length" class="mb-4">
                 <transition-group name="list-files">
                   <v-chip
                     v-for="(file, index) in dropFiles"
-                    :key="`${file.name}-${index}`"
-                    class="list-files-item"
+                    :key="`${file.name}`"
+                    class="list-files-item ma-1"
                     close
                     color="secondary"
                     @click:close="deleteDropFile(index)"
@@ -325,8 +325,8 @@ export default class CzNewSubmission extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.cz-new-submission {
-}
+// .cz-new-submission {
+// }
 
 .schema-wrapper {
   width: 100rem;
@@ -348,15 +348,15 @@ export default class CzNewSubmission extends Vue {
   }
 }
 
-.list-files {
-  transition: all 1s;
+.list-files-item {
+  transition: all 0.55s ease;
+  display: inline-block;
 }
 
 .list-files-enter,
-  .list-files-leave-to
-  /* .list-complete-leave-active below version 2.1.8 */ {
+.list-files-leave-to {
   opacity: 0;
-  // transform: translateY(30px);
+  transform: translateY(30px);
 }
 
 .list-files-leave-active {
