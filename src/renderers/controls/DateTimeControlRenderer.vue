@@ -56,7 +56,7 @@
       <v-col>
         <v-time-picker
           v-model="selectedTime"
-          @change="onChange"
+          @input="onChange"
           :disabled="!control.enabled"
           use-seconds
           scrollable
