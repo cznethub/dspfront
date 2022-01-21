@@ -1,52 +1,55 @@
 <template>
-  <fieldset v-if="control.visible" class="cz-fieldset my-3" outlined>
-    <legend>{{ control.label }}</legend>
+  <div class="mt-2 mb-4">
+    <fieldset v-if="control.visible" class="cz-fieldset" outlined>
+      <legend>{{ control.label }}</legend>
 
-    <v-btn fab small color="primary" @click="addButtonClick" :class="styles.arrayList.addButton" class="btn-add">
-      <v-icon>mdi-plus</v-icon>
-    </v-btn>
+      <v-btn fab small color="primary" @click="addButtonClick" :class="styles.arrayList.addButton" class="btn-add">
+        <v-icon>mdi-plus</v-icon>
+      </v-btn>
 
-    <div>
-      <drop-list name="list-complete" class="list-elements-container mt-4" 
-        :items="control.data || []"
-        @reorder="reorderElements($event.from, $event.to)"
-      >
-        <template v-slot:item="{ index }">
-          <drag class="item" :key="index">
-            <array-list-element
-              class="list-complete-item"
-              :styles="styles"
-              :moveUp="moveUp(control.path, index)"
-              :moveDown="moveDown(control.path, index)"
-              :delete="removeItems(control.path, [index])"
-              :moveUpEnabled="index > 0"
-              :moveDownEnabled="index < control.data.length - 1"
-              :label="childLabelForIndex(index)"
-            >
-              <dispatch-renderer
-                :schema="control.schema"
-                :uischema="childUiSchema"
-                :path="composePaths(control.path, `${index}`)"
-                :enabled="control.enabled"
-                :renderers="control.renderers"
-                :cells="control.cells"
-              />
-            </array-list-element>
-          </drag>
-        </template>
+      <div>
+        <drop-list name="list-complete" class="list-elements-container mt-4" 
+          :items="control.data || []"
+          @reorder="reorderElements($event.from, $event.to)"
+        >
+          <template v-slot:item="{ index }">
+            <drag class="item" :key="index">
+              <array-list-element
+                class="list-complete-item"
+                :styles="styles"
+                :moveUp="moveUp(control.path, index)"
+                :moveDown="moveDown(control.path, index)"
+                :delete="removeItems(control.path, [index])"
+                :moveUpEnabled="index > 0"
+                :moveDownEnabled="index < control.data.length - 1"
+                :label="childLabelForIndex(index)"
+              >
+                <dispatch-renderer
+                  :schema="control.schema"
+                  :uischema="childUiSchema"
+                  :path="composePaths(control.path, `${index}`)"
+                  :enabled="control.enabled"
+                  :renderers="control.renderers"
+                  :cells="control.cells"
+                />
+              </array-list-element>
+            </drag>
+          </template>
 
-        <template v-slot:feedback="{data}">
-          <div class="item feedback" :key="data">{{data}}</div>
-        </template>
-        
-      </drop-list>
+          <template v-slot:feedback="{data}">
+            <div class="item feedback" :key="data">{{data}}</div>
+          </template>
+          
+        </drop-list>
 
-      <v-alert v-if="noData"  @click="addButtonClick" class="text-subtitle-2 has-cursor-pointer"
-        type="info" color="grey" colored-border border="left" outlined>
-        <span class="text-subtitle-1 grey--text">Click here or use the '+' button above to add items</span>
-      </v-alert>
-    </div>
-  </fieldset>
+        <v-alert v-if="noData"  @click="addButtonClick" class="text-subtitle-2 has-cursor-pointer"
+          type="info" color="primary" border="left" dense text elevation="2" max-width="27rem">
+          <span class="text-subtitle-1">Click here or use the '+' button above to add items</span>
+        </v-alert>
+      </div>
+    </fieldset>
+    <div class="v-messages mt-1" style="color: rgba(0,0,0,.6);">{{ control.description }}</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -87,8 +90,9 @@ const controlRenderer = defineComponent({
       return !this.control.data || this.control.data.length === 0
     }
   },
-  // created() {
-  // },
+  created() {
+    // console.log(this.control)
+  },
   methods: {
     composePaths,
     createDefaultValue,

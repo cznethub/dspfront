@@ -12,18 +12,26 @@
   import { arrayListRenderer } from './array/ArrayListRenderer.vue'
   import { groupRenderer } from './layouts/GroupRenderer.vue'
   import { numberControlRenderer } from './controls/NumberControlRenderer.vue'
+  import { stringControlRenderer } from './controls/StringControlRenderer.vue'
+  import { multiStringControlRenderer } from './controls/MultiStringControlRenderer.vue'
+  import { dateControlRenderer } from './controls/DateControlRenderer.vue'
+  import { dateTimeControlRenderer } from './controls/DateTimeControlRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
 
   export const CzRenderers: JsonFormsRendererRegistryEntry[] = [
-    inputRenderer,
-    inputDateRenderer,
+    // inputRenderer,
+    // inputDateRenderer,
     selectRenderer,
     enumControlRenderer,
     arrayListRenderer,
     groupRenderer,
-    numberControlRenderer
+    numberControlRenderer,
+    stringControlRenderer,
+    multiStringControlRenderer,
+    dateControlRenderer,
+    dateTimeControlRenderer,
     // listInputObjectRenderer,
   ]
 </script>

@@ -65,7 +65,7 @@ const controlRenderer = defineComponent({
       this.tags.splice(this.tags.indexOf(item), 1)
       this.onChange()
     },
-  },
+  }
 });
 export default controlRenderer;
 

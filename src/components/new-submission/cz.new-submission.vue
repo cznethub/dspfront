@@ -6,8 +6,7 @@
       <v-col md="4" sm="12" order-md="2">
         <v-alert class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
           <b>Instructions</b>: Fill in the required fields (marked with *).
-          Press the "Save" button to save your upload for later editing. When
-          the form is complete, click the "Submit" button to upload your
+          Press the "Save" button to upload your
           submission to the repository.
 
           <v-img
@@ -41,7 +40,7 @@
             <div v-if="!isLoading">
               <div class="upload-drop-area has-space-bottom">
                 <b-upload v-model="dropFiles" multiple drag-drop expanded>
-                  <v-alert class="ma-4 has-cursor-pointer" type="info" prominent colored-border>
+                  <v-alert class="ma-4 has-cursor-pointer" type="info" prominent colored-border icon="mdi-file-multiple">
                     <span class="text-subtitle-1">Drop your files here or click to upload</span>
                   </v-alert>
                 </b-upload>
@@ -329,7 +328,6 @@ export default class CzNewSubmission extends Vue {
 // }
 
 .schema-wrapper {
-  width: 100rem;
   max-width: 100%;
   height: 0;
   flex: 1;
