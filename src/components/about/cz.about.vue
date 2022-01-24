@@ -1,9 +1,9 @@
 <template>
-  <div class="cz-about d-flex">
-    <div id="panel-left" class="text-center has-text-shadow flex-grow-1 hidden-sm-and-down"
+  <v-container class="cz-about d-flex full-height pa-0">
+    <div id="panel-left" class="flex-grow-1 hidden-sm-and-down"
       :style="{ 'background-image': 'linear-gradient(rgb(0 52 82 / 31%), rgba(0, 0, 0, 0)), url(' + require('@/assets/img/bg-4.png') + ')' }">
     </div>
-    <v-container id="panel-right">
+    <v-container id="panel-right" class="pa-8">
       <div class="text-h4">About the Critical Zone Collaborative Network</div>
       <v-divider class="has-space-bottom" />
       <p class="text-body-1">
@@ -18,7 +18,7 @@
       </p>
     </v-container>
     
-  </div>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -34,14 +34,7 @@
 </script>
 
 <style lang="scss" scoped>
-  .cz-about {
-    // margin: -17px;
-    // height: calc(100% + 34px);
-    // background-color: #edf0f1;
-  }
-
   #panel-left {
-    padding-top: 8rem;
     background-size: cover;
     flex: 3;
   }
@@ -53,7 +46,6 @@
 
   #panel-right {
     flex: 1;
-    padding: 4rem;
     flex-direction: column;
   }
 </style>
