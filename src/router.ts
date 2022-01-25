@@ -5,6 +5,7 @@ import User from './models/user.model'
 import HydroShare from './models/hydroshare.model'
 import Repository from './models/repository.model'
 import Zenodo from './models/zenodo.model'
+import { nextTick } from 'vue/types/umd'
 
 export const router = new VueRouter({
   mode: 'history',
@@ -15,7 +16,7 @@ export const router = new VueRouter({
 })
 
 /** Guards are executed in the order they appear in this array */
-const guards: ((to, from?) => RawLocation | null)[] = [
+const guards: ((to, from?, next?) => RawLocation | null)[] = [
   // hasNextRouteGuard
   (to, from?): RawLocation | null =>  {
     const nextRoute = User.$state.next
@@ -31,9 +32,10 @@ const guards: ((to, from?) => RawLocation | null)[] = [
   },
 
   // hasLoggedInGuard
-  (to, from?): RawLocation | null => {
+  (to, from?, next?): RawLocation | null => {
     if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
-      return { name: 'login', query: { next: to.path } }
+      User.openLogInDialog({ path: to.path })
+      return from
     }
 
     return null
@@ -66,9 +68,9 @@ export function setupRouteGuards() {
     next()
   })
 
-  guards.map((fn: (to, from?) => RawLocation | null) => {
+  guards.map((fn: (to, from?, next?) => RawLocation | null) => {
     router.beforeEach((to, from, next) => {
-      const activatedRouteGuard = fn(to, from)
+      const activatedRouteGuard = fn(to, from, next)
       if (activatedRouteGuard) {
         next(activatedRouteGuard)
       }

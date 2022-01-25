@@ -5,6 +5,7 @@ import { router } from '@/router';
 import axios from "axios";
 import Submission from './submission.model';
 import CzNotification from './notifications.model';
+import User from './user.model';
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
@@ -114,7 +115,9 @@ export default class Repository extends Model implements IRepository {
       return undefined
     }
 
-    const resp = await axios.get(jsonUrl)
+    const resp = await axios.get(jsonUrl, { 
+      params: { "access_token": User.$state.orcidAccessToken }
+    })
 
     if (resp.status === 200) {
       return resp.data
@@ -123,7 +126,9 @@ export default class Repository extends Model implements IRepository {
 
   protected static async getUrls(): Promise<undefined | IRepositoryUrls> {
     try {
-      const resp = await axios.get("/api/urls/" + this.get()?.key)
+      const resp = await axios.get("/api/urls/" + this.get()?.key, { 
+        params: { "access_token": User.$state.orcidAccessToken }
+      })
 
       return {
         schemaUrl: resp.data.schema,
@@ -152,7 +157,9 @@ export default class Repository extends Model implements IRepository {
     const accessTokenUrl = this.get()?.urls?.accessTokenUrl
     if (accessTokenUrl) {
       try {
-        const resp = await axios.get(accessTokenUrl)
+        const resp = await axios.get(accessTokenUrl, { 
+          params: { "access_token": User.$state.orcidAccessToken }
+        })
         if (resp.status === 200) {
           const token = resp.data.access_token // TODO: also need its expiration date!
           this.commit((state) => {

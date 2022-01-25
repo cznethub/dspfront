@@ -89,7 +89,9 @@ export default class Submission extends Model implements ISubmission {
         return state.isFetching = true
       })
       
-      const resp = await axios.get('/api/submissions')
+      const resp = await axios.get('/api/submissions', { 
+        params: { "access_token": User.$state.orcidAccessToken }
+      })
 
       if (resp.status === 200) {
         let data = resp.data as any[]
@@ -108,7 +110,12 @@ export default class Submission extends Model implements ISubmission {
       if (e.response && e.response.status === 401) {
         // Unauthorized
       }
-      console.error(e)
+      if (e.response && e.response.status === 403) {
+        // Forbidden
+      }
+      else {
+        console.error(e)
+      }
     }
   }
 }
