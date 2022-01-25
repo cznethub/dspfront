@@ -1,7 +1,5 @@
 import { RouteConfig } from "vue-router"
 
-import CzScott from '@/scott.vue'   // temporary
-
 import CzFooter from '@/components/base/cz.footer.vue'
 import CzHome from '@/components/home/cz.home.vue'
 import CzAbout from '@/components/about/cz.about.vue'
@@ -10,9 +8,7 @@ import CzResources from '@/components/resources/cz.resources.vue'
 import CzContact from '@/components/contact/cz.contact.vue'
 import CzRecommendations from '@/components/recommendations/cz.recommendations.vue'
 import CzSubmissions from '@/components/submissions/cz.submissions.vue'
-import CzLogin from '@/components/account/cz.login.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
-import CzAuthorize from '@/components/authorize/cz.authorize.vue'
 
 export const routes: RouteConfig[] = [
   {
@@ -83,35 +79,10 @@ export const routes: RouteConfig[] = [
     ]
   },
   {
-    name: 'authorize',
-    path: '/authorize',
-    components: {
-      content: CzAuthorize,
-      footer: CzFooter
-    },
-    meta: { hasLoggedInGuard: true, hideMainSheet: true }
-  },
-  {
     name: 'contact',
     path: '/contact',
     components: {
       content: CzContact,
-      footer: CzFooter
-    },
-  },
-  {
-    name: 'login',
-    path: '/login',
-    components: {
-      content: CzLogin,
-      footer: CzFooter
-    },
-  },
-  {
-    name: 'scott',
-    path: '/scott',
-    components: {
-      content: CzScott,
       footer: CzFooter
     },
   },

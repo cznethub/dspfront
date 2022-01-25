@@ -17,7 +17,7 @@
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
-          <v-btn v-if="!isLoggedIn" to="/login" rounded>Log In</v-btn>
+          <v-btn v-if="!isLoggedIn" @click="openLogInDialog()" rounded>Log In</v-btn>
           <v-btn v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
         </template>
 
@@ -60,12 +60,10 @@
         <v-divider class="my-4"></v-divider>
 
         <v-list-item-group class="text-body-1">
-          <router-link v-if="!isLoggedIn" to="/login">
-            <v-list-item active-class="is-active">
-              <v-icon class="mr-2">mdi-login</v-icon>
-              <span>Log In</span>
-            </v-list-item>
-          </router-link>
+          <v-list-item v-if="!isLoggedIn" @click="openLogInDialog(); showMobileNavigation = false">
+            <v-icon class="mr-2">mdi-login</v-icon>
+            <span>Log In</span>
+          </v-list-item>
 
           <v-list-item v-else @click="logOut()">
             <v-icon class="mr-2">mdi-logout</v-icon>
@@ -124,31 +122,45 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog v-model="logInDialog.isActive" width="500">
+      <cz-login @cancel="logInDialog.isActive = false" @logged-in="logInDialog.onLoggedIn"></cz-login>
+    </v-dialog>
+
+    <v-dialog v-model="authorizeDialog.isActive" width="500">
+      <cz-authorize @authorized="authorizeDialog.onAuthorized"></cz-authorize>
+    </v-dialog>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
   </v-app>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { setupRouteGuards } from "./router";
-import { Subscription } from "rxjs";
-import { DEFAULT_TOAST_DURATION } from "./constants";
-import CzNotification, { IDialog, IToast } from "./models/notifications.model";
-import CzFooter from "@/components/base/cz.footer.vue";
-import User from "@/models/user.model";
-import Zenodo from "@/models/zenodo.model";
-import HydroShare from "./models/hydroshare.model";
-import Submission from "./models/submission.model";
+import { Component, Vue } from "vue-property-decorator"
+import { setupRouteGuards } from "./router"
+import { Subscription } from "rxjs"
+import { DEFAULT_TOAST_DURATION } from "./constants"
+import { RawLocation } from "vue-router"
+import CzNotification, { IDialog, IToast } from "./models/notifications.model"
+import CzFooter from "@/components/base/cz.footer.vue"
+import CzLogin from "@/components/account/cz.login.vue"
+import CzAuthorize from "@/components/authorize/cz.authorize.vue"
+import User from "@/models/user.model"
+import Zenodo from "@/models/zenodo.model"
+import HydroShare from "./models/hydroshare.model"
+import Submission from "./models/submission.model"
+import Repository from "./models/repository.model"
 
 @Component({
   name: "app",
-  components: { CzFooter },
+  components: { CzFooter, CzLogin, CzAuthorize },
 })
 export default class App extends Vue {
   protected isLoading = true
   protected onToast!: Subscription
   protected onOpenDialog!: Subscription
+  protected onOpenLogInDialog!: Subscription
+  protected onOpenAuthorizeDialog!: Subscription
   protected showMobileNavigation = false
 
   protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
@@ -170,6 +182,18 @@ export default class App extends Vue {
     onCancel: () => {},
   }
 
+  protected logInDialog: any & { isActive: boolean } = {
+    isActive: false,
+    onLoggedIn: () => {},
+    onCancel: () => {},
+  }
+
+  protected authorizeDialog: any & { isActive: boolean } = {
+    isActive: false,
+    onAuthorized: () => {},
+    onCancel: () => {},
+  }
+
   protected paths = [
     { to: "/submissions", label: "My Submissions", icon: "mdi-bookmark-multiple" },
     { to: "/resources", label: "Resources", icon: "mdi-library" },
@@ -180,6 +204,10 @@ export default class App extends Vue {
 
   protected get isLoggedIn() {
     return User.$state.isLoggedIn;
+  }
+
+  protected openLogInDialog() {
+    User.openLogInDialog()
   }
 
   protected logOut() {
@@ -205,12 +233,33 @@ export default class App extends Vue {
     this.onToast = CzNotification.toast$.subscribe((toast: IToast) => {
       this.snackbar = { ...this.snackbar, ...toast }
       this.snackbar.isActive = true
-    });
+    })
 
     this.onOpenDialog = CzNotification.dialog$.subscribe((dialog: IDialog) => {
       this.dialog = { ...this.dialog, ...dialog }
       this.dialog.isActive = true
-    });
+    })
+
+    this.onOpenLogInDialog = User.logInDialog$.subscribe((redirectTo: RawLocation | undefined) => {
+      this.logInDialog.isActive = true
+
+      this.logInDialog.onLoggedIn = () => {
+        if (redirectTo) {
+          this.$router.push(redirectTo)
+        }
+        this.logInDialog.isActive = false
+      }
+    })
+
+    this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe((redirectTo: RawLocation | undefined) => {
+      this.authorizeDialog.isActive = true
+      this.authorizeDialog.onAuthorized = () => {
+        if (redirectTo) {
+          this.$router.push(redirectTo)
+        }
+        this.authorizeDialog.isActive = false
+      }
+    })
 
     // Check for Authorization cookie instead.
     // const isAuthorized = this.$cookies.get('Authorization')
@@ -223,7 +272,7 @@ export default class App extends Vue {
     // }
 
     if (User.$state.isLoggedIn) {
-      await Promise.all([Zenodo.init(), HydroShare.init()]);
+      await Promise.all([Zenodo.init(), HydroShare.init()])
     }
 
     // Guards are setup after checking authorization and loading access tokens
@@ -237,6 +286,8 @@ export default class App extends Vue {
     // Good practice
     this.onToast.unsubscribe()
     this.onOpenDialog.unsubscribe()
+    this.onOpenLogInDialog.unsubscribe()
+    this.onOpenAuthorizeDialog.unsubscribe()
   }
 }
 </script>

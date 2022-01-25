@@ -2,6 +2,8 @@ import { router } from '@/router'
 import { Model } from '@vuex-orm/core'
 import axios from "axios"
 import CzNotification from './notifications.model'
+import { Subject } from 'rxjs'
+import { RawLocation } from 'vue-router'
 
 export interface ICzCurrentUserState {
   orcid: string
@@ -17,6 +19,8 @@ export interface IUserState {
 
 export default class User extends Model {
   static entity = 'users'
+  static isLoginListenerSet = false
+  static logInDialog$ = new Subject<RawLocation | undefined>()
   
   static fields () {
     return {}
@@ -43,32 +47,50 @@ export default class User extends Model {
     }
   }
 
+  static openLogInDialog(redirectTo?: RawLocation) {
+    this.logInDialog$.next(redirectTo)
+  }
+
+  static async logIn(callback?: () => any) {
+    window.open(
+      `${window.location.origin}/api/login`,
+      "_blank",
+      "location=1,status=1,scrollbars=1, width=800,height=800"
+    )
+
+    if (!this.isLoginListenerSet) {
+      window.addEventListener("message", async (message) => {
+        this.isLoginListenerSet = true; // Prevents registering the listener more than once
+
+        if (message.data.token) {
+          this.signalLogIn(message.data.orcid, message.data.token)
+          document.cookie = `Authorization=Bearer ${message.data.token}; expires=${message.data.expiresIn}; path=/`
+          if (callback) {
+            callback()
+          }
+        }
+        else {
+          CzNotification.toast({ message: 'Failed to Log In' })
+        }
+      })
+    }
+  }
+
   static async checkAuthorization() {
     try {
-      const response = await axios.get('/api')
+      const response = await axios.get('/api', { 
+        params: { "access_token": User.$state.orcidAccessToken }
+      })
       
-      if (response.status === 200) {
-        if (!User.$state.isLoggedIn) {
-          // Just logged in
-          CzNotification.toast({ 
-            message: 'You have logged in!', 
-          })
-
-          await User.commit((state) => {
-            state.isLoggedIn = true
-            state.orcid = response.data.orcid
-            state.orcidAccessToken = response.data.orcid_access_token
-          })
-        }
-      }
-      else {
+      if (response.status !== 200) {
         // Something went wrong, authorization may be invalid
         User.commit((state) => {
           state.isLoggedIn = false
         })
       }
     }
-    catch(e) {
+    catch(e: any) {
+      // console.log(e.response.status)
       User.commit((state) => {
         state.isLoggedIn = false
       })
@@ -79,7 +101,9 @@ export default class User extends Model {
     try {
       await axios.get('/api/logout')  // We don't care about the response status. We at least log the user out in the frontend.
       await User.commit((state) => {
-        state.isLoggedIn = false
+        state.isLoggedIn = false,
+        // state.orcid = ''
+        state.orcidAccessToken = ''
       })
 
       CzNotification.toast({ 
@@ -93,5 +117,17 @@ export default class User extends Model {
     catch(e) {
       console.error("Failed to log out", e)
     }
+  }
+
+  private static async signalLogIn(orcId: string, token: string) {
+    CzNotification.toast({ 
+      message: 'You have logged in!', 
+    })
+
+    await User.commit((state) => {
+      state.isLoggedIn = true
+      state.orcid = orcId
+      state.orcidAccessToken = token
+    })
   }
 }

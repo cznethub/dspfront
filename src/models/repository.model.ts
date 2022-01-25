@@ -1,14 +1,17 @@
 import { Model } from '@vuex-orm/core'
 import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
-import { repoMetadata } from "@/components/submit/constants";
-import { router } from '@/router';
-import axios from "axios";
-import Submission from './submission.model';
-import CzNotification from './notifications.model';
+import { repoMetadata } from "@/components/submit/constants"
+import { Subject } from 'rxjs'
+import { RawLocation } from 'vue-router'
+import axios from "axios"
+import Submission from './submission.model'
+import CzNotification from './notifications.model'
+import User from './user.model'
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
   static primaryKey = 'key'
+  static isAuthorizeListenerSet = false
   public readonly key!: EnumRepositoryKeys
   public readonly name!: string
   public readonly logoSrc!: string
@@ -18,6 +21,7 @@ export default class Repository extends Model implements IRepository {
   public readonly schema?: any
   public readonly uischema?: any
   public readonly schemaDefaults?: any
+  static authorizeDialog$ = new Subject<RawLocation | undefined>()
 
   static get isAuthorized() {
     return !!(this.$state.accessToken)
@@ -109,12 +113,54 @@ export default class Repository extends Model implements IRepository {
     // }
   }
 
+  static openAuthorizeDialog(redirectTo?: RawLocation) {
+    this.authorizeDialog$.next(redirectTo)
+  }
+
+  static async authorize(activeRepository: typeof Repository, callback?: () => any) {
+    const authorizeUrl = activeRepository?.get()?.urls?.authorizeUrl
+
+    if (!authorizeUrl) {
+      CzNotification.toast({ message: 'Failed to authorize repository' })
+      return
+    }
+
+    window.open(
+      `${window.location.origin}${authorizeUrl}`,
+      "_blank",
+      "location=1,status=1,scrollbars=1, width=800,height=800"
+    )
+
+    if (!this.isAuthorizeListenerSet) {
+      window.addEventListener("message", async (message) => {
+        this.isAuthorizeListenerSet = true; // Prevents registering the listener more than once
+
+        if (message.data.token) {
+          // document.cookie = `Authorization=${message.data.token.token_type} ${message.data.token.access_token}; expires=${message.data.token.expires_at}; path=/`
+
+          activeRepository.commit((state) => {
+            state.accessToken = message.data.token.access_token || ''
+          })
+
+          if (callback) {
+            callback()
+          }
+        }
+        else {
+          CzNotification.toast({ message: 'Failed to authorize repository' })
+        }
+      })
+    }
+  }
+
   protected static async getJson(jsonUrl: string | undefined) {
     if (!jsonUrl) {
       return undefined
     }
 
-    const resp = await axios.get(jsonUrl)
+    const resp = await axios.get(jsonUrl, { 
+      params: { "access_token": User.$state.orcidAccessToken }
+    })
 
     if (resp.status === 200) {
       return resp.data
@@ -123,7 +169,9 @@ export default class Repository extends Model implements IRepository {
 
   protected static async getUrls(): Promise<undefined | IRepositoryUrls> {
     try {
-      const resp = await axios.get("/api/urls/" + this.get()?.key)
+      const resp = await axios.get("/api/urls/" + this.get()?.key, { 
+        params: { "access_token": User.$state.orcidAccessToken }
+      })
 
       return {
         schemaUrl: resp.data.schema,
@@ -152,7 +200,9 @@ export default class Repository extends Model implements IRepository {
     const accessTokenUrl = this.get()?.urls?.accessTokenUrl
     if (accessTokenUrl) {
       try {
-        const resp = await axios.get(accessTokenUrl)
+        const resp = await axios.get(accessTokenUrl, { 
+          params: { "access_token": User.$state.orcidAccessToken }
+        })
         if (resp.status === 200) {
           const token = resp.data.access_token // TODO: also need its expiration date!
           this.commit((state) => {

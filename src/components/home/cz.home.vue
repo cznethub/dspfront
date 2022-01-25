@@ -10,7 +10,7 @@
       <template v-if="!isLoggedIn">
         <div>
           <div class="has-text-white has-space-top-2x has-space-bottom has-text-shadow text-h6">Ready to Submit Data?</div>
-          <v-btn to="/login" rounded>Log In</v-btn>
+          <v-btn @click="openLogInDialog()" rounded>Log In</v-btn>
         </div>
       </template>
     </div>
@@ -120,6 +120,9 @@
       return Object.keys(repoMetadata).map(key => repoMetadata[key])
     }
 
+    protected openLogInDialog() {
+      User.openLogInDialog()
+    }
   }
 </script>
 

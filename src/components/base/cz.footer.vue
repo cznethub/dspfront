@@ -10,7 +10,7 @@
 
       <div class="has-space-bottom-2x">
         <div class="has-space-bottom text-h6">Get Started</div>
-        <router-link to="/login">Log In</router-link>
+        <a @click="openLogInDialog()">Log In</a>
       </div>
 
       <div>
@@ -31,6 +31,7 @@
 </template>
 
 <script lang="ts">
+  import User from '@/models/user.model'
   import { Component, Vue } from 'vue-property-decorator'
 
   @Component({
@@ -38,7 +39,9 @@
     components: { },
   })
   export default class CzFooter extends Vue {
-
+    protected openLogInDialog() {
+      User.openLogInDialog()
+    }
   }
 </script>
 

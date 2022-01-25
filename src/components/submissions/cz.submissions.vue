@@ -403,6 +403,7 @@ export default class CzSubmissions extends Vue {
 <style lang="scss" scoped>
 .cz-submissions {
   padding: 1rem;
+  min-height: 30rem;
 }
 
 .v-card {
