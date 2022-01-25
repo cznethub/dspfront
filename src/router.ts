@@ -54,7 +54,8 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
       }
 
       if (!(activeRepository?.$state.accessToken)) {
-        return { path: '/authorize', query: { next: to.path }}
+        Repository.openAuthorizeDialog({ path: to.path })
+        return from
       }
     }
 

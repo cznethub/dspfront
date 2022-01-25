@@ -74,10 +74,7 @@ export default class Zenodo extends Repository {
           CzNotification.toast({
             message: 'Authorization token is invalid or has expired.'
           })
-          router.push({ path: '/authorize', query: { repo: this.entity, next: `/submit/${this.entity}` } })
-          
-          console.info("Zenodo: Authorization token is invalid or has expired.")
-          console.info("Zenodo: Redirecting to authorization page...")
+          Repository.openAuthorizeDialog()
         }
         else {
           console.error("Zenodo: failed to create submission. ", e.response)

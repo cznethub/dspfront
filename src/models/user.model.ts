@@ -64,6 +64,7 @@ export default class User extends Model {
 
         if (message.data.token) {
           this.signalLogIn(message.data.orcid, message.data.token)
+          document.cookie = `Authorization=Bearer ${message.data.token}; expires=${message.data.expiresIn}; path=/`
           if (callback) {
             callback()
           }

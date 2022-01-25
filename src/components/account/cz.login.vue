@@ -36,7 +36,7 @@ import { RawLocation } from 'vue-router'
       this.$emit('cancel')
     }
 
-    protected onLoggedIn(redirectTo?: RawLocation) {
+    protected onLoggedIn() {
       this.$emit('logged-in')
     }
   }

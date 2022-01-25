@@ -55,10 +55,8 @@ export default class HydroShare extends Repository {
           CzNotification.toast({
             message: 'Authorization token is invalid or has expired.'
           })
-          router.push({ path: '/authorize', query: { repo: this.entity, next: `/submit/${this.entity}` } })
-          
-          console.info("HydroShare: Authorization token is invalid or has expired.")
-          console.info("HydroShare: Redirecting to authorization page...")
+
+          Repository.openAuthorizeDialog()
         }
         else {
           console.error("HydroShare: failed to create submission. ", e.response)

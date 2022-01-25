@@ -126,6 +126,10 @@
     <v-dialog v-model="logInDialog.isActive" width="500">
       <cz-login @cancel="logInDialog.isActive = false" @logged-in="logInDialog.onLoggedIn"></cz-login>
     </v-dialog>
+
+    <v-dialog v-model="authorizeDialog.isActive" width="500">
+      <cz-authorize @authorized="authorizeDialog.onAuthorized"></cz-authorize>
+    </v-dialog>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
   </v-app>
@@ -140,20 +144,23 @@ import { RawLocation } from "vue-router"
 import CzNotification, { IDialog, IToast } from "./models/notifications.model"
 import CzFooter from "@/components/base/cz.footer.vue"
 import CzLogin from "@/components/account/cz.login.vue"
+import CzAuthorize from "@/components/authorize/cz.authorize.vue"
 import User from "@/models/user.model"
 import Zenodo from "@/models/zenodo.model"
 import HydroShare from "./models/hydroshare.model"
 import Submission from "./models/submission.model"
+import Repository from "./models/repository.model"
 
 @Component({
   name: "app",
-  components: { CzFooter, CzLogin },
+  components: { CzFooter, CzLogin, CzAuthorize },
 })
 export default class App extends Vue {
   protected isLoading = true
   protected onToast!: Subscription
   protected onOpenDialog!: Subscription
   protected onOpenLogInDialog!: Subscription
+  protected onOpenAuthorizeDialog!: Subscription
   protected showMobileNavigation = false
 
   protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
@@ -178,6 +185,12 @@ export default class App extends Vue {
   protected logInDialog: any & { isActive: boolean } = {
     isActive: false,
     onLoggedIn: () => {},
+    onCancel: () => {},
+  }
+
+  protected authorizeDialog: any & { isActive: boolean } = {
+    isActive: false,
+    onAuthorized: () => {},
     onCancel: () => {},
   }
 
@@ -238,6 +251,16 @@ export default class App extends Vue {
       }
     })
 
+    this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe((redirectTo: RawLocation | undefined) => {
+      this.authorizeDialog.isActive = true
+      this.authorizeDialog.onAuthorized = () => {
+        if (redirectTo) {
+          this.$router.push(redirectTo)
+        }
+        this.authorizeDialog.isActive = false
+      }
+    })
+
     // Check for Authorization cookie instead.
     // const isAuthorized = this.$cookies.get('Authorization')
 
@@ -264,6 +287,7 @@ export default class App extends Vue {
     this.onToast.unsubscribe()
     this.onOpenDialog.unsubscribe()
     this.onOpenLogInDialog.unsubscribe()
+    this.onOpenAuthorizeDialog.unsubscribe()
   }
 }
 </script>

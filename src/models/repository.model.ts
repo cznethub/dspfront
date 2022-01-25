@@ -6,10 +6,13 @@ import axios from "axios";
 import Submission from './submission.model';
 import CzNotification from './notifications.model';
 import User from './user.model';
+import { Subject } from 'rxjs'
+import { RawLocation } from 'vue-router';
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
   static primaryKey = 'key'
+  static isAuthorizeListenerSet = false
   public readonly key!: EnumRepositoryKeys
   public readonly name!: string
   public readonly logoSrc!: string
@@ -19,6 +22,7 @@ export default class Repository extends Model implements IRepository {
   public readonly schema?: any
   public readonly uischema?: any
   public readonly schemaDefaults?: any
+  static authorizeDialog$ = new Subject<RawLocation | undefined>()
 
   static get isAuthorized() {
     return !!(this.$state.accessToken)
@@ -108,6 +112,46 @@ export default class Repository extends Model implements IRepository {
     // if (!(this.isAuthorized) && repository?.urls?.accessTokenUrl) {
       await this.fetchAccessToken()
     // }
+  }
+
+  static openAuthorizeDialog(redirectTo?: RawLocation) {
+    this.authorizeDialog$.next(redirectTo)
+  }
+
+  static async authorize(activeRepository: typeof Repository, callback?: () => any) {
+    const authorizeUrl = activeRepository?.get()?.urls?.authorizeUrl
+
+    if (!authorizeUrl) {
+      CzNotification.toast({ message: 'Failed to authorize repository' })
+      return
+    }
+
+    window.open(
+      `${window.location.origin}${authorizeUrl}`,
+      "_blank",
+      "location=1,status=1,scrollbars=1, width=800,height=800"
+    )
+
+    if (!this.isAuthorizeListenerSet) {
+      window.addEventListener("message", async (message) => {
+        this.isAuthorizeListenerSet = true; // Prevents registering the listener more than once
+
+        if (message.data.token) {
+          // document.cookie = `Authorization=${message.data.token.token_type} ${message.data.token.access_token}; expires=${message.data.token.expires_at}; path=/`
+
+          activeRepository.commit((state) => {
+            state.accessToken = message.data.token.access_token || ''
+          })
+
+          if (callback) {
+            callback()
+          }
+        }
+        else {
+          CzNotification.toast({ message: 'Failed to authorize repository' })
+        }
+      })
+    }
   }
 
   protected static async getJson(jsonUrl: string | undefined) {
