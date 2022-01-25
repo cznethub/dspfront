@@ -1,22 +1,14 @@
 <template>
-  <md-field v-show="control.visible" md-dense>
-    <label>{{ control.label }}</label>
-    <md-select
-      @input="onChange"
-      :disabled="!control.enabled"
-      :required="control.required"
-      :value="control.schema.default"
-    >
-      <md-option
-        v-for="option in control.schema.enum"
-        :value="option"
-        :key="option"
-      >
-        {{ option }}
-      </md-option>
-    </md-select>
-    <div class="md-helper-text">{{ control.description }}</div>
-  </md-field>
+  <v-select
+    v-show="control.visible"
+    @input="onChange"
+    :items="control.schema.enum"
+    :label="control.label"
+    :disabled="!control.enabled"
+    :value="control.schema.default"
+    outlined
+  >
+  </v-select>
 </template>
 
 <script lang="ts">

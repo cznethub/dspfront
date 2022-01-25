@@ -174,18 +174,22 @@ export default class Repository extends Model implements IRepository {
   }
 
   static async updateCzHubRecord(recordId: string, repository: string) {
-    const response = await axios.put(`/api/submit/${repository}/${recordId}`)
-    const inserted = await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
+    try {
+      const response = await axios.put(`/api/submit/${repository}/${recordId}`)
+      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
+    }
+    catch(e) {
+      CzNotification.toast({ message: 'Failed to update record' })
+    }
   }
 
-  static async deleteSubmission(recordId) {
-    await Submission.delete([recordId, this.entity])
+  static async deleteSubmission(identifier: string, repository: string) {
+    await Submission.delete([identifier, repository])
     CzNotification.toast({ message: 'Your submission has been deleted' })
-    router.push({ path: '/submissions' })
   }
 
   protected static createSubmission: (data?: any) => Promise<{ recordId: string, formMetadata: any} | null>
-  protected static deleteRecord: (recordId: string) => Promise<any>
+  protected static deleteRecord: (recordId: string, repository: string) => Promise<any>
   protected static read: (recordId: string) => Promise<any>
   protected static updateRepositoryRecord: (recordId: string, metadata: any) => Promise<any>
 }

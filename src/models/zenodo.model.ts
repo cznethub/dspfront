@@ -109,11 +109,11 @@ export default class Zenodo extends Repository {
     // TODO: indicate to Cz api that files were uploaded
   }
 
-  static async deleteRecord(recordId: string) {
+  static async deleteRecord(identifier: string, repository: string) {
     const zenodo = this.get()
     
     if (zenodo) {
-      const url = sprintf(zenodo.urls?.deleteUrl, recordId)
+      const url = sprintf(zenodo.urls?.deleteUrl, identifier)
 
       await axios.delete(
         url,
@@ -124,9 +124,9 @@ export default class Zenodo extends Repository {
       )
 
       // Delete on CZHub
-      const response = await axios.delete(`/api/submit/${this.entity}/${recordId}`)
+      const response = await axios.delete(`/api/submit/${this.entity}/${identifier}`)
       if (response.status === 200) {
-        await this.deleteSubmission(recordId)
+        await this.deleteSubmission(identifier, repository)
         // await Submission.delete([recordId, this.entity])
         // CzNotification.toast({ message: 'Your submission has been deleted' })
         // router.push({ path: '/submissions' })

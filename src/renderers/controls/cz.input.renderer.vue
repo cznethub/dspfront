@@ -1,16 +1,23 @@
 <template>
-  <md-field v-show="control.visible" ref="field">
-    <label>{{ control.label }}</label>
-    <md-input
+  <v-text-field v-show="control.visible" ref="field"
+    @input="onChange"
+    :label="control.label"
+    :value="control.data"
+    :disabled="!control.enabled"
+    outlined
+  >
+
+    <!-- <label>{{ control.label }}</label>
+    <v-input
       @input="onChange"
       :disabled="!control.enabled"
       :required="control.required"
       :value="control.data"
       size="is-medium" 
     />
-    <span class="md-helper-text">{{ control.description }}</span>
-    <span v-for="(error, index) in control.errors" :key="index" class="md-error">{{ error }}</span>
-  </md-field>
+    <span>{{ control.description }}</span>
+    <span v-for="(error, index) in control.errors" :key="index">{{ error }}</span> -->
+  </v-text-field>
 </template>
 
 <script lang="ts">
@@ -41,15 +48,6 @@
         )
         // console.log(this.control)
       },
-      // getValidationClass (fieldName) {
-      //   const field = this.$v.form[fieldName]
-
-      //   if (field) {
-      //     return {
-      //       'md-invalid': field.$invalid && field.$dirty
-      //     }
-      //   }
-      // }
     }
   })
   export default controlRenderer

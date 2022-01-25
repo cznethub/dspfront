@@ -1,8 +1,6 @@
 <template>
-  <md-field v-show="control.visible">
-    <label>{{ control.label }}</label>
-    <div class="md-helper-text">{{ control.description }}</div>
-  </md-field>
+  <v-text-field v-show="control.visible" :label="control.label" :hint="control.description" :error-messages="control.errors" outlined>
+  </v-text-field>
 </template>
 
 <script lang="ts">

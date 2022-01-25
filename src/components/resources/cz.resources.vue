@@ -1,58 +1,51 @@
 <template>
   <div class="cz-resources">
-    <h1 class="md-display-1">Resources</h1>
-    <hr>
-    <section class="has-text-centered">
-      <h2>Repository Recommendations</h2>
-      <p class="has-text-mute">If you aren't sure which repository to use, visit our repository recommendation system to get help.</p>
-      <router-link to="/recommendations">
-        <md-button class="md-raised md-accent">Help Me Decide</md-button>
-      </router-link>
-    </section>
+    <div class="has-bg-light-gray has-space-bottom-2x banner d-flex flex-column align-center">
+      <div class="text-h4 has-space-bottom">Repository Recommendations</div>
+      <p class="text-body-1 has-space-bottom">If you aren't sure which repository to use, visit our repository recommendation system to get help.</p>
+      <v-btn color="primary" to="/resources/recommendations">Help Me Decide</v-btn>
+    </div>
 
-    <hr>
-
-    <section>
-      <div class="has-text-centered">
-        <h2 class="has-space-bottom">Best Practices and Data Templates</h2>
-        <p class="has-text-mute">Access best practices, recommendations, suggested formats and rep﻿ository recommendations for the data types listed below.</p>
+    <v-container>
+      <div class="d-flex flex-column align-center">
+        <div class="has-space-bottom text-h4">Best Practices and Data Templates</div>
+        <p class="text--secondary text-subtitle-1">Access best practices, recommendations, suggested formats and rep﻿ository recommendations for the data types listed below.</p>
       </div>
 
-      <div class="md-layout md-alignment-top-center has-space-bottom-2x">
-        <div id="data-templates" class="md-layout-item md-layout" style="flex-direction: column;">
-          <div class="md-layout-item md-layout">
-            <!-- <img class="md-layout-item" :src="require('@/assets/img/placeholder.png')" alt="" style="flex: 0;"> -->
-            <md-icon class="md-size-4x md-layout-item" style="color: #87AAAA;">layers</md-icon>
-            <div class="md-layout-item">
-              <h4 class="has-text-weight-bold ">Geospatial Data</h4>
-              <p class="has-text-mute">Geospatial data include geographic feature and raster datasets.</p>
+      <div class="has-space-bottom-2x d-flex justify-center">
+        <div id="data-templates" class="d-inline-flex flex-column">
+          <div class="d-flex align-center">
+            <v-icon  style="color: #87AAAA;">mdi-layers</v-icon>
+            <div>
+              <div class="text-h6">Geospatial Data</div>
+              <p class="text--secondary text-subtitle-1">Geospatial data include geographic feature and raster datasets.</p>
             </div>
           </div>
 
-          <div class="md-layout-item md-layout">
-            <md-icon class="md-size-4x md-layout-item" style="color: #BCCC9A;">timeline</md-icon>
-            <div class="md-layout-item">
-              <h4 class="has-text-weight-bold">Sensor Time Series Data</h4>
-              <p class="has-text-mute">Sensor datasets typically consist of time series of observations from sensors deployed in the environment.</p>
+          <div class="d-flex align-center">
+            <v-icon  style="color: #BCCC9A;">mdi-chart-timeline-variant</v-icon>
+            <div>
+              <div class="text-h6">Sensor Time Series Data</div>
+              <p class="text--secondary text-subtitle-1">Sensor datasets typically consist of time series of observations from sensors deployed in the environment.</p>
             </div>
           </div>
 
-          <div class="md-layout-item md-layout">
-            <md-icon class="md-size-4x md-layout-item" style="color: #C37B89;">account_tree</md-icon>
-            <div class="md-layout-item">
-              <h4 class="has-text-weight-bold">Data Derived from Samples</h4>
-              <p class="has-text-mute">Access best practices, recommendations, formats, and repository recommendations for geospatial data.</p>
+          <div class="d-flex align-center">
+            <v-icon  style="color: #C37B89;">mdi-file-tree</v-icon>
+            <div>
+              <div class="text-h6">Data Derived from Samples</div>
+              <p class="text--secondary text-subtitle-1">Access best practices, recommendations, formats, and repository recommendations for geospatial data.</p>
             </div>
           </div>
         </div>
       </div>
-    </section>
+    </v-container>
 
-    <hr>
-    <section class="has-space-bottom-2x has-space-top-2x has-text-centered">
-      <h2 class="mat-display-1">Tools for Automating Submissions</h2>
-      <p class="has-text-mute">If you are a developer, you can use the following resources to automate submissions to the repositories supported by the Data Submission Portal.</p>
-    </section>
+    <v-divider />
+    <v-container class="has-space-bottom-2x has-space-top-2x d-flex flex-column align-center">
+      <div class="text-h4 mb-4">Tools for Automating Submissions</div>
+      <p class="text--secondary text-subtitle-1 has-space-bottom-2x">If you are a developer, you can use the following resources to automate submissions to the repositories supported by the Data Submission Portal.</p>
+    </v-container>
   </div>
 </template>
 
@@ -70,22 +63,17 @@
 
 <style lang="scss" scoped>
   .cz-resources {
-    padding: 1rem;
+    // padding: 1rem;
   }
 
   #data-templates {
     max-width: 65rem;
     margin-top: 4rem;
 
-    & > div.md-layout {
-      justify-content: flex-start;
-      align-items: center;
-      margin: 1.5rem 0;
-    }
-
-    img, .md-icon {
+    img, .v-icon {
       margin-right: 3rem;
       flex: 0;
+      font-size: 8rem;
     }
   }
 </style>
