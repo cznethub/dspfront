@@ -19,9 +19,8 @@
 </template>
 
 <script lang="ts">
-  import User from '@/models/user.model'
   import { Component, Vue } from 'vue-property-decorator'
-import { RawLocation } from 'vue-router'
+  import User from '@/models/user.model'
 
   @Component({
     name: 'cz-login',
@@ -29,7 +28,7 @@ import { RawLocation } from 'vue-router'
   })
   export default class CzLogin extends Vue {
     protected async openLogInDialog() {
-      User.logIn(this.onLoggedIn) // Close the popup window once logged in
+      User.logIn(this.onLoggedIn)
     }
 
     protected onCancel() {
@@ -43,10 +42,6 @@ import { RawLocation } from 'vue-router'
 </script>
 
 <style lang="scss" scoped>
-  .cz-login {
-    // min-height: 50rem;
-  }
-
   ::v-deep .v-card__text img {
     max-width: 12rem;
   }

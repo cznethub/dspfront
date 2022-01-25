@@ -48,12 +48,6 @@ import { RawLocation } from 'vue-router'
       }
     }
 
-    // protected goToAuthorizePage() {
-    //   if (this.authorizeUrl) {
-    //     saveNextRoute()
-    //     window.location.replace(this.authorizeUrl)
-    //   }
-    // }
     protected async openAuthorizeDialog() {
       Repository.authorize(this.activeRepository, this.onAuthorized)
     }
@@ -65,9 +59,6 @@ import { RawLocation } from 'vue-router'
 </script>
 
 <style lang="scss" scoped>
-  .cz-authorize {
-  }
-  
   .v-card {
     .v-card-media {
       background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);

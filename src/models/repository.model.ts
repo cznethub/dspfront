@@ -1,13 +1,12 @@
 import { Model } from '@vuex-orm/core'
 import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
-import { repoMetadata } from "@/components/submit/constants";
-import { router } from '@/router';
-import axios from "axios";
-import Submission from './submission.model';
-import CzNotification from './notifications.model';
-import User from './user.model';
+import { repoMetadata } from "@/components/submit/constants"
 import { Subject } from 'rxjs'
-import { RawLocation } from 'vue-router';
+import { RawLocation } from 'vue-router'
+import axios from "axios"
+import Submission from './submission.model'
+import CzNotification from './notifications.model'
+import User from './user.model'
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'

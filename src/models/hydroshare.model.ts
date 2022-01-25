@@ -1,8 +1,7 @@
 
 import { EnumRepositoryKeys } from '@/components/submissions/types'
-import { router } from '@/router';
 import axios, { AxiosRequestConfig } from "axios"
-import CzNotification from './notifications.model';
+import CzNotification from './notifications.model'
 import Repository from './repository.model'
 
 const sprintf = require('sprintf-js').sprintf

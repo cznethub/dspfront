@@ -113,9 +113,8 @@ export default class Submission extends Model implements ISubmission {
       if (e.response && e.response.status === 403) {
         // Forbidden
       }
-      else {
-        console.error(e)
-      }
+      
+      console.error(e)
     }
   }
 }
