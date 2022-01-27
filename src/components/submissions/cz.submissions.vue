@@ -84,13 +84,13 @@
         <v-card>
           <div v-if="!isFetching">
             <v-data-iterator
+              @current-items="currentItems = $event"
               :items="submissions"
               :items-per-page.sync="itemsPerPage"
               :page.sync="page"
               :search="filters.searchStr"
               :sort-by="sortBy.toLowerCase()"
               :sort-desc="sortDesc === 'desc'"
-              @current-items="currentItems = $event"
               item-key="identifier"
               hide-default-footer
             >
@@ -103,7 +103,6 @@
                       :items="sortOptions"
                       v-model="sortBy"
                       class="mr-1"
-                      :item-text="'test'"
                       outlined
                       dense
                       hide-details
@@ -332,13 +331,6 @@ export default class CzSubmissions extends Vue {
 
   async created() {
     await Submission.fetchSubmissions()
-  }
-
-  protected goToSubmission(submission: Submission) {
-    this.$router.push({
-      name: "submissions",
-      params: { id: submission.identifier, repository: submission.repository },
-    })
   }
 
   protected goToEditSubmission(submission: ISubmission) {

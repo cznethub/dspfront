@@ -26,7 +26,7 @@
             <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
               >UI Schema</v-btn
             >
-            <v-btn v-if="isEditMode" @click="goToSubmission()" rounded
+            <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
               >Cancel</v-btn
             >
             <v-btn @click="save()" color="primary" :disabled="isSaving" rounded>
@@ -83,7 +83,7 @@
               <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
                 >UI Schema</v-btn
               >
-              <v-btn v-if="isEditMode" @click="goToSubmission()" rounded
+              <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
                 >Cancel</v-btn
               >
               <v-btn
@@ -149,7 +149,7 @@ export default class CzNewSubmission extends Vue {
   @Ref("form") jsonForm!: typeof JsonForms;
   protected isLoading = false;
   protected isSaving = false;
-  protected recordId = "";
+  protected identifier = "";
   protected data: any = {};
   protected links: any = {};
   protected renderers: JsonFormsRendererRegistryEntry[] = renderers;
@@ -220,25 +220,23 @@ export default class CzNewSubmission extends Vue {
 
     if (this.isEditMode) {
       const identifier = this.$route.params.id
-      // const submission = Submission.find([identifier, this.activeRepository.entity])
-      // this.recordId = submission?.identifier || ''  // TODO: get the recordId and update it here
-      this.recordId = identifier
+      this.identifier = identifier
       this.loadExistingSubmission()
     } else {
       this.isLoading = false
     }
   }
 
-  protected goToSubmission() {
+  protected goToSubmissions() {
+    // TODO: add discard confirm dialog if the form was changed
     this.$router.push({
       name: "submissions",
-      params: { id: this.recordId, repository: this.activeRepository.entity },
-    });
+    })
   }
 
   protected async loadExistingSubmission() {
     console.info("CzNewSubmission: reading existing record...");
-    const repositoryRecord = await Repository.readSubmission(this.recordId, this.repository)
+    const repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
 
     if (repositoryRecord) {
       this.data = {
@@ -268,7 +266,7 @@ export default class CzNewSubmission extends Vue {
     let submission;
 
     // If first time saving, create a new record
-    if (!this.recordId) {
+    if (!this.identifier) {
       console.info("CzNewSubmission: creating new record...");
       try {
         submission = await this.activeRepository?.createSubmission(this.data, this.repository);
@@ -283,12 +281,12 @@ export default class CzNewSubmission extends Vue {
         //   ...submission?.formMetadata.metadata,
         // };
         // this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
-        this.recordId = submission.recordId
+        this.identifier = submission.recordId
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...");
       await this.activeRepository?.updateSubmission(
-        this.recordId,
+        this.identifier,
         this.data
       )
     }
@@ -297,7 +295,7 @@ export default class CzNewSubmission extends Vue {
     if (this.dropFiles.length) {
       const url = sprintf(
         this.activeRepository?.get()?.urls?.fileCreateUrl,
-        this.recordId
+        this.identifier
       )
       await this.activeRepository?.uploadFiles(url, this.dropFiles)
     }
