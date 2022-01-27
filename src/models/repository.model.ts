@@ -129,7 +129,6 @@ export default class Repository extends Model implements IRepository {
     if (!this.isAuthorizeListenerSet) {
       window.addEventListener("message", async (message) => {
         this.isAuthorizeListenerSet = true; // Prevents registering the listener more than once
-        console.log(message.data.token)
 
         if (message.data.token) {
           activeRepository.commit((state) => {

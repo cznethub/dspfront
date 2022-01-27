@@ -65,38 +65,22 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import { Component } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
-  import { EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
-  import Repository from '@/models/repository.model'
+  import { mixins } from 'vue-class-component'
+  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
   @Component({
     name: 'cz-submit',
     components: { },
   })
-  export default class CzSubmit extends Vue {
+  export default class CzSubmit extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
     protected get repoMetadata() {
       return Object.keys(repoMetadata).map(r => repoMetadata[r])
     }
 
     protected get isInSubmitLandingPage() {
       return !(this.$route.params.repository)
-    }
-    
-    protected submitTo(repo: IRepository) {
-      if (repo.isDisabled) {
-        return
-      }
-      if (Object.keys(EnumRepositoryKeys).includes(repo.key)) {
-        this.setActiveRepository(repo.key)
-      }
-      this.$router.push({ name: 'submit.repository', params: { repository: repo.key } }).catch(() => {})
-    }
-
-    private setActiveRepository(key: EnumRepositoryKeys) {
-      Repository.commit((state) => {
-        state.submittingTo = key
-      })
     }
   }
 </script>

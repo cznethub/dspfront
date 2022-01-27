@@ -238,7 +238,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import {
   ISubmission,
   EnumSubmissionSorts,
@@ -247,17 +247,19 @@ import {
   IRepository,
 } from "@/components/submissions/types"
 import { repoMetadata } from "../submit/constants"
+import { Subscription } from "rxjs"
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
-import CzNotification from "@/models/notifications.model";
-import { Subscription } from "rxjs";
-import User from "@/models/user.model";
+import CzNotification from "@/models/notifications.model"
+import User from "@/models/user.model"
 
 @Component({
   name: "cz-submissions",
   components: {  },
 })
-export default class CzSubmissions extends Vue {
+export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
 
@@ -314,19 +316,6 @@ export default class CzSubmissions extends Vue {
     }
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
-
-  // TODO: add to a mixin and reuse
-  // protected get activeRepository() {
-  //   const key = Repository.$state.submittingTo
-  //   switch (key) {
-  //     case EnumRepositoryKeys.hydroshare:
-  //       return HydroShare
-  //     case EnumRepositoryKeys.zenodo:
-  //       return Zenodo
-  //     default:
-  //       return HydroShare
-  //   }
-  // }
 
   async created() {
     const fetched = await Submission.fetchSubmissions()
@@ -399,23 +388,6 @@ export default class CzSubmissions extends Vue {
       }
     })
   }
-
-  // TODO: move to mixin and reuse
-  // =================
-  protected submitTo(repo: IRepository) {
-    if (Object.keys(EnumRepositoryKeys).includes(repo.key)) {
-      this.setActiveRepository(repo.key);
-    }
-    this.$router
-      .push({ name: "submit.repository", params: { repository: repo.key } })
-      .catch(() => {});
-  }
-
-  private setActiveRepository(key: EnumRepositoryKeys) {
-    Repository.commit((state) => {
-      state.submittingTo = key;
-    });
-  }
 }
 </script>
 
@@ -429,8 +401,8 @@ export default class CzSubmissions extends Vue {
   margin: 0;
 }
 
-#filters {
-}
+// #filters {
+// }
 
 .footer {
   padding: 1rem;

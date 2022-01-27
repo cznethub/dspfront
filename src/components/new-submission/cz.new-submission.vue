@@ -125,17 +125,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Ref } from "vue-property-decorator";
-import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2";
-import { vanillaRenderers } from "@jsonforms/vue2-vanilla";
-import { JsonFormsRendererRegistryEntry } from "@jsonforms/core";
-import { CzRenderers } from "@/renderers/renderer.vue";
-import { EnumRepositoryKeys } from "../submissions/types";
-import JsonViewer from "vue-json-viewer";
-import Repository from "@/models/repository.model";
-import HydroShare from "@/models/hydroshare.model";
-import Zenodo from "@/models/zenodo.model";
-import CzNotification from "@/models/notifications.model";
+import { Component, Ref } from "vue-property-decorator"
+import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
+import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
+import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
+import { CzRenderers } from "@/renderers/renderer.vue"
+import { EnumRepositoryKeys } from "../submissions/types"
+import JsonViewer from "vue-json-viewer"
+import Repository from "@/models/repository.model"
+import CzNotification from "@/models/notifications.model"
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
 const sprintf = require("sprintf-js").sprintf;
 
@@ -145,7 +145,7 @@ const renderers = [...vanillaRenderers, ...CzRenderers];
   name: "cz-new-submission",
   components: { JsonForms, JsonViewer },
 })
-export default class CzNewSubmission extends Vue {
+export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms;
   protected isLoading = false;
   protected isSaving = false;
@@ -179,19 +179,6 @@ export default class CzNewSubmission extends Vue {
 
   protected get isDevMode() {
     return process.env.NODE_ENV === "development";
-  }
-
-  // TODO: add to a mixin and reuse
-  protected get activeRepository() {
-    const key = Repository.$state.submittingTo;
-    switch (key) {
-      case EnumRepositoryKeys.hydroshare:
-        return HydroShare;
-      case EnumRepositoryKeys.zenodo:
-        return Zenodo;
-      default:
-        return Zenodo;
-    }
   }
 
   protected get formTitle() {
@@ -315,12 +302,6 @@ export default class CzNewSubmission extends Vue {
 
   protected onChange(event: JsonFormsChangeEvent) {
     this.data = event.data;
-  }
-
-  private setActiveRepository(key: EnumRepositoryKeys) {
-    Repository.commit((state) => {
-      state.submittingTo = key;
-    });
   }
 }
 </script>

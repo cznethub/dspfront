@@ -21,29 +21,18 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
-  import { EnumRepositoryKeys } from '../submissions/types'
+  import { Component } from 'vue-property-decorator'
+  import { mixins } from 'vue-class-component'
+  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import Repository from '@/models/repository.model'
-  import HydroShare from '@/models/hydroshare.model'
-  import Zenodo from '@/models/zenodo.model'
 
   @Component({
     name: 'cz-authorize',
     components: { },
   })
-  export default class CzAuthorize extends Vue {
+  export default class CzAuthorize extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
     protected get authorizeUrl() {
       return this.activeRepository?.get()?.urls?.authorizeUrl
-    }
-
-    // TODO: add to a mixin and reuse
-    protected get activeRepository() {
-      const key = Repository.$state.submittingTo
-      switch (key) {
-        case EnumRepositoryKeys.hydroshare: return HydroShare
-        case EnumRepositoryKeys.zenodo: return Zenodo
-        default: return Zenodo
-      }
     }
 
     protected get repoLogoSrc() {
