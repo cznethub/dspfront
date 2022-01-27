@@ -303,17 +303,17 @@ export default class CzSubmissions extends Vue {
   }
 
   // TODO: add to a mixin and reuse
-  protected get activeRepository() {
-    const key = Repository.$state.submittingTo
-    switch (key) {
-      case EnumRepositoryKeys.hydroshare:
-        return HydroShare
-      case EnumRepositoryKeys.zenodo:
-        return Zenodo
-      default:
-        return HydroShare
-    }
-  }
+  // protected get activeRepository() {
+  //   const key = Repository.$state.submittingTo
+  //   switch (key) {
+  //     case EnumRepositoryKeys.hydroshare:
+  //       return HydroShare
+  //     case EnumRepositoryKeys.zenodo:
+  //       return Zenodo
+  //     default:
+  //       return HydroShare
+  //   }
+  // }
 
   protected nextPage() {
     if (this.page + 1 <= this.numberOfPages) this.page += 1
@@ -348,7 +348,7 @@ export default class CzSubmissions extends Vue {
       `${submission.repository}-${submission.identifier}`,
       true
     )
-    await this.activeRepository.updateCzHubRecord(
+    await Repository.refetchSubmission(
       submission.identifier,
       submission.repository
     )
@@ -371,7 +371,7 @@ export default class CzSubmissions extends Vue {
           `${submission.repository}-${submission.identifier}`,
           true
         )
-        await this.activeRepository.deleteRecord(submission.identifier, submission.repository)
+        await Repository.deleteSubmission(submission.identifier, submission.repository)
         this.$set(
           this.isDeleting,
           `${submission.repository}-${submission.identifier}`,

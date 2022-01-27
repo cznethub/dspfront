@@ -1,26 +1,17 @@
 <template>
-  <!-- <control-wrapper
-    v-bind="controlWrapper"
-    :styles="styles"
-    :isFocused="isFocused"
-    :appliedOptions="appliedOptions"
-  > -->
-    <v-text-field
-      type="number"
-      :label="computedLabel"
-      :step="step"
-      :id="control.id + '-input'"
-      :class="styles.control.input"
-      :value="control.data"
-      :disabled="!control.enabled"
-      :autofocus="appliedOptions.focus"
-      :placeholder="appliedOptions.placeholder"
-      @change="onChange"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
-      outlined
-    />
-  <!-- </control-wrapper> -->
+  <v-text-field
+    type="number"
+    :label="computedLabel"
+    :step="step"
+    :id="control.id + '-input'"
+    :class="styles.control.input"
+    :value="control.data"
+    :disabled="!control.enabled"
+    :autofocus="appliedOptions.focus"
+    :placeholder="appliedOptions.placeholder"
+    @change.native="onChanges"
+    outlined
+  />
 </template>
 
 <script lang="ts">

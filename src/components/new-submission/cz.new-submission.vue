@@ -161,6 +161,10 @@ export default class CzNewSubmission extends Vue {
     return this.$route.params.id !== undefined;
   }
 
+  protected get repository() {
+    return this.$route.params.repository
+  }
+
   protected get schema() {
     return this.activeRepository?.get()?.schema;
   }
@@ -215,13 +219,13 @@ export default class CzNewSubmission extends Vue {
     }
 
     if (this.isEditMode) {
-      const identifier = this.$route.params.id;
+      const identifier = this.$route.params.id
       // const submission = Submission.find([identifier, this.activeRepository.entity])
       // this.recordId = submission?.identifier || ''  // TODO: get the recordId and update it here
-      this.recordId = identifier;
-      this.loadExistingSubmission();
+      this.recordId = identifier
+      this.loadExistingSubmission()
     } else {
-      this.isLoading = false;
+      this.isLoading = false
     }
   }
 
@@ -234,7 +238,7 @@ export default class CzNewSubmission extends Vue {
 
   protected async loadExistingSubmission() {
     console.info("CzNewSubmission: reading existing record...");
-    const repositoryRecord = await this.activeRepository?.read(this.recordId);
+    const repositoryRecord = await Repository.readSubmission(this.recordId, this.repository)
 
     if (repositoryRecord) {
       this.data = {
@@ -264,26 +268,26 @@ export default class CzNewSubmission extends Vue {
     if (!this.recordId) {
       console.info("CzNewSubmission: creating new record...");
       try {
-        submission = await this.activeRepository?.createSubmission(this.data);
+        submission = await this.activeRepository?.createSubmission(this.data, this.repository);
       } catch (e) {
         this.isSaving = false;
         return;
       }
 
       if (submission?.recordId) {
-        this.data = {
-          ...this.data,
-          ...submission?.formMetadata.metadata,
-        };
-        this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
-        this.recordId = submission?.recordId;
+        // this.data = {
+        //   ...this.data,
+        //   ...submission?.formMetadata.metadata,
+        // };
+        // this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
+        this.recordId = submission.recordId
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...");
-      await this.activeRepository?.updateRepositoryRecord(
+      await this.activeRepository?.updateSubmission(
         this.recordId,
         this.data
-      );
+      )
     }
 
     // If files have been selected for upload, upload them
@@ -291,8 +295,8 @@ export default class CzNewSubmission extends Vue {
       const url = sprintf(
         this.activeRepository?.get()?.urls?.fileCreateUrl,
         this.recordId
-      );
-      await this.activeRepository?.uploadFiles(url, this.dropFiles);
+      )
+      await this.activeRepository?.uploadFiles(url, this.dropFiles)
     }
 
     // Indicate that changes have been saved
@@ -300,11 +304,8 @@ export default class CzNewSubmission extends Vue {
       message: this.isEditMode
         ? "Your changes have been saved"
         : "Your submission has been saved!",
-    });
-
-    this.$router.push({ name: "submissions" });
-
-    this.isSaving = false;
+    })
+    this.$router.push({ name: "submissions" })
   }
 
   protected deleteDropFile(index) {

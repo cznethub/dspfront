@@ -12,6 +12,7 @@ export default class Repository extends Model implements IRepository {
   static entity = 'repository'
   static primaryKey = 'key'
   static isAuthorizeListenerSet = false
+  static authorizeDialog$ = new Subject<RawLocation | undefined>()
   public readonly key!: EnumRepositoryKeys
   public readonly name!: string
   public readonly logoSrc!: string
@@ -21,7 +22,6 @@ export default class Repository extends Model implements IRepository {
   public readonly schema?: any
   public readonly uischema?: any
   public readonly schemaDefaults?: any
-  static authorizeDialog$ = new Subject<RawLocation | undefined>()
 
   static get isAuthorized() {
     return !!(this.$state.accessToken)
@@ -81,7 +81,6 @@ export default class Repository extends Model implements IRepository {
     }
 
     // Fetch urls and schemas
-    // const repository = this.get()
     console.info(`${this.entity}: fetching schemas...`)
     const urls: IRepositoryUrls | undefined = await this.getUrls()
 
@@ -106,11 +105,7 @@ export default class Repository extends Model implements IRepository {
       data: { urls, schema, uischema, schemaDefaults }
     })
 
-    // If we don't have an access token stored, fetch one using the accessTokenUrl
-    // TODO: also check if it expired, and if so refresh it
-    // if (!(this.isAuthorized) && repository?.urls?.accessTokenUrl) {
-      await this.fetchAccessToken()
-    // }
+    await this.fetchAccessToken()
   }
 
   static openAuthorizeDialog(redirectTo?: RawLocation) {
@@ -223,9 +218,71 @@ export default class Repository extends Model implements IRepository {
     return Repository.query().where('key', this.entity).withAll().first()
   }
 
-  static async updateCzHubRecord(recordId: string, repository: string) {
+    /** 
+   * Creates a submission
+   * @param {any} data - the form data to be saved
+   * @param {string} repository - the repository key
+  */
+  static async createSubmission(data: any, repository: string): Promise<{ recordId: string, formMetadata: any } | null> {
+    console.info(`${repository}: Creating submission...`)
+    
     try {
-      const response = await axios.put(`/api/submit/${repository}/${recordId}`)
+      await axios.post(
+        `/api/metadata/${repository}`,
+        data,
+        { 
+          headers: { "Content-Type": "application/json"},
+          params: { "access_token": User.$state.orcidAccessToken }
+        }
+      )
+    }
+    catch(e: any) {
+      if (e.response.status === 401) {
+        // Token has expired
+        this.commit((state) => {
+          state.accessToken = ''
+        })
+        CzNotification.toast({
+          message: 'Authorization token is invalid or has expired.'
+        })
+
+        Repository.openAuthorizeDialog()
+      }
+      else {
+        console.error("HydroShare: failed to create submission. ", e.response)
+      }
+      throw(e)
+    }
+    return null
+  }
+
+  /** 
+   * Updates a submission
+   * @param {string} identifier - the identifier of the resource in the repository
+   * @param {any} data - the form data to be saved
+  */
+  static async updateSubmission(identifier: string, data: any) {
+    await axios.put(
+      `/api/metadata/${this.entity}/${identifier}`,
+      data,
+      { 
+        headers: { "Content-Type": "application/json"},
+        params: { "access_token": User.$state.orcidAccessToken },
+      }
+    )
+  }
+
+  /** 
+   * Refetches a submission from the repository and updates it in ORM
+   * @param {string} identifier - the identifier of the resource in the repository
+   * @param {string} repositiry - the repository key
+  */
+  static async refetchSubmission(identifier: string, repository: string) {
+    try {
+      const response = await axios.put(`/api/submit/${repository}/${identifier}`,
+      { 
+        params: { "access_token": User.$state.orcidAccessToken },
+      })
       await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
     }
     catch(e) {
@@ -233,13 +290,39 @@ export default class Repository extends Model implements IRepository {
     }
   }
 
+  /** 
+   * Deletes a submission
+   * @param {string} identifier - the identifier of the resource in the repository
+   * @param {string} repositiry - the repository key
+  */
   static async deleteSubmission(identifier: string, repository: string) {
-    await Submission.delete([identifier, repository])
-    CzNotification.toast({ message: 'Your submission has been deleted' })
+    const response = await axios.delete(`/api/metadata/${repository}/${identifier}`, { 
+      params: { "access_token": User.$state.orcidAccessToken }
+    })
+
+    if (response.status === 200) {
+      await Submission.delete([identifier, repository])
+      CzNotification.toast({ message: 'Your submission has been deleted' })
+    }
   }
 
-  protected static createSubmission: (data?: any) => Promise<{ recordId: string, formMetadata: any} | null>
-  protected static deleteRecord: (recordId: string, repository: string) => Promise<any>
-  protected static read: (recordId: string) => Promise<any>
-  protected static updateRepositoryRecord: (recordId: string, metadata: any) => Promise<any>
+  /** 
+   * Reads a submission
+   * @param {string} identifier - the identifier of the resource in the repository
+   * @param {string} repositiry - the repository key
+  */
+  static async readSubmission(identifier: string, repository: string) {
+    const response = await axios.get(
+      `/api/metadata/${repository}/${identifier}`, 
+      { params: { "access_token": this.accessToken } 
+    })
+
+    if (response.status === 200) {
+      return response.data
+    }
+    else {
+      CzNotification.toast({ message: 'Failed to load submission' })
+      return { }
+    }
+  }
 }
