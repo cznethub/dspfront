@@ -264,8 +264,7 @@ export default class Repository extends Model implements IRepository {
   static async updateSubmission(identifier: string, data: any) {
     await axios.put(
       `/api/metadata/${this.entity}/${identifier}`,
-      data,
-      { 
+      data, { 
         headers: { "Content-Type": "application/json"},
         params: { "access_token": User.$state.orcidAccessToken },
       }
@@ -279,8 +278,7 @@ export default class Repository extends Model implements IRepository {
   */
   static async refetchSubmission(identifier: string, repository: string) {
     try {
-      const response = await axios.put(`/api/submit/${repository}/${identifier}`,
-      { 
+      const response = await axios.put(`/api/submit/${repository}/${identifier}`, { 
         params: { "access_token": User.$state.orcidAccessToken },
       })
       await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
@@ -296,13 +294,19 @@ export default class Repository extends Model implements IRepository {
    * @param {string} repositiry - the repository key
   */
   static async deleteSubmission(identifier: string, repository: string) {
-    const response = await axios.delete(`/api/metadata/${repository}/${identifier}`, { 
-      params: { "access_token": User.$state.orcidAccessToken }
-    })
-
-    if (response.status === 200) {
-      await Submission.delete([identifier, repository])
-      CzNotification.toast({ message: 'Your submission has been deleted' })
+    try {
+      const response = await axios.delete(`/api/metadata/${repository}/${identifier}`, { 
+        params: { "access_token": User.$state.orcidAccessToken }
+      })
+  
+      if (response.status === 200) {
+        await Submission.delete([identifier, repository])
+        CzNotification.toast({ message: 'Your submission has been deleted' })
+      }
+    }
+    catch(e) {
+      console.log(e)
+      CzNotification.toast({ message: 'Failed to delete submission' })
     }
   }
 
@@ -312,17 +316,23 @@ export default class Repository extends Model implements IRepository {
    * @param {string} repositiry - the repository key
   */
   static async readSubmission(identifier: string, repository: string) {
-    const response = await axios.get(
-      `/api/metadata/${repository}/${identifier}`, 
-      { params: { "access_token": this.accessToken } 
-    })
+    try {
+      const response = await axios.get(
+        `/api/metadata/${repository}/${identifier}`, 
+        { params: { "access_token": this.accessToken } 
+      })
 
-    if (response.status === 200) {
-      return response.data
+      if (response.status === 200) {
+        return response.data
+      }
+      else {
+        CzNotification.toast({ message: 'Failed to load submission' })
+        return null
+      }
     }
-    else {
+    catch(e) {
+      console.log(e)
       CzNotification.toast({ message: 'Failed to load submission' })
-      return { }
     }
   }
 }

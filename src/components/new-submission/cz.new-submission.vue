@@ -247,6 +247,9 @@ export default class CzNewSubmission extends Vue {
       };
       // this.links = repositoryRecord?.formMetadata.links // Has useful links, i.e: bucket for upload
     }
+    else {
+      // TODO: indicate in the UI that submission was not loaded
+    }
     this.isLoading = false;
   }
 
