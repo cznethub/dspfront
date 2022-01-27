@@ -225,8 +225,13 @@
         </v-card>
       </div>
       <div v-else class="text-body-2 text-center mt-4 d-flex flex-column">
-        <v-icon style="font-size: 6rem;">mdi-text-box-remove</v-icon>
-        You have not created any submissions
+        <template v-if="!showPlaceholder">
+          <v-icon style="font-size: 6rem;">mdi-text-box-remove</v-icon>
+          You have not created any submissions
+        </template>
+        <template>
+          You need to log in to view this page
+        </template>
       </div>
     </template>
   </div>
@@ -244,9 +249,9 @@ import {
 import { repoMetadata } from "../submit/constants"
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
-import HydroShare from "@/models/hydroshare.model"
-import Zenodo from "@/models/zenodo.model"
 import CzNotification from "@/models/notifications.model";
+import { Subscription } from "rxjs";
+import User from "@/models/user.model";
 
 @Component({
   name: "cz-submissions",
@@ -270,6 +275,8 @@ export default class CzSubmissions extends Vue {
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
+  protected showPlaceholder = false
+  protected loggedInSubject = new Subscription()
 
   protected get isFetching() {
     return Submission.$state.isFetching
@@ -321,16 +328,29 @@ export default class CzSubmissions extends Vue {
   //   }
   // }
 
+  async created() {
+    const fetched = await Submission.fetchSubmissions()
+    if (fetched === 401 || fetched === 403) {
+      // User is not logged in or page is forbidden
+      this.showPlaceholder = true
+
+      // Refetch submissions once user logs in
+      this.loggedInSubject = User.loggedIn$.subscribe(() => {
+        Submission.fetchSubmissions()
+      })
+    }
+  }
+
+  destroyed() {
+    this.loggedInSubject.unsubscribe()
+  }
+
   protected nextPage() {
     if (this.page + 1 <= this.numberOfPages) this.page += 1
   }
 
   protected formerPage() {
     if (this.page - 1 >= 1) this.page -= 1
-  }
-
-  async created() {
-    await Submission.fetchSubmissions()
   }
 
   protected goToEditSubmission(submission: ISubmission) {

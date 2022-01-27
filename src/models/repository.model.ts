@@ -129,10 +129,9 @@ export default class Repository extends Model implements IRepository {
     if (!this.isAuthorizeListenerSet) {
       window.addEventListener("message", async (message) => {
         this.isAuthorizeListenerSet = true; // Prevents registering the listener more than once
+        console.log(message.data.token)
 
         if (message.data.token) {
-          // document.cookie = `Authorization=${message.data.token.token_type} ${message.data.token.access_token}; expires=${message.data.token.expires_at}; path=/`
-
           activeRepository.commit((state) => {
             state.accessToken = message.data.token.access_token || ''
           })

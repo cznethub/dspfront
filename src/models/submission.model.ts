@@ -105,16 +105,13 @@ export default class Submission extends Model implements ISubmission {
       this.commit((state) => {
         return state.isFetching = false
       })
+      return resp.status
     }
     catch(e: any) {
-      if (e.response && e.response.status === 401) {
-        // Unauthorized
-      }
-      if (e.response && e.response.status === 403) {
-        // Forbidden
-      }
-      
-      console.error(e)
+      this.commit((state) => {
+        return state.isFetching = false
+      })
+      return e.response.status
     }
   }
 }
