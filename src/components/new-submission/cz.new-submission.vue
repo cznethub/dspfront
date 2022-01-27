@@ -191,7 +191,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   created() {
     this.isLoading = true;
-    this.data = this.schemaDefaults;
+    this.data = this.schemaDefaults
     const routeRepositoryKey = this.$route.params
       .repository as EnumRepositoryKeys;
 
@@ -248,17 +248,17 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected async save() {
-    this.isSaving = true;
+    this.isSaving = true
 
-    let submission;
+    let submission
 
     // If first time saving, create a new record
     if (!this.identifier) {
-      console.info("CzNewSubmission: creating new record...");
+      console.info("CzNewSubmission: creating new record...")
       try {
-        submission = await this.activeRepository?.createSubmission(this.data, this.repository);
+        submission = await this.activeRepository?.createSubmission(this.data, this.repository)
       } catch (e) {
-        this.isSaving = false;
+        this.isSaving = false
         return;
       }
 
@@ -301,7 +301,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected onChange(event: JsonFormsChangeEvent) {
-    this.data = event.data;
+    this.data = event.data
   }
 }
 </script>
