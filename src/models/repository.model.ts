@@ -247,7 +247,7 @@ export default class Repository extends Model implements IRepository {
         Repository.openAuthorizeDialog()
       }
       else {
-        console.error("HydroShare: failed to create submission. ", e.response)
+        console.error(`${repository}: failed to create submission.`, e.response)
       }
       throw(e)
     }
