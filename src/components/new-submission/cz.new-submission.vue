@@ -195,7 +195,7 @@ export default class CzNewSubmission extends Vue {
   }
 
   protected get formTitle() {
-    return this.isEditMode ? "Edit Submission" : "New Submission";
+    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`;
   }
 
   protected get submitText() {

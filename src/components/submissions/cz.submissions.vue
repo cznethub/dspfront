@@ -135,24 +135,31 @@
                 <v-divider />
                 <div v-for="item in items" :key="item.identifier">
                   <div class="table-item d-flex justify-space-between">
-                    <div>
-                      <div class="text-h6 has-space-bottom">
-                        {{ item.title }}
-                      </div>
-                      <div class="text-body-1">
-                        <b class="mr-1">Authors: </b>{{ item.authors.join(", ") }}
-                      </div>
-                      <div class="text-body-1">
-                        <b class="mr-1">Submission Repository: </b><span class="text-body-2">{{ repoMetadata[item.repository].name }}</span>
-                      </div>
-                      <div class="text-body-1">
-                        <b class="mr-1">Submission Date: </b
-                        ><span class="text-body-2">{{ new Date(item.date).toLocaleString() }}</span>
-                      </div>
-                      <div class="text-body-1">
-                        <b class="mr-1">Identifier: </b><span class="text-body-2">{{ item.identifier }}</span>
-                      </div>
+                    <div class="flex-grow-1 mr-4">
+                      <table class="text-body-1">
+                        <tr>
+                          <th class="pr-4"></th>
+                          <td class="text-h6">{{ item.title }}</td>
+                        </tr>
+                        <tr v-if="item.authors.length">
+                          <th class="pr-4">Authors:</th>
+                          <td>{{ item.authors.join(", ") }}</td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4">Submission Repository:</th>
+                          <td>{{ repoMetadata[item.repository].name }}</td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4">Submission Date:</th>
+                          <td>{{ new Date(item.date).toLocaleString() }}</td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4">Identifier:</th>
+                          <td>{{ item.identifier }}</td>
+                        </tr>
+                      </table>
                     </div>
+
                     <div class="d-flex flex-column actions">
                       <v-btn :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
@@ -419,6 +426,10 @@ export default class CzSubmissions extends Vue {
 
 .table-item {
   padding: 1rem;
+
+  table th {
+    text-align: right;
+  }
 }
 
 .actions {
