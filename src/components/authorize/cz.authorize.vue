@@ -1,7 +1,7 @@
 <template>
   <v-card class="cz-authorize">
     <div class="v-card-media py-4 px-8">
-      <v-img :src="activeRepository.get().logoSrc" :alt="activeRepository.name" width="100%" height="8rem" contain />
+      <v-img :src="repoLogoSrc" :alt="activeRepository.name" width="100%" height="8rem" contain />
     </div>
     <v-divider></v-divider>
     <v-card-title class="justify-center">
@@ -21,31 +21,22 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
-  import { EnumRepositoryKeys } from '../submissions/types'
-  import { saveNextRoute } from '@/router'
+  import { Component } from 'vue-property-decorator'
+  import { mixins } from 'vue-class-component'
+  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import Repository from '@/models/repository.model'
-  import HydroShare from '@/models/hydroshare.model'
-  import Zenodo from '@/models/zenodo.model'
-import { RawLocation } from 'vue-router'
 
   @Component({
     name: 'cz-authorize',
     components: { },
   })
-  export default class CzAuthorize extends Vue {
+  export default class CzAuthorize extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
     protected get authorizeUrl() {
       return this.activeRepository?.get()?.urls?.authorizeUrl
     }
 
-    // TODO: add to a mixin and reuse
-    protected get activeRepository() {
-      const key = Repository.$state.submittingTo
-      switch (key) {
-        case EnumRepositoryKeys.hydroshare: return HydroShare
-        case EnumRepositoryKeys.zenodo: return Zenodo
-        default: return Zenodo
-      }
+    protected get repoLogoSrc() {
+      return this.activeRepository.get()?.logoSrc
     }
 
     protected async openAuthorizeDialog() {

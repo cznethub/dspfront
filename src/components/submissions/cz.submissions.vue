@@ -84,13 +84,13 @@
         <v-card>
           <div v-if="!isFetching">
             <v-data-iterator
+              @current-items="currentItems = $event"
               :items="submissions"
               :items-per-page.sync="itemsPerPage"
               :page.sync="page"
               :search="filters.searchStr"
               :sort-by="sortBy.toLowerCase()"
               :sort-desc="sortDesc === 'desc'"
-              @current-items="currentItems = $event"
               item-key="identifier"
               hide-default-footer
             >
@@ -103,7 +103,6 @@
                       :items="sortOptions"
                       v-model="sortBy"
                       class="mr-1"
-                      :item-text="'test'"
                       outlined
                       dense
                       hide-details
@@ -135,24 +134,31 @@
                 <v-divider />
                 <div v-for="item in items" :key="item.identifier">
                   <div class="table-item d-flex justify-space-between">
-                    <div>
-                      <div class="text-h6 has-space-bottom">
-                        {{ item.title }}
-                      </div>
-                      <div class="text-body-1">
-                        <b class="mr-1">Authors: </b>{{ item.authors.join(", ") }}
-                      </div>
-                      <div class="text-body-1">
-                        <b class="mr-1">Submission Repository: </b><span class="text-body-2">{{ repoMetadata[item.repository].name }}</span>
-                      </div>
-                      <div class="text-body-1">
-                        <b class="mr-1">Submission Date: </b
-                        ><span class="text-body-2">{{ new Date(item.date).toLocaleString() }}</span>
-                      </div>
-                      <div class="text-body-1">
-                        <b class="mr-1">Identifier: </b><span class="text-body-2">{{ item.identifier }}</span>
-                      </div>
+                    <div class="flex-grow-1 mr-4">
+                      <table class="text-body-1">
+                        <tr>
+                          <th class="pr-4"></th>
+                          <td class="text-h6">{{ item.title }}</td>
+                        </tr>
+                        <tr v-if="item.authors.length">
+                          <th class="pr-4">Authors:</th>
+                          <td>{{ item.authors.join(", ") }}</td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4">Submission Repository:</th>
+                          <td>{{ repoMetadata[item.repository].name }}</td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4">Submission Date:</th>
+                          <td>{{ new Date(item.date).toLocaleString() }}</td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4">Identifier:</th>
+                          <td>{{ item.identifier }}</td>
+                        </tr>
+                      </table>
                     </div>
+
                     <div class="d-flex flex-column actions">
                       <v-btn :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
@@ -219,15 +225,20 @@
         </v-card>
       </div>
       <div v-else class="text-body-2 text-center mt-4 d-flex flex-column">
-        <v-icon style="font-size: 6rem;">mdi-text-box-remove</v-icon>
-        You have not created any submissions
+        <template v-if="!showPlaceholder">
+          <v-icon style="font-size: 6rem;">mdi-text-box-remove</v-icon>
+          You have not created any submissions
+        </template>
+        <template>
+          You need to log in to view this page
+        </template>
       </div>
     </template>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import {
   ISubmission,
   EnumSubmissionSorts,
@@ -236,17 +247,19 @@ import {
   IRepository,
 } from "@/components/submissions/types"
 import { repoMetadata } from "../submit/constants"
+import { Subscription } from "rxjs"
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
-import HydroShare from "@/models/hydroshare.model"
-import Zenodo from "@/models/zenodo.model"
-import CzNotification from "@/models/notifications.model";
+import CzNotification from "@/models/notifications.model"
+import User from "@/models/user.model"
 
 @Component({
   name: "cz-submissions",
   components: {  },
 })
-export default class CzSubmissions extends Vue {
+export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
 
@@ -264,6 +277,8 @@ export default class CzSubmissions extends Vue {
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
+  protected showPlaceholder = false
+  protected loggedInSubject = new Subscription()
 
   protected get isFetching() {
     return Submission.$state.isFetching
@@ -302,17 +317,21 @@ export default class CzSubmissions extends Vue {
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
-  // TODO: add to a mixin and reuse
-  protected get activeRepository() {
-    const key = Repository.$state.submittingTo
-    switch (key) {
-      case EnumRepositoryKeys.hydroshare:
-        return HydroShare
-      case EnumRepositoryKeys.zenodo:
-        return Zenodo
-      default:
-        return HydroShare
+  async created() {
+    const fetched = await Submission.fetchSubmissions()
+    if (fetched === 401 || fetched === 403) {
+      // User is not logged in or page is forbidden
+      this.showPlaceholder = true
+
+      // Refetch submissions once user logs in
+      this.loggedInSubject = User.loggedIn$.subscribe(() => {
+        Submission.fetchSubmissions()
+      })
     }
+  }
+
+  destroyed() {
+    this.loggedInSubject.unsubscribe()
   }
 
   protected nextPage() {
@@ -321,17 +340,6 @@ export default class CzSubmissions extends Vue {
 
   protected formerPage() {
     if (this.page - 1 >= 1) this.page -= 1
-  }
-
-  async created() {
-    await Submission.fetchSubmissions()
-  }
-
-  protected goToSubmission(submission: Submission) {
-    this.$router.push({
-      name: "submissions",
-      params: { id: submission.identifier, repository: submission.repository },
-    })
   }
 
   protected goToEditSubmission(submission: ISubmission) {
@@ -348,7 +356,7 @@ export default class CzSubmissions extends Vue {
       `${submission.repository}-${submission.identifier}`,
       true
     )
-    await this.activeRepository.updateCzHubRecord(
+    await Repository.refetchSubmission(
       submission.identifier,
       submission.repository
     )
@@ -371,7 +379,7 @@ export default class CzSubmissions extends Vue {
           `${submission.repository}-${submission.identifier}`,
           true
         )
-        await this.activeRepository.deleteRecord(submission.identifier, submission.repository)
+        await Repository.deleteSubmission(submission.identifier, submission.repository)
         this.$set(
           this.isDeleting,
           `${submission.repository}-${submission.identifier}`,
@@ -379,23 +387,6 @@ export default class CzSubmissions extends Vue {
         )
       }
     })
-  }
-
-  // TODO: move to mixin and reuse
-  // =================
-  protected submitTo(repo: IRepository) {
-    if (Object.keys(EnumRepositoryKeys).includes(repo.key)) {
-      this.setActiveRepository(repo.key);
-    }
-    this.$router
-      .push({ name: "submit.repository", params: { repository: repo.key } })
-      .catch(() => {});
-  }
-
-  private setActiveRepository(key: EnumRepositoryKeys) {
-    Repository.commit((state) => {
-      state.submittingTo = key;
-    });
   }
 }
 </script>
@@ -410,8 +401,8 @@ export default class CzSubmissions extends Vue {
   margin: 0;
 }
 
-#filters {
-}
+// #filters {
+// }
 
 .footer {
   padding: 1rem;
@@ -419,6 +410,10 @@ export default class CzSubmissions extends Vue {
 
 .table-item {
   padding: 1rem;
+
+  table th {
+    text-align: right;
+  }
 }
 
 .actions {

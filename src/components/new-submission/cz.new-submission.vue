@@ -26,7 +26,7 @@
             <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
               >UI Schema</v-btn
             >
-            <v-btn v-if="isEditMode" @click="goToSubmission()" rounded
+            <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
               >Cancel</v-btn
             >
             <v-btn @click="save()" color="primary" :disabled="isSaving" rounded>
@@ -83,7 +83,7 @@
               <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
                 >UI Schema</v-btn
               >
-              <v-btn v-if="isEditMode" @click="goToSubmission()" rounded
+              <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
                 >Cancel</v-btn
               >
               <v-btn
@@ -125,17 +125,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Ref } from "vue-property-decorator";
-import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2";
-import { vanillaRenderers } from "@jsonforms/vue2-vanilla";
-import { JsonFormsRendererRegistryEntry } from "@jsonforms/core";
-import { CzRenderers } from "@/renderers/renderer.vue";
-import { EnumRepositoryKeys } from "../submissions/types";
-import JsonViewer from "vue-json-viewer";
-import Repository from "@/models/repository.model";
-import HydroShare from "@/models/hydroshare.model";
-import Zenodo from "@/models/zenodo.model";
-import CzNotification from "@/models/notifications.model";
+import { Component, Ref } from "vue-property-decorator"
+import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
+import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
+import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
+import { CzRenderers } from "@/renderers/renderer.vue"
+import { EnumRepositoryKeys } from "../submissions/types"
+import JsonViewer from "vue-json-viewer"
+import Repository from "@/models/repository.model"
+import CzNotification from "@/models/notifications.model"
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
 const sprintf = require("sprintf-js").sprintf;
 
@@ -145,11 +145,11 @@ const renderers = [...vanillaRenderers, ...CzRenderers];
   name: "cz-new-submission",
   components: { JsonForms, JsonViewer },
 })
-export default class CzNewSubmission extends Vue {
+export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms;
   protected isLoading = false;
   protected isSaving = false;
-  protected recordId = "";
+  protected identifier = "";
   protected data: any = {};
   protected links: any = {};
   protected renderers: JsonFormsRendererRegistryEntry[] = renderers;
@@ -159,6 +159,10 @@ export default class CzNewSubmission extends Vue {
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined;
+  }
+
+  protected get repository() {
+    return this.$route.params.repository
   }
 
   protected get schema() {
@@ -177,21 +181,8 @@ export default class CzNewSubmission extends Vue {
     return process.env.NODE_ENV === "development";
   }
 
-  // TODO: add to a mixin and reuse
-  protected get activeRepository() {
-    const key = Repository.$state.submittingTo;
-    switch (key) {
-      case EnumRepositoryKeys.hydroshare:
-        return HydroShare;
-      case EnumRepositoryKeys.zenodo:
-        return Zenodo;
-      default:
-        return Zenodo;
-    }
-  }
-
   protected get formTitle() {
-    return this.isEditMode ? "Edit Submission" : "New Submission";
+    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`;
   }
 
   protected get submitText() {
@@ -215,26 +206,24 @@ export default class CzNewSubmission extends Vue {
     }
 
     if (this.isEditMode) {
-      const identifier = this.$route.params.id;
-      // const submission = Submission.find([identifier, this.activeRepository.entity])
-      // this.recordId = submission?.identifier || ''  // TODO: get the recordId and update it here
-      this.recordId = identifier;
-      this.loadExistingSubmission();
+      const identifier = this.$route.params.id
+      this.identifier = identifier
+      this.loadExistingSubmission()
     } else {
-      this.isLoading = false;
+      this.isLoading = false
     }
   }
 
-  protected goToSubmission() {
+  protected goToSubmissions() {
+    // TODO: add discard confirm dialog if the form was changed
     this.$router.push({
       name: "submissions",
-      params: { id: this.recordId, repository: this.activeRepository.entity },
-    });
+    })
   }
 
   protected async loadExistingSubmission() {
     console.info("CzNewSubmission: reading existing record...");
-    const repositoryRecord = await this.activeRepository?.read(this.recordId);
+    const repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
 
     if (repositoryRecord) {
       this.data = {
@@ -242,6 +231,9 @@ export default class CzNewSubmission extends Vue {
         ...repositoryRecord,
       };
       // this.links = repositoryRecord?.formMetadata.links // Has useful links, i.e: bucket for upload
+    }
+    else {
+      // TODO: indicate in the UI that submission was not loaded
     }
     this.isLoading = false;
   }
@@ -261,38 +253,38 @@ export default class CzNewSubmission extends Vue {
     let submission;
 
     // If first time saving, create a new record
-    if (!this.recordId) {
+    if (!this.identifier) {
       console.info("CzNewSubmission: creating new record...");
       try {
-        submission = await this.activeRepository?.createSubmission(this.data);
+        submission = await this.activeRepository?.createSubmission(this.data, this.repository);
       } catch (e) {
         this.isSaving = false;
         return;
       }
 
       if (submission?.recordId) {
-        this.data = {
-          ...this.data,
-          ...submission?.formMetadata.metadata,
-        };
-        this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
-        this.recordId = submission?.recordId;
+        // this.data = {
+        //   ...this.data,
+        //   ...submission?.formMetadata.metadata,
+        // };
+        // this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
+        this.identifier = submission.recordId
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...");
-      await this.activeRepository?.updateRepositoryRecord(
-        this.recordId,
+      await this.activeRepository?.updateSubmission(
+        this.identifier,
         this.data
-      );
+      )
     }
 
     // If files have been selected for upload, upload them
     if (this.dropFiles.length) {
       const url = sprintf(
         this.activeRepository?.get()?.urls?.fileCreateUrl,
-        this.recordId
-      );
-      await this.activeRepository?.uploadFiles(url, this.dropFiles);
+        this.identifier
+      )
+      await this.activeRepository?.uploadFiles(url, this.dropFiles)
     }
 
     // Indicate that changes have been saved
@@ -300,11 +292,8 @@ export default class CzNewSubmission extends Vue {
       message: this.isEditMode
         ? "Your changes have been saved"
         : "Your submission has been saved!",
-    });
-
-    this.$router.push({ name: "submissions" });
-
-    this.isSaving = false;
+    })
+    this.$router.push({ name: "submissions" })
   }
 
   protected deleteDropFile(index) {
@@ -313,12 +302,6 @@ export default class CzNewSubmission extends Vue {
 
   protected onChange(event: JsonFormsChangeEvent) {
     this.data = event.data;
-  }
-
-  private setActiveRepository(key: EnumRepositoryKeys) {
-    Repository.commit((state) => {
-      state.submittingTo = key;
-    });
   }
 }
 </script>

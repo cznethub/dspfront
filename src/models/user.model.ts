@@ -1,9 +1,9 @@
 import { router } from '@/router'
 import { Model } from '@vuex-orm/core'
-import axios from "axios"
-import CzNotification from './notifications.model'
 import { Subject } from 'rxjs'
 import { RawLocation } from 'vue-router'
+import axios from "axios"
+import CzNotification from './notifications.model'
 
 export interface ICzCurrentUserState {
   orcid: string
@@ -21,6 +21,7 @@ export default class User extends Model {
   static entity = 'users'
   static isLoginListenerSet = false
   static logInDialog$ = new Subject<RawLocation | undefined>()
+  static loggedIn$ = new Subject<void>()
   
   static fields () {
     return {}
@@ -63,8 +64,16 @@ export default class User extends Model {
         this.isLoginListenerSet = true; // Prevents registering the listener more than once
 
         if (message.data.token) {
-          this.signalLogIn(message.data.orcid, message.data.token)
+          CzNotification.toast({ 
+            message: 'You have logged in!', 
+          })
+          await User.commit((state) => {
+            state.isLoggedIn = true
+            state.orcid = message.data.orcid
+            state.orcidAccessToken = message.data.token
+          })
           document.cookie = `Authorization=Bearer ${message.data.token}; expires=${message.data.expiresIn}; path=/`
+          this.loggedIn$.next()
           if (callback) {
             callback()
           }
@@ -117,17 +126,5 @@ export default class User extends Model {
     catch(e) {
       console.error("Failed to log out", e)
     }
-  }
-
-  private static async signalLogIn(orcId: string, token: string) {
-    CzNotification.toast({ 
-      message: 'You have logged in!', 
-    })
-
-    await User.commit((state) => {
-      state.isLoggedIn = true
-      state.orcid = orcId
-      state.orcidAccessToken = token
-    })
   }
 }

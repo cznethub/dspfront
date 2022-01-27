@@ -1,23 +1,14 @@
 <template>
-  <!-- <control-wrapper
-    v-bind="controlWrapper"
-    :styles="styles"
-    :isFocused="isFocused"
-    :appliedOptions="appliedOptions"
-  > -->
-    <v-textarea
-      :id="control.id + '-input'"
-      :class="styles.control.textarea"
-      :value="control.data"
-      :disabled="!control.enabled"
-      :autofocus="appliedOptions.focus"
-      :placeholder="appliedOptions.placeholder"
-      :label="computedLabel"
-      @change="onChange"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
-    />
-  <!-- </control-wrapper> -->
+  <v-textarea
+    :id="control.id + '-input'"
+    :class="styles.control.textarea"
+    :value="control.data"
+    :disabled="!control.enabled"
+    :autofocus="appliedOptions.focus"
+    :placeholder="appliedOptions.placeholder"
+    :label="computedLabel"
+    @change.native="onChanges"
+  />
 </template>
 
 <script lang="ts">
