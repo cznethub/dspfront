@@ -12,6 +12,7 @@
     "@jsonforms/core": "^2.5.2",
     "@jsonforms/vue2": "^2.5.2",
     "@jsonforms/vue2-vanilla": "^2.5.2",
+    "@jsonforms/vue2-vuetify": "^3.0.0-alpha.2",
     "@vue/composition-api": "^1.2.2",
     "@vuex-orm/core": "^0.36.4",
     "axios": "^0.21.1",

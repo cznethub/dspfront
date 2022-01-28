@@ -1,14 +1,14 @@
 <template>
   <div v-if="visible" :class="styles.control.root" :id="id">
-    <label :for="id + '-input'" :class="styles.control.label">
+    <!-- <label :for="id + '-input'" :class="styles.control.label">
       {{ computedLabel }}
-    </label>
+    </label> -->
     <div :class="styles.control.wrapper">
       <slot></slot>
     </div>
-    <div :class="errors ? styles.control.error : styles.control.description">
+    <!-- <div :class="errors ? styles.control.error : styles.control.description">
       {{ errors ? errors : showDescription ? description : null }}
-    </div>
+    </div> -->
   </div>
 </template>
 

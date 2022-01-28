@@ -22,10 +22,10 @@ import {
   isNumberControl
 } from '@jsonforms/core';
 import { defineComponent } from '@vue/composition-api'
-import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2';
-import { default as ControlWrapper } from './ControlWrapper.vue';
-import { useVanillaControl } from "@jsonforms/vue2-vanilla";
-import { computeLabel } from '@jsonforms/core';
+import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
+import { default as ControlWrapper } from './ControlWrapper.vue'
+import { useVanillaControl } from "@jsonforms/vue2-vanilla"
+import { computeLabel } from '@jsonforms/core'
 
 const controlRenderer = defineComponent({
   name: 'number-control-renderer',
@@ -53,12 +53,18 @@ const controlRenderer = defineComponent({
       );
     }
   }
-});
+})
 
 export default controlRenderer;
 
 export const numberControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
   tester: rankWith(2, isNumberControl)
-};
+}
 </script>
+
+<style lang="scss" scoped>
+.v-text-field {
+  max-width: 20rem;
+}
+</style>

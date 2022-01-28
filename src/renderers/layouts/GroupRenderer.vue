@@ -1,6 +1,6 @@
 <template>
-  <fieldset v-if="layout.visible" :class="styles.group.root" class="cz-fieldset my-3">
-    <legend v-if="layout.uischema.label" :class="styles.group.label">{{ layout.uischema.label }}</legend>
+  <fieldset v-if="layout.visible" :class="styles.group.root" class="cz-fieldset mb-8 pt-8">
+    <legend v-if="layout.uischema.label" :class="styles.group.label" class="v-label--active">{{ layout.uischema.label }}</legend>
     <div
       v-for="(element, index) in layout.uischema.elements"
       :key="`${layout.path}-${index}`"

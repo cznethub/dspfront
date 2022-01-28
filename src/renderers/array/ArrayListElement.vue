@@ -1,7 +1,7 @@
 <template>
   <v-card outlined>
     <!-- <v-card-header v-if="label">{{ label }}</v-card-header> -->
-    <v-card-actions>
+    <v-card-actions style="background: #f5f5f5;">
       <v-spacer></v-spacer>
       <v-btn elevation="1" fab small @click="moveUpClicked" :disabled="!moveUpEnabled">
         <v-icon>mdi-arrow-up</v-icon>
@@ -114,3 +114,9 @@ const listItem = defineComponent({
 
 export default listItem
 </script>
+
+<style lang="scss" scoped>
+  ::v-deep .v-card__accions {
+    background-color: red;
+  }
+</style>

@@ -3,26 +3,6 @@ import { Model } from '@vuex-orm/core'
 import axios from "axios"
 import User from './user.model'
 
-export interface IApiRecordHs {
-  abstract: string
-  additional_metadata: any
-  awards: any[]
-  citation: string
-  contributors: []
-  created: string
-  creators: any[]
-  identifier: string
-  language: string
-  modified: string
-  relations: []
-  rights: { statement: string, url: string }
-  sources: any[]
-  subjects: any[]
-  title: string
-  type: string
-  url: string
-}
-
 // temporary workaround to circular dependecy error
 function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
   if (repo === EnumRepositoryKeys.hydroshare) {

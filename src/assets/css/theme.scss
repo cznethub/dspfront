@@ -51,6 +51,10 @@ section {
   cursor: pointer;
 }
 
+.has-cursor-text {
+  cursor: text;
+}
+
 // .has-background-dark--gradient {
 //   background: linear-gradient(180deg, #0D0F15 0%, #1A1D27 100%);
 // }
@@ -109,14 +113,36 @@ p {
   padding: 1rem;
   position: relative;
 
+  &:hover {
+    border-color: rgba(0, 0, 0, 0.6);;
+  }
+
   legend {
-    font-size: 12px;
+    font-size: 16px;
     letter-spacing: .0125em;
-    line-height: 2rem;
     word-break: break-all;
-    color: rgba(0, 0, 0, 0.6);
+    color: rgba(0, 0, 0, 0.5);
     background: #FFF;
     font-weight: normal;
     padding: 0 0.25rem;
+    position: absolute;
+    left: 0.5rem;
+    top: 1rem;
+
+    &.v-label--active {
+      position: absolute;
+      cursor: default;
+    }
+
+    &:not(.v-label--active) {
+      width: calc(100% - 5rem);
+      cursor: text;
+    }
+  }
+
+  .btn-add {
+    position: absolute;
+    top: -1.3rem;
+    right: 1rem;
   }
 }

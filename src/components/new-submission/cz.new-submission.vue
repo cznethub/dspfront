@@ -131,15 +131,20 @@ import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
 import { CzRenderers } from "@/renderers/renderer.vue"
 import { EnumRepositoryKeys } from "../submissions/types"
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
-import { mixins } from 'vue-class-component'
-import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
 const sprintf = require("sprintf-js").sprintf;
 
-const renderers = [...vanillaRenderers, ...CzRenderers];
+const renderers = [
+  ...vanillaRenderers, 
+  ...CzRenderers,
+  // ...vuetifyRenderers
+];
 
 @Component({
   name: "cz-new-submission",
@@ -191,7 +196,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   created() {
     this.isLoading = true;
-    this.data = this.schemaDefaults;
+    this.data = this.schemaDefaults
     const routeRepositoryKey = this.$route.params
       .repository as EnumRepositoryKeys;
 
@@ -248,17 +253,17 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected async save() {
-    this.isSaving = true;
+    this.isSaving = true
 
-    let submission;
+    let submission
 
     // If first time saving, create a new record
     if (!this.identifier) {
-      console.info("CzNewSubmission: creating new record...");
+      console.info("CzNewSubmission: creating new record...")
       try {
-        submission = await this.activeRepository?.createSubmission(this.data, this.repository);
+        submission = await this.activeRepository?.createSubmission(this.data, this.repository)
       } catch (e) {
-        this.isSaving = false;
+        this.isSaving = false
         return;
       }
 
@@ -301,7 +306,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected onChange(event: JsonFormsChangeEvent) {
-    this.data = event.data;
+    this.data = event.data
   }
 }
 </script>
@@ -348,5 +353,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   button + button {
     margin-left: 1rem;
   }
+}
+
+::v-deep .v-label--active {
+  transform: translateY(-26px) scale(1) !important;
+  background-color: #FFF;
+  padding-right: 0.2rem;
 }
 </style>

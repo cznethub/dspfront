@@ -302,9 +302,21 @@ export default class Repository extends Model implements IRepository {
         CzNotification.toast({ message: 'Your submission has been deleted' })
       }
     }
-    catch(e) {
+    catch(e: any) {
       console.log(e)
       CzNotification.toast({ message: 'Failed to delete submission' })
+
+      if (e.response.status === 401) {
+        // Token has expired
+        this.commit((state) => {
+          state.accessToken = ''
+        })
+        CzNotification.toast({
+          message: 'Authorization token is invalid or has expired.'
+        })
+
+        Repository.openAuthorizeDialog()
+      }
     }
   }
 
@@ -317,7 +329,7 @@ export default class Repository extends Model implements IRepository {
     try {
       const response = await axios.get(
         `/api/metadata/${repository}/${identifier}`, 
-        { params: { "access_token": this.accessToken } 
+        { params: { "access_token": User.$state.orcidAccessToken } 
       })
 
       if (response.status === 200) {
