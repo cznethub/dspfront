@@ -329,7 +329,7 @@ export default class Repository extends Model implements IRepository {
     try {
       const response = await axios.get(
         `/api/metadata/${repository}/${identifier}`, 
-        { params: { "access_token": this.accessToken } 
+        { params: { "access_token": User.$state.orcidAccessToken } 
       })
 
       if (response.status === 200) {
