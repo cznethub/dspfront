@@ -146,7 +146,7 @@
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Repository:</th>
-                          <td>{{ repoMetadata[item.repository].name }}</td>
+                          <td>{{ repoMetadata[item.repository] ? repoMetadata[item.repository].name : '' }}</td>
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Date:</th>

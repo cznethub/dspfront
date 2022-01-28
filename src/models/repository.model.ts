@@ -276,12 +276,14 @@ export default class Repository extends Model implements IRepository {
   */
   static async refetchSubmission(identifier: string, repository: string) {
     try {
-      const response = await axios.put(`/api/submit/${repository}/${identifier}`, { 
+      const response = await axios.put(`/api/metadata/${repository}/${identifier}`, { 
         params: { "access_token": User.$state.orcidAccessToken },
       })
-      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) }) 
+      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) })
+      CzNotification.toast({ message: 'Your submission has been reloaded with its latest changes' })
     }
     catch(e) {
+      console.log(e)
       CzNotification.toast({ message: 'Failed to update record' })
     }
   }

@@ -1,7 +1,6 @@
 <template>
   <v-card outlined>
-    <!-- <v-card-header v-if="label">{{ label }}</v-card-header> -->
-    <v-card-actions style="background: #f5f5f5;">
+    <v-card-actions class="has-bg-light-gray">
       <v-spacer></v-spacer>
       <v-btn elevation="1" fab small @click="moveUpClicked" :disabled="!moveUpEnabled">
         <v-icon>mdi-arrow-up</v-icon>
@@ -25,9 +24,9 @@
 </template>
 
 <script lang="ts">
-declare type CompType<_S, V> = V
 import { defineComponent } from '@vue/composition-api'
 import { Styles } from "@jsonforms/vue2-vanilla"
+import { CompType } from '@jsonforms/vue2-vuetify/lib/vue'
 import CzNotification from '@/models/notifications.model'
 
 const listItem = defineComponent({
