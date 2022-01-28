@@ -25,6 +25,7 @@
         @change="onChange"
         @focus="isFocused = true"
         @blur="isFocused = false"
+        outlined
       />
     </v-hover>
   </control-wrapper>
@@ -71,6 +72,6 @@ const controlRenderer = defineComponent({
 export default controlRenderer;
 export const enumControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(2, isEnumControl),
+  tester: rankWith(3, isEnumControl),
 }
 </script>

@@ -79,7 +79,7 @@ import {
   rendererProps,
   useJsonFormsArrayControl,
   RendererProps,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue2'
 import { useVuetifyArrayControl } from '@jsonforms/vue2-vuetify'
 import { useVanillaArrayControl } from "@jsonforms/vue2-vanilla"
 import { Drag, Drop, DropList } from 'vue-easy-dnd'
@@ -110,7 +110,7 @@ const controlRenderer = defineComponent({
         this.control.rootSchema,
         this.control.uischema.scope,
         this.control.rootSchema
-      );
+      )
     },
     noData(): boolean {
       return !this.control.data || this.control.data.length === 0;
