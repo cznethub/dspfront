@@ -59,4 +59,5 @@ export interface IRepository {
   uischema?: any
   schemaDefaults?: any
   isDisabled?: boolean
+  hasFolderStructure?: boolean
 }

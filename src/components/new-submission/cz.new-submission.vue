@@ -46,6 +46,8 @@
                 </b-upload>
               </div>
 
+              <cz-folder-structure v-if="repoMetadata[repository].hasFolderStructure" :drop-files="dropFiles" />
+
               <div v-if="dropFiles.length" class="mb-4">
                 <transition-group name="list-files">
                   <v-chip
@@ -133,10 +135,12 @@ import { CzRenderers } from "@/renderers/renderer.vue"
 import { EnumRepositoryKeys } from "../submissions/types"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { repoMetadata } from "../submit/constants"
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
-import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
+import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
+// import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
 const sprintf = require("sprintf-js").sprintf;
 
@@ -148,19 +152,20 @@ const renderers = [
 
 @Component({
   name: "cz-new-submission",
-  components: { JsonForms, JsonViewer },
+  components: { JsonForms, JsonViewer, CzFolderStructure },
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms;
-  protected isLoading = false;
-  protected isSaving = false;
-  protected identifier = "";
-  protected data: any = {};
-  protected links: any = {};
-  protected renderers: JsonFormsRendererRegistryEntry[] = renderers;
-  protected dropFiles: File[] = [];
-  protected showUISchema = false;
-  protected usedUISchema = {};
+  protected isLoading = false
+  protected isSaving = false
+  protected identifier = ""
+  protected data: any = {}
+  protected links: any = {}
+  protected renderers: JsonFormsRendererRegistryEntry[] = renderers
+  protected dropFiles: File[] = []
+  protected showUISchema = false
+  protected usedUISchema = {}
+  protected repoMetadata = repoMetadata
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined;

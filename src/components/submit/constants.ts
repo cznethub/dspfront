@@ -6,6 +6,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     name: 'HydroShare',
     logoSrc: require('@/assets/img/hydroshare.png'),
     description: 'HydroShare is a general-purpose domain repository the primarily serves the water science community. HydroShare is operated by the Consortium of Universities for the Advancement of Hydrologic Science, Inc. (CUAHSI). Data types include geographic feature, geographic raster, multidimensional, time series, model programs, model instances, and generic data types.',
+    hasFolderStructure: true
   },
   [EnumRepositoryKeys.earthChemLibrary]: {
     key: EnumRepositoryKeys.earthChemLibrary,
