@@ -1,6 +1,7 @@
 FROM node:14
 WORKDIR /dspfront
 COPY package*.json ./
+RUN npm i @vue/cli-service
 RUN npm install --production
 COPY . .
 RUN npm run build
