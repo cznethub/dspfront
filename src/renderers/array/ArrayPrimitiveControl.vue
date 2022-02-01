@@ -18,6 +18,7 @@
         multiple
         no-filter
         outlined
+        dense
 
         :id="control.id + '-input'"
         :class="styles.control.input"

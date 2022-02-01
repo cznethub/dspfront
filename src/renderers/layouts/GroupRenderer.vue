@@ -34,7 +34,7 @@ import {
   useJsonFormsLayout,
   RendererProps
 } from '@jsonforms/vue2'
-import { useVanillaLayout } from "@jsonforms/vue2-vanilla";
+import { useVanillaLayout } from "@jsonforms/vue2-vanilla"
 
 const layoutRenderer = defineComponent({
   name: 'group-renderer',
@@ -45,14 +45,14 @@ const layoutRenderer = defineComponent({
     ...rendererProps<Layout>()
   },
   setup(props: RendererProps<Layout>) {
-    return useVanillaLayout(useJsonFormsLayout(props));
+    return useVanillaLayout(useJsonFormsLayout(props))
   }
-});
+})
 
 export default layoutRenderer;
 
 export const groupRenderer: JsonFormsRendererRegistryEntry = {
   renderer: layoutRenderer,
   tester: rankWith(3, and(isLayout, uiTypeIs('Group')))
-};
+}
 </script>

@@ -8,6 +8,7 @@
     :placeholder="appliedOptions.placeholder"
     :label="computedLabel"
     @change.native="onChanges"
+    dense
   />
 </template>
 

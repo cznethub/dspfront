@@ -10,6 +10,7 @@
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
     @change.native="onChanges"
+    dense
     outlined
   />
 </template>

@@ -9,6 +9,7 @@
     :hint="control.description"
     :placeholder="appliedOptions.placeholder"
     @change.native="onChange"
+    dense
     outlined
   />
 </template>

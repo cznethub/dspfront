@@ -26,6 +26,7 @@
         @focus="isFocused = true"
         @blur="isFocused = false"
         outlined
+        dense
       />
     </v-hover>
   </control-wrapper>

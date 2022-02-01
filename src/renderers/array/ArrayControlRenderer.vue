@@ -7,7 +7,7 @@
     </legend>
     <v-tooltip bottom>
       <template v-slot:activator="{ on: onTooltip }">
-        <v-btn fab small color="primary" 
+        <v-btn icon color="primary"
           @click="addButtonClick" 
           :class="styles.arrayList.addButton"
           class="btn-add" 
@@ -123,7 +123,7 @@ const controlRenderer = defineComponent({
       this.addItem(
         this.control.path,
         createDefaultValue(this.control.schema)
-      )();
+      )()
     },
     reorderElements(index, newIndex) {
       if (newIndex < 0 || newIndex >= this.control.data.length) {
