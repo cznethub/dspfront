@@ -38,17 +38,17 @@
         <div>
           <div class="container">
             <div v-if="!isLoading">
-              <div class="upload-drop-area has-space-bottom">
+              <!-- <div class="upload-drop-area has-space-bottom">
                 <b-upload v-model="dropFiles" multiple drag-drop expanded>
                   <v-alert class="ma-4 has-cursor-pointer" type="info" prominent colored-border icon="mdi-file-multiple">
                     <span class="text-subtitle-1">Drop your files here or click to upload</span>
                   </v-alert>
                 </b-upload>
-              </div>
+              </div> -->
 
               <cz-folder-structure v-if="repoMetadata[repository].hasFolderStructure" :drop-files="dropFiles" />
 
-              <div v-if="dropFiles.length" class="mb-4">
+              <!-- <div v-if="dropFiles.length" class="mb-4">
                 <transition-group name="list-files">
                   <v-chip
                     v-for="(file, index) in dropFiles"
@@ -62,7 +62,7 @@
                     <strong>{{ file.name }}</strong>
                   </v-chip>
                 </transition-group>
-              </div>
+              </div> -->
 
               <json-forms
                 :disabled="isSaving"
@@ -329,30 +329,30 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   min-height: 75vh;
 }
 
-.upload-drop-area {
-  border: 1px dashed #ddd;
-  border-radius: 0.5rem;
-  cursor: pointer;
+// .upload-drop-area {
+//   border: 1px dashed #ddd;
+//   border-radius: 0.5rem;
+//   cursor: pointer;
 
-  ::v-deep input[type="file"] {
-    display: none;
-  }
-}
+//   ::v-deep input[type="file"] {
+//     display: none;
+//   }
+// }
 
-.list-files-item {
-  transition: all 0.55s ease;
-  display: inline-block;
-}
+// .list-files-item {
+//   transition: all 0.55s ease;
+//   display: inline-block;
+// }
 
-.list-files-enter,
-.list-files-leave-to {
-  opacity: 0;
-  transform: translateY(30px);
-}
+// .list-files-enter,
+// .list-files-leave-to {
+//   opacity: 0;
+//   transform: translateY(30px);
+// }
 
-.list-files-leave-active {
-  position: absolute;
-}
+// .list-files-leave-active {
+//   position: absolute;
+// }
 
 .form-controls {
   button + button {
