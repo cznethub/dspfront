@@ -112,6 +112,7 @@ p {
   border-radius: 4px;
   padding: 0.5rem 1rem;
   position: relative;
+  min-height: 2rem;
 
   &:hover {
     border-color: rgba(0, 0, 0, 0.6);;
@@ -132,6 +133,7 @@ p {
     &.v-label--active {
       position: absolute;
       cursor: default;
+      transform: translateY(-1.2rem) scale(1) !important;
     }
 
     &:not(.v-label--active) {

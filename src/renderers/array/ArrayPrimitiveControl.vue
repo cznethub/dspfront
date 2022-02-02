@@ -39,6 +39,7 @@
           <v-chip
             v-bind="attrs"
             close
+            small
             @click:close="remove(item)"
           >
             {{ item }}
