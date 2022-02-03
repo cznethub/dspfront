@@ -3,7 +3,6 @@
     <v-sheet class="pa-4 primary lighten-2 d-flex align-center">
       <v-btn @click="newFolder" fab small text><v-icon>mdi-folder</v-icon></v-btn>
       <v-btn @click="deleteSelected" fab small text :disabled="!selected.length"><v-icon>mdi-delete</v-icon></v-btn>
-      <v-btn @click="renameItem" fab small text :disabled="selectedDirectoryItem === rootDirectory"><v-icon>mdi-pencil</v-icon></v-btn>
       <template v-if="selected.length">
         <v-spacer></v-spacer>
         <span class="text-subtitle-2">{{ selected.length }} item{{ selected.length !== 1 ? 's': '' }} selected</span>
@@ -37,19 +36,28 @@
                   </v-icon>
                 </template>
                 <template v-slot:label="{ item }">
-                  <v-text-field v-if="item.isRenaming" :value="item.name"
+                  <v-text-field v-if="item.isRenaming"
                     @change="onRenamed(item, $event)"
                     @keydown.enter="item.isRenaming = false"
                     @click.stop="onItemClick(item)"
+                    @click:append="item.isRenaming = false"
+                    append-icon="mdi-cancel"
+                    :value="item.name"
+                    dense
+                    hide-details
                     autofocus>
                   </v-text-field>
                   <div v-else @click.stop="onItemClick(item)">{{ item.name }}</div>
                 </template>
+                <template v-slot:append="{ item, active }">
+                  <template v-if="active">
+                    <v-btn v-if="!item.isRenaming"
+                      @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil</v-icon></v-btn>
+                  </template>
+                </template>
               </v-treeview>
             </v-col>
-            <v-col cols="3" @click="selectedDirectoryItem = rootDirectory; active = [rootDirectory.key]">
-              
-            </v-col>
+            <v-col cols="3" @click="onClickOutside"></v-col>
           </v-row>
         </v-card-text>
       </v-card>
@@ -100,18 +108,18 @@ export default class CzFolderStructure extends Vue {
     txt: 'mdi-file-document-outline',
     xls: 'mdi-file-excel',
   }
-  // protected selectedDirectoryItem!: IFolder | IFile
+  // protected activeDirectoryItem!: IFolder | IFile
   protected rootDirectory: IFolder = { name: 'root', children: [
     
   ], parent: null, key: '' }
   protected open: string[] = []
   protected active: string[] = []
   protected selected: string[] = []
-  protected selectedDirectoryItem!: IFolder | IFile
+  protected activeDirectoryItem!: IFolder | IFile
   protected dropFiles: File[] = []
 
   created() {
-    this.selectedDirectoryItem = this.rootDirectory
+    this.activeDirectoryItem = this.rootDirectory
     // this.directoryItems = this.dropFiles.map((file) => {
     //   return {
     //     name: file.name
@@ -123,9 +131,9 @@ export default class CzFolderStructure extends Vue {
     this.active = [item.key]
   }
 
-  protected renameItem() {
+  protected renameItem(item: IFile | IFolder) {
     this.clearRenaming()
-    this.selectedDirectoryItem.isRenaming = true
+    item.isRenaming = true
   }
 
   protected onRenamed(item: IFile | IFolder, name: string) {
@@ -146,17 +154,22 @@ export default class CzFolderStructure extends Vue {
     this.selected = []
   }
 
+  protected onClickOutside() {
+    this.activeDirectoryItem = this.rootDirectory
+    this.active = [this.rootDirectory.key]
+  }
+
   protected onUpdateActive(keys: string[]) {
     const target = this._getItemByKey(keys[0])
 
-    if (this.selectedDirectoryItem !== target && !target?.isRenaming) {
+    if (this.activeDirectoryItem !== target && !target?.isRenaming) {
       this.clearRenaming()
     }
     if (keys.length && target) {
-      this.selectedDirectoryItem = target
+      this.activeDirectoryItem = target
     }
     else {
-      this.selectedDirectoryItem = this.rootDirectory
+      this.activeDirectoryItem = this.rootDirectory
     }
   }
 
@@ -167,20 +180,20 @@ export default class CzFolderStructure extends Vue {
   protected newFolder() {
     this.clearRenaming()
     const newFolder = { name: 'New folder', children: [], parent: null, isRenaming: true, key: Date.now().toString() } as IFolder
-    if (this.selectedDirectoryItem.hasOwnProperty('children')) {
+    if (this.activeDirectoryItem.hasOwnProperty('children')) {
       // Selected item is a folder
-      newFolder.parent = this.selectedDirectoryItem as IFolder
-      newFolder.name = this._getAvailableName(newFolder.name, this.selectedDirectoryItem as IFolder)
+      newFolder.parent = this.activeDirectoryItem as IFolder
+      newFolder.name = this._getAvailableName(newFolder.name, this.activeDirectoryItem as IFolder)
       if (this.open.indexOf(newFolder.parent.key) === -1) {
         this.open.push(newFolder.parent.key)
       }
-      ;(this.selectedDirectoryItem as IFolder).children.push(newFolder)
+      ;(this.activeDirectoryItem as IFolder).children.push(newFolder)
     }
     else {
       // Selected item is a file
-      newFolder.parent = this.selectedDirectoryItem.parent as IFolder
-      newFolder.name = this._getAvailableName(newFolder.name, this.selectedDirectoryItem.parent as IFolder);
-      (this.selectedDirectoryItem.parent as IFolder).children = [newFolder, ...this.rootDirectory.children]
+      newFolder.parent = this.activeDirectoryItem.parent as IFolder
+      newFolder.name = this._getAvailableName(newFolder.name, this.activeDirectoryItem.parent as IFolder);
+      (this.activeDirectoryItem.parent as IFolder).children = [newFolder, ...this.rootDirectory.children]
     }
   }
 
@@ -191,8 +204,8 @@ export default class CzFolderStructure extends Vue {
     const parent = item.parent as IFolder
 
     // If it was the active directory, make its parent active
-    if (item === this.selectedDirectoryItem) {
-      this.selectedDirectoryItem = parent
+    if (item === this.activeDirectoryItem) {
+      this.activeDirectoryItem = parent
       this.active = [parent.key]
     }
 
@@ -211,7 +224,7 @@ export default class CzFolderStructure extends Vue {
 
     while(nameAlreadyExists) {
       availableName = `${name} (${counter})`
-      nameAlreadyExists = (this.selectedDirectoryItem as IFolder).children.some((item: IFile | IFolder) => {
+      nameAlreadyExists = (this.activeDirectoryItem as IFolder).children.some((item: IFile | IFolder) => {
         return item.name === availableName && item.name !== currentName
       })
       counter++
