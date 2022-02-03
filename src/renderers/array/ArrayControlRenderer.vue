@@ -5,7 +5,7 @@
       class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
       {{ computedLabel }}
     </legend>
-    <v-tooltip bottom>
+    <v-tooltip bottom transition="fade">
       <template v-slot:activator="{ on: onTooltip }">
         <v-btn icon color="primary"
           @click="addButtonClick" 

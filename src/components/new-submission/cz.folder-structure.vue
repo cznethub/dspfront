@@ -1,30 +1,54 @@
 <template>
   <v-card class="mb-8">
-    <v-sheet class="pa-4 primary lighten-2 d-flex align-center">
+    <v-sheet class="pa-4 d-flex align-center has-bg-light-gray">
       <v-btn @click="newFolder" fab small text><v-icon>mdi-folder</v-icon></v-btn>
-      <v-btn @click="deleteSelected" fab small text :disabled="!selected.length"><v-icon>mdi-delete</v-icon></v-btn>
+      <v-divider class="mx-4" vertical></v-divider>
+      <v-btn @click="empty" :disabled="!rootDirectory.children.length" small depressed>
+        <v-icon>mdi-delete-empty</v-icon>
+        Empty
+      </v-btn>
       <template v-if="selected.length">
         <v-spacer></v-spacer>
+        <v-tooltip bottom transition="fade">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn @click="selected = []" fab small text :disabled="!selected.length" v-on="on" v-bind="attrs">
+              <v-icon>mdi-checkbox-blank-off</v-icon>
+            </v-btn>
+          </template>
+          <span>Unselect All</span>
+        </v-tooltip>
+        <v-tooltip bottom transition="fade">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn @click="deleteSelected" fab small text :disabled="!selected.length" v-on="on" v-bind="attrs">
+              <v-icon>mdi-delete</v-icon>
+            </v-btn>
+          </template>
+          <span>Delete</span>
+        </v-tooltip>
+        
+        <v-divider class="mx-4" vertical></v-divider>
         <span class="text-subtitle-2">{{ selected.length }} item{{ selected.length !== 1 ? 's': '' }} selected</span>
       </template>
     </v-sheet>
     <v-card-text style="min-height: 10rem;">
+
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
-        <v-card-text>
+        <v-card-text class="files-container" style="height: 15rem;">
           <v-row>
-            <v-col cols="9">
+            <v-col cols="9" v-click-outside="{ handler: onSetActiveRootDirectory, include: include}">
               <v-treeview
                 v-model="selected"
+                @update:active="onUpdateActive"
                 :items="rootDirectory.children"
                 :open.sync="open"
                 :active.sync="active"
                 :value.sync="selected"
-                @update:active="onUpdateActive"
                 selection-type="independent"
                 selectable
                 transition
                 activatable
                 item-key="key"
+                dense
                 open-on-click
               >
                 <template v-slot:prepend="{ item, open }">
@@ -41,6 +65,7 @@
                     @keydown.enter="item.isRenaming = false"
                     @click.stop="onItemClick(item)"
                     @click:append="item.isRenaming = false"
+                    v-click-outside="onClickOutside"
                     :value="item.name"
                     append-icon="mdi-cancel"
                     dense
@@ -57,12 +82,12 @@
                 </template>
               </v-treeview>
             </v-col>
-            <v-col cols="3" @click="onClickOutside"></v-col>
+            <v-col cols="3"></v-col>
           </v-row>
         </v-card-text>
       </v-card>
 
-      <div class="upload-drop-area has-bg-light-gray">
+      <div class="upload-drop-area has-bg-light-gray included">
         <b-upload multiple drag-drop expanded v-model="dropFiles">
           <v-alert class="ma-4 has-cursor-pointer has-bg-light-gray" type="info" prominent colored-border icon="mdi-file-multiple">
             <span class="text-subtitle-1">Drop your files here or click to upload</span>
@@ -129,7 +154,7 @@ export default class CzFolderStructure extends Vue {
   }
 
   @Watch('dropFiles')
-  onFilesDropped(newFiles) {
+  onFilesDropped(newFiles: File[]) {
     if (!newFiles.length) {
       return
     }
@@ -148,6 +173,25 @@ export default class CzFolderStructure extends Vue {
     })
     this._openRecursive(targetFolder)
     this.dropFiles = []
+  }
+
+  @Watch('selected')
+  onSelectedChanged(newSelected: string[]) {
+    // When a folder is selected, select all its child items as well
+    const items = newSelected.map((key: string) => this._getItemByKey(key))
+    items.map((item: IFolder | IFile | undefined) => {
+
+      if (item && item.hasOwnProperty('children')) {
+        const children = (item as IFolder).children
+        if (children.some(c => this.selected.indexOf(c.key) === -1)) {
+          this.select(children.map(i => i.key))
+        }
+      }
+    })
+  }
+
+  protected select(keys: string[]) {
+    this.selected = [...new Set([...this.selected, ...keys])]
   }
 
   protected onItemClick(item: IFolder | IFile) {
@@ -182,6 +226,15 @@ export default class CzFolderStructure extends Vue {
     this.active = [this.rootDirectory.key]
   }
 
+  protected onSetActiveRootDirectory() {
+    this.activeDirectoryItem = this.rootDirectory
+    this.active = []
+  }
+
+  protected include () {
+    return [document.querySelector('.included')]
+  }
+
   protected onUpdateActive(keys: string[]) {
     const target = this._getItemByKey(keys[0])
 
@@ -200,6 +253,22 @@ export default class CzFolderStructure extends Vue {
     this._clearRenamingRecursive(this.rootDirectory)
   }
 
+  protected empty() {
+    CzNotification.openDialog({
+      title: 'Remove all files?',
+      content: 'Are you sure you want to remove all files from this list?',
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        this.rootDirectory.children = []
+        this.activeDirectoryItem = this.rootDirectory
+        this.selected = []
+        this.open = []
+        this.active = []
+      }
+    })
+  }
+
   protected newFolder() {
     this.clearRenaming()
     const newFolder = { name: 'New folder', children: [], parent: null, isRenaming: true, key: Date.now().toString() } as IFolder
@@ -207,13 +276,16 @@ export default class CzFolderStructure extends Vue {
       // Selected item is a folder
       newFolder.parent = this.activeDirectoryItem as IFolder
       newFolder.name = this._getAvailableName(newFolder.name, this.activeDirectoryItem as IFolder)
-      ;(this.activeDirectoryItem as IFolder).children.push(newFolder)
+      newFolder.parent.children.push(newFolder)
+      newFolder.parent.children = newFolder.parent.children.sort((a, b) => {
+        return a.hasOwnProperty('children') ? -1 : 1
+      })
     }
     else {
       // Selected item is a file
       newFolder.parent = this.activeDirectoryItem.parent as IFolder
-      newFolder.name = this._getAvailableName(newFolder.name, this.activeDirectoryItem.parent as IFolder);
-      (this.activeDirectoryItem.parent as IFolder).children = [newFolder, ...this.rootDirectory.children]
+      newFolder.name = this._getAvailableName(newFolder.name, newFolder.parent as IFolder);
+      newFolder.parent.children = [newFolder, ...this.rootDirectory.children]
     }
     this._openRecursive(newFolder)
   }
@@ -247,6 +319,13 @@ export default class CzFolderStructure extends Vue {
     const index = parent.children.indexOf(item)
     if (index >= 0) {
       parent.children.splice(index, 1)
+      // If the folder is now empty, mark it as closed
+      if (!parent.children.length) {
+        const index = this.open.indexOf(parent.key)
+        if (index >= 0) {
+          this.open.splice(index, 1)
+        }
+      }
     }
   }
 
@@ -308,5 +387,10 @@ export default class CzFolderStructure extends Vue {
   ::v-deep input[type="file"] {
     display: none;
   }
+}
+
+.files-container {
+  overflow: auto;
+  resize: vertical;
 }
 </style>
