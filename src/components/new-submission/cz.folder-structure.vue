@@ -41,8 +41,8 @@
                     @keydown.enter="item.isRenaming = false"
                     @click.stop="onItemClick(item)"
                     @click:append="item.isRenaming = false"
-                    append-icon="mdi-cancel"
                     :value="item.name"
+                    append-icon="mdi-cancel"
                     dense
                     hide-details
                     autofocus>
@@ -87,10 +87,10 @@ interface IFile {
 
 interface IFolder {
   name: string
-  children: (IFile | IFolder)[]
   parent: IFolder | null
   isRenaming?: boolean
   key: string
+  children: (IFile | IFolder)[]
 }
 
 @Component({
@@ -142,6 +142,7 @@ export default class CzFolderStructure extends Vue {
         name: this._getAvailableName(file.name, targetFolder),
         parent: targetFolder,
         key: `${Date.now().toString()}-${index}`,
+        isRenaming: false,  // Need to pass it so that Vue can set reactive bindings to it
         file
       } as IFile)
     })
