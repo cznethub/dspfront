@@ -75,13 +75,14 @@
 
 <script lang="ts">
 import CzNotification from "@/models/notifications.model"
-import { Component, Vue, Prop } from "vue-property-decorator"
+import { Component, Vue, Watch } from "vue-property-decorator"
 
 interface IFile {
   name: string
   parent: IFolder | null
   isRenaming?: boolean
   key: string
+  file: File
 }
 
 interface IFolder {
@@ -125,6 +126,27 @@ export default class CzFolderStructure extends Vue {
     //     name: file.name
     //   } as IDirectoryItem
     // })
+  }
+
+  @Watch('dropFiles')
+  onFilesDropped(newFiles) {
+    if (!newFiles.length) {
+      return
+    }
+    const targetFolder = this.activeDirectoryItem.hasOwnProperty('children')
+      ? this.activeDirectoryItem as IFolder
+      : this.activeDirectoryItem.parent as IFolder
+
+    newFiles.map((file, index) => {
+      targetFolder.children.push({
+        name: this._getAvailableName(file.name, targetFolder),
+        parent: targetFolder,
+        key: `${Date.now().toString()}-${index}`,
+        file
+      } as IFile)
+    })
+    this._openRecursive(targetFolder)
+    this.dropFiles = []
   }
 
   protected onItemClick(item: IFolder | IFile) {
@@ -184,9 +206,6 @@ export default class CzFolderStructure extends Vue {
       // Selected item is a folder
       newFolder.parent = this.activeDirectoryItem as IFolder
       newFolder.name = this._getAvailableName(newFolder.name, this.activeDirectoryItem as IFolder)
-      if (this.open.indexOf(newFolder.parent.key) === -1) {
-        this.open.push(newFolder.parent.key)
-      }
       ;(this.activeDirectoryItem as IFolder).children.push(newFolder)
     }
     else {
@@ -194,6 +213,21 @@ export default class CzFolderStructure extends Vue {
       newFolder.parent = this.activeDirectoryItem.parent as IFolder
       newFolder.name = this._getAvailableName(newFolder.name, this.activeDirectoryItem.parent as IFolder);
       (this.activeDirectoryItem.parent as IFolder).children = [newFolder, ...this.rootDirectory.children]
+    }
+    this._openRecursive(newFolder)
+  }
+
+  private _openRecursive(item: IFile | IFolder) {
+    if (item.hasOwnProperty('children')) {
+      if (this.open.indexOf(item.key) === -1) {
+        this.open.push(item.key)
+      }
+    }
+    if (item.parent) {
+      if (this.open.indexOf(item.parent.key) === -1) {
+        this.open.push(item.parent.key)
+      }
+      this._openRecursive(item.parent)
     }
   }
 
