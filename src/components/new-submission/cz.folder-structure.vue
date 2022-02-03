@@ -176,22 +176,59 @@ export default class CzFolderStructure extends Vue {
   }
 
   @Watch('selected')
-  onSelectedChanged(newSelected: string[]) {
-    // When a folder is selected, select all its child items as well
-    const items = newSelected.map((key: string) => this._getItemByKey(key))
-    items.map((item: IFolder | IFile | undefined) => {
+  onSelectedChanged(newSelected: string[], oldSelected: string[]) {
+    const isSelecting = newSelected.length > oldSelected.length
+    const selectedItems = newSelected.map((key: string) => this._getItemByKey(key))
 
-      if (item && item.hasOwnProperty('children')) {
-        const children = (item as IFolder).children
-        if (children.some(c => this.selected.indexOf(c.key) === -1)) {
-          this.select(children.map(i => i.key))
+    if (isSelecting) {
+      // When a folder is selected, select all its child items as well
+      selectedItems.map((item: IFolder | IFile | undefined) => {
+        if (item && this.isFolder(item)) {
+          if (this._hasSomeChildUnselected(item as IFolder)) {
+            this.select((item as IFolder).children.map(i => i.key))
+          }
         }
-      }
+      })
+    }
+    else {
+      // If a selected item is a folder and has some child unselected, unselect it
+      selectedItems.map((item: IFolder | IFile | undefined) => {
+        if (item && this.isFolder(item) && this._hasSomeChildUnselected(item as IFolder)) {
+          this.unselect(item.key)
+        }
+      })
+    }
+  }
+
+  protected isFolder(item: IFile | IFolder) {
+    return item.hasOwnProperty('children')
+  }
+
+  protected isSelected(item: IFolder | IFile) {
+    return this.selected.includes(item.key)
+  }
+
+  private _hasSomeChildSelected(item: IFolder) {
+    return item.children.some((c) => {
+      return this.isSelected(c)
+    })
+  }
+
+  private _hasSomeChildUnselected(item: IFolder) {
+    return item.children.some((c) => {
+      return !this.isSelected(c)
     })
   }
 
   protected select(keys: string[]) {
     this.selected = [...new Set([...this.selected, ...keys])]
+  }
+
+  protected unselect(key: string) {
+    const index = this.selected.indexOf(key)
+    if (index >= 0) {
+      this.selected.splice(index, 1)
+    }
   }
 
   protected onItemClick(item: IFolder | IFile) {
@@ -276,30 +313,25 @@ export default class CzFolderStructure extends Vue {
       // Selected item is a folder
       newFolder.parent = this.activeDirectoryItem as IFolder
       newFolder.name = this._getAvailableName(newFolder.name, this.activeDirectoryItem as IFolder)
-      newFolder.parent.children.push(newFolder)
-      newFolder.parent.children = newFolder.parent.children.sort((a, b) => {
-        return a.hasOwnProperty('children') ? -1 : 1
-      })
     }
     else {
       // Selected item is a file
       newFolder.parent = this.activeDirectoryItem.parent as IFolder
-      newFolder.name = this._getAvailableName(newFolder.name, newFolder.parent as IFolder);
-      newFolder.parent.children = [newFolder, ...this.rootDirectory.children]
+      newFolder.name = this._getAvailableName(newFolder.name, newFolder.parent as IFolder)
     }
+    newFolder.parent.children.push(newFolder)
+    newFolder.parent.children = newFolder.parent.children.sort((a, b) => {
+      return b.hasOwnProperty('children') ? 1 : -1
+    })
     this._openRecursive(newFolder)
   }
 
   private _openRecursive(item: IFile | IFolder) {
-    if (item.hasOwnProperty('children')) {
-      if (this.open.indexOf(item.key) === -1) {
-        this.open.push(item.key)
-      }
+    if (this.isFolder(item)) {
+      this.open = [...new Set([...this.open, item.key])]
     }
     if (item.parent) {
-      if (this.open.indexOf(item.parent.key) === -1) {
-        this.open.push(item.parent.key)
-      }
+      this.open = [...new Set([...this.open, item.parent.key])]
       this._openRecursive(item.parent)
     }
   }
@@ -338,7 +370,7 @@ export default class CzFolderStructure extends Vue {
 
     while(nameAlreadyExists) {
       availableName = `${name} (${counter})`
-      nameAlreadyExists = (this.activeDirectoryItem as IFolder).children.some((item: IFile | IFolder) => {
+      nameAlreadyExists = parent.children.some((item: IFile | IFolder) => {
         return item.name === availableName && item.name !== currentName
       })
       counter++
