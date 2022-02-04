@@ -53,14 +53,6 @@ export const routes: RouteConfig[] = [
     meta: { hasLoggedInGuard: true },
   },
   {
-    name: 'about',
-    path: '/about',
-    components: {
-      content: CzAbout,
-      footer: CzFooter
-    },
-  },
-  {
     name: 'submit',
     path: '/submit',
     components: {

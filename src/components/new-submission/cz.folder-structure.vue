@@ -1,12 +1,19 @@
 <template>
   <v-card class="mb-8">
     <v-sheet class="pa-4 d-flex align-center has-bg-light-gray">
-      <v-btn @click="newFolder" fab small text><v-icon>mdi-folder</v-icon></v-btn>
-      <v-divider class="mx-4" vertical></v-divider>
-      <v-btn @click="empty" :disabled="!rootDirectory.children.length" small depressed>
-        <v-icon>mdi-delete-empty</v-icon>
-        Empty
-      </v-btn>
+      <v-tooltip v-if="allowFolders" bottom transition="fade">
+        <template v-slot:activator="{ on, attrs}">
+          <v-btn @click="newFolder" fab small text v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
+        </template>
+        New Folder
+      </v-tooltip>
+      
+      <template v-if="rootDirectory.children.length">
+        <v-divider v-if="allowFolders" class="mx-4" vertical></v-divider>
+        <v-btn @click="empty" small depressed>
+          Discard All
+        </v-btn>
+      </template>
       <template v-if="selected.length">
         <v-spacer></v-spacer>
         <v-tooltip bottom transition="fade">
@@ -23,15 +30,13 @@
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
-          <span>Delete</span>
+          <span>Discard</span>
         </v-tooltip>
-        
         <v-divider class="mx-4" vertical></v-divider>
         <span class="text-subtitle-2">{{ selected.length }} item{{ selected.length !== 1 ? 's': '' }} selected</span>
       </template>
     </v-sheet>
     <v-card-text style="min-height: 10rem;">
-
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem;">
           <v-row>
@@ -72,7 +77,10 @@
                     hide-details
                     autofocus>
                   </v-text-field>
-                  <div v-else @click.stop="onItemClick(item)">{{ item.name }}</div>
+                  <div v-else @click.stop="onItemClick(item)">
+                    <span>{{ item.name }}</span>
+                    <small v-if="item.file" class="ml-2 text-caption text--secondary">({{ item.file.size | prettyBytes }})</small>
+                  </div>
                 </template>
                 <template v-slot:append="{ item, active }">
                   <template v-if="active">
@@ -100,9 +108,9 @@
 
 <script lang="ts">
 import CzNotification from "@/models/notifications.model"
-import { Component, Vue, Watch } from "vue-property-decorator"
+import { Component, Vue, Watch, Prop } from "vue-property-decorator"
 
-interface IFile {
+export interface IFile {
   name: string
   parent: IFolder | null
   isRenaming?: boolean
@@ -110,7 +118,7 @@ interface IFile {
   file: File
 }
 
-interface IFolder {
+export interface IFolder {
   name: string
   parent: IFolder | null
   isRenaming?: boolean
@@ -121,9 +129,13 @@ interface IFolder {
 @Component({
   name: "cz-folder-structure",
   components: {  },
+  filters: {
+  }
 })
 export default class CzFolderStructure extends Vue {
-  // @Prop({ default: () => []}) dropFiles!: File[]
+  @Prop({ default: false }) allowFolders!: boolean
+  // @Prop() initialUploads!: (IFile | IFolder)[]
+
   protected files = {
     html: 'mdi-language-html5',
     js: 'mdi-nodejs',
@@ -134,10 +146,7 @@ export default class CzFolderStructure extends Vue {
     txt: 'mdi-file-document-outline',
     xls: 'mdi-file-excel',
   }
-  // protected activeDirectoryItem!: IFolder | IFile
-  protected rootDirectory: IFolder = { name: 'root', children: [
-    
-  ], parent: null, key: '' }
+  protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '' }
   protected open: string[] = []
   protected active: string[] = []
   protected selected: string[] = []
@@ -146,15 +155,15 @@ export default class CzFolderStructure extends Vue {
 
   created() {
     this.activeDirectoryItem = this.rootDirectory
-    // this.directoryItems = this.dropFiles.map((file) => {
-    //   return {
-    //     name: file.name
-    //   } as IDirectoryItem
-    // })
+  }
+
+  @Watch('rootDirectory.children', { deep: true })
+  protected onInput() {
+    this.$emit('input', this._getFiles(this.rootDirectory))
   }
 
   @Watch('dropFiles')
-  onFilesDropped(newFiles: File[]) {
+  protected onFilesDropped(newFiles: File[]) {
     if (!newFiles.length) {
       return
     }
@@ -176,7 +185,7 @@ export default class CzFolderStructure extends Vue {
   }
 
   @Watch('selected')
-  onSelectedChanged(newSelected: string[], oldSelected: string[]) {
+  protected onSelectedChanged(newSelected: string[], oldSelected: string[]) {
     const isSelecting = newSelected.length > oldSelected.length
     const selectedItems = newSelected.map((key: string) => this._getItemByKey(key))
 
@@ -307,6 +316,10 @@ export default class CzFolderStructure extends Vue {
   }
 
   protected newFolder() {
+    if (!this.allowFolders) {
+      return
+    }
+
     this.clearRenaming()
     const newFolder = { name: 'New folder', children: [], parent: null, isRenaming: true, key: Date.now().toString() } as IFolder
     if (this.activeDirectoryItem.hasOwnProperty('children')) {
@@ -406,6 +419,20 @@ export default class CzFolderStructure extends Vue {
         }
       }
     }
+  }
+
+  /** Returns all files inside the given folder */
+  private _getFiles(item: IFolder): IFile[] {
+    const childFolders = item.children.filter(i => this.isFolder(i)) as IFolder[]
+    const childFiles = item.children.filter(i => !this.isFolder(i)) as IFile[]
+
+    let nestedFiles: IFile[] = []
+    for (let i = 0; i < childFolders.length; i++) {
+      const newItems = this._getFiles(childFolders[i])
+      nestedFiles.push(...newItems)
+    }
+
+    return [...childFiles, ...nestedFiles]
   }
 }
 </script>

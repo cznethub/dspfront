@@ -221,11 +221,11 @@ export default class Repository extends Model implements IRepository {
    * @param {any} data - the form data to be saved
    * @param {string} repository - the repository key
   */
-  static async createSubmission(data: any, repository: string): Promise<{ recordId: string, formMetadata: any } | null> {
+  static async createSubmission(data: any, repository: string): Promise<{ identifier: string, formMetadata: any } | null> {
     console.info(`${repository}: Creating submission...`)
     
     try {
-      await axios.post(
+      const resp = await axios.post(
         `/api/metadata/${repository}`,
         data,
         { 
@@ -233,6 +233,9 @@ export default class Repository extends Model implements IRepository {
           params: { "access_token": User.$state.orcidAccessToken }
         }
       )
+      if (resp.status === 201) {
+        return { identifier: resp.data.identifier, formMetadata: resp.data }
+      }
     }
     catch(e: any) {
       if (e.response.status === 401) {

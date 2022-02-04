@@ -46,7 +46,7 @@
                 </b-upload>
               </div> -->
 
-              <cz-folder-structure v-if="repoMetadata[repository].hasFolderStructure" :drop-files="dropFiles" />
+              <cz-folder-structure v-model="uploads" :allowFolders="repoMetadata[repository].hasFolderStructure" />
 
               <!-- <div v-if="dropFiles.length" class="mb-4">
                 <transition-group name="list-files">
@@ -132,14 +132,14 @@ import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
 import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
 import { CzRenderers } from "@/renderers/renderer.vue"
-import { EnumRepositoryKeys } from "../submissions/types"
+import { EnumRepositoryKeys, IFolder } from "../submissions/types"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
-import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
+import CzFolderStructure, { IFile } from "@/components/new-submission/cz.folder-structure.vue"
 // import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
 const sprintf = require("sprintf-js").sprintf;
@@ -163,6 +163,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected links: any = {}
   protected renderers: JsonFormsRendererRegistryEntry[] = renderers
   protected dropFiles: File[] = []
+  protected uploads: IFile [] = []
   protected showUISchema = false
   protected usedUISchema = {}
   protected repoMetadata = repoMetadata
@@ -272,13 +273,16 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         return;
       }
 
-      if (submission?.recordId) {
+      if (submission?.identifier) {
         // this.data = {
         //   ...this.data,
         //   ...submission?.formMetadata.metadata,
         // };
         // this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
-        this.identifier = submission.recordId
+        // TODO: getting a full url as identifier instead of just the identifier
+        // I.e: http://beta.hydroshare.org/resource/99b2bc413274446185eb489ed312de45
+        // Parsing it for now...
+        this.identifier = submission.identifier.split('/').pop()
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...");
@@ -289,12 +293,25 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     }
 
     // If files have been selected for upload, upload them
-    if (this.dropFiles.length) {
-      const url = sprintf(
-        this.activeRepository?.get()?.urls?.fileCreateUrl,
-        this.identifier
-      )
-      await this.activeRepository?.uploadFiles(url, this.dropFiles)
+    // if (this.dropFiles.length) {
+    //   const url = sprintf(
+    //     this.activeRepository?.get()?.urls?.fileCreateUrl,
+    //     this.identifier
+    //   )
+    //   await this.activeRepository?.uploadFiles(url, this.dropFiles)
+    // }
+
+    if (this.uploads.length) {
+      console.log(this.identifier)
+      //  const url = sprintf(
+      //   this.activeRepository?.get()?.urls?.fileCreateUrl,
+      //   this.identifier
+      // )
+      // TODO: add this to backend
+      const url = `https://beta.hydroshare.org/hsapi/_internal/${this.identifier}/add-files-to-resource/`
+      // TODO: integrate file paths into endpoints
+      // console.log(url, files)
+      await this.activeRepository?.uploadFiles(url, this.uploads, this.identifier)
     }
 
     // Indicate that changes have been saved
