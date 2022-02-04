@@ -38,31 +38,7 @@
         <div>
           <div class="container">
             <div v-if="!isLoading">
-              <!-- <div class="upload-drop-area has-space-bottom">
-                <b-upload v-model="dropFiles" multiple drag-drop expanded>
-                  <v-alert class="ma-4 has-cursor-pointer" type="info" prominent colored-border icon="mdi-file-multiple">
-                    <span class="text-subtitle-1">Drop your files here or click to upload</span>
-                  </v-alert>
-                </b-upload>
-              </div> -->
-
               <cz-folder-structure v-model="uploads" :allowFolders="repoMetadata[repository].hasFolderStructure" />
-
-              <!-- <div v-if="dropFiles.length" class="mb-4">
-                <transition-group name="list-files">
-                  <v-chip
-                    v-for="(file, index) in dropFiles"
-                    :key="`${file.name}`"
-                    class="list-files-item ma-1"
-                    close
-                    color="secondary"
-                    @click:close="deleteDropFile(index)"
-                  >
-                    <v-icon left>mdi-file</v-icon>
-                    <strong>{{ file.name }}</strong>
-                  </v-chip>
-                </transition-group>
-              </div> -->
 
               <json-forms
                 :disabled="isSaving"
@@ -136,7 +112,7 @@ import { EnumRepositoryKeys } from "../submissions/types"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
-import { IFolder, IFile } from '@/components/new-submission/types'
+import { IFile } from '@/components/new-submission/types'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -163,7 +139,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected data: any = {}
   protected links: any = {}
   protected renderers: JsonFormsRendererRegistryEntry[] = renderers
-  protected dropFiles: File[] = []
   protected uploads: IFile [] = []
   protected showUISchema = false
   protected usedUISchema = {}
@@ -261,7 +236,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected async save() {
     this.isSaving = true
-
     let submission
 
     // If first time saving, create a new record
@@ -294,15 +268,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       )
     }
 
-    // If files have been selected for upload, upload them
-    // if (this.dropFiles.length) {
-    //   const url = sprintf(
-    //     this.activeRepository?.get()?.urls?.fileCreateUrl,
-    //     this.identifier
-    //   )
-    //   await this.activeRepository?.uploadFiles(url, this.dropFiles)
-    // }
-
     if (this.uploads.length) {
        const url = sprintf(
         this.activeRepository?.get()?.urls?.fileCreateUrl,
@@ -318,10 +283,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         : "Your submission has been saved!",
     })
     this.$router.push({ name: "submissions" })
-  }
-
-  protected deleteDropFile(index) {
-    this.dropFiles.splice(index, 1);
   }
 
   protected onChange(event: JsonFormsChangeEvent) {
@@ -342,31 +303,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   border-top: 1px solid #ddd;
   min-height: 75vh;
 }
-
-// .upload-drop-area {
-//   border: 1px dashed #ddd;
-//   border-radius: 0.5rem;
-//   cursor: pointer;
-
-//   ::v-deep input[type="file"] {
-//     display: none;
-//   }
-// }
-
-// .list-files-item {
-//   transition: all 0.55s ease;
-//   display: inline-block;
-// }
-
-// .list-files-enter,
-// .list-files-leave-to {
-//   opacity: 0;
-//   transform: translateY(30px);
-// }
-
-// .list-files-leave-active {
-//   position: absolute;
-// }
 
 .form-controls {
   button + button {
