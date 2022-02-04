@@ -90,7 +90,7 @@
               :page.sync="page"
               :search="filters.searchStr"
               :sort-by="sortBy.toLowerCase()"
-              :sort-desc="sortDesc === 'desc'"
+              :sort-desc="sortDesc === 'asc'"
               item-key="identifier"
               hide-default-footer
             >
@@ -272,7 +272,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected itemsPerPageArray = [10, 25, 50]
   protected page = 1
   protected sortDesc = false
-  protected sortBy = "title"
+  protected sortBy = "date"
   protected repoMetadata = repoMetadata
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections

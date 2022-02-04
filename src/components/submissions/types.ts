@@ -7,11 +7,6 @@ export interface ISubmission {
   url: string
 }
 
-export interface IFolder {
-  folders?: IFolder[]
-  files?: any[]
-}
-
 export enum EnumRepositoryKeys {
   hydroshare = 'hydroshare',
   zenodo = 'zenodo',
@@ -59,4 +54,5 @@ export interface IRepository {
   uischema?: any
   schemaDefaults?: any
   isDisabled?: boolean
+  hasFolderStructure?: boolean
 }

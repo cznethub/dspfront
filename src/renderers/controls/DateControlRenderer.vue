@@ -43,6 +43,7 @@
         readonly
         clearable
         v-bind="attrs"
+        dense
         v-on="on"
       />
     </template>

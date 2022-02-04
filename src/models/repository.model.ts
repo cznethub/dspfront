@@ -12,7 +12,7 @@ export default class Repository extends Model implements IRepository {
   static entity = 'repository'
   static primaryKey = 'key'
   static isAuthorizeListenerSet = false
-  static authorizeDialog$ = new Subject<RawLocation | undefined>()
+  static authorizeDialog$ = new Subject<{ repository: string, redirectTo?: RawLocation | undefined }>()
   public readonly key!: EnumRepositoryKeys
   public readonly name!: string
   public readonly logoSrc!: string
@@ -108,8 +108,8 @@ export default class Repository extends Model implements IRepository {
     await this.fetchAccessToken()
   }
 
-  static openAuthorizeDialog(redirectTo?: RawLocation) {
-    this.authorizeDialog$.next(redirectTo)
+  static openAuthorizeDialog(repository: string, redirectTo?: RawLocation) {
+    this.authorizeDialog$.next({ repository, redirectTo})
   }
 
   static async authorize(activeRepository: typeof Repository, callback?: () => any) {
@@ -221,11 +221,11 @@ export default class Repository extends Model implements IRepository {
    * @param {any} data - the form data to be saved
    * @param {string} repository - the repository key
   */
-  static async createSubmission(data: any, repository: string): Promise<{ recordId: string, formMetadata: any } | null> {
+  static async createSubmission(data: any, repository: string): Promise<{ identifier: string, formMetadata: any } | null> {
     console.info(`${repository}: Creating submission...`)
     
     try {
-      await axios.post(
+      const response = await axios.post(
         `/api/metadata/${repository}`,
         data,
         { 
@@ -233,6 +233,15 @@ export default class Repository extends Model implements IRepository {
           params: { "access_token": User.$state.orcidAccessToken }
         }
       )
+      if (response.status === 201) {
+        // TODO: get these identifiers from the backend
+        return { 
+          identifier: 
+            (response.data.identifier ? response.data.identifier.split('/').pop() : '')   // HydroShare
+            || response.data.prereserve_doi.recid,                                        // Zenodo
+          formMetadata: response.data
+        }
+      }
     }
     catch(e: any) {
       if (e.response.status === 401) {
@@ -244,7 +253,7 @@ export default class Repository extends Model implements IRepository {
           message: 'Authorization token is invalid or has expired.'
         })
 
-        Repository.openAuthorizeDialog()
+        Repository.openAuthorizeDialog(this.entity)
       }
       else {
         console.error(`${repository}: failed to create submission.`, e.response)
@@ -317,7 +326,7 @@ export default class Repository extends Model implements IRepository {
           message: 'Authorization token is invalid or has expired.'
         })
 
-        Repository.openAuthorizeDialog()
+        Repository.openAuthorizeDialog(this.entity)
       }
     }
   }

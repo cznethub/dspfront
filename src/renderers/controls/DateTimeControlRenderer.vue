@@ -40,6 +40,7 @@
         v-bind="attrs"
         v-on="on"
         style="max-width: 20rem;"
+        dense
       />
     </template>
 
@@ -49,7 +50,7 @@
           v-model="selectedDate" 
           @change="onChange"
           :disabled="!control.enabled"
-          scrollable 
+          scrollable
         />
       </v-col>
       
@@ -71,9 +72,9 @@ import {
   JsonFormsRendererRegistryEntry,
   rankWith,
   isDateTimeControl
-} from '@jsonforms/core';
+} from '@jsonforms/core'
 import { defineComponent } from '@vue/composition-api'
-import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2';
+import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { format, parse } from 'date-fns'
 
 const DEFAULT_TIME = '00:00:00'
@@ -84,7 +85,7 @@ const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 // TODO: add the rest of date formats used by jsonschema
 const DATE_FORMATS = {
   "date-time": "yyyy-MM-dd'T'HH:mm:ssXXX",
-};
+}
 
 const controlRenderer = defineComponent({
   name: 'datetime-control-renderer',
@@ -104,11 +105,11 @@ const controlRenderer = defineComponent({
       defaultTime: DEFAULT_TIME,
       menu: false,
       ...useJsonFormsControl(props)
-    };
+    }
   },
   computed: {
     dataDateTime(): string {
-      return (this.control.data ?? '').substr(0, 16);
+      return (this.control.data ?? '').substr(0, 16)
     },
     selectedDatetime() {
       if (this.selectedDate && this.selectedTime) {
@@ -137,7 +138,7 @@ const controlRenderer = defineComponent({
   },
   methods: {
     onChange() {
-      this.handleChange(this.control.path, this.formattedDatetime);
+      this.handleChange(this.control.path, this.formattedDatetime)
     },
   },
 });

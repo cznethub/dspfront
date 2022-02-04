@@ -38,29 +38,7 @@
         <div>
           <div class="container">
             <div v-if="!isLoading">
-              <div class="upload-drop-area has-space-bottom">
-                <b-upload v-model="dropFiles" multiple drag-drop expanded>
-                  <v-alert class="ma-4 has-cursor-pointer" type="info" prominent colored-border icon="mdi-file-multiple">
-                    <span class="text-subtitle-1">Drop your files here or click to upload</span>
-                  </v-alert>
-                </b-upload>
-              </div>
-
-              <div v-if="dropFiles.length" class="mb-4">
-                <transition-group name="list-files">
-                  <v-chip
-                    v-for="(file, index) in dropFiles"
-                    :key="`${file.name}`"
-                    class="list-files-item ma-1"
-                    close
-                    color="secondary"
-                    @click:close="deleteDropFile(index)"
-                  >
-                    <v-icon left>mdi-file</v-icon>
-                    <strong>{{ file.name }}</strong>
-                  </v-chip>
-                </transition-group>
-              </div>
+              <cz-folder-structure v-model="uploads" :allowFolders="repoMetadata[repository].hasFolderStructure" />
 
               <json-forms
                 :disabled="isSaving"
@@ -133,12 +111,15 @@ import { CzRenderers } from "@/renderers/renderer.vue"
 import { EnumRepositoryKeys } from "../submissions/types"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { repoMetadata } from "../submit/constants"
+import { IFile } from '@/components/new-submission/types'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
-import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
+import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
+// import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
-const sprintf = require("sprintf-js").sprintf;
+const sprintf = require("sprintf-js").sprintf
 
 const renderers = [
   ...vanillaRenderers, 
@@ -148,19 +129,20 @@ const renderers = [
 
 @Component({
   name: "cz-new-submission",
-  components: { JsonForms, JsonViewer },
+  components: { JsonForms, JsonViewer, CzFolderStructure },
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms;
-  protected isLoading = false;
-  protected isSaving = false;
-  protected identifier = "";
-  protected data: any = {};
-  protected links: any = {};
-  protected renderers: JsonFormsRendererRegistryEntry[] = renderers;
-  protected dropFiles: File[] = [];
-  protected showUISchema = false;
-  protected usedUISchema = {};
+  protected isLoading = false
+  protected isSaving = false
+  protected identifier = ""
+  protected data: any = {}
+  protected links: any = {}
+  protected renderers: JsonFormsRendererRegistryEntry[] = renderers
+  protected uploads: IFile [] = []
+  protected showUISchema = false
+  protected usedUISchema = {}
+  protected repoMetadata = repoMetadata
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined;
@@ -254,7 +236,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected async save() {
     this.isSaving = true
-
     let submission
 
     // If first time saving, create a new record
@@ -267,29 +248,32 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         return;
       }
 
-      if (submission?.recordId) {
+      if (submission?.identifier) {
         // this.data = {
         //   ...this.data,
         //   ...submission?.formMetadata.metadata,
         // };
         // this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
-        this.identifier = submission.recordId
+        // TODO: getting a full url as identifier instead of just the identifier
+        // I.e: http://beta.hydroshare.org/resource/99b2bc413274446185eb489ed312de45
+        // Parsing it for now...
+        // HydroShare
+        this.identifier = submission.identifier
       }
     } else {
-      console.info("CzNewSubmission: Saving to existing record...");
+      console.info("CzNewSubmission: Saving to existing record...")
       await this.activeRepository?.updateSubmission(
         this.identifier,
         this.data
       )
     }
 
-    // If files have been selected for upload, upload them
-    if (this.dropFiles.length) {
-      const url = sprintf(
+    if (this.uploads.length) {
+       const url = sprintf(
         this.activeRepository?.get()?.urls?.fileCreateUrl,
         this.identifier
       )
-      await this.activeRepository?.uploadFiles(url, this.dropFiles)
+      await this.activeRepository?.uploadFiles(url, this.uploads, this.identifier)
     }
 
     // Indicate that changes have been saved
@@ -299,10 +283,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         : "Your submission has been saved!",
     })
     this.$router.push({ name: "submissions" })
-  }
-
-  protected deleteDropFile(index) {
-    this.dropFiles.splice(index, 1);
   }
 
   protected onChange(event: JsonFormsChangeEvent) {
@@ -322,31 +302,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   overflow: auto;
   border-top: 1px solid #ddd;
   min-height: 75vh;
-}
-
-.upload-drop-area {
-  border: 1px dashed #ddd;
-  border-radius: 0.5rem;
-  cursor: pointer;
-
-  ::v-deep input[type="file"] {
-    display: none;
-  }
-}
-
-.list-files-item {
-  transition: all 0.55s ease;
-  display: inline-block;
-}
-
-.list-files-enter,
-.list-files-leave-to {
-  opacity: 0;
-  transform: translateY(30px);
-}
-
-.list-files-leave-active {
-  position: absolute;
 }
 
 .form-controls {

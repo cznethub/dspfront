@@ -9,6 +9,10 @@ import Repository from '@/models/repository.model'
 export class ActiveRepositoryMixin extends Vue {
   protected get activeRepository() {
     const key = Repository.$state.submittingTo
+    return this.getRepositoryFromKey(key)
+  }
+
+  protected getRepositoryFromKey(key: string) {
     switch (key) {
       case EnumRepositoryKeys.hydroshare: return HydroShare
       case EnumRepositoryKeys.zenodo: return Zenodo

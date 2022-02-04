@@ -5,9 +5,9 @@
       class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
       {{ computedLabel }}
     </legend>
-    <v-tooltip bottom>
+    <v-tooltip bottom transition="fade">
       <template v-slot:activator="{ on: onTooltip }">
-        <v-btn fab small color="primary" 
+        <v-btn icon color="primary"
           @click="addButtonClick" 
           :class="styles.arrayList.addButton"
           class="btn-add" 
@@ -25,40 +25,38 @@
       </template>
       {{ `Add to ${control.label}` }}
     </v-tooltip>
-    <div>
-      <drop-list name="list-complete" class="list-elements-container mt-4" 
-        :items="control.data || []"
-        @reorder="reorderElements($event.from, $event.to)"
-      >
-        <template v-slot:item="{ index }">
-          <drag class="item" :key="index">
-            <array-list-element
-              class="list-complete-item"
-              :styles="styles"
-              :moveUp="moveUp(control.path, index)"
-              :moveDown="moveDown(control.path, index)"
-              :delete="removeItems(control.path, [index])"
-              :moveUpEnabled="index > 0"
-              :moveDownEnabled="index < control.data.length - 1"
-              :label="childLabelForIndex(index)"
-            >
-              <dispatch-renderer
-                :schema="control.schema"
-                :uischema="childUiSchema"
-                :path="composePaths(control.path, `${index}`)"
-                :enabled="control.enabled"
-                :renderers="control.renderers"
-                :cells="control.cells"
-              />
-            </array-list-element>
-          </drag>
-        </template>
+    <drop-list v-if="control.data && control.data.length" name="list-complete" class="list-elements-container mt-4 pb-2" 
+      :items="control.data || []"
+      @reorder="reorderElements($event.from, $event.to)"
+    >
+      <template v-slot:item="{ index }">
+        <drag class="item" :key="index">
+          <array-list-element
+            class="list-complete-item mt-2"
+            :styles="styles"
+            :moveUp="moveUp(control.path, index)"
+            :moveDown="moveDown(control.path, index)"
+            :delete="removeItems(control.path, [index])"
+            :moveUpEnabled="index > 0"
+            :moveDownEnabled="index < control.data.length - 1"
+            :label="childLabelForIndex(index)"
+          >
+            <dispatch-renderer
+              :schema="control.schema"
+              :uischema="childUiSchema"
+              :path="composePaths(control.path, `${index}`)"
+              :enabled="control.enabled"
+              :renderers="control.renderers"
+              :cells="control.cells"
+            />
+          </array-list-element>
+        </drag>
+      </template>
 
-        <template v-slot:feedback="{data}">
-          <div class="item feedback" :key="data">{{data}}</div>
-        </template>
-      </drop-list>
-    </div>
+      <template v-slot:feedback="{data}">
+        <div class="item feedback" :key="data">{{data}}</div>
+      </template>
+    </drop-list>
   </fieldset>
 </template>
 
@@ -123,7 +121,7 @@ const controlRenderer = defineComponent({
       this.addItem(
         this.control.path,
         createDefaultValue(this.control.schema)
-      )();
+      )()
     },
     reorderElements(index, newIndex) {
       if (newIndex < 0 || newIndex >= this.control.data.length) {
@@ -151,18 +149,18 @@ export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
     }
   }
 
-  .list-complete-item {
-    transition: all 0.35s ease;
-  }
+  // .list-complete-item {
+  //   transition: all 0.35s ease;
+  // }
 
-  .list-complete-enter,
-  .list-complete-leave-to {
-    opacity: 0;
-  }
+  // .list-complete-enter,
+  // .list-complete-leave-to {
+  //   opacity: 0;
+  // }
 
-  .list-complete-leave-active {
-    // position: absolute;
-  }
+  // .list-complete-leave-active {
+  //   position: absolute;
+  // }
 
   .list-title {
     position: absolute;

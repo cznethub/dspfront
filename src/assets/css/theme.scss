@@ -110,8 +110,9 @@ p {
   border: thin solid rgba(0,0,0,.12);
   border-color: rgb(158, 158, 158);
   border-radius: 4px;
-  padding: 1rem;
+  padding: 0.5rem 1rem;
   position: relative;
+  min-height: 2rem;
 
   &:hover {
     border-color: rgba(0, 0, 0, 0.6);;
@@ -121,17 +122,18 @@ p {
     font-size: 16px;
     letter-spacing: .0125em;
     word-break: break-all;
-    color: rgba(0, 0, 0, 0.5);
+    color: rgba(0, 0, 0, 0.6);
     background: #FFF;
     font-weight: normal;
     padding: 0 0.25rem;
     position: absolute;
     left: 0.5rem;
-    top: 1rem;
+    top: 0.5rem;
 
     &.v-label--active {
       position: absolute;
       cursor: default;
+      transform: translateY(-1.2rem) scale(1) !important;
     }
 
     &:not(.v-label--active) {
@@ -142,7 +144,7 @@ p {
 
   .btn-add {
     position: absolute;
-    top: -1.3rem;
-    right: 1rem;
+    top: -0.2rem;
+    right: 0;
   }
 }

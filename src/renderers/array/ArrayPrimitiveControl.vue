@@ -18,6 +18,7 @@
         multiple
         no-filter
         outlined
+        dense
 
         :id="control.id + '-input'"
         :class="styles.control.input"
@@ -38,6 +39,7 @@
           <v-chip
             v-bind="attrs"
             close
+            small
             @click:close="remove(item)"
           >
             {{ item }}
