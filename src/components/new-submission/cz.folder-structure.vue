@@ -7,20 +7,6 @@
         </template>
         New Folder
       </v-tooltip>
-
-      <v-tooltip v-if="allowFolders" bottom transition="fade">
-        <template v-slot:activator="{ on, attrs}">
-          <v-btn @click="cut" fab small text v-on="on" v-bind="attrs" :disabled="!selected.length"><v-icon>mdi-content-cut</v-icon></v-btn>
-        </template>
-        Cut
-      </v-tooltip>
-
-      <v-tooltip v-if="allowFolders" bottom transition="fade">
-        <template v-slot:activator="{ on, attrs}">
-          <v-btn @click="paste" fab small text v-on="on" v-bind="attrs" :disabled="!itemsToCut.length || itemsToCut.includes(activeDirectoryItem)"><v-icon>mdi-content-paste</v-icon></v-btn>
-        </template>
-        Paste
-      </v-tooltip>
       
       <template v-if="rootDirectory.children.length">
         <v-divider v-if="allowFolders" class="mx-4" vertical></v-divider>
@@ -28,8 +14,28 @@
           Discard All
         </v-btn>
       </template>
+      <v-spacer></v-spacer>
+
+      <template v-if="allowFolders && (selected.length || itemsToCut.length)">
+        <v-tooltip v-if="selected.length" bottom transition="fade">
+          <template v-slot:activator="{ on, attrs}">
+            <v-btn @click="cut" fab small text v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
+          </template>
+          Cut
+        </v-tooltip>
+
+        <v-tooltip v-if="(itemsToCut.length || selected.length)" bottom transition="fade">
+          <template v-slot:activator="{ on, attrs}">
+            <v-btn @click="paste" fab small text v-on="on" v-bind="attrs" :disabled="!itemsToCut.length || itemsToCut.includes(activeDirectoryItem)">
+              <v-icon>mdi-content-paste</v-icon>
+            </v-btn>
+          </template>
+          Paste
+        </v-tooltip>
+        <v-divider v-if="selected.length" class="mx-4" vertical></v-divider>
+      </template>
+
       <template v-if="selected.length">
-        <v-spacer></v-spacer>
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
             <v-btn @click="selected = []" fab small text :disabled="!selected.length" v-on="on" v-bind="attrs">
@@ -259,8 +265,7 @@ export default class CzFolderStructure extends Vue {
   }
 
   protected paste() {
-    this.selected.map((key) => {
-      const item = this._getItemByKey(key)
+    this.itemsToCut.map((item) => {
       const targetFolder: IFolder = this.isFolder(this.activeDirectoryItem)
         ? this.activeDirectoryItem as IFolder
         : this.activeDirectoryItem.parent as IFolder
@@ -290,6 +295,7 @@ export default class CzFolderStructure extends Vue {
 
     // Add to destination
     item.parent = destination
+    item.name = this._getAvailableName(item.name, item.parent)
     destination.children.push(item)
     destination.children = destination.children.sort((a, b) => {
       return b.hasOwnProperty('children') ? 1 : -1
