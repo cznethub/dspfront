@@ -132,17 +132,18 @@ import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
 import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
 import { CzRenderers } from "@/renderers/renderer.vue"
-import { EnumRepositoryKeys, IFolder } from "../submissions/types"
+import { EnumRepositoryKeys } from "../submissions/types"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
+import { IFolder, IFile } from '@/components/new-submission/types'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
-import CzFolderStructure, { IFile } from "@/components/new-submission/cz.folder-structure.vue"
+import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
 // import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
-const sprintf = require("sprintf-js").sprintf;
+const sprintf = require("sprintf-js").sprintf
 
 const renderers = [
   ...vanillaRenderers, 
@@ -282,10 +283,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         // TODO: getting a full url as identifier instead of just the identifier
         // I.e: http://beta.hydroshare.org/resource/99b2bc413274446185eb489ed312de45
         // Parsing it for now...
-        this.identifier = submission.identifier.split('/').pop()
+        // HydroShare
+        this.identifier = submission.identifier
       }
     } else {
-      console.info("CzNewSubmission: Saving to existing record...");
+      console.info("CzNewSubmission: Saving to existing record...")
       await this.activeRepository?.updateSubmission(
         this.identifier,
         this.data
@@ -302,15 +304,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     // }
 
     if (this.uploads.length) {
-      console.log(this.identifier)
-      //  const url = sprintf(
-      //   this.activeRepository?.get()?.urls?.fileCreateUrl,
-      //   this.identifier
-      // )
-      // TODO: add this to backend
-      const url = `https://beta.hydroshare.org/hsapi/_internal/${this.identifier}/add-files-to-resource/`
-      // TODO: integrate file paths into endpoints
-      // console.log(url, files)
+       const url = sprintf(
+        this.activeRepository?.get()?.urls?.fileCreateUrl,
+        this.identifier
+      )
       await this.activeRepository?.uploadFiles(url, this.uploads, this.identifier)
     }
 

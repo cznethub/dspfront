@@ -7,11 +7,6 @@ export interface ISubmission {
   url: string
 }
 
-export interface IFolder {
-  folders?: IFolder[]
-  files?: any[]
-}
-
 export enum EnumRepositoryKeys {
   hydroshare = 'hydroshare',
   zenodo = 'zenodo',

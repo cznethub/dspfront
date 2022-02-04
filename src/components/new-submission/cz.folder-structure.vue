@@ -7,6 +7,9 @@
         </template>
         New Folder
       </v-tooltip>
+      <div v-else class="text-subtitle-1 mr-4">
+        Files
+      </div>
       
       <template v-if="rootDirectory.children.length">
         <v-divider v-if="allowFolders" class="mx-4" vertical></v-divider>
@@ -81,7 +84,7 @@
                     {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                   </v-icon>
                   <v-icon v-else @click.stop="onItemClick(item)" :color="item.isCutting ? 'grey': ''">
-                    {{ files[item.name.split('.').pop()] || files['txt'] }}
+                    {{ files[item.name.split('.').pop()] || files['default'] }}
                   </v-icon>
                 </template>
                 <template v-slot:label="{ item }">
@@ -105,7 +108,7 @@
                 <template v-slot:append="{ item, active }">
                   <template v-if="active">
                     <v-btn v-if="!item.isRenaming"
-                      @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil</v-icon></v-btn>
+                      @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
                   </template>
                 </template>
               </v-treeview>
@@ -117,7 +120,7 @@
 
       <div class="upload-drop-area has-bg-light-gray files-container--included">
         <b-upload multiple drag-drop expanded v-model="dropFiles">
-          <v-alert class="ma-4 has-cursor-pointer has-bg-light-gray" type="info" prominent colored-border icon="mdi-file-multiple">
+          <v-alert class="ma-4 has-cursor-pointer has-bg-light-gray" type="info" prominent colored-border icon="mdi-paperclip">
             <span class="text-subtitle-1">Drop your files here or click to upload</span>
           </v-alert>
         </b-upload>
@@ -129,24 +132,7 @@
 <script lang="ts">
 import CzNotification from "@/models/notifications.model"
 import { Component, Vue, Watch, Prop } from "vue-property-decorator"
-
-export interface IFile {
-  name: string
-  parent: IFolder | null
-  isRenaming?: boolean
-  isCutting?: boolean
-  key: string
-  file: File
-}
-
-export interface IFolder {
-  name: string
-  parent: IFolder | null
-  isRenaming?: boolean
-  isCutting?: boolean
-  key: string
-  children: (IFile | IFolder)[]
-}
+import { IFolder, IFile } from '@/components/new-submission/types'
 
 @Component({
   name: "cz-folder-structure",
@@ -159,13 +145,39 @@ export default class CzFolderStructure extends Vue {
 
   protected files = {
     html: 'mdi-language-html5',
+    md: 'mdi-language-markdown',
     js: 'mdi-nodejs',
     json: 'mdi-code-json',
-    md: 'mdi-language-markdown',
-    pdf: 'mdi-file-pdf',
-    png: 'mdi-file-image',
+    pdf: 'mdi-file-pdf-box',
     txt: 'mdi-file-document-outline',
-    xls: 'mdi-file-excel',
+
+    zip: 'mdi-folder-zip',
+    rar: 'mdi-folder-zip',
+
+    exe: 'mdi-application-outline',
+
+    png: 'mdi-file-image-outline',
+    jpg: 'mdi-file-image-outline',
+
+    mp4: 'mdi-file-video-outline',
+
+    mp3: 'mdi-file-music-outline',
+    wav: 'mdi-file-music-outline',
+
+    xlsm: 'mdi-file-excel-outline',
+    xlsb: 'mdi-file-excel-outline',
+    xlsx: 'mdi-file-excel-outline',
+    xltx: 'mdi-file-excel-outline',
+    xltm: 'mdi-file-excel-outline',
+    xlt: 'mdi-file-excel-outline',
+    xls: 'mdi-file-excel-outline',
+    xla: 'mdi-file-excel-outline',
+
+    ppt: 'mdi-file-powerpoint-outline',
+    pptx: 'mdi-file-powerpoint-outline',
+
+    card: 'mdi-file-cad',
+    default: 'mdi-file-outline',
   }
   protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '' }
   protected open: string[] = []
@@ -184,6 +196,9 @@ export default class CzFolderStructure extends Vue {
 
   @Watch('rootDirectory.children', { deep: true })
   protected onInput() {
+    const files = this._getFiles(this.rootDirectory) as IFile[]
+    // Update paths
+    files.map(f => f.path = this.getPathString(f.parent as IFolder))
     this.$emit('input', this._getFiles(this.rootDirectory))
   }
 
@@ -200,6 +215,7 @@ export default class CzFolderStructure extends Vue {
       targetFolder.children.push({
         name: this._getAvailableName(file.name, targetFolder),
         parent: targetFolder,
+        path: '',
         key: `${Date.now().toString()}-${index}`,
         file,
         // Need to populate these optional properties so that Vue can set reactive bindings to it
@@ -234,6 +250,13 @@ export default class CzFolderStructure extends Vue {
         }
       })
     }
+  }
+
+  protected getPathString(item: IFolder | IFile) {
+    if (item === this.rootDirectory) {
+      return ''
+    }
+    return `${this.getPathString(item.parent as IFolder)}/${item.name}`
   }
 
   protected isFolder(item: IFile | IFolder) {
@@ -388,7 +411,7 @@ export default class CzFolderStructure extends Vue {
       name: 'New folder', 
       children: [], 
       parent: null, 
-      isRenaming: true,
+      isRenaming: false,
       isCutting: false,
       key: Date.now().toString() 
     } as IFolder

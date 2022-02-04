@@ -53,7 +53,7 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
       }
 
       if (!(activeRepository?.$state.accessToken)) {
-        Repository.openAuthorizeDialog({ path: to.path })
+        Repository.openAuthorizeDialog(key, { path: to.path })
         return from
       }
     }

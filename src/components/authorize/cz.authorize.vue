@@ -1,15 +1,15 @@
 <template>
   <v-card class="cz-authorize">
     <div class="v-card-media py-4 px-8">
-      <v-img :src="repoLogoSrc" :alt="activeRepository.name" width="100%" height="8rem" contain />
+      <v-img :src="repoLogoSrc" :alt="repository.name" width="100%" height="8rem" contain />
     </div>
     <v-divider></v-divider>
     <v-card-title class="justify-center">
-      <div class="text-h4 mt-2">Submit to {{ activeRepository.name }}</div>
+      <div class="text-h4 mt-2">Submit to {{ repository.name }}</div>
       <div class="text-body-1 mb-4">Permission is needed to post to this repository</div>
     </v-card-title>
     <v-card-text class="d-flex flex-column align-center">
-      <v-btn @click="openAuthorizeDialog()" color="primary" class="mb-4">
+      <v-btn @click="openAuthorizePopup(repository.key)" color="primary" class="mb-4">
         <i class="fas fa-key mr-2" />Authorize
       </v-btn>
     </v-card-text>
@@ -21,7 +21,7 @@
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator'
+  import { Component, Prop } from 'vue-property-decorator'
   import { mixins } from 'vue-class-component'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import Repository from '@/models/repository.model'
@@ -31,16 +31,22 @@
     components: { },
   })
   export default class CzAuthorize extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+    @Prop() repo!: string
+
+    protected get repository() {
+      return this.getRepositoryFromKey(this.repo)
+    }
+
     protected get authorizeUrl() {
-      return this.activeRepository?.get()?.urls?.authorizeUrl
+      return this.repository?.get()?.urls?.authorizeUrl
     }
 
     protected get repoLogoSrc() {
-      return this.activeRepository.get()?.logoSrc
+      return this.repository.get()?.logoSrc
     }
 
-    protected async openAuthorizeDialog() {
-      Repository.authorize(this.activeRepository, this.onAuthorized)
+    protected async openAuthorizePopup() {
+      Repository.authorize(this.repository, this.onAuthorized)
     }
 
     protected onAuthorized() {
