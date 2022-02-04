@@ -7,6 +7,20 @@
         </template>
         New Folder
       </v-tooltip>
+
+      <v-tooltip v-if="allowFolders" bottom transition="fade">
+        <template v-slot:activator="{ on, attrs}">
+          <v-btn @click="cut" fab small text v-on="on" v-bind="attrs" :disabled="!selected.length"><v-icon>mdi-content-cut</v-icon></v-btn>
+        </template>
+        Cut
+      </v-tooltip>
+
+      <v-tooltip v-if="allowFolders" bottom transition="fade">
+        <template v-slot:activator="{ on, attrs}">
+          <v-btn @click="paste" fab small text v-on="on" v-bind="attrs" :disabled="!itemsToCut.length || itemsToCut.includes(activeDirectoryItem)"><v-icon>mdi-content-paste</v-icon></v-btn>
+        </template>
+        Paste
+      </v-tooltip>
       
       <template v-if="rootDirectory.children.length">
         <v-divider v-if="allowFolders" class="mx-4" vertical></v-divider>
@@ -57,10 +71,10 @@
                 open-on-click
               >
                 <template v-slot:prepend="{ item, open }">
-                  <v-icon v-if="item.children" @click.stop="onItemClick(item)">
+                  <v-icon v-if="item.children" @click.stop="onItemClick(item)" :color="item.isCutting ? 'grey': ''">
                     {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                   </v-icon>
-                  <v-icon v-else @click.stop="onItemClick(item)">
+                  <v-icon v-else @click.stop="onItemClick(item)" :color="item.isCutting ? 'grey': ''">
                     {{ files[item.name.split('.').pop()] || files['txt'] }}
                   </v-icon>
                 </template>
@@ -70,17 +84,17 @@
                     @keydown.enter="item.isRenaming = false"
                     @click.stop="onItemClick(item)"
                     @click:append="item.isRenaming = false"
-                    v-click-outside="onClickOutside"
                     :value="item.name"
+                    v-click-outside="onClickOutside"
                     append-icon="mdi-cancel"
                     dense
                     hide-details
                     autofocus>
                   </v-text-field>
-                  <div v-else @click.stop="onItemClick(item)">
-                    <span>{{ item.name }}</span>
-                    <small v-if="item.file" class="ml-2 text-caption text--secondary">({{ item.file.size | prettyBytes }})</small>
-                  </div>
+                  <v-row v-else @click.stop="onItemClick(item)" :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap">
+                    <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
+                    <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ml-2 text-caption text--secondary">({{ item.file.size | prettyBytes }})</v-col>
+                  </v-row>
                 </template>
                 <template v-slot:append="{ item, active }">
                   <template v-if="active">
@@ -95,7 +109,7 @@
         </v-card-text>
       </v-card>
 
-      <div class="upload-drop-area has-bg-light-gray included">
+      <div class="upload-drop-area has-bg-light-gray files-container--included">
         <b-upload multiple drag-drop expanded v-model="dropFiles">
           <v-alert class="ma-4 has-cursor-pointer has-bg-light-gray" type="info" prominent colored-border icon="mdi-file-multiple">
             <span class="text-subtitle-1">Drop your files here or click to upload</span>
@@ -114,6 +128,7 @@ export interface IFile {
   name: string
   parent: IFolder | null
   isRenaming?: boolean
+  isCutting?: boolean
   key: string
   file: File
 }
@@ -122,6 +137,7 @@ export interface IFolder {
   name: string
   parent: IFolder | null
   isRenaming?: boolean
+  isCutting?: boolean
   key: string
   children: (IFile | IFolder)[]
 }
@@ -134,7 +150,6 @@ export interface IFolder {
 })
 export default class CzFolderStructure extends Vue {
   @Prop({ default: false }) allowFolders!: boolean
-  // @Prop() initialUploads!: (IFile | IFolder)[]
 
   protected files = {
     html: 'mdi-language-html5',
@@ -152,6 +167,10 @@ export default class CzFolderStructure extends Vue {
   protected selected: string[] = []
   protected activeDirectoryItem!: IFolder | IFile
   protected dropFiles: File[] = []
+
+  protected get itemsToCut() {
+    return this._itemsToCutRecursive(this.rootDirectory)
+  }
 
   created() {
     this.activeDirectoryItem = this.rootDirectory
@@ -176,8 +195,10 @@ export default class CzFolderStructure extends Vue {
         name: this._getAvailableName(file.name, targetFolder),
         parent: targetFolder,
         key: `${Date.now().toString()}-${index}`,
-        isRenaming: false,  // Need to pass it so that Vue can set reactive bindings to it
-        file
+        file,
+        // Need to populate these optional properties so that Vue can set reactive bindings to it
+        isRenaming: false,
+        isCutting: false,
       } as IFile)
     })
     this._openRecursive(targetFolder)
@@ -217,18 +238,6 @@ export default class CzFolderStructure extends Vue {
     return this.selected.includes(item.key)
   }
 
-  private _hasSomeChildSelected(item: IFolder) {
-    return item.children.some((c) => {
-      return this.isSelected(c)
-    })
-  }
-
-  private _hasSomeChildUnselected(item: IFolder) {
-    return item.children.some((c) => {
-      return !this.isSelected(c)
-    })
-  }
-
   protected select(keys: string[]) {
     this.selected = [...new Set([...this.selected, ...keys])]
   }
@@ -238,6 +247,54 @@ export default class CzFolderStructure extends Vue {
     if (index >= 0) {
       this.selected.splice(index, 1)
     }
+  }
+
+  protected cut() {
+    this.selected.map((key) => {
+      const item = this._getItemByKey(key)
+      if (item) {
+        item.isCutting = true
+      }
+    })
+  }
+
+  protected paste() {
+    this.selected.map((key) => {
+      const item = this._getItemByKey(key)
+      const targetFolder: IFolder = this.isFolder(this.activeDirectoryItem)
+        ? this.activeDirectoryItem as IFolder
+        : this.activeDirectoryItem.parent as IFolder
+      if (item && !this.isSelected(item.parent as IFolder)) {
+        this.moveItem(item, targetFolder)
+      }
+    })
+
+    // Uncomment if we want to unselect items after moving them
+    // this.itemsToCut.map((item) => {
+    //   this.unselect(item.key)
+    // })
+
+    this.itemsToCut.map((item) => {
+      item.isCutting = false
+    })
+  }
+
+  protected moveItem(item: IFolder | IFile, destination: IFolder) {
+    const previousParent = item.parent as IFolder
+
+    // Remove from previous parent
+    const index = previousParent.children.indexOf(item)
+    if (index >= 0) {
+      previousParent.children.splice(index, 1)
+    }
+
+    // Add to destination
+    item.parent = destination
+    destination.children.push(item)
+    destination.children = destination.children.sort((a, b) => {
+      return b.hasOwnProperty('children') ? 1 : -1
+    })
+    this._openRecursive(destination)
   }
 
   protected onItemClick(item: IFolder | IFile) {
@@ -277,8 +334,8 @@ export default class CzFolderStructure extends Vue {
     this.active = []
   }
 
-  protected include () {
-    return [document.querySelector('.included')]
+  protected include() {
+    return [document.querySelector('.files-container--included')]
   }
 
   protected onUpdateActive(keys: string[]) {
@@ -321,7 +378,14 @@ export default class CzFolderStructure extends Vue {
     }
 
     this.clearRenaming()
-    const newFolder = { name: 'New folder', children: [], parent: null, isRenaming: true, key: Date.now().toString() } as IFolder
+    const newFolder = { 
+      name: 'New folder', 
+      children: [], 
+      parent: null, 
+      isRenaming: true,
+      isCutting: false,
+      key: Date.now().toString() 
+    } as IFolder
     if (this.activeDirectoryItem.hasOwnProperty('children')) {
       // Selected item is a folder
       newFolder.parent = this.activeDirectoryItem as IFolder
@@ -433,6 +497,32 @@ export default class CzFolderStructure extends Vue {
     }
 
     return [...childFiles, ...nestedFiles]
+  }
+
+  // private _hasSomeChildSelected(item: IFolder) {
+  //   return item.children.some((c) => {
+  //     return this.isSelected(c)
+  //   })
+  // }
+
+  private _hasSomeChildUnselected(item: IFolder) {
+    return item.children.some((c) => {
+      return !this.isSelected(c)
+    })
+  }
+
+  private _itemsToCutRecursive(item: IFolder) {
+    const childFolders = item.children.filter(i => this.isFolder(i)) as IFolder[]
+
+    return [
+      ...item.children.filter(f => f.isCutting),
+      ...childFolders
+        .filter(f => f.children.length)
+        .map(f => this._itemsToCutRecursive(f))
+        .reduce((acc, curr) => {
+          return [...acc, ...curr]
+        }, [])
+    ] 
   }
 }
 </script>

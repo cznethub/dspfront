@@ -13,12 +13,12 @@ export default class Zenodo extends Repository {
     }
   }
 
-  static async uploadFiles(bucketUrl: string, filesToUpload: { name: string, data: any }[] | any[]) {
+  static async uploadFiles(bucketUrl: string, filesToUpload: any[] | any[]) {
     const promises = filesToUpload.map((file) => {
       // const url = `${bucketUrl}/${file.name}` // new api
       const url = bucketUrl // new api
       const form = new window.FormData()
-      form.append('file', file, file.name)
+      form.append('file', file.file, file.name)
 
       return axios.post(
         url,
