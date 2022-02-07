@@ -1,5 +1,5 @@
 <template>
-  <fieldset v-if="control.visible" :class="styles.arrayList.root" class="cz-fieldset mb-8">
+  <fieldset v-if="control.visible" :class="styles.arrayList.root" class="cz-fieldset my-4 mb-8">
     <legend v-if="computedLabel"
       @click="noData ? addButtonClick() : null"
       class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">

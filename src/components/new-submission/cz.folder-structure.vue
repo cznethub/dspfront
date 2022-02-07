@@ -118,9 +118,9 @@
         </v-card-text>
       </v-card>
 
-      <div class="upload-drop-area has-bg-light-gray files-container--included">
-        <b-upload multiple drag-drop expanded v-model="dropFiles">
-          <v-alert class="ma-4 has-cursor-pointer has-bg-light-gray" type="info" prominent colored-border icon="mdi-paperclip">
+      <div class="upload-drop-area files-container--included">
+        <b-upload type="file" multiple drag-drop expanded v-model="dropFiles" native class="has-bg-light-gray">
+          <v-alert class="ma-4 has-cursor-pointer transparent" type="info" prominent colored-border icon="mdi-paperclip">
             <span class="text-subtitle-1">Drop your files here or click to upload</span>
           </v-alert>
         </b-upload>
@@ -207,6 +207,7 @@ export default class CzFolderStructure extends Vue {
     if (!newFiles.length) {
       return
     }
+    console.log(newFiles)
     const targetFolder = this.activeDirectoryItem.hasOwnProperty('children')
       ? this.activeDirectoryItem as IFolder
       : this.activeDirectoryItem.parent as IFolder
@@ -224,7 +225,6 @@ export default class CzFolderStructure extends Vue {
       } as IFile)
     })
     this._openRecursive(targetFolder)
-    this.dropFiles = []
   }
 
   @Watch('selected')
@@ -565,10 +565,15 @@ export default class CzFolderStructure extends Vue {
   ::v-deep input[type="file"] {
     display: none;
   }
+
+  ::v-deep .upload-draggable.is-hovered {
+    background: lightgray;
+  }
 }
 
 .files-container {
   overflow: auto;
   resize: vertical;
 }
+
 </style>

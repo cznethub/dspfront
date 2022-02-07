@@ -9,6 +9,7 @@
     :hint="control.description"
     :placeholder="appliedOptions.placeholder"
     @change.native="onChange"
+    class="my-2"
     dense
     outlined
   />
@@ -22,10 +23,10 @@ import {
   isStringControl
 } from '@jsonforms/core';
 import { defineComponent } from '@vue/composition-api'
-import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2';
-import { default as ControlWrapper } from './ControlWrapper.vue';
-import { useVanillaControl } from "@jsonforms/vue2-vanilla";
-import { computeLabel } from '@jsonforms/core';
+import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
+import { default as ControlWrapper } from './ControlWrapper.vue'
+import { useVanillaControl } from "@jsonforms/vue2-vanilla"
+import { computeLabel } from '@jsonforms/core'
 
 const controlRenderer = defineComponent({
   name: 'string-control-renderer',
@@ -36,7 +37,7 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>()
   },
   setup(props: RendererProps<ControlElement>) {
-    return useVanillaControl(useJsonFormsControl(props));
+    return useVanillaControl(useJsonFormsControl(props))
   },
   computed: {
     computedLabel(): string {
@@ -49,10 +50,14 @@ const controlRenderer = defineComponent({
   }
 });
 
-export default controlRenderer;
+export default controlRenderer
 
 export const stringControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
   tester: rankWith(2, isStringControl)
-};
+}
 </script>
+
+<style lang="scss" scoped>
+  
+</style>

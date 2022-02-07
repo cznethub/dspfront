@@ -1,10 +1,10 @@
 <template>
-  <control-wrapper
+  <!-- <control-wrapper
     v-bind="controlWrapper"
     :styles="styles"
     :isFocused="isFocused"
     :appliedOptions="appliedOptions"
-  >
+  > -->
     <v-hover v-slot="{ hover }">
       <v-combobox
         v-model="tags"
@@ -14,6 +14,7 @@
         :delimiters="[',']"
         :error-messages="control.errors"
         :menu-props="{ openOnClick: false }"
+        class="my-2 mb-0"
         small-chips
         multiple
         no-filter
@@ -47,7 +48,7 @@
         </template>
       </v-combobox>
     </v-hover>
-  </control-wrapper>
+  <!-- </control-wrapper> -->
 </template>
 
 <script lang="ts">

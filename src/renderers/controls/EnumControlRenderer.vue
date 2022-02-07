@@ -1,12 +1,15 @@
 <template>
-  <control-wrapper
+  <!-- <control-wrapper
     v-bind="controlWrapper"
     :styles="styles"
     :isFocused="isFocused"
     :appliedOptions="appliedOptions"
-  >
+  > -->
     <v-hover v-slot="{ hover }">
       <v-select
+        @change="onChange"
+        @focus="isFocused = true"
+        @blur="isFocused = false"
         :id="control.id + '-input'"
         :class="styles.control.input"
         :disabled="!control.enabled"
@@ -20,16 +23,14 @@
         :clearable="hover"
         :value="control.data"
         :items="control.options"
+        class="my-2"
         item-text="label"
         item-value="value"
-        @change="onChange"
-        @focus="isFocused = true"
-        @blur="isFocused = false"
         outlined
         dense
       />
     </v-hover>
-  </control-wrapper>
+  <!-- </control-wrapper> -->
 </template>
 
 <script lang="ts">

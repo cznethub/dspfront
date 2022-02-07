@@ -118,7 +118,7 @@ p {
     border-color: rgba(0, 0, 0, 0.6);;
   }
 
-  legend {
+  & > legend {
     font-size: 16px;
     letter-spacing: .0125em;
     word-break: break-all;
@@ -133,7 +133,7 @@ p {
     &.v-label--active {
       position: absolute;
       cursor: default;
-      transform: translateY(-1.2rem) scale(1) !important;
+      transform: translateY(-1.4rem) scale(1) !important;
     }
 
     &:not(.v-label--active) {

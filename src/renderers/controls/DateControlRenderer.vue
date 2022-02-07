@@ -94,5 +94,5 @@ export default controlRenderer;
 export const dateControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
   tester: rankWith(3, isDateControl)
-};
+}
 </script>
