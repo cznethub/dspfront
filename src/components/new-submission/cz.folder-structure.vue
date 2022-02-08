@@ -135,7 +135,7 @@
       </v-card>
 
       <div class="upload-drop-area files-container--included">
-        <b-upload type="file" multiple drag-drop expanded v-model="dropFiles" native class="has-bg-light-gray">
+        <b-upload type="file" multiple drag-drop expanded v-model="dropFiles" class="has-bg-light-gray">
           <v-alert class="ma-4 has-cursor-pointer transparent" type="info" prominent colored-border icon="mdi-paperclip">
             <span class="text-subtitle-1">Drop your files here or click to upload</span>
           </v-alert>
@@ -240,6 +240,7 @@ export default class CzFolderStructure extends Vue {
       } as IFile)
     })
     this._openRecursive(targetFolder)
+    this.dropFiles = []
   }
 
   @Watch('selected')
