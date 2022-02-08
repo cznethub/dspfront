@@ -1,25 +1,4 @@
 <template>
-  <!-- <control-wrapper
-    v-bind="controlWrapper"
-    :styles="styles"
-    :isFocused="isFocused"
-    :appliedOptions="appliedOptions"
-  >
-    <input
-      type="date"
-      :id="control.id + '-input'"
-      :class="styles.control.input"
-      :value="control.data"
-      :disabled="!control.enabled"
-      :autofocus="appliedOptions.focus"
-      :placeholder="appliedOptions.placeholder"
-      :hint="control.description"
-      @change="onChange"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
-    />
-  </control-wrapper> -->
-
   <v-menu
     v-model="menu"
     :close-on-content-click="false"
@@ -29,12 +8,11 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
-        v-model="selectedDate"
+        @click:clear="selectedDate = null"
+        @change="onChange"
+        :value="dataDate"
         :id="control.id + '-input'"
         :label="control.label"
-        @click:clear="selectedDate = null"
-        :autofocus="appliedOptions.focus"
-        :class="styles.control.input"
         :hint="control.description"
         :error-messages="control.errors"
         prepend-icon="mdi-calendar"
@@ -48,17 +26,16 @@
       />
     </template>
 
-    <v-date-picker v-model="selectedDate"
+    <v-date-picker
+      v-model="selectedDate"
       @change="onChange" 
       @input="menu = false"
       :value="control.data" 
       :disabled="!control.enabled"
       scrollable 
-      no-title
     />
   </v-menu>
 </template>
-
 
 <script lang="ts">
 import {
@@ -66,10 +43,17 @@ import {
   JsonFormsRendererRegistryEntry,
   rankWith,
   isDateControl
-} from '@jsonforms/core';
+} from '@jsonforms/core'
 import { defineComponent } from '@vue/composition-api'
-import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2';
-import { useVanillaControl } from "@jsonforms/vue2-vanilla";
+import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
+import { format, parse } from 'date-fns'
+
+const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
+
+const DATE_FORMATS = {
+  "date": "yyyy-MM-dd",
+}
+
 const controlRenderer = defineComponent({
   name: 'date-control-renderer',
   components: {
@@ -84,12 +68,41 @@ const controlRenderer = defineComponent({
     return {
       selectedDate,
       menu: false,
-      ...useVanillaControl(useJsonFormsControl(props))
+      ...useJsonFormsControl(props)
     }
   },
-});
+  computed: {
+    dataDate(): string {
+      return (this.control.data ?? '')
+    },
+    parsedDate() {
+      if (this.selectedDate) {
+        // @ts-ignore
+        return parse(this.selectedDate, this.defaultDateFormat, new Date())
+      } else {
+        return null
+      }
+    },
+    defaultDateFormat() {
+      return DEFAULT_DATE_FORMAT
+    },
+    formattedDate() {
+      // @ts-ignore
+      return this.parsedDate ? format(this.parsedDate, DATE_FORMATS[this.dateFormat]) : ''
+    },
+    dateFormat() {
+      // @ts-ignore
+      return this.control.schema.format || "date"
+    },
+  },
+  methods: {
+    onChange() {
+      this.handleChange(this.control.path, this.formattedDate)
+    },
+  },
+})
 
-export default controlRenderer;
+export default controlRenderer
 
 export const dateControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,

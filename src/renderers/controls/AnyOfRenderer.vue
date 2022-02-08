@@ -1,37 +1,43 @@
 <template>
-  <fieldset v-if="control.visible" :class="styles.control.root" class="cz-fieldset my-4">
-    <legend v-if="control.uischema.label" :class="styles.control.label" class="v-label--active">{{ control.uischema.label }}</legend>
-    <combinator-properties
-      :schema="subSchema"
-      combinatorKeyword="anyOf"
-      :path="path"
-    />
+  <div class="my-4">
+    <fieldset v-if="control.visible" :class="styles.control.root" class="cz-fieldset">
+      <legend v-if="control.uischema.label" :class="styles.control.label" class="v-label--active">{{ control.uischema.label }}</legend>
+      <combinator-properties
+        :schema="subSchema"
+        combinatorKeyword="anyOf"
+        :path="path"
+      />
 
-    <v-tabs v-model="selectedIndex">
-      <v-tab
-        v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
-        :key="`${control.path}-${anyOfIndex}`"
-      >
-        {{ anyOfRenderInfo.label }}
-      </v-tab>
-    </v-tabs>
+      <v-tabs v-model="selectedIndex">
+        <v-tab
+          v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
+          :key="`${control.path}-${anyOfIndex}`"
+        >
+          {{ anyOfRenderInfo.label }}
+        </v-tab>
+      </v-tabs>
+      <v-divider></v-divider>
 
-    <v-tabs-items v-model="selectedIndex">
-      <v-tab-item
-        v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
-        :key="`${control.path}-${anyOfIndex}`"
-      >
-        <dispatch-renderer
-          v-if="selectedIndex === anyOfIndex"
-          :schema="anyOfRenderInfo.schema"
-          :uischema="anyOfRenderInfo.uischema"
-          :path="control.path"
-          :renderers="control.renderers"
-          :cells="control.cells"
-        />
-      </v-tab-item>
-    </v-tabs-items>
-  </fieldset>
+      <v-tabs-items v-model="selectedIndex">
+        <v-tab-item
+          v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
+          :key="`${control.path}-${anyOfIndex}`"
+        >
+          <div class="pt-4">
+            <dispatch-renderer
+              v-if="selectedIndex === anyOfIndex"
+              :schema="anyOfRenderInfo.schema"
+              :uischema="anyOfRenderInfo.uischema"
+              :path="control.path"
+              :renderers="control.renderers"
+              :cells="control.cells"
+            />
+          </div>
+        </v-tab-item>
+      </v-tabs-items>
+    </fieldset>
+    <div class="text-caption text--secondary">{{ control.schema.description }}</div>
+  </div>
 </template>
 
 <script lang="ts">

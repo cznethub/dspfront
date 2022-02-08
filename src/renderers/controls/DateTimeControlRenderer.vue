@@ -1,24 +1,4 @@
 <template>
-  <!-- <control-wrapper
-    v-bind="controlWrapper"
-    :styles="styles"
-    :isFocused="isFocused"
-    :appliedOptions="appliedOptions"
-  >
-    <input
-      type="datetime-local"
-      :id="control.id + '-input'"
-      :class="styles.control.input"
-      :value="dataTime"
-      :disabled="!control.enabled"
-      :autofocus="appliedOptions.focus"
-      :placeholder="appliedOptions.placeholder"
-      @change="onChange"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
-    />
-  </control-wrapper> -->
-
   <v-menu
     v-model="menu"
     :close-on-content-click="false"
@@ -29,12 +9,12 @@
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
         @click:clear="selectedDate = null; selectedTime = defaultTime"
+        @change="onChange"
         :value="dataDateTime"
         :id="control.id + '-input'"
         :label="control.label"
         :hint="control.description"
         :error-messages="control.errors"
-        class="my-4"
         prepend-icon="mdi-calendar"
         outlined
         clearable
@@ -142,7 +122,7 @@ const controlRenderer = defineComponent({
       this.handleChange(this.control.path, this.formattedDatetime)
     },
   },
-});
+})
 
 export default controlRenderer;
 
