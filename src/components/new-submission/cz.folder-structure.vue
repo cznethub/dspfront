@@ -3,21 +3,36 @@
     <v-sheet class="pa-4 d-flex align-center has-bg-light-gray">
       <v-tooltip v-if="allowFolders" bottom transition="fade">
         <template v-slot:activator="{ on, attrs}">
-          <v-btn @click="newFolder" fab small text v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
+          <v-btn @click="newFolder" class="mr-4" fab small text v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
         </template>
         New Folder
       </v-tooltip>
       <div v-else class="text-subtitle-1 mr-4">
         Files
       </div>
-      
+
       <template v-if="rootDirectory.children.length">
-        <v-divider v-if="allowFolders" class="mx-4" vertical></v-divider>
-        <v-btn @click="empty" small depressed>
-          Discard All
-        </v-btn>
+        <v-tooltip bottom transition="fade">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn @click="selectAll" fab small text v-on="on" v-bind="attrs">
+              <v-icon>mdi-checkbox-marked-outline</v-icon>
+            </v-btn>
+          </template>
+          <span>Select All</span>
+        </v-tooltip>
       </template>
-      <v-spacer></v-spacer>
+
+      <template v-if="selected.length">
+        <v-tooltip bottom transition="fade">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn @click="selected = []" fab small text :disabled="!selected.length" v-on="on" v-bind="attrs">
+              <v-icon>mdi-checkbox-blank-off-outline</v-icon>
+            </v-btn>
+          </template>
+          <span>Unselect All</span>
+        </v-tooltip>
+        <v-divider class="mx-4" vertical></v-divider>
+      </template>
 
       <template v-if="allowFolders && (selected.length || itemsToCut.length)">
         <v-tooltip v-if="selected.length" bottom transition="fade">
@@ -41,14 +56,6 @@
       <template v-if="selected.length">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="selected = []" fab small text :disabled="!selected.length" v-on="on" v-bind="attrs">
-              <v-icon>mdi-checkbox-blank-off</v-icon>
-            </v-btn>
-          </template>
-          <span>Unselect All</span>
-        </v-tooltip>
-        <v-tooltip bottom transition="fade">
-          <template v-slot:activator="{ on, attrs }">
             <v-btn @click="deleteSelected" fab small text :disabled="!selected.length" v-on="on" v-bind="attrs">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
@@ -58,6 +65,15 @@
         <v-divider class="mx-4" vertical></v-divider>
         <span class="text-subtitle-2">{{ selected.length }} item{{ selected.length !== 1 ? 's': '' }} selected</span>
       </template>
+
+      <v-spacer></v-spacer>
+
+      <template v-if="rootDirectory.children.length">
+        <v-btn @click="empty" small depressed>
+          Discard All
+        </v-btn>
+      </template>
+      
     </v-sheet>
     <v-card-text style="min-height: 10rem;">
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
@@ -102,7 +118,7 @@
                   </v-text-field>
                   <v-row v-else @click.stop="onItemClick(item)" :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap">
                     <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
-                    <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ml-2 text-caption text--secondary">({{ item.file.size | prettyBytes }})</v-col>
+                    <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ml-2 text-caption text--secondary">{{ item.file.size | prettyBytes }}</v-col>
                   </v-row>
                 </template>
                 <template v-slot:append="{ item, active }">
@@ -207,7 +223,6 @@ export default class CzFolderStructure extends Vue {
     if (!newFiles.length) {
       return
     }
-    console.log(newFiles)
     const targetFolder = this.activeDirectoryItem.hasOwnProperty('children')
       ? this.activeDirectoryItem as IFolder
       : this.activeDirectoryItem.parent as IFolder
@@ -250,6 +265,10 @@ export default class CzFolderStructure extends Vue {
         }
       })
     }
+  }
+
+  protected selectAll() {
+    this.select(this.rootDirectory.children.map(item => item.key))
   }
 
   protected getPathString(item: IFolder | IFile) {
