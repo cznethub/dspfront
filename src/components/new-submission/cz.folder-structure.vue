@@ -1,9 +1,9 @@
 <template>
   <v-card class="mb-8">
-    <v-sheet class="pa-4 d-flex align-center has-bg-light-gray">
+    <v-sheet class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4">
       <v-tooltip v-if="allowFolders" bottom transition="fade">
         <template v-slot:activator="{ on, attrs}">
-          <v-btn @click="newFolder" class="mr-4" fab small text v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
+          <v-btn @click="newFolder" class="mr-4" small icon v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
         </template>
         New Folder
       </v-tooltip>
@@ -14,7 +14,7 @@
       <template v-if="rootDirectory.children.length">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="selectAll" fab small text v-on="on" v-bind="attrs">
+            <v-btn @click="selectAll" class="mr-1" icon small v-on="on" v-bind="attrs">
               <v-icon>mdi-checkbox-marked-outline</v-icon>
             </v-btn>
           </template>
@@ -25,7 +25,7 @@
       <template v-if="selected.length">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="selected = []" fab small text :disabled="!selected.length" v-on="on" v-bind="attrs">
+            <v-btn @click="selected = []" icon small :disabled="!selected.length" v-on="on" v-bind="attrs">
               <v-icon>mdi-checkbox-blank-off-outline</v-icon>
             </v-btn>
           </template>
@@ -37,14 +37,14 @@
       <template v-if="allowFolders && (selected.length || itemsToCut.length)">
         <v-tooltip v-if="selected.length" bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
-            <v-btn @click="cut" fab small text v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
+            <v-btn @click="cut" class="mr-1" icon small v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
           </template>
           Cut
         </v-tooltip>
 
         <v-tooltip v-if="(itemsToCut.length || selected.length)" bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
-            <v-btn @click="paste" fab small text v-on="on" v-bind="attrs" :disabled="!itemsToCut.length || itemsToCut.includes(activeDirectoryItem)">
+            <v-btn @click="paste" icon small v-on="on" v-bind="attrs" :disabled="!itemsToCut.length || itemsToCut.includes(activeDirectoryItem)">
               <v-icon>mdi-content-paste</v-icon>
             </v-btn>
           </template>
@@ -56,7 +56,7 @@
       <template v-if="selected.length">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="deleteSelected" fab small text :disabled="!selected.length" v-on="on" v-bind="attrs">
+            <v-btn @click="deleteSelected" icon small :disabled="!selected.length" v-on="on" v-bind="attrs">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
@@ -69,7 +69,7 @@
       <v-spacer></v-spacer>
 
       <template v-if="rootDirectory.children.length">
-        <v-btn @click="empty" small depressed>
+        <v-btn @click="empty" small depressed class="primary lighten-2">
           Discard All
         </v-btn>
       </template>
@@ -276,7 +276,8 @@ export default class CzFolderStructure extends Vue {
     if (item === this.rootDirectory) {
       return ''
     }
-    return `${this.getPathString(item.parent as IFolder)}/${item.name}`
+    const pre = this.getPathString(item.parent as IFolder)
+    return `${pre ? pre + '/': ''}${item.name}`
   }
 
   protected isFolder(item: IFile | IFolder) {

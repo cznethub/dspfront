@@ -14,7 +14,7 @@ export default class Zenodo extends Repository {
     }
   }
 
-  static async uploadFiles(bucketUrl: string, filesToUpload: IFile[], identifier?: string) {
+  static async uploadFiles(bucketUrl: string, filesToUpload: IFile[], createFolderUrl?: string) {
     const promises = filesToUpload.map((file) => {
       // const url = `${bucketUrl}/${file.name}` // new api
       const url = bucketUrl // new api

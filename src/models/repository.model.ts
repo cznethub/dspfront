@@ -177,6 +177,7 @@ export default class Repository extends Model implements IRepository {
         fileCreateUrl: resp.data.file_create,
         fileDeleteUrl: resp.data.file_delete,
         fileReadUrl: resp.data.file_read,
+        folderCreateUrl: resp.data.folder_create,
         accessTokenUrl: resp.data.access_token,
         authorizeUrl: resp.data.authorize_url,
         viewUrl: resp.data.view_url
@@ -218,7 +219,7 @@ export default class Repository extends Model implements IRepository {
 
     /** 
    * Creates a submission
-   * @param {any} data - the form data to be saved
+   * @param {object} data - the form data to be saved
    * @param {string} repository - the repository key
   */
   static async createSubmission(data: any, repository: string): Promise<{ identifier: string, formMetadata: any } | null> {

@@ -108,7 +108,7 @@ import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
 import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
 import { CzRenderers } from "@/renderers/renderer.vue"
-import { EnumRepositoryKeys } from "../submissions/types"
+import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
@@ -268,12 +268,20 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       )
     }
 
-    if (this.uploads.length) {
+    const repoUrls: IRepositoryUrls | undefined  = this.activeRepository?.get()?.urls 
+
+    if (this.uploads.length && repoUrls) {
        const url = sprintf(
-        this.activeRepository?.get()?.urls?.fileCreateUrl,
+        repoUrls.fileCreateUrl,
         this.identifier
       )
-      await this.activeRepository?.uploadFiles(url, this.uploads, this.identifier)
+
+      const createFolderUrl = sprintf(
+        repoUrls.folderCreateUrl,
+        this.identifier,
+        '%s'  // replaced file by file inside repo model
+      )
+      await this.activeRepository?.uploadFiles(url, this.uploads, createFolderUrl)
     }
 
     // Indicate that changes have been saved
