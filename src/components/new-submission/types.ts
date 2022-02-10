@@ -4,8 +4,8 @@ export interface IFile {
   isRenaming?: boolean
   isCutting?: boolean
   key: string
-  file: File
   path: string
+  file: File
 }
 
 export interface IFolder {
@@ -14,5 +14,6 @@ export interface IFolder {
   isRenaming?: boolean
   isCutting?: boolean
   key: string
+  path: string
   children: (IFile | IFolder)[]
 }

@@ -1,7 +1,7 @@
 
 import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { IFolder, IFile } from '@/components/new-submission/types'
-import axios, { AxiosResponse } from "axios"
+import axios from "axios"
 import Repository from './repository.model'
 
 const sprintf = require("sprintf-js").sprintf
@@ -16,54 +16,79 @@ export default class HydroShare extends Repository {
     }
   }
 
-  static async uploadFiles(bucketUrl: string, filesToUpload: IFile[] | any[], createFolderUrl: string) {
-    let folderPaths = filesToUpload.map(f => f.path)
+  static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
+    const filesToUpload = itemsToUpload.filter(i => i.hasOwnProperty('file'))
+    const foldersToUpload = itemsToUpload.filter(i => i.hasOwnProperty('children'))
+
+    let folderPaths = foldersToUpload.map(f => `${f.path ? f.path + '/' : ''}${f.name}`)
     // Get unique paths
-    folderPaths = [...new Set(folderPaths)].sort((a, b) => (a < b ? 1 : -1))
-    folderPaths = folderPaths
-      .filter(path => path && !folderPaths.some((p) => {
-        return (p.length > path.length) && p.startsWith(`${path}/`)
-      }))
+    folderPaths = [...new Set(folderPaths)].sort((a, b) => b.split('/').length - a.split('/').length)
 
-    const folderPromises = folderPaths.map((path: string) => {
-      const folderCreateUrl = sprintf(
-        createFolderUrl,
-        encodeURIComponent(path)
-      )
-      return axios.put(
-        folderCreateUrl,
-        {},
-        { 
-          // headers: { 'Content-Type': 'multipart/form-data', }, 
-          params: { "access_token": this.accessToken }
-        }
-      )
-    })
+    // HydroShare can only create multiple folders at a time if the parent folder already exists
+    // So we traverse the tree by depth and create folders in each depth at a time
+    const that = this
+    
+    if (folderPaths.length) {
+      // Create folders
+      await _createFoldersByDepth(folderPaths, 1)
+    }
+    else {
+      // No folders to create. Just upload files directly.
+      await _uploadFiles()
+    }
 
-    const promises = filesToUpload.map((file: IFile) => {
-      let url = bucketUrl
-      const form = new window.FormData()
-      form.append('file', file.file, file.name)
+    async function _createFoldersByDepth(paths: string[], depth: number) {
+      const depthPaths = paths.filter(p => p.split('/').length === depth)
 
-      // Check if the file is in a folder
-      if (file.path) {
-        url = `${url}${ encodeURIComponent(file.path) }/`
+      const folderCreatePromises = depthPaths.map((path: string) => {
+        const folderCreateUrl = sprintf(
+          createFolderUrl,
+          encodeURIComponent(path)
+        )
+  
+        return axios.put(
+          folderCreateUrl,
+          {},
+          { 
+            // headers: { 'Content-Type': 'multipart/form-data', }, 
+            params: { "access_token": that.accessToken }
+          }
+        )
+      })
+      await Promise.allSettled(folderCreatePromises)
+      const remaining = paths.filter(p => p.split('/').length > depth)
+      if (remaining.length) {
+        _createFoldersByDepth(remaining, depth + 1)
       }
+      else {
+        // Finished creating folders. Files can be added.
+        _uploadFiles()
+      }
+    }
 
-      return axios.post(
-        url,
-        form,
-        { 
-          headers: { 
-            'Content-Type': 'multipart/form-data', 
-          }, 
-          params: { "access_token": this.accessToken }
+    async function _uploadFiles() {
+      const fileUploadPromises = filesToUpload.map((file: IFile) => {
+        let url = bucketUrl
+        const form = new window.FormData()
+        form.append('file', file.file, file.name)
+  
+        // Check if the file is in a folder
+        if (file.path) {
+          url = `${url}${ encodeURIComponent(file.path) }/`
         }
-      )
-    })
-
-    const folderCreations: PromiseSettledResult<any>[] = await Promise.allSettled(folderPromises)
-    const resp: PromiseSettledResult<any>[] = await Promise.allSettled(promises)
-    // TODO: indicate to Cz api that files were uploaded
+  
+        return axios.post(
+          url,
+          form,
+          { 
+            headers: { 
+              'Content-Type': 'multipart/form-data', 
+            }, 
+            params: { "access_token": that.accessToken }
+          }
+        )
+      })
+      const response: PromiseSettledResult<any>[] = await Promise.allSettled(fileUploadPromises)
+    }
   }
 }

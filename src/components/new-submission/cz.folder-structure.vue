@@ -195,7 +195,7 @@ export default class CzFolderStructure extends Vue {
     card: 'mdi-file-cad',
     default: 'mdi-file-outline',
   }
-  protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '' }
+  protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '', path: '' }
   protected open: string[] = []
   protected active: string[] = []
   protected selected: string[] = []
@@ -212,10 +212,10 @@ export default class CzFolderStructure extends Vue {
 
   @Watch('rootDirectory.children', { deep: true })
   protected onInput() {
-    const files = this._getFiles(this.rootDirectory) as IFile[]
+    const items = this._getDirectoryItems(this.rootDirectory) as IFile[]
     // Update paths
-    files.map(f => f.path = this.getPathString(f.parent as IFolder))
-    this.$emit('input', this._getFiles(this.rootDirectory))
+    items.map(i => i.path = this.getPathString(i.parent as IFolder))
+    this.$emit('input', this._getDirectoryItems(this.rootDirectory))
   }
 
   @Watch('dropFiles')
@@ -434,7 +434,8 @@ export default class CzFolderStructure extends Vue {
       parent: null, 
       isRenaming: false,
       isCutting: false,
-      key: Date.now().toString() 
+      key: Date.now().toString(),
+      path: '',
     } as IFolder
     if (this.activeDirectoryItem.hasOwnProperty('children')) {
       // Selected item is a folder
@@ -536,17 +537,16 @@ export default class CzFolderStructure extends Vue {
   }
 
   /** Returns all files inside the given folder */
-  private _getFiles(item: IFolder): IFile[] {
+  private _getDirectoryItems(item: IFolder): (IFile | IFolder)[] {
     const childFolders = item.children.filter(i => this.isFolder(i)) as IFolder[]
-    const childFiles = item.children.filter(i => !this.isFolder(i)) as IFile[]
 
-    let nestedFiles: IFile[] = []
+    let nestedItems: (IFile | IFolder)[] = []
     for (let i = 0; i < childFolders.length; i++) {
-      const newItems = this._getFiles(childFolders[i])
-      nestedFiles.push(...newItems)
+      const newItems = this._getDirectoryItems(childFolders[i])
+      nestedItems.push(...newItems)
     }
 
-    return [...childFiles, ...nestedFiles]
+    return [...item.children, ...nestedItems]
   }
 
   // private _hasSomeChildSelected(item: IFolder) {

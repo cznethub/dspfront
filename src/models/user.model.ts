@@ -54,7 +54,7 @@ export default class User extends Model {
 
   static async logIn(callback?: () => any) {
     window.open(
-      `${window.location.origin}/api/login`,
+      `${window.location.origin}/api/login?window_close=True`,
       "_blank",
       "location=1,status=1,scrollbars=1, width=800,height=800"
     )
