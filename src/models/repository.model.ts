@@ -109,7 +109,7 @@ export default class Repository extends Model implements IRepository {
   }
 
   static openAuthorizeDialog(repository: string, redirectTo?: RawLocation) {
-    this.authorizeDialog$.next({ repository, redirectTo})
+    this.authorizeDialog$.next({ repository, redirectTo })
   }
 
   static async authorize(activeRepository: typeof Repository, callback?: () => any) {
@@ -208,7 +208,7 @@ export default class Repository extends Model implements IRepository {
         this.commit((state) => {
           state.accessToken = ''
         })
-        // console.error(this.get()?.key + ': failed to fetch access token. ', e)
+        console.error(this.get()?.key + ': failed to fetch access token. ', e)
       }
     }
   }

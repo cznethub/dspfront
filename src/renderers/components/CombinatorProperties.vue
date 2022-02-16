@@ -9,16 +9,18 @@
 </template>
 
 <script lang="ts">
-import { Generate, JsonSchema, Layout, UISchemaElement } from '@jsonforms/core';
-import omit from 'lodash/omit';
+import { Generate, JsonSchema, Layout, UISchemaElement } from '@jsonforms/core'
 import { defineComponent } from "@vue/composition-api"
-import { DispatchRenderer } from '@jsonforms/vue2';
-import { CompType } from '@jsonforms/vue2-vuetify/lib/vue';
+import { DispatchRenderer } from '@jsonforms/vue2'
+import { CompType } from '@jsonforms/vue2-vuetify/lib/vue'
+import omit from 'lodash/omit'
+
 interface CombinatorProps {
-  schema: JsonSchema;
-  combinatorKeyword: 'oneOf' | 'anyOf';
-  path: string;
+  schema: JsonSchema
+  combinatorKeyword: 'oneOf' | 'anyOf'
+  path: string
 }
+
 export default defineComponent({
   name: 'combinator-properties',
   components: {
@@ -46,9 +48,9 @@ export default defineComponent({
     const foundUISchema: UISchemaElement = Generate.uiSchema(
       otherProps,
       'VerticalLayout'
-    );
+    )
     const isLayout = (uischema: UISchemaElement): uischema is Layout =>
-      Object.prototype.hasOwnProperty.call(uischema, 'elements');
+      Object.prototype.hasOwnProperty.call(uischema, 'elements')
     let isLayoutWithElements = false;
     if (foundUISchema !== null && isLayout(foundUISchema)) {
       isLayoutWithElements = foundUISchema.elements.length > 0;
@@ -57,7 +59,7 @@ export default defineComponent({
       otherProps,
       foundUISchema,
       isLayoutWithElements,
-    };
+    }
   },
-});
+})
 </script>

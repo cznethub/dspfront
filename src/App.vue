@@ -128,7 +128,7 @@
     </v-dialog>
 
     <v-dialog v-model="authorizeDialog.isActive" width="500">
-      <cz-authorize @authorized="authorizeDialog.onAuthorized" :repository="authorizeDialog.repo"></cz-authorize>
+      <cz-authorize @authorized="authorizeDialog.onAuthorized" :repo="authorizeDialog.repo"></cz-authorize>
     </v-dialog>
     <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
@@ -150,7 +150,6 @@ import Zenodo from "@/models/zenodo.model"
 import HydroShare from "./models/hydroshare.model"
 import Submission from "./models/submission.model"
 import Repository from "./models/repository.model"
-import { EnumRepositoryKeys } from "./components/submissions/types"
 
 @Component({
   name: "app",
@@ -254,8 +253,8 @@ export default class App extends Vue {
     })
 
     this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe((params: { repository: string, redirectTo?: RawLocation | undefined }) => {
-      this.authorizeDialog.isActive = true
       this.authorizeDialog.repo = params.repository
+      this.authorizeDialog.isActive = true
       this.authorizeDialog.onAuthorized = () => {
         if (params.redirectTo) {
           this.$router.push(params.redirectTo)

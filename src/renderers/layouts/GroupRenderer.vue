@@ -49,10 +49,13 @@ const layoutRenderer = defineComponent({
   },
   setup(props: RendererProps<Layout>) {
     return useVanillaLayout(useJsonFormsLayout(props))
+  },
+  created() {
+    console.log(this.layout)
   }
 })
 
-export default layoutRenderer;
+export default layoutRenderer
 
 export const groupRenderer: JsonFormsRendererRegistryEntry = {
   renderer: layoutRenderer,

@@ -10,7 +10,8 @@
 
       <div class="has-space-bottom-2x">
         <div class="has-space-bottom text-h6">Get Started</div>
-        <a @click="openLogInDialog()">Log In</a>
+        <a v-if="!isLoggedIn" @click="openLogInDialog()">Log In</a>
+        <router-link v-else to="/submit">Submit Data</router-link>
       </div>
 
       <div>
@@ -41,6 +42,10 @@
   export default class CzFooter extends Vue {
     protected openLogInDialog() {
       User.openLogInDialog()
+    }
+
+    protected get isLoggedIn() {
+      return User.$state.isLoggedIn;
     }
   }
 </script>

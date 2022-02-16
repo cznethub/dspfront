@@ -3,6 +3,7 @@
     <div class="v-card-media py-4 px-8">
       <v-img :src="repoLogoSrc" :alt="repository.name" width="100%" height="8rem" contain />
     </div>
+    
     <v-divider></v-divider>
     <v-card-title class="justify-center">
       <div class="text-h4 mt-2">Submit to {{ repository.name }}</div>

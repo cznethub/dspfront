@@ -44,16 +44,16 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   (to, from?): RawLocation | null => {
     if (to.meta?.hasAccessTokenGuard) {
       let activeRepository: typeof Repository | null = null
-      const key = to.params.repository
+      const repo = to.params.repository
 
-      switch (key) {
+      switch (repo) {
         case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;
         case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
         default: activeRepository = HydroShare
       }
 
       if (!(activeRepository?.$state.accessToken)) {
-        Repository.openAuthorizeDialog(key, { path: to.path })
+        Repository.openAuthorizeDialog(repo, { path: to.path })
         return from
       }
     }
