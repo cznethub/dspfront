@@ -225,7 +225,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     const repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
 
     console.info("CzNewSubmission: reading existing files...")
-    const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readFolder(this.identifier, '', this.rootDirectory)
+    const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
     this.rootDirectory.children = initialStructure
     this.isLoadingInitialFiles = false
 

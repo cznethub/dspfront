@@ -3,6 +3,7 @@ import { EnumRepositoryKeys } from '@/components/submissions/types'
 import { IFolder, IFile } from '@/components/new-submission/types'
 import axios from "axios"
 import Repository from './repository.model'
+import CzNotification from './notifications.model'
 
 const sprintf = require("sprintf-js").sprintf
 
@@ -94,8 +95,51 @@ export default class HydroShare extends Repository {
     }
   }
 
-  static async readFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
+  static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
     return this._readFolderRecursive(identifier, path, rootDirectory)
+  }
+
+  static async deleteFile(identifier: string, path: string): Promise<boolean> {
+    const url = this.get()?.urls?.fileDeleteUrl
+    const deleteUrl = sprintf(url, identifier, encodeURIComponent(path))
+    try {
+      const response = await axios.delete(deleteUrl, { 
+        params: { "access_token": this.accessToken }
+      })
+      console.log(response)
+  
+      if (response.status === 200) {
+        return true
+      }
+    }
+    catch(e: any) {
+      console.log(e)
+      CzNotification.toast({ message: 'Failed to delete file' })
+    }
+    return false
+  }
+
+  static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
+    const path = `${item.path ? item.path + '/' : ''}${item.name}`
+    const isFolder = item.hasOwnProperty('children')
+    const url = isFolder ? this.get()?.urls?.folderDeleteUrl : this.get()?.urls?.fileDeleteUrl
+    const deleteUrl = sprintf(url, identifier, encodeURIComponent(path))
+
+    try {
+      const response = await axios.delete(deleteUrl, { 
+        params: { "access_token": this.accessToken }
+      })
+  
+      if (response.status === 200) {
+        return true
+      }
+    }
+    catch(e: any) {
+      console.log(e)
+      CzNotification.toast({ message: 'Failed to delete file' })
+    }
+
+    return false
   }
 
   private static async _readFolderRecursive(identifier: string, path: string, folder: IFolder): Promise<(IFile | IFolder)[]> {
@@ -117,6 +161,7 @@ export default class HydroShare extends Repository {
           parent: folder,
           isRenaming: false,
           isCutting: false,
+          isDisabled: false,
           key: `${Date.now().toString()}-a-${index}`,
           path: path,
           file: null,
@@ -129,6 +174,7 @@ export default class HydroShare extends Repository {
           parent: folder,
           isRenaming: false,
           isCutting: false,
+          isDisabled: false,
           key: `${Date.now().toString()}-b-${index}`,
           path: path,
           children: [],

@@ -56,7 +56,7 @@
       <template v-if="selected.length">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="deleteSelected" icon small :disabled="!selected.length" v-on="on" v-bind="attrs">
+            <v-btn @click="deleteSelected" icon small :disabled="isDeleting" v-on="on" v-bind="attrs">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
@@ -86,6 +86,7 @@
               <v-treeview
                 v-model="selected"
                 @update:active="onUpdateActive"
+                item-disabled="isDisabled"
                 :items="rootDirectory.children"
                 :open.sync="open"
                 :active.sync="active"
@@ -125,10 +126,11 @@
                   </v-row>
                 </template>
                 <template v-slot:append="{ item, active }">
-                  <template v-if="active">
+                  <template v-if="active && !item.isDisabled">
                     <v-btn v-if="!item.isRenaming"
                       @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
                   </template>
+                  <v-icon v-if="item.isDisabled" small>fas fa-circle-notch fa-spin</v-icon>
                 </template>
               </v-treeview>
             </v-col>
@@ -150,8 +152,10 @@
 
 <script lang="ts">
 import CzNotification from "@/models/notifications.model"
-import { Component, Vue, Watch, Prop } from "vue-property-decorator"
+import { Component, Watch, Prop } from "vue-property-decorator"
 import { IFolder, IFile } from '@/components/new-submission/types'
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
 @Component({
   name: "cz-folder-structure",
@@ -159,7 +163,7 @@ import { IFolder, IFile } from '@/components/new-submission/types'
   filters: {
   }
 })
-export default class CzFolderStructure extends Vue {
+export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Prop({ default: false }) allowFolders!: boolean
   @Prop({ default: false }) isEditMode!: boolean
   @Prop() identifier!: string  // Use if isEditMode is true
@@ -206,6 +210,7 @@ export default class CzFolderStructure extends Vue {
   protected selected: string[] = []
   protected activeDirectoryItem!: IFolder | IFile
   protected dropFiles: File[] = []
+  protected isDeleting = false
 
   protected get itemsToCut() {
     return this._itemsToCutRecursive(this.rootDirectory)
@@ -242,6 +247,7 @@ export default class CzFolderStructure extends Vue {
         // Need to populate these optional properties so that Vue can set reactive bindings to it
         isRenaming: false,
         isCutting: false,
+        isDisabled: false,
       } as IFile)
     })
     this._openRecursive(targetFolder)
@@ -369,14 +375,56 @@ export default class CzFolderStructure extends Vue {
     item.isRenaming = false
   }
 
-  protected deleteSelected() {
-    this.selected.reverse().map((key: string) => {
+  protected async deleteSelected() {
+    this.isDeleting = true
+    const reversedSelected = this.selected.reverse()
+    const deletePromises: Promise<boolean>[] = []
+
+    for (let i = 0; i < reversedSelected.length; i++) {
+      const key = reversedSelected[i]
       const item = this._getItemByKey(key)
+
       if (item) {
-        this._deleteItem(item)
+        if (this.isEditMode) {
+          const isParentSelected = this.isSelected(item.parent as IFolder)
+          if (!isParentSelected) {
+            const p = this.deleteFileOrFolder(item)
+            deletePromises.push(p)
+          }
+        }
+        else {
+          this._deleteItem(item)
+        }
       }
-    })
+    }
+
+    const wereDeleted = await Promise.all(deletePromises)
+    if (wereDeleted) {
+      console.log(wereDeleted)
+      // Failed to delete
+    }
+    this.isDeleting = false
     this.selected = []
+  }
+
+  private async deleteFileOrFolder(item: IFile | IFolder) {
+    this.toggleItemDisabled(item, true)
+    const wasDeleted = await this.activeRepository.deleteFileOrFolder(this.identifier, item)
+    this.toggleItemDisabled(item, false)
+    if (wasDeleted) {
+      this._deleteItem(item)
+    }
+    return wasDeleted
+  }
+
+  private toggleItemDisabled(item: IFolder | IFile, isDisabled: boolean) {
+    item.isDisabled = isDisabled
+    if (this.isFolder(item)) {
+      (item as IFolder).children.map((item) => {
+        (item as IFolder).isDisabled = isDisabled
+        this.toggleItemDisabled(item as IFolder, isDisabled)
+      })
+    }
   }
 
   protected onClickOutside() {
@@ -439,6 +487,7 @@ export default class CzFolderStructure extends Vue {
       parent: null, 
       isRenaming: false,
       isCutting: false,
+      isDisabled: false,
       key: Date.now().toString(),
       path: '',
     } as IFolder

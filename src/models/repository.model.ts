@@ -180,6 +180,7 @@ export default class Repository extends Model implements IRepository {
         fileReadUrl: resp.data.file_read,
         folderCreateUrl: resp.data.folder_create,
         folderReadUrl: resp.data.folder_read,
+        folderDeleteUrl: resp.data.folder_delete,
         accessTokenUrl: resp.data.access_token,
         authorizeUrl: resp.data.authorize_url,
         viewUrl: resp.data.view_url
@@ -360,6 +361,7 @@ export default class Repository extends Model implements IRepository {
     }
   }
 
-  static uploadFiles: (bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) => Promise<any> 
-  static readFolder: (identifier: string, path: string, rootDirectory: IFolder) => Promise<(IFile | IFolder)[]> 
+  static uploadFiles: (bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) => Promise<any>
+  static readRootFolder: (identifier: string, path: string, rootDirectory: IFolder) => Promise<(IFile | IFolder)[]>
+  static deleteFileOrFolder: (identifier: string, item: IFile | IFolder) => Promise<boolean>
 }

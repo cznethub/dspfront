@@ -3,6 +3,7 @@ export interface IFile {
   parent: IFolder | null
   isRenaming?: boolean
   isCutting?: boolean
+  isDisabled?: boolean
   key: string
   path: string
   file: File | null
@@ -13,6 +14,7 @@ export interface IFolder {
   parent: IFolder | null
   isRenaming?: boolean
   isCutting?: boolean
+  isDisabled?: boolean
   key: string
   path: string
   children: (IFile | IFolder)[]

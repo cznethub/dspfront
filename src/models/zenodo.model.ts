@@ -35,7 +35,7 @@ export default class Zenodo extends Repository {
     // TODO: indicate to Cz api that files were uploaded
   }
 
-  static async readFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
+  static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
     return  []
   }
 }
