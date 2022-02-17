@@ -1,6 +1,6 @@
 
 import { EnumRepositoryKeys } from '@/components/submissions/types'
-import { IFile } from '@/components/new-submission/types'
+import { IFile, IFolder } from '@/components/new-submission/types'
 import axios from "axios"
 import Repository from './repository.model'
 
@@ -14,8 +14,8 @@ export default class Zenodo extends Repository {
     }
   }
 
-  static async uploadFiles(bucketUrl: string, filesToUpload: IFile[], createFolderUrl?: string) {
-    const promises = filesToUpload.map((file) => {
+  static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
+    const promises = itemsToUpload.map((file) => {
       // const url = `${bucketUrl}/${file.name}` // new api
       const url = bucketUrl // new api
       const form = new window.FormData()
@@ -33,5 +33,9 @@ export default class Zenodo extends Repository {
 
     const resp: PromiseSettledResult<any>[] = await Promise.allSettled(promises)
     // TODO: indicate to Cz api that files were uploaded
+  }
+
+  static async readFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
+    return  []
   }
 }

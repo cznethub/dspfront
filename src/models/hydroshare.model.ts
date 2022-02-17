@@ -70,7 +70,9 @@ export default class HydroShare extends Repository {
       const fileUploadPromises = filesToUpload.map((file: IFile) => {
         let url = bucketUrl
         const form = new window.FormData()
-        form.append('file', file.file, file.name)
+        if (file.file) {
+          form.append('file', file.file, file.name)
+        }
   
         // Check if the file is in a folder
         if (file.path) {
@@ -90,5 +92,52 @@ export default class HydroShare extends Repository {
       })
       const response: PromiseSettledResult<any>[] = await Promise.allSettled(fileUploadPromises)
     }
+  }
+
+  static async readFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
+    const url = this.get()?.urls?.folderCreateUrl
+    const folderReadUrl = sprintf(
+      url,
+      identifier,
+      encodeURIComponent(path || ' ')
+    )
+    try {
+      const response = await axios.get(
+        folderReadUrl,
+        { params: { "access_token": this.accessToken } }
+      )
+      if (response.status === 200) {
+        const files: IFile[] = response.data.files.map((fileName: string, index: number): IFile => {
+          return {
+            name: fileName,
+            parent: rootDirectory,
+            isRenaming: false,
+            isCutting: false,
+            key: `${Date.now().toString()}-a-${index}`,
+            path: '',
+            file: null,
+          }
+        })
+
+        const folders: IFolder[] = response.data.folders.map((folderName: string, index: number): IFolder => {
+          return {
+            name: folderName,
+            parent: rootDirectory,
+            isRenaming: false,
+            isCutting: false,
+            key: `${Date.now().toString()}-b-${index}`,
+            path: '',
+            children: [],
+          }
+        })
+
+        return [...folders, ...files]
+      }
+    }
+    catch(e: any) {
+      console.log(e)
+    }
+    
+    return []
   }
 }

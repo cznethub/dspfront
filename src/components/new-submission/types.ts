@@ -5,7 +5,7 @@ export interface IFile {
   isCutting?: boolean
   key: string
   path: string
-  file: File
+  file: File | null
 }
 
 export interface IFolder {

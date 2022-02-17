@@ -39,6 +39,7 @@ export interface IRepositoryUrls {
   fileDeleteUrl: string
   fileReadUrl: string
   folderCreateUrl?: string
+  folderReadUrl?: string
   accessTokenUrl: string
   authorizeUrl: string
   viewUrl: string

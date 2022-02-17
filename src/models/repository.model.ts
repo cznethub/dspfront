@@ -7,6 +7,7 @@ import axios from "axios"
 import Submission from './submission.model'
 import CzNotification from './notifications.model'
 import User from './user.model'
+import { IFile, IFolder } from '@/components/new-submission/types'
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
@@ -178,6 +179,7 @@ export default class Repository extends Model implements IRepository {
         fileDeleteUrl: resp.data.file_delete,
         fileReadUrl: resp.data.file_read,
         folderCreateUrl: resp.data.folder_create,
+        folderReadUrl: resp.data.folder_read,
         accessTokenUrl: resp.data.access_token,
         authorizeUrl: resp.data.authorize_url,
         viewUrl: resp.data.view_url
@@ -357,4 +359,7 @@ export default class Repository extends Model implements IRepository {
       CzNotification.toast({ message: 'Failed to load submission' })
     }
   }
+
+  static uploadFiles: (bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) => Promise<any> 
+  static readFolder: (identifier: string, path: string, rootDirectory: IFolder) => Promise<(IFile | IFolder)[]> 
 }

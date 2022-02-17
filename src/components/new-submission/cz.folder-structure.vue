@@ -76,6 +76,9 @@
       
     </v-sheet>
     <v-card-text style="min-height: 10rem;">
+      <v-alert v-if="isEditMode" class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
+        These are your files as they appear in HydroShare. Any changes you make here will be immediately applied to your files.
+      </v-alert>
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem;">
           <v-row>
@@ -158,6 +161,9 @@ import { IFolder, IFile } from '@/components/new-submission/types'
 })
 export default class CzFolderStructure extends Vue {
   @Prop({ default: false }) allowFolders!: boolean
+  @Prop({ default: false }) isEditMode!: boolean
+  @Prop() identifier!: string  // Use if isEditMode is true
+  @Prop({ required: true }) rootDirectory!: IFolder
 
   protected files = {
     html: 'mdi-language-html5',
@@ -195,7 +201,6 @@ export default class CzFolderStructure extends Vue {
     card: 'mdi-file-cad',
     default: 'mdi-file-outline',
   }
-  protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '', path: '' }
   protected open: string[] = []
   protected active: string[] = []
   protected selected: string[] = []
