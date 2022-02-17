@@ -237,20 +237,28 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       ? this.activeDirectoryItem as IFolder
       : this.activeDirectoryItem.parent as IFolder
 
-    newFiles.map((file, index) => {
-      targetFolder.children.push({
+    const addedFiles = newFiles.map((file, index) => {
+      const newItem = {
         name: this._getAvailableName(file.name, targetFolder),
         parent: targetFolder,
         path: '',
         key: `${Date.now().toString()}-${index}`,
-        file,
+        file: file,
         // Need to populate these optional properties so that Vue can set reactive bindings to it
         isRenaming: false,
         isCutting: false,
         isDisabled: false,
-      } as IFile)
+      } as IFile
+
+      targetFolder.children.push(newItem)
+      return newItem
     })
+
     this._openRecursive(targetFolder)
+
+    if (this.isEditMode) {
+      this.$emit('upload', addedFiles)
+    }
     this.dropFiles = []
   }
 
@@ -400,8 +408,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
     const wereDeleted = await Promise.all(deletePromises)
     if (wereDeleted) {
-      console.log(wereDeleted)
-      // Failed to delete
+      // Failed to delete some file
     }
     this.isDeleting = false
     this.selected = []
@@ -491,6 +498,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       key: Date.now().toString(),
       path: '',
     } as IFolder
+
     if (this.activeDirectoryItem.hasOwnProperty('children')) {
       // Selected item is a folder
       newFolder.parent = this.activeDirectoryItem as IFolder
@@ -501,10 +509,22 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       newFolder.parent = this.activeDirectoryItem.parent as IFolder
       newFolder.name = this._getAvailableName(newFolder.name, newFolder.parent as IFolder)
     }
+
+    newFolder.path = newFolder.parent === this.rootDirectory
+      ? ''
+      : newFolder.parent.path 
+        ? newFolder.parent.path + '/' + newFolder.parent.name 
+        : newFolder.parent.name
+
+    if (this.isEditMode) {
+      this.$emit('upload', [newFolder])
+    }
+
     newFolder.parent.children.push(newFolder)
     newFolder.parent.children = newFolder.parent.children.sort((a, b) => {
       return b.hasOwnProperty('children') ? 1 : -1
     })
+
     this._openRecursive(newFolder)
   }
 

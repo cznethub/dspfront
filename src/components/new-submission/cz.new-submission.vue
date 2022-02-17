@@ -41,6 +41,7 @@
               <cz-folder-structure
                 ref="folderStructure"
                 v-model="uploads"
+                @upload="uploadFiles($event)"
                 :rootDirectory.sync="rootDirectory"
                 :allowFolders="repoMetadata[repository].hasFolderStructure"
                 :isEditMode="isEditMode"
@@ -286,21 +287,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       )
     }
 
-    const repoUrls: IRepositoryUrls | undefined  = this.activeRepository?.get()?.urls 
-
-    if (this.uploads.length && repoUrls) {
-       const url = sprintf(
-        repoUrls.fileCreateUrl,
-        this.identifier
-      )
-
-      const createFolderUrl = sprintf(
-        repoUrls.folderCreateUrl,
-        this.identifier,
-        '%s'  // replaced file by file inside repo model
-      )
-      await this.activeRepository?.uploadFiles(url, this.uploads, createFolderUrl)
-    }
+    await this.uploadFiles(this.uploads)
 
     // Indicate that changes have been saved
     CzNotification.toast({
@@ -313,6 +300,24 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected onChange(event: JsonFormsChangeEvent) {
     this.data = event.data
+  }
+
+  protected async uploadFiles(files: (IFolder | IFile)[]) {
+    const repoUrls: IRepositoryUrls | undefined  = this.activeRepository?.get()?.urls
+
+    if (files.length && repoUrls) {
+       const url = sprintf(
+        repoUrls.fileCreateUrl,
+        this.identifier
+      )
+
+      const createFolderUrl = sprintf(
+        repoUrls.folderCreateUrl,
+        this.identifier,
+        '%s'  // replaced file by file inside repo model
+      )
+      await this.activeRepository?.uploadFiles(url, files, createFolderUrl)
+    }
   }
 }
 </script>

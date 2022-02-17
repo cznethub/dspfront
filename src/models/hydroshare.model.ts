@@ -18,6 +18,7 @@ export default class HydroShare extends Repository {
   }
 
   static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
+    itemsToUpload.map(i => i.isDisabled = true)
     const filesToUpload = itemsToUpload.filter(i => i.hasOwnProperty('file'))
     const foldersToUpload = itemsToUpload.filter(i => i.hasOwnProperty('children'))
 
@@ -37,6 +38,7 @@ export default class HydroShare extends Repository {
       // No folders to create. Just upload files directly.
       await _uploadFiles()
     }
+    itemsToUpload.map(i => i.isDisabled = false)
 
     async function _createFoldersByDepth(paths: string[], depth: number) {
       const depthPaths = paths.filter(p => p.split('/').length === depth)
