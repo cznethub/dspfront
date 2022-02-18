@@ -181,7 +181,7 @@ export default class Repository extends Model implements IRepository {
         folderCreateUrl: resp.data.folder_create,
         folderReadUrl: resp.data.folder_read,
         folderDeleteUrl: resp.data.folder_delete,
-        moveOrRenameUrl: resp.data.move_or_rename_url,
+        moveOrRenameUrl: resp.data.move_or_rename_url,  // TODO: split into two in the backend (move and rename)
         accessTokenUrl: resp.data.access_token,
         authorizeUrl: resp.data.authorize_url,
         viewUrl: resp.data.view_url
@@ -333,6 +333,9 @@ export default class Repository extends Model implements IRepository {
 
         Repository.openAuthorizeDialog(this.entity)
       }
+      else {
+        console.error(`${repository}: failed to delete submission.`, e.response)
+      }
     }
   }
 
@@ -356,9 +359,21 @@ export default class Repository extends Model implements IRepository {
         return null
       }
     }
-    catch(e) {
-      console.log(e)
-      CzNotification.toast({ message: 'Failed to load submission' })
+    catch(e: any) {
+      if (e.response.status === 401) {
+        // Token has expired
+        this.commit((state) => {
+          state.accessToken = ''
+        })
+        CzNotification.toast({
+          message: 'Authorization token is invalid or has expired.'
+        })
+
+        Repository.openAuthorizeDialog(this.entity)
+      }
+      else {
+        console.error(`${repository}: failed to read submission.`, e.response)
+      }
     }
   }
 

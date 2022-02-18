@@ -77,7 +77,7 @@
     </v-sheet>
     <v-card-text style="min-height: 10rem;">
       <v-alert v-if="isEditMode" class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
-        These are your files as they appear in HydroShare. Any changes you make here will be immediately applied to your files.
+        These are your files as they appear in the repository. Any changes you make here will be immediately applied to your files.
       </v-alert>
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem;">

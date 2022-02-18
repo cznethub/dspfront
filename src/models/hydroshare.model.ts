@@ -175,7 +175,7 @@ export default class HydroShare extends Repository {
   }
 
   private static async _readFolderRecursive(identifier: string, path: string, folder: IFolder): Promise<(IFile | IFolder)[]> {
-    const url = this.get()?.urls?.folderCreateUrl
+    const url = this.get()?.urls?.folderReadUrl
     const folderReadUrl = sprintf(
       url,
       identifier,
