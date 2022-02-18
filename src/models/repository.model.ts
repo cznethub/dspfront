@@ -181,6 +181,7 @@ export default class Repository extends Model implements IRepository {
         folderCreateUrl: resp.data.folder_create,
         folderReadUrl: resp.data.folder_read,
         folderDeleteUrl: resp.data.folder_delete,
+        moveOrRenameUrl: resp.data.move_or_rename_url,
         accessTokenUrl: resp.data.access_token,
         authorizeUrl: resp.data.authorize_url,
         viewUrl: resp.data.view_url

@@ -378,16 +378,18 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   protected async onRenamed(item: IFile | IFolder, name: string) {
     if (name.trim()) {
       const newName = this._getAvailableName(name, item.parent as IFolder, item.name)
+
       if (this.isEditMode) {
-        // const wasRenamed = this.activeRepository.renameFileOrFolder(item)
-        // if (wasRenamed) {
-        //   item.name = newName
-        // }
+        item.isDisabled = true
+        const wasRenamed = await this.activeRepository.renameFileOrFolder(this.identifier, item, newName)
+        if (wasRenamed) {
+          item.name = newName
+        }
+        item.isDisabled = false
       }
       else {
         item.name = newName
       }
-      
     }
     
     item.isRenaming = false

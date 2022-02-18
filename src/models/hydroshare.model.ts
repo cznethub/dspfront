@@ -93,6 +93,7 @@ export default class HydroShare extends Repository {
           }
         )
       })
+
       const response: PromiseSettledResult<any>[] = await Promise.allSettled(fileUploadPromises)
 
       // HydroShare replaces spaces with '_' when uploading files. We must update the name here with their changes.
@@ -101,7 +102,16 @@ export default class HydroShare extends Repository {
           // @ts-ignore
           f.name = (response[index]).value.data.file_name
         }
+        else {
+          // Uplaod failed for this file
+          f.parent.children = f.parent.children.filter(file => file.name !== f.name)
+        }
       })
+
+      // TODO: figure out how to identify that fail was due to a name that already exists
+      if (response.some(r => r.status === 'rejected')) {
+        CzNotification.toast({ message: 'Some of your files failed to upload'})
+      }
     }
   }
 
@@ -109,28 +119,26 @@ export default class HydroShare extends Repository {
     return this._readFolderRecursive(identifier, path, rootDirectory)
   }
 
-  // static async deleteFile(identifier: string, path: string): Promise<boolean> {
-  //   const url = this.get()?.urls?.fileDeleteUrl
-  //   const deleteUrl = sprintf(url, identifier, encodeURIComponent(path))
-  //   try {
-  //     const response = await axios.delete(deleteUrl, { 
-  //       params: { "access_token": this.accessToken }
-  //     })
-  //     console.log(response)
-  
-  //     if (response.status === 200) {
-  //       return true
-  //     }
-  //   }
-  //   catch(e: any) {
-  //     console.log(e)
-  //     CzNotification.toast({ message: 'Failed to delete file' })
-  //   }
-  //   return false
-  // }
-
   static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newName: string) {
-    return true
+    const pathPrefix = 'data/contents/'
+    const url = this.get()?.urls?.moveOrRenameUrl
+    const renameUrl = sprintf(url, identifier)
+
+    const form = new window.FormData()
+
+    form.append('source_path', pathPrefix + (item.path ? item.path + '/' + item.name : item.name))
+    form.append('target_path', pathPrefix + (item.path ? item.path + '/' + newName : newName))
+
+    return axios.post(
+      renameUrl,
+      form,
+      { 
+        headers: { 
+          'Content-Type': 'multipart/form-data', 
+        }, 
+        params: { "access_token": this.accessToken }
+      }
+    )
   }
 
   static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
