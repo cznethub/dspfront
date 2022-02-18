@@ -94,6 +94,14 @@ export default class HydroShare extends Repository {
         )
       })
       const response: PromiseSettledResult<any>[] = await Promise.allSettled(fileUploadPromises)
+
+      // HydroShare replaces spaces with '_' when uploading files. We must update the name here with their changes.
+      filesToUpload.map((f, index) => {
+        if (response[index].status === 'fulfilled') {
+          // @ts-ignore
+          f.name = (response[index]).value.data.file_name
+        }
+      })
     }
   }
 
@@ -101,24 +109,28 @@ export default class HydroShare extends Repository {
     return this._readFolderRecursive(identifier, path, rootDirectory)
   }
 
-  static async deleteFile(identifier: string, path: string): Promise<boolean> {
-    const url = this.get()?.urls?.fileDeleteUrl
-    const deleteUrl = sprintf(url, identifier, encodeURIComponent(path))
-    try {
-      const response = await axios.delete(deleteUrl, { 
-        params: { "access_token": this.accessToken }
-      })
-      console.log(response)
+  // static async deleteFile(identifier: string, path: string): Promise<boolean> {
+  //   const url = this.get()?.urls?.fileDeleteUrl
+  //   const deleteUrl = sprintf(url, identifier, encodeURIComponent(path))
+  //   try {
+  //     const response = await axios.delete(deleteUrl, { 
+  //       params: { "access_token": this.accessToken }
+  //     })
+  //     console.log(response)
   
-      if (response.status === 200) {
-        return true
-      }
-    }
-    catch(e: any) {
-      console.log(e)
-      CzNotification.toast({ message: 'Failed to delete file' })
-    }
-    return false
+  //     if (response.status === 200) {
+  //       return true
+  //     }
+  //   }
+  //   catch(e: any) {
+  //     console.log(e)
+  //     CzNotification.toast({ message: 'Failed to delete file' })
+  //   }
+  //   return false
+  // }
+
+  static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newName: string) {
+    return true
   }
 
   static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {

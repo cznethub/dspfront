@@ -100,10 +100,10 @@
                 open-on-click
               >
                 <template v-slot:prepend="{ item, open }">
-                  <v-icon v-if="item.children" @click.stop="onItemClick(item)" :color="item.isCutting ? 'grey': ''">
+                  <v-icon v-if="item.children" @click.stop="onItemClick(item)" :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
                     {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                   </v-icon>
-                  <v-icon v-else @click.stop="onItemClick(item)" :color="item.isCutting ? 'grey': ''">
+                  <v-icon v-else @click.stop="onItemClick(item)" :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
                     {{ files[item.name.split('.').pop()] || files['default'] }}
                   </v-icon>
                 </template>
@@ -241,7 +241,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       const newItem = {
         name: this._getAvailableName(file.name, targetFolder),
         parent: targetFolder,
-        path: '',
+        path: this.getPathString(targetFolder),
         key: `${Date.now().toString()}-${index}`,
         file: file,
         // Need to populate these optional properties so that Vue can set reactive bindings to it
@@ -375,9 +375,19 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     item.isRenaming = true
   }
 
-  protected onRenamed(item: IFile | IFolder, name: string) {
+  protected async onRenamed(item: IFile | IFolder, name: string) {
     if (name.trim()) {
-      item.name = this._getAvailableName(name, item.parent as IFolder, item.name)
+      const newName = this._getAvailableName(name, item.parent as IFolder, item.name)
+      if (this.isEditMode) {
+        // const wasRenamed = this.activeRepository.renameFileOrFolder(item)
+        // if (wasRenamed) {
+        //   item.name = newName
+        // }
+      }
+      else {
+        item.name = newName
+      }
+      
     }
     
     item.isRenaming = false
@@ -482,6 +492,15 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     })
   }
 
+  protected updateFolderPath(folder: IFolder) {
+    folder.path = folder.parent === this.rootDirectory
+      ? ''
+      : folder.parent?.path 
+        ? folder.parent.path + '/' + folder.parent.name 
+        : folder.parent?.name
+      || ''
+  }
+
   protected newFolder() {
     if (!this.allowFolders) {
       return
@@ -510,11 +529,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       newFolder.name = this._getAvailableName(newFolder.name, newFolder.parent as IFolder)
     }
 
-    newFolder.path = newFolder.parent === this.rootDirectory
-      ? ''
-      : newFolder.parent.path 
-        ? newFolder.parent.path + '/' + newFolder.parent.name 
-        : newFolder.parent.name
+    this.updateFolderPath(newFolder)
 
     if (this.isEditMode) {
       this.$emit('upload', [newFolder])
