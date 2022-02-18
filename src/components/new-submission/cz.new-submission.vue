@@ -38,7 +38,15 @@
         <div>
           <div class="container">
             <div v-if="!isLoading">
-              <cz-folder-structure v-model="uploads" :allowFolders="repoMetadata[repository].hasFolderStructure" />
+              <cz-folder-structure
+                ref="folderStructure"
+                v-model="uploads"
+                @upload="uploadFiles($event)"
+                :rootDirectory.sync="rootDirectory"
+                :allowFolders="repoMetadata[repository].hasFolderStructure"
+                :isEditMode="isEditMode"
+                :identifier="identifier"
+              />
 
               <json-forms
                 :disabled="isSaving"
@@ -112,7 +120,7 @@ import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
-import { IFile } from '@/components/new-submission/types'
+import { IFile, IFolder } from '@/components/new-submission/types'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -125,27 +133,31 @@ const renderers = [
   ...vanillaRenderers, 
   ...CzRenderers,
   // ...vuetifyRenderers
-];
+]
 
 @Component({
   name: "cz-new-submission",
   components: { JsonForms, JsonViewer, CzFolderStructure },
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
-  @Ref("form") jsonForm!: typeof JsonForms;
+  @Ref("form") jsonForm!: typeof JsonForms
+  // @Ref("folderStructure") folderStructure!: InstanceType<typeof CzFolderStructure>
+
+  protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '', path: '' }
   protected isLoading = false
+  protected isLoadingInitialFiles = false
   protected isSaving = false
   protected identifier = ""
   protected data: any = {}
   protected links: any = {}
   protected renderers: JsonFormsRendererRegistryEntry[] = renderers
-  protected uploads: IFile [] = []
   protected showUISchema = false
   protected usedUISchema = {}
   protected repoMetadata = repoMetadata
+  protected uploads: (IFile | IFolder)[] = []
 
   protected get isEditMode() {
-    return this.$route.params.id !== undefined;
+    return this.$route.params.id !== undefined
   }
 
   protected get repository() {
@@ -153,31 +165,31 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected get schema() {
-    return this.activeRepository?.get()?.schema;
+    return this.activeRepository?.get()?.schema
   }
 
   protected get uischema() {
-    return this.activeRepository?.get()?.uischema || undefined;
+    return this.activeRepository?.get()?.uischema || undefined
   }
 
   protected get schemaDefaults() {
-    return this.activeRepository?.get()?.schemaDefaults;
+    return this.activeRepository?.get()?.schemaDefaults
   }
 
   protected get isDevMode() {
-    return process.env.NODE_ENV === "development";
+    return process.env.NODE_ENV === "development"
   }
 
   protected get formTitle() {
-    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`;
+    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`
   }
 
   protected get submitText() {
-    return this.isEditMode ? "Save Changes" : "Save";
+    return this.isEditMode ? "Save Changes" : "Save"
   }
 
   created() {
-    this.isLoading = true;
+    this.isLoading = true
     this.data = this.schemaDefaults
     const routeRepositoryKey = this.$route.params
       .repository as EnumRepositoryKeys;
@@ -209,8 +221,14 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected async loadExistingSubmission() {
-    console.info("CzNewSubmission: reading existing record...");
+    // TODO: these 2 calls can be performed in parallel
+    console.info("CzNewSubmission: reading existing record...")
     const repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
+
+    console.info("CzNewSubmission: reading existing files...")
+    const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
+    this.rootDirectory.children = initialStructure
+    this.isLoadingInitialFiles = false
 
     if (repositoryRecord) {
       this.data = {
@@ -222,16 +240,17 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     else {
       // TODO: indicate in the UI that submission was not loaded
     }
-    this.isLoading = false;
+
+    this.isLoading = false
   }
 
   protected onShowUISchema() {
     if (this.jsonForm) {
       this.usedUISchema = this.jsonForm.uischemaToUse;
     } else {
-      this.usedUISchema = {}; // default
+      this.usedUISchema = {} // default
     }
-    this.showUISchema = true;
+    this.showUISchema = true
   }
 
   protected async save() {
@@ -268,20 +287,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       )
     }
 
-    const repoUrls: IRepositoryUrls | undefined  = this.activeRepository?.get()?.urls 
-
-    if (this.uploads.length && repoUrls) {
-       const url = sprintf(
-        repoUrls.fileCreateUrl,
-        this.identifier
-      )
-
-      const createFolderUrl = sprintf(
-        repoUrls.folderCreateUrl,
-        this.identifier,
-        '%s'  // replaced file by file inside repo model
-      )
-      await this.activeRepository?.uploadFiles(url, this.uploads, createFolderUrl)
+    // If we are in edit mode, files have already been saved
+    if (!this.isEditMode) {
+      await this.uploadFiles(this.uploads)
     }
 
     // Indicate that changes have been saved
@@ -295,6 +303,24 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected onChange(event: JsonFormsChangeEvent) {
     this.data = event.data
+  }
+
+  protected async uploadFiles(files: (IFolder | IFile)[]) {
+    const repoUrls: IRepositoryUrls | undefined  = this.activeRepository?.get()?.urls
+
+    if (files.length && repoUrls) {
+       const url = sprintf(
+        repoUrls.fileCreateUrl,
+        this.identifier
+      )
+
+      const createFolderUrl = sprintf(
+        repoUrls.folderCreateUrl,
+        this.identifier,
+        '%s'  // replaced file by file inside repo model
+      )
+      await this.activeRepository?.uploadFiles(url, files, createFolderUrl)
+    }
   }
 }
 </script>

@@ -56,7 +56,7 @@
       <template v-if="selected.length">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="deleteSelected" icon small :disabled="!selected.length" v-on="on" v-bind="attrs">
+            <v-btn @click="deleteSelected" icon small :disabled="isDeleting" v-on="on" v-bind="attrs">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
@@ -76,6 +76,9 @@
       
     </v-sheet>
     <v-card-text style="min-height: 10rem;">
+      <v-alert v-if="isEditMode" class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
+        These are your files as they appear in the repository. Any changes you make here will be immediately applied to your files.
+      </v-alert>
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem;">
           <v-row>
@@ -83,6 +86,7 @@
               <v-treeview
                 v-model="selected"
                 @update:active="onUpdateActive"
+                item-disabled="isDisabled"
                 :items="rootDirectory.children"
                 :open.sync="open"
                 :active.sync="active"
@@ -96,10 +100,10 @@
                 open-on-click
               >
                 <template v-slot:prepend="{ item, open }">
-                  <v-icon v-if="item.children" @click.stop="onItemClick(item)" :color="item.isCutting ? 'grey': ''">
+                  <v-icon v-if="item.children" @click.stop="onItemClick(item)" :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
                     {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                   </v-icon>
-                  <v-icon v-else @click.stop="onItemClick(item)" :color="item.isCutting ? 'grey': ''">
+                  <v-icon v-else @click.stop="onItemClick(item)" :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
                     {{ files[item.name.split('.').pop()] || files['default'] }}
                   </v-icon>
                 </template>
@@ -122,10 +126,11 @@
                   </v-row>
                 </template>
                 <template v-slot:append="{ item, active }">
-                  <template v-if="active">
+                  <template v-if="active && !item.isDisabled">
                     <v-btn v-if="!item.isRenaming"
                       @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
                   </template>
+                  <v-icon v-if="item.isDisabled" small>fas fa-circle-notch fa-spin</v-icon>
                 </template>
               </v-treeview>
             </v-col>
@@ -147,8 +152,10 @@
 
 <script lang="ts">
 import CzNotification from "@/models/notifications.model"
-import { Component, Vue, Watch, Prop } from "vue-property-decorator"
+import { Component, Watch, Prop } from "vue-property-decorator"
 import { IFolder, IFile } from '@/components/new-submission/types'
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
 @Component({
   name: "cz-folder-structure",
@@ -156,8 +163,11 @@ import { IFolder, IFile } from '@/components/new-submission/types'
   filters: {
   }
 })
-export default class CzFolderStructure extends Vue {
+export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Prop({ default: false }) allowFolders!: boolean
+  @Prop({ default: false }) isEditMode!: boolean
+  @Prop() identifier!: string  // Use if isEditMode is true
+  @Prop({ required: true }) rootDirectory!: IFolder
 
   protected files = {
     html: 'mdi-language-html5',
@@ -195,12 +205,12 @@ export default class CzFolderStructure extends Vue {
     card: 'mdi-file-cad',
     default: 'mdi-file-outline',
   }
-  protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '', path: '' }
   protected open: string[] = []
   protected active: string[] = []
   protected selected: string[] = []
   protected activeDirectoryItem!: IFolder | IFile
   protected dropFiles: File[] = []
+  protected isDeleting = false
 
   protected get itemsToCut() {
     return this._itemsToCutRecursive(this.rootDirectory)
@@ -227,19 +237,28 @@ export default class CzFolderStructure extends Vue {
       ? this.activeDirectoryItem as IFolder
       : this.activeDirectoryItem.parent as IFolder
 
-    newFiles.map((file, index) => {
-      targetFolder.children.push({
+    const addedFiles = newFiles.map((file, index) => {
+      const newItem = {
         name: this._getAvailableName(file.name, targetFolder),
         parent: targetFolder,
-        path: '',
+        path: this.getPathString(targetFolder),
         key: `${Date.now().toString()}-${index}`,
-        file,
+        file: file,
         // Need to populate these optional properties so that Vue can set reactive bindings to it
         isRenaming: false,
         isCutting: false,
-      } as IFile)
+        isDisabled: false,
+      } as IFile
+
+      targetFolder.children.push(newItem)
+      return newItem
     })
+
     this._openRecursive(targetFolder)
+
+    if (this.isEditMode) {
+      this.$emit('upload', addedFiles)
+    }
     this.dropFiles = []
   }
 
@@ -308,24 +327,42 @@ export default class CzFolderStructure extends Vue {
     })
   }
 
-  protected paste() {
-    this.itemsToCut.map((item) => {
+  protected async paste() {
+    const pastePromises: Promise<boolean>[] = []
+    for (let i = 0; i < this.itemsToCut.length; i++) {
+      const item = this.itemsToCut[i]
       const targetFolder: IFolder = this.isFolder(this.activeDirectoryItem)
         ? this.activeDirectoryItem as IFolder
         : this.activeDirectoryItem.parent as IFolder
-      if (item && !this.isSelected(item.parent as IFolder)) {
-        this.moveItem(item, targetFolder)
-      }
-    })
 
-    // Uncomment if we want to unselect items after moving them
-    // this.itemsToCut.map((item) => {
-    //   this.unselect(item.key)
-    // })
+      // TODO: move these into a promise array and perform them at the same time
+      if (item && !this.isSelected(item.parent as IFolder)) {
+        if (this.isEditMode) {
+          pastePromises.push(this._paste(item, targetFolder))
+        }
+        else {
+          this.moveItem(item, targetFolder)
+        }
+      }
+    }
+
+    await Promise.all(pastePromises)
 
     this.itemsToCut.map((item) => {
       item.isCutting = false
     })
+  }
+
+  private async _paste(item, targetFolder) {
+    let newPath = this.getPathString(targetFolder)
+    newPath = newPath ? newPath + '/' + item.name : item.name
+    item.isDisabled = true
+    const wasMoved = await this.activeRepository.renameFileOrFolder(this.identifier, item, newPath)
+    if (wasMoved) {
+      this.moveItem(item, targetFolder)
+    }
+    item.isDisabled = false
+    return wasMoved
   }
 
   protected moveItem(item: IFolder | IFile, destination: IFolder) {
@@ -356,22 +393,76 @@ export default class CzFolderStructure extends Vue {
     item.isRenaming = true
   }
 
-  protected onRenamed(item: IFile | IFolder, name: string) {
+  protected async onRenamed(item: IFile | IFolder, name: string) {
     if (name.trim()) {
-      item.name = this._getAvailableName(name, item.parent as IFolder, item.name)
+      const newName = this._getAvailableName(name, item.parent as IFolder, item.name)
+
+      if (this.isEditMode) {
+        item.isDisabled = true
+        const newPath = item.path ? item.path + '/' + newName : newName
+        const wasRenamed = await this.activeRepository.renameFileOrFolder(this.identifier, item, newPath)
+        if (wasRenamed) {
+          item.name = newName
+        }
+        item.isDisabled = false
+      }
+      else {
+        item.name = newName
+      }
     }
     
     item.isRenaming = false
   }
 
-  protected deleteSelected() {
-    this.selected.reverse().map((key: string) => {
+  protected async deleteSelected() {
+    this.isDeleting = true
+    const reversedSelected = this.selected.reverse()
+    const deletePromises: Promise<boolean>[] = []
+
+    for (let i = 0; i < reversedSelected.length; i++) {
+      const key = reversedSelected[i]
       const item = this._getItemByKey(key)
+
       if (item) {
-        this._deleteItem(item)
+        if (this.isEditMode) {
+          const isParentSelected = this.isSelected(item.parent as IFolder)
+          if (!isParentSelected) {
+            const p = this.deleteFileOrFolder(item)
+            deletePromises.push(p)
+          }
+        }
+        else {
+          this._deleteItem(item)
+        }
       }
-    })
+    }
+
+    const wereDeleted = await Promise.all(deletePromises)
+    if (wereDeleted) {
+      // Failed to delete some file
+    }
+    this.isDeleting = false
     this.selected = []
+  }
+
+  private async deleteFileOrFolder(item: IFile | IFolder) {
+    this.toggleItemDisabled(item, true)
+    const wasDeleted = await this.activeRepository.deleteFileOrFolder(this.identifier, item)
+    this.toggleItemDisabled(item, false)
+    if (wasDeleted) {
+      this._deleteItem(item)
+    }
+    return wasDeleted
+  }
+
+  private toggleItemDisabled(item: IFolder | IFile, isDisabled: boolean) {
+    item.isDisabled = isDisabled
+    if (this.isFolder(item)) {
+      (item as IFolder).children.map((item) => {
+        (item as IFolder).isDisabled = isDisabled
+        this.toggleItemDisabled(item as IFolder, isDisabled)
+      })
+    }
   }
 
   protected onClickOutside() {
@@ -422,6 +513,15 @@ export default class CzFolderStructure extends Vue {
     })
   }
 
+  protected updateFolderPath(folder: IFolder) {
+    folder.path = folder.parent === this.rootDirectory
+      ? ''
+      : folder.parent?.path 
+        ? folder.parent.path + '/' + folder.parent.name 
+        : folder.parent?.name
+      || ''
+  }
+
   protected newFolder() {
     if (!this.allowFolders) {
       return
@@ -434,9 +534,11 @@ export default class CzFolderStructure extends Vue {
       parent: null, 
       isRenaming: false,
       isCutting: false,
+      isDisabled: false,
       key: Date.now().toString(),
       path: '',
     } as IFolder
+
     if (this.activeDirectoryItem.hasOwnProperty('children')) {
       // Selected item is a folder
       newFolder.parent = this.activeDirectoryItem as IFolder
@@ -447,10 +549,18 @@ export default class CzFolderStructure extends Vue {
       newFolder.parent = this.activeDirectoryItem.parent as IFolder
       newFolder.name = this._getAvailableName(newFolder.name, newFolder.parent as IFolder)
     }
+
+    this.updateFolderPath(newFolder)
+
+    if (this.isEditMode) {
+      this.$emit('upload', [newFolder])
+    }
+
     newFolder.parent.children.push(newFolder)
     newFolder.parent.children = newFolder.parent.children.sort((a, b) => {
       return b.hasOwnProperty('children') ? 1 : -1
     })
+
     this._openRecursive(newFolder)
   }
 

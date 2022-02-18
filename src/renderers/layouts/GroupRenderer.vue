@@ -51,7 +51,7 @@ const layoutRenderer = defineComponent({
     return useVanillaLayout(useJsonFormsLayout(props))
   },
   created() {
-    console.log(this.layout)
+    // console.log(this.layout)
   }
 })
 

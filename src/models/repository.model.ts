@@ -7,6 +7,7 @@ import axios from "axios"
 import Submission from './submission.model'
 import CzNotification from './notifications.model'
 import User from './user.model'
+import { IFile, IFolder } from '@/components/new-submission/types'
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
@@ -178,6 +179,9 @@ export default class Repository extends Model implements IRepository {
         fileDeleteUrl: resp.data.file_delete,
         fileReadUrl: resp.data.file_read,
         folderCreateUrl: resp.data.folder_create,
+        folderReadUrl: resp.data.folder_read,
+        folderDeleteUrl: resp.data.folder_delete,
+        moveOrRenameUrl: resp.data.move_or_rename_url,  // TODO: split into two in the backend (move and rename)
         accessTokenUrl: resp.data.access_token,
         authorizeUrl: resp.data.authorize_url,
         viewUrl: resp.data.view_url
@@ -270,13 +274,18 @@ export default class Repository extends Model implements IRepository {
    * @param {any} data - the form data to be saved
   */
   static async updateSubmission(identifier: string, data: any) {
-    await axios.put(
-      `/api/metadata/${this.entity}/${identifier}`,
-      data, { 
-        headers: { "Content-Type": "application/json"},
-        params: { "access_token": User.$state.orcidAccessToken },
-      }
-    )
+    try {
+      await axios.put(
+        `/api/metadata/${this.entity}/${identifier}`,
+        data, { 
+          headers: { "Content-Type": "application/json"},
+          params: { "access_token": User.$state.orcidAccessToken },
+        }
+      )
+    }
+    catch(e: any) {
+      console.log(e)
+    }
   }
 
   /** 
@@ -329,6 +338,9 @@ export default class Repository extends Model implements IRepository {
 
         Repository.openAuthorizeDialog(this.entity)
       }
+      else {
+        console.error(`${repository}: failed to delete submission.`, e.response)
+      }
     }
   }
 
@@ -352,9 +364,26 @@ export default class Repository extends Model implements IRepository {
         return null
       }
     }
-    catch(e) {
-      console.log(e)
-      CzNotification.toast({ message: 'Failed to load submission' })
+    catch(e: any) {
+      if (e.response.status === 401) {
+        // Token has expired
+        this.commit((state) => {
+          state.accessToken = ''
+        })
+        CzNotification.toast({
+          message: 'Authorization token is invalid or has expired.'
+        })
+
+        Repository.openAuthorizeDialog(this.entity)
+      }
+      else {
+        console.error(`${repository}: failed to read submission.`, e.response)
+      }
     }
   }
+
+  static uploadFiles: (bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) => Promise<any>
+  static readRootFolder: (identifier: string, path: string, rootDirectory: IFolder) => Promise<(IFile | IFolder)[]>
+  static deleteFileOrFolder: (identifier: string, item: IFile | IFolder) => Promise<boolean>
+  static renameFileOrFolder: (identifier: string, item: IFile | IFolder, newPath: string) => Promise<boolean>
 }
