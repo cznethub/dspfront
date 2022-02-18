@@ -119,7 +119,7 @@ export default class HydroShare extends Repository {
     return this._readFolderRecursive(identifier, path, rootDirectory)
   }
 
-  static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string) {
+  static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string): Promise<boolean> {
     const pathPrefix = 'data/contents/'
     const url = this.get()?.urls?.moveOrRenameUrl
     const renameUrl = sprintf(url, identifier)
@@ -128,17 +128,27 @@ export default class HydroShare extends Repository {
 
     form.append('source_path', pathPrefix + (item.path ? item.path + '/' + item.name : item.name))
     form.append('target_path', pathPrefix + newPath)
-
-    return axios.post(
-      renameUrl,
-      form,
-      { 
-        headers: { 
-          'Content-Type': 'multipart/form-data', 
-        }, 
-        params: { "access_token": this.accessToken }
+    try {
+      const response = await axios.post(
+        renameUrl,
+        form,
+        { 
+          headers: { 
+            'Content-Type': 'multipart/form-data', 
+          }, 
+          params: { "access_token": this.accessToken }
+        }
+      )
+  
+      if (response.status === 200) {
+        return true
       }
-    )
+      return false
+    }
+    catch(e: any) {
+      console.log(e)
+      return false
+    }
   }
 
   static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {

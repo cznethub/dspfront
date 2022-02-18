@@ -328,6 +328,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected async paste() {
+    const pastePromises: Promise<boolean>[] = []
     for (let i = 0; i < this.itemsToCut.length; i++) {
       const item = this.itemsToCut[i]
       const targetFolder: IFolder = this.isFolder(this.activeDirectoryItem)
@@ -337,12 +338,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       // TODO: move these into a promise array and perform them at the same time
       if (item && !this.isSelected(item.parent as IFolder)) {
         if (this.isEditMode) {
-          let newPath = this.getPathString(targetFolder)
-          newPath = newPath ? newPath + '/' + item.name : item.name
-          const response = await this.activeRepository.renameFileOrFolder(this.identifier, item, newPath)
-          if (response.status === 200) {
-            this.moveItem(item, targetFolder)
-          }
+          pastePromises.push(this._paste(item, targetFolder))
         }
         else {
           this.moveItem(item, targetFolder)
@@ -350,15 +346,23 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       }
     }
 
-
-    // Uncomment if we want to unselect items after moving them
-    // this.itemsToCut.map((item) => {
-    //   this.unselect(item.key)
-    // })
+    await Promise.all(pastePromises)
 
     this.itemsToCut.map((item) => {
       item.isCutting = false
     })
+  }
+
+  private async _paste(item, targetFolder) {
+    let newPath = this.getPathString(targetFolder)
+    newPath = newPath ? newPath + '/' + item.name : item.name
+    item.isDisabled = true
+    const wasMoved = await this.activeRepository.renameFileOrFolder(this.identifier, item, newPath)
+    if (wasMoved) {
+      this.moveItem(item, targetFolder)
+    }
+    item.isDisabled = false
+    return wasMoved
   }
 
   protected moveItem(item: IFolder | IFile, destination: IFolder) {
