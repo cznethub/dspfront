@@ -365,5 +365,5 @@ export default class Repository extends Model implements IRepository {
   static uploadFiles: (bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) => Promise<any>
   static readRootFolder: (identifier: string, path: string, rootDirectory: IFolder) => Promise<(IFile | IFolder)[]>
   static deleteFileOrFolder: (identifier: string, item: IFile | IFolder) => Promise<boolean>
-  static renameFileOrFolder: (identifier: string, item: IFile | IFolder, newName: string) => any
+  static renameFileOrFolder: (identifier: string, item: IFile | IFolder, newPath: string) => any
 }

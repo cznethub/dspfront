@@ -327,15 +327,29 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     })
   }
 
-  protected paste() {
-    this.itemsToCut.map((item) => {
+  protected async paste() {
+    for (let i = 0; i < this.itemsToCut.length; i++) {
+      const item = this.itemsToCut[i]
       const targetFolder: IFolder = this.isFolder(this.activeDirectoryItem)
         ? this.activeDirectoryItem as IFolder
         : this.activeDirectoryItem.parent as IFolder
+
+      // TODO: move these into a promise array and perform them at the same time
       if (item && !this.isSelected(item.parent as IFolder)) {
-        this.moveItem(item, targetFolder)
+        if (this.isEditMode) {
+          let newPath = this.getPathString(targetFolder)
+          newPath = newPath ? newPath + '/' + item.name : item.name
+          const response = await this.activeRepository.renameFileOrFolder(this.identifier, item, newPath)
+          if (response.status === 200) {
+            this.moveItem(item, targetFolder)
+          }
+        }
+        else {
+          this.moveItem(item, targetFolder)
+        }
       }
-    })
+    }
+
 
     // Uncomment if we want to unselect items after moving them
     // this.itemsToCut.map((item) => {
@@ -381,7 +395,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
       if (this.isEditMode) {
         item.isDisabled = true
-        const wasRenamed = await this.activeRepository.renameFileOrFolder(this.identifier, item, newName)
+        const newPath = item.path ? item.path + '/' + newName : newName
+        const wasRenamed = await this.activeRepository.renameFileOrFolder(this.identifier, item, newPath)
         if (wasRenamed) {
           item.name = newName
         }
