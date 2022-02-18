@@ -274,13 +274,18 @@ export default class Repository extends Model implements IRepository {
    * @param {any} data - the form data to be saved
   */
   static async updateSubmission(identifier: string, data: any) {
-    await axios.put(
-      `/api/metadata/${this.entity}/${identifier}`,
-      data, { 
-        headers: { "Content-Type": "application/json"},
-        params: { "access_token": User.$state.orcidAccessToken },
-      }
-    )
+    try {
+      await axios.put(
+        `/api/metadata/${this.entity}/${identifier}`,
+        data, { 
+          headers: { "Content-Type": "application/json"},
+          params: { "access_token": User.$state.orcidAccessToken },
+        }
+      )
+    }
+    catch(e: any) {
+      console.log(e)
+    }
   }
 
   /** 

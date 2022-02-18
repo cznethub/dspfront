@@ -287,7 +287,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       )
     }
 
-    await this.uploadFiles(this.uploads)
+    // If we are in edit mode, files have already been saved
+    if (!this.isEditMode) {
+      await this.uploadFiles(this.uploads)
+    }
 
     // Indicate that changes have been saved
     CzNotification.toast({

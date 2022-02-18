@@ -182,50 +182,56 @@ export default class HydroShare extends Repository {
       encodeURIComponent(path || ' ') // HydroShare accepts ' ' to indicate root directory
     )
     
-    const response = await axios.get(
-      folderReadUrl,
-      { params: { "access_token": this.accessToken } }
-    )
-    if (response.status === 200) {
-      const files: IFile[] = response.data.files.map((fileName: string, index: number): IFile => {
-        return {
-          name: fileName,
-          parent: folder,
-          isRenaming: false,
-          isCutting: false,
-          isDisabled: false,
-          key: `${Date.now().toString()}-a-${index}`,
-          path: path,
-          file: null,
-        }
-      })
-
-      const folders: IFolder[] = response.data.folders.map((folderName: string, index: number): IFolder => {
-        return {
-          name: folderName,
-          parent: folder,
-          isRenaming: false,
-          isCutting: false,
-          isDisabled: false,
-          key: `${Date.now().toString()}-b-${index}`,
-          path: path,
-          children: [],
-        }
-      })
-
-      if (folders.length) {
-        const readSubfolderPromises: (Promise<(IFile | IFolder)[]>)[] = folders.map((f: IFolder) => {
-          const newPath = path ? `${path}/${f.name}` : f.name
-          return this._readFolderRecursive(identifier, newPath, f)
+    try {
+      const response = await axios.get(
+        folderReadUrl,
+        { params: { "access_token": this.accessToken } }
+      )
+  
+      if (response.status === 200) {
+        const files: IFile[] = response.data.files.map((fileName: string, index: number): IFile => {
+          return {
+            name: fileName,
+            parent: folder,
+            isRenaming: false,
+            isCutting: false,
+            isDisabled: false,
+            key: `${Date.now().toString()}-a-${index}`,
+            path: path,
+            file: null,
+          }
         })
-        const responses: (IFile | IFolder)[][] = await Promise.all(readSubfolderPromises)
-
-        folders.map((f, i) => {
-          f.children = responses[i] || []
+  
+        const folders: IFolder[] = response.data.folders.map((folderName: string, index: number): IFolder => {
+          return {
+            name: folderName,
+            parent: folder,
+            isRenaming: false,
+            isCutting: false,
+            isDisabled: false,
+            key: `${Date.now().toString()}-b-${index}`,
+            path: path,
+            children: [],
+          }
         })
+  
+        if (folders.length) {
+          const readSubfolderPromises: (Promise<(IFile | IFolder)[]>)[] = folders.map((f: IFolder) => {
+            const newPath = path ? `${path}/${f.name}` : f.name
+            return this._readFolderRecursive(identifier, newPath, f)
+          })
+          const responses: (IFile | IFolder)[][] = await Promise.all(readSubfolderPromises)
+  
+          folders.map((f, i) => {
+            f.children = responses[i] || []
+          })
+        }
+  
+        return [...folders, ...files]
       }
-
-      return [...folders, ...files]
+    }
+    catch(e: any) {
+      console.log(e)
     }
 
     return []
