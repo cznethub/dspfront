@@ -4,8 +4,9 @@
       <div class="has-space-bottom-2x">
         <div class="has-space-bottom text-h6">Contact Us</div>
         <router-link to="/contact">Contact</router-link>
-        <p>Learn more about the <a href="#">CZCN</a> and <a href="#">CZ Hub</a></p>
-        <p>Visit <a href="#">cuahsi.org</a></p>
+        <p>Learn more about the <a href="https://czo-archive.criticalzone.org/national/news/story/critical-zone-collaborative-network/"
+          target="_blank">CZCN</a> and <router-link to="/about">CZ Hub</router-link></p>
+        <p>Visit <a href="https://www.cuahsi.org/" target="_blank">cuahsi.org</a></p>
       </div>
 
       <div class="has-space-bottom-2x">
@@ -16,8 +17,8 @@
 
       <div>
         <div class="has-space-bottom text-h6">Open Source</div>
-        <p>The Data Submission Portal is Open Source. Find us on GitHub.</p>
-        <p>Report a bug <a href="#">here</a></p>
+        <p>The Data Submission Portal is Open Source. Find us on <a href="https://github.com/cznethub/dsp" target="_blank">GitHub</a>.</p>
+        <p>Report a bug <a href="https://github.com/cznethub/dsp/issues/new/choose" target="_blank">here</a></p>
         <p>This is Version X.X.X of the Data Submission Portal</p>
       </div>
     </div>
