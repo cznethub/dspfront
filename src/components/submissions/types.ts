@@ -11,6 +11,7 @@ export enum EnumRepositoryKeys {
   hydroshare = 'hydroshare',
   zenodo = 'zenodo',
   earthChemLibrary = 'earthChemLibrary',
+  external = 'external',
   // openTopography = 'openTopography',
   // sesar = 'sesar',
   // other = 'other'
@@ -58,5 +59,6 @@ export interface IRepository {
   uischema?: any
   schemaDefaults?: any
   isDisabled?: boolean
+  isExternal?: boolean
   hasFolderStructure?: boolean
 }

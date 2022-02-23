@@ -15,6 +15,7 @@
   import { enumControlRenderer } from './controls/EnumControlRenderer.vue'
   import { arrayPrimitiveRenderer } from './array/ArrayPrimitiveControl.vue'
   import { anyOfRenderer } from './controls/AnyOfRenderer.vue'
+  import { allOfRenderer } from './controls/AllOfRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -30,6 +31,7 @@
     dateTimeControlRenderer,
     objectControlRenderer,
     arrayPrimitiveRenderer,
-    anyOfRenderer
+    anyOfRenderer,
+    allOfRenderer
   ]
 </script>

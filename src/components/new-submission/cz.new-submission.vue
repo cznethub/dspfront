@@ -10,6 +10,7 @@
           submission to the repository.
 
           <v-img
+            v-if="!repoMetadata[repository].isExternal"
             class="my-4"
             :src="activeRepository.get().logoSrc"
             :alt="activeRepository.get().name"
@@ -39,6 +40,7 @@
           <div class="container">
             <div v-if="!isLoading">
               <cz-folder-structure
+                v-if="!repoMetadata[repository].isExternal"
                 ref="folderStructure"
                 v-model="uploads"
                 @upload="uploadFiles($event)"
@@ -192,7 +194,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.isLoading = true
     this.data = this.schemaDefaults
     const routeRepositoryKey = this.$route.params
-      .repository as EnumRepositoryKeys;
+      .repository as EnumRepositoryKeys
 
     if (
       !this.activeRepository ||

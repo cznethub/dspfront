@@ -150,6 +150,7 @@ import Zenodo from "@/models/zenodo.model"
 import HydroShare from "./models/hydroshare.model"
 import Submission from "./models/submission.model"
 import Repository from "./models/repository.model"
+import External from "./models/external.model"
 
 @Component({
   name: "app",
@@ -274,7 +275,11 @@ export default class App extends Vue {
     // }
 
     if (User.$state.isLoggedIn) {
-      await Promise.all([Zenodo.init(), HydroShare.init()])
+      await Promise.all([
+        Zenodo.init(), 
+        HydroShare.init(), 
+        External.init()
+      ])
     }
 
     // Guards are setup after checking authorization and loading access tokens

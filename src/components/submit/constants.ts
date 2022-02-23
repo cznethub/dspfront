@@ -21,6 +21,13 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: require('@/assets/img/zenodo.png'),
     description: 'Zenodo is a general-purpose, domain-agnostic repository that serves as a "catch-all" repository for EC funded research. Zenodo is operated by CERN in partnership with the OpenAIRE project.',
   },
+  [EnumRepositoryKeys.external]: {
+    key: EnumRepositoryKeys.external,
+    name: 'Register a product submitted to another repository',
+    logoSrc: '',
+    description: 'The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will ensure that your data can be discovered with all of the other CZCN research products.',
+    isExternal: true,
+  },
   // sesar: {
   //   key: 'sesar',
   //   name: 'SESAR',

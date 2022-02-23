@@ -19,8 +19,9 @@
               <v-hover :key="repo.key">
                 <template v-slot:default="{ hover }">
                   <v-card  @click.native="submitTo(repo)"
-                    :disabled="repo.isDisabled"
                     class="has-cursor-pointer transition-swing"
+                    max-width="40rem"
+                    :disabled="repo.isDisabled"
                     :class="`elevation-${ hover ? 12 : 2 }`">
                     <v-card-title class="v-card-media justify-center">
                       <img :src="repo.logoSrc" :alt="repo.name">
@@ -48,14 +49,31 @@
 
       <v-divider />
 
-      <v-container class="d-flex">
-        <div class="has-space-bottom-2x">
-          <div class="text-h4 has-space-bottom-2x has-space-top-2x">Register a product submitted to another repository</div>
-          <p class="text--secondary text-subtitle-1">The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will create a metadata record for the dataset within the HydroShare repository to ensure that your data can still be discovered with all of the other CZCN research products.</p>
-          <v-btn>Register</v-btn>
-        </div>
-        <div class="d-flex justify-center flex-grow-1 ml-4"><v-icon style="font-size: 10rem;">mdi-cloud</v-icon></div>
-        <!-- <img class="  " :src="require('@/assets/img/placeholder.png')" alt=""> -->
+      <v-container class="d-flex repositories flex-column align-center">
+        <div class="text-h4 has-space-bottom-2x has-space-top-2x">Register a product submitted to another repository</div>
+        <v-hover>
+          <template v-slot:default="{ hover }">
+            <v-card  @click.native="submitTo(externalRepoMetadata)"
+              class="has-cursor-pointer transition-swing mb-4"
+              max-width="40rem"
+              :disabled="externalRepoMetadata.isDisabled"
+              :class="`elevation-${ hover ? 12 : 2 }`">
+              <v-card-title class="v-card-media justify-center">
+                <div class="d-flex justify-center flex-grow-1"><v-icon>mdi-cloud</v-icon></div>
+              </v-card-title>
+              <v-divider></v-divider>
+
+              <v-card-text class="text--secondary">
+                <div class="text-subtitle-1">{{ externalRepoMetadata.description }}</div>
+                
+                <template v-if="externalRepoMetadata.isDisabled">
+                  <v-divider class="has-space-top has-space-bottom" />
+                  <v-chip>Coming soon...</v-chip>
+                </template>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
       </v-container>
     </template>
     <template v-else>
@@ -75,8 +93,17 @@
     components: { },
   })
   export default class CzSubmit extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+    protected get repoCollection() {
+      return Object.keys(repoMetadata)
+        .map(r => repoMetadata[r])
+    }
+
     protected get repoMetadata() {
-      return Object.keys(repoMetadata).map(r => repoMetadata[r])
+      return this.repoCollection.filter(r => !r.isExternal)
+    }
+
+    protected get externalRepoMetadata() {
+      return this.repoCollection.find(r => r.isExternal)
     }
 
     protected get isInSubmitLandingPage() {
@@ -108,6 +135,10 @@
       img {
         height: 100%;
         flex: 0;
+      }
+
+      .v-icon {
+        font-size: 7rem;
       }
     }
   }
