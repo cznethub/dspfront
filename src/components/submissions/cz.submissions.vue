@@ -225,11 +225,11 @@
         </v-card>
       </div>
       <div v-else class="text-body-2 text-center mt-4 d-flex flex-column">
-        <template v-if="!showPlaceholder">
-          <v-icon style="font-size: 6rem;">mdi-text-box-remove</v-icon>
-          You have not created any submissions
+        <template v-if="!submissions.length">
+          <v-icon style="font-size: 6rem;" class="mb-4">mdi-text-box-remove</v-icon>
+          You have not created any submissions yet
         </template>
-        <template>
+        <template v-if="!isLoggedIn">
           You need to log in to view this page
         </template>
       </div>
@@ -243,7 +243,6 @@ import {
   ISubmission,
   EnumSubmissionSorts,
   EnumSortDirections,
-  EnumRepositoryKeys,
   IRepository,
 } from "@/components/submissions/types"
 import { repoMetadata } from "../submit/constants"
@@ -277,7 +276,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
-  protected showPlaceholder = false
   protected loggedInSubject = new Subscription()
 
   protected get isFetching() {
@@ -291,6 +289,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected get sortOptions() {
     return Object.keys(EnumSubmissionSorts)
   }
+
+  protected get isLoggedIn() {
+      return User.$state.isLoggedIn
+    }
 
   protected get sortDirectionOptions() {
     return Object.keys(EnumSortDirections)
@@ -321,7 +323,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     const fetched = await Submission.fetchSubmissions()
     if (fetched === 401 || fetched === 403) {
       // User is not logged in or page is forbidden
-      this.showPlaceholder = true
 
       // Refetch submissions once user logs in
       this.loggedInSubject = User.loggedIn$.subscribe(() => {
