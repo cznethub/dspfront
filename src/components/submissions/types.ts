@@ -59,4 +59,5 @@ export interface IRepository {
   schemaDefaults?: any
   isDisabled?: boolean
   hasFolderStructure?: boolean
+  url?: string
 }
