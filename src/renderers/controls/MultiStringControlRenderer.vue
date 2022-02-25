@@ -7,7 +7,8 @@
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
     :label="computedLabel"
-    @change.native="onChanges"
+    @change.native="onChange"
+    outlined
     dense
   />
 </template>
@@ -23,7 +24,6 @@ import {
 } from '@jsonforms/core';
 import { defineComponent } from '@vue/composition-api'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2';
-// import { default as ControlWrapper } from './ControlWrapper.vue';
 import { useVanillaControl } from "@jsonforms/vue2-vanilla";
 import { computeLabel } from '@jsonforms/core';
 
@@ -53,6 +53,6 @@ export default controlRenderer;
 
 export const multiStringControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(3, and(isStringControl, isMultiLineControl))
+  tester: rankWith(4, and(isStringControl, isMultiLineControl))
 };
 </script>

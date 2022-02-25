@@ -24,15 +24,11 @@ import {
 } from '@jsonforms/core';
 import { defineComponent } from '@vue/composition-api'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
-import { default as ControlWrapper } from './ControlWrapper.vue'
 import { useVanillaControl } from "@jsonforms/vue2-vanilla"
 import { computeLabel } from '@jsonforms/core'
 
 const controlRenderer = defineComponent({
   name: 'string-control-renderer',
-  components: {
-    ControlWrapper
-  },
   props: {
     ...rendererProps<ControlElement>()
   },
@@ -48,7 +44,7 @@ const controlRenderer = defineComponent({
       );
     }
   }
-});
+})
 
 export default controlRenderer
 

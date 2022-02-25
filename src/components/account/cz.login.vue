@@ -3,7 +3,7 @@
     <v-card-title>Log In</v-card-title>
     <v-card-text>
       <p class="text-body-1">User accounts in the Data Submission Portal are managed using your ORCID® iD. An ORCID iD is a persistent digital identifier that you own and control and that distinguishes you from every other researcher.</p>
-      <p class="text-body-1">If you have an ORCID already, click the button above to get started. If you don't have an ORCID yet, getting one is easy. Visit <a href="https://orcid.org" target="_blank">https://orcid.org</a> to register and get your unique ORCID iD.</p>
+      <p class="text-body-1">If you have an ORCID already, click the button below to get started. If you don't have an ORCID yet, getting one is easy. Visit <a href="https://orcid.org" target="_blank">https://orcid.org</a> to register and get your unique ORCID iD.</p>
       <img :src="require('@/assets/img/orcid.png')" alt="ORCID">
     </v-card-text>
       <v-divider></v-divider>

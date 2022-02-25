@@ -1,6 +1,7 @@
 <template>
   <div class="cz-recommendations">
     <div class="banner text-center has-bg-light-gray">
+      <div class="text-subtitle-1 mb-12">Coming soon: This page will provide functionality that will help you decide which repository to use for your data.</div>
       <div class="has-space-bottom text-h4">Repository Recommendations</div>
       <div class="text-h5">Find the Best Repository for Your Research Products</div>
     </div>

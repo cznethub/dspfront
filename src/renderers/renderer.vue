@@ -16,6 +16,7 @@
   import { arrayPrimitiveRenderer } from './array/ArrayPrimitiveControl.vue'
   import { anyOfRenderer } from './controls/AnyOfRenderer.vue'
   import { allOfRenderer } from './controls/AllOfRenderer.vue'
+  import { radioGroupControlRenderer } from './controls/RadioGroupControlRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -32,6 +33,7 @@
     objectControlRenderer,
     arrayPrimitiveRenderer,
     anyOfRenderer,
-    allOfRenderer
+    allOfRenderer,
+    radioGroupControlRenderer
   ]
 </script>

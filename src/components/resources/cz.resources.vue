@@ -9,7 +9,8 @@
     <v-container>
       <div class="d-flex flex-column align-center">
         <div class="has-space-bottom text-h4">Best Practices and Data Templates</div>
-        <p class="text--secondary text-subtitle-1">Access best practices, recommendations, suggested formats and rep﻿ository recommendations for the data types listed below.</p>
+        <p class="text--secondary text-subtitle-1 text-center">Access best practices, recommendations, suggested formats and rep﻿ository recommendations for the data types listed below.</p>
+        <p class="text--secondary text-subtitle-1 text-center">Coming soon: In this section, we will be posting recommendations for best practices and data templates you should consider using for your data submissions.</p>
       </div>
 
       <div class="has-space-bottom-2x d-flex justify-center">
@@ -34,7 +35,7 @@
             <v-icon  style="color: #C37B89;">mdi-file-tree</v-icon>
             <div>
               <div class="text-h6">Data Derived from Samples</div>
-              <p class="text--secondary text-subtitle-1">Access best practices, recommendations, formats, and repository recommendations for geospatial data.</p>
+              <p class="text--secondary text-subtitle-1">Access best practices, recommendations, formats, and repository recommendations for data derived from physical samples.</p>
             </div>
           </div>
         </div>
@@ -42,9 +43,10 @@
     </v-container>
 
     <v-divider />
-    <v-container class="has-space-bottom-2x has-space-top-2x d-flex flex-column align-center">
+    <v-container class="my-4 d-flex flex-column align-center">
       <div class="text-h4 mb-4">Tools for Automating Submissions</div>
-      <p class="text--secondary text-subtitle-1 has-space-bottom-2x">If you are a developer, you can use the following resources to automate submissions to the repositories supported by the Data Submission Portal.</p>
+      <p class="text--secondary text-subtitle-1" text-center>If you are a developer, you can use the following resources to automate submissions to the repositories supported by the Data Submission Portal.</p>
+      <p class="text--secondary text-subtitle-1 text-center">Coming soon: In this section, we will be posting information about tools that can be used to automate submissions to HydroShare, EarthChem, and Zenodo.</p>
     </v-container>
   </div>
 </template>

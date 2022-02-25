@@ -61,4 +61,5 @@ export interface IRepository {
   isDisabled?: boolean
   isExternal?: boolean
   hasFolderStructure?: boolean
+  url?: string
 }
