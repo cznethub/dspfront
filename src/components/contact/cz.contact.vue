@@ -8,7 +8,7 @@
     <div class="text-h6 has-space-bottom">Join Us in the CZNet Slack Workspace</div>
 
     <p class="text-body-1">
-      The CZNet Slack workspace was established to foster communication between the thematic clusters and with the CZNet Hub team. If you haven’t joined the CZNet Slack workspace, we encourage you to join us there. There are specific channels set up within the workspace for topical discussions. If you would like to join the CZNet Slack workspace, please email us at cznet@cuahsi.org.
+      The CZNet Slack workspace was established to foster communication between the thematic clusters and with the CZNet Hub team. If you haven’t joined the CZNet Slack workspace, we encourage you to join us there. There are specific channels set up within the workspace for topical discussions. If you would like to join the CZNet Slack workspace, please email us at <a href="mailto:cznet@cuahsi.org">cznet@cuahsi.org</a>.
     </p>
 
     <div class="text-h6 has-space-bottom">Contact Us Directly via Email</div>

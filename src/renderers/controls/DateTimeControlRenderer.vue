@@ -10,6 +10,7 @@
       <v-text-field
         @click:clear="selectedDate = null; selectedTime = defaultTime"
         @change="onChange"
+        :disabled="!control.enabled"
         :value="dataDateTime"
         :id="control.id + '-input'"
         :label="control.label"

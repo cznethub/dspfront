@@ -56,19 +56,18 @@
       <div class="has-space-bottom-2x text-h4">What do you want to do?</div>
       <v-row id="features-2" justify="center">
         <v-col>
-          <v-icon>mdi-book-plus</v-icon>
-          <div class="has-space-bottom text-h6">Submit Data Products</div>
+          <router-link class="is-clickable" to="/submit" tag="div"><v-icon>mdi-book-plus</v-icon></router-link>
+          <router-link class="has-space-bottom text-h6 is-clickable" to="/submit" tag="div">Submit Data Products</router-link>
           <div class="text--secondary text-subtitle-1">Assemble your data files and metadata using our templates and submit directly to a supported repository.</div>
         </v-col>
         <v-col>
-          <v-icon >mdi-arrow-decision</v-icon>
-          <div class="has-space-bottom text-h6">Find the Right Repository</div>
+          <router-link to="/resources/recommendations" class="is-clickable" tag="div"><v-icon>mdi-arrow-decision</v-icon></router-link>
+          <router-link to="/resources/recommendations" class="has-space-bottom text-h6 is-clickable" tag="div">Find the Right Repository</router-link>
           <div class="text--secondary text-subtitle-1">Don't know which repository to use? Use our repository recommendation system to decide which repository is the best place for your data.</div>
         </v-col>
         <v-col>
           <v-icon >mdi-database-search</v-icon>
           <div class=" has-space-bottom text-h6">Explore CZCN Data</div>
-          <div class="text--secondary text-subtitle-1">All products submitted via this Portal are  cataloged for browsing and discovery via the <a href="https://www.hydroshare.org/" target="_blank">HydroShare repository</a>. </div>
         </v-col>
       </v-row>
     </section>
@@ -82,7 +81,7 @@
       </div>
 
       <div class="has-space-top-2x">
-        <img :src="require('@/assets/img/fair.png')" alt="">
+        <a href="https://www.go-fair.org/fair-principles/" target="_blank"><img :src="require('@/assets/img/fair.png')" alt="FAIR"></a>
       </div>
     </section>
 
@@ -94,7 +93,7 @@
         <p class="text--secondary text-center text-subtitle-1">Data submitted via this Portal are deposited in multiple repositories. Click the links below to learn more about each of the supported repositories.</p>
       </div>
       <div class="repos has-space-bottom-2x d-flex flex-wrap align-center justify-center">
-        <img v-for="repo of supportedRepositories" :key="repo.key" :src="repo.logoSrc" :alt="repo.name">
+        <a v-for="repo of supportedRepositories" :key="repo.key" :href="repo.url" target="_blank"><img :src="repo.logoSrc" :alt="repo.name"></a>
       </div>
     </section>
   </div>

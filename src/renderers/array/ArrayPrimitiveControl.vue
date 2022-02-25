@@ -9,6 +9,7 @@
       <v-combobox
         v-model="tags"
         @input="onTagsChange"
+        hide-no-data
         :label="control.label"
         :hint="control.description"
         :delimiters="[',']"
@@ -115,6 +116,9 @@ export const arrayPrimitiveRenderer: JsonFormsRendererRegistryEntry = {
 </script>
 
 <style lang="scss" scoped>
+::v-deep .v-input__append-inner {
+  display: none !important;
+}
 </style>
 
 
