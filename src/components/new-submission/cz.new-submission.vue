@@ -2,89 +2,76 @@
   <v-container class="cz-new-submission">
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
-    <v-row>
-      <v-col md="4" sm="12" order-md="2">
-        <v-alert class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
-          <b>Instructions</b>: Fill in the required fields (marked with *).
-          Press the "Save" button to upload your
-          submission to the repository.
+    <v-alert class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
+      <b>Instructions</b>: Fill in the required fields (marked with *).
+      Press the "Save" button to upload your
+      submission to the repository.
 
-          <v-img
-            class="my-4"
-            :src="activeRepository.get().logoSrc"
-            :alt="activeRepository.get().name"
-            width="200px"
-            contain
-          />
-        </v-alert>
-      </v-col>
+      <v-img
+        class="my-4"
+        :src="activeRepository.get().logoSrc"
+        :alt="activeRepository.get().name"
+        width="200px"
+        contain
+      />
+    </v-alert>
 
-      <v-col md="8" sm="12" order-md="1">
-        <div class="d-flex align-center my-4">
-          <v-spacer></v-spacer>
-          <div class="form-controls">
-            <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
-              >UI Schema</v-btn
-            >
-            <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
-              >Cancel</v-btn
-            >
-            <v-btn @click="save()" color="primary" :disabled="isSaving" rounded>
-              {{ isSaving ? "Saving..." : submitText }}
-            </v-btn>
-          </div>
-        </div>
+    <div class="d-flex align-center my-4">
+      <v-spacer></v-spacer>
+      <div class="form-controls">
+        <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
+          >UI Schema</v-btn
+        > -->
+        <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
+          >Cancel</v-btn
+        >
+        <v-btn @click="save()" color="primary" :disabled="isSaving || !!errors.length" rounded>
+          {{ isSaving ? "Saving..." : submitText }}
+        </v-btn>
+      </div>
+    </div>
 
-        <div>
-          <div class="container">
-            <div v-if="!isLoading">
-              <cz-folder-structure
-                ref="folderStructure"
-                v-model="uploads"
-                @upload="uploadFiles($event)"
-                :rootDirectory.sync="rootDirectory"
-                :allowFolders="repoMetadata[repository].hasFolderStructure"
-                :isEditMode="isEditMode"
-                :identifier="identifier"
-              />
+    <div>
+      <div v-if="!isLoading">
+        <cz-folder-structure
+          ref="folderStructure"
+          v-model="uploads"
+          @upload="uploadFiles($event)"
+          :rootDirectory.sync="rootDirectory"
+          :allowFolders="repoMetadata[repository].hasFolderStructure"
+          :isEditMode="isEditMode"
+          :identifier="identifier"
+        />
 
-              <json-forms
-                :disabled="isSaving"
-                :data="data"
-                :renderers="renderers"
-                :schema="schema"
-                :uischema="uischema"
-                @change="onChange"
-                ref="form"
-              />
-            </div>
+        <json-forms
+          @change="onChange"
+          :disabled="isSaving"
+          :data="data"
+          :renderers="renderers"
+          :schema="schema"
+          :uischema="uischema"
+          ref="form"
+        />
+      </div>
 
-            <v-progress-circular v-else indeterminate color="primary" />
+      <v-progress-circular v-else indeterminate color="primary" />
 
-            <!-- TODO: MOVE INTO COMPONENT AND REUSE -->
-            <div
-              v-if="!isLoading"
-              class="form-controls has-space-top-2x text-right"
-            >
-              <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
-                >UI Schema</v-btn
-              >
-              <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
-                >Cancel</v-btn
-              >
-              <v-btn
-                @click="save()"
-                color="primary"
-                :disabled="isSaving"
-                rounded
-              >
-                {{ isSaving ? "Saving..." : submitText }}
-              </v-btn>
-            </div>
-          </div>
-        </div>
-      </v-col>
-    </v-row>
+      <!-- TODO: MOVE INTO COMPONENT AND REUSE -->
+      <div
+        v-if="!isLoading"
+        class="form-controls has-space-top-2x text-right"
+      >
+        <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
+          >UI Schema</v-btn
+        > -->
+        <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
+          >Cancel</v-btn
+        >
+        <v-btn @click="save()" color="primary" :disabled="isSaving || !!errors.length" rounded>
+          {{ isSaving ? "Saving..." : submitText }}
+        </v-btn>
+      </div>
+    </div>
 
     <v-dialog v-if="isDevMode" v-model="showUISchema">
       <v-card>
@@ -121,6 +108,7 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
 import { IFile, IFolder } from '@/components/new-submission/types'
+import { ErrorObject } from 'ajv';
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -155,6 +143,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected usedUISchema = {}
   protected repoMetadata = repoMetadata
   protected uploads: (IFile | IFolder)[] = []
+  protected errors: ErrorObject[]  = []
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined
@@ -263,8 +252,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       try {
         submission = await this.activeRepository?.createSubmission(this.data, this.repository)
       } catch (e) {
+        console.log(e)
+        CzNotification.toast({ message: 'Failed to create submission' })
         this.isSaving = false
-        return;
+        return
       }
 
       if (submission?.identifier) {
@@ -302,6 +293,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected onChange(event: JsonFormsChangeEvent) {
+    this.errors = event.errors || []
     this.data = event.data
   }
 
