@@ -5,6 +5,7 @@
     </div>
     <v-container id="panel-right" class="pa-8">
       <div class="text-h4">About the Critical Zone Collaborative Network</div>
+      <a href="http://www.criticalzone.org" target="_blank">http://www.criticalzone.org</a>
       <v-divider class="has-space-bottom" />
       <p class="text-body-1">
         The Critical Zone Collaborative Network (CZNet) is the next phase of NSF’s Critical Zone research program, comprised of nine Thematic Cluster study areas with a wide range of geological, climatic, and land use settings that provide an opportunity to better understand the evolution and function of the critical zone.
