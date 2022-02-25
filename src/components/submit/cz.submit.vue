@@ -5,16 +5,21 @@
         :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.35), rgba(28, 37, 65, 0.3)), url(' + require('@/assets/img/bg-1.jpg') + ')' }">
         <div>
           <div class="has-text-white text-h2 has-text-shadow">Submit Data</div>
-          <div class="has-text-white has-space-top-2x has-space-bottom text-h4 has-text-shadow">Not sure which repository to use?</div>
+          <div class="has-text-white mt-4 has-space-bottom text-h4 has-text-shadow">Not sure which repository to use?</div>
           <v-btn to="/resources/recommendations">Help Me Decide</v-btn>
         </div>
       </div>
 
       <v-container>
-        <div class="text-h4 has-space-bottom-2x text-center has-space-top-2x">Submit to a Supported Repository</div>
+        <div class="d-flex justify-center align-center flex-column mb-8">
+          <p class="text-subtitle-1 text-center">{{ externalRepoMetadata.description }}</p>
+          <v-btn @click="submitTo(externalRepoMetadata)" color="primary">Register Dataset</v-btn>
+        </div>
+
+        <div class="text-h4 mb-4 mt-8 text-center">Supported Repositories</div>
 
         <div class="has-space-bottom-2x">
-          <div class="repositories justify-space-around">
+          <div class="repositories justify-space-around px-4">
             <template  v-for="repo of repoMetadata">
               <v-hover :key="repo.key">
                 <template v-slot:default="{ hover }">
@@ -45,35 +50,6 @@
             </template>
           </div>
         </div>
-      </v-container>
-
-      <v-divider />
-
-      <v-container class="d-flex repositories flex-column align-center">
-        <div class="text-h4 has-space-bottom-2x has-space-top-2x">Register a product submitted to another repository</div>
-        <v-hover>
-          <template v-slot:default="{ hover }">
-            <v-card  @click.native="submitTo(externalRepoMetadata)"
-              class="has-cursor-pointer transition-swing mb-4"
-              max-width="40rem"
-              :disabled="externalRepoMetadata.isDisabled"
-              :class="`elevation-${ hover ? 12 : 2 }`">
-              <v-card-title class="v-card-media justify-center">
-                <div class="d-flex justify-center flex-grow-1"><v-icon>mdi-cloud</v-icon></div>
-              </v-card-title>
-              <v-divider></v-divider>
-
-              <v-card-text class="text--secondary">
-                <div class="text-subtitle-1">{{ externalRepoMetadata.description }}</div>
-                
-                <template v-if="externalRepoMetadata.isDisabled">
-                  <v-divider class="has-space-top has-space-bottom" />
-                  <v-chip>Coming soon...</v-chip>
-                </template>
-              </v-card-text>
-            </v-card>
-          </template>
-        </v-hover>
       </v-container>
     </template>
     <template v-else>

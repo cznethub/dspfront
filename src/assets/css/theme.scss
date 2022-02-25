@@ -114,6 +114,14 @@ p {
   position: relative;
   min-height: 2rem;
 
+  &.is-invalid {
+    border: 2px solid #ff5252;
+
+    legend {
+      color: #ff5252;
+    }
+  }
+
   &:hover {
     border-color: rgba(0, 0, 0, 0.6);;
   }

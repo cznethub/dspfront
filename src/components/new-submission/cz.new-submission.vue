@@ -16,6 +16,12 @@
       />
     </v-alert>
 
+    <!-- <v-alert>
+      <ul>
+        <li v-for="(error, index) of errors" :key="index"><b>{{ error.dataPath.split('.').pop() }}</b> {{ error.message }}</li>
+      </ul>
+    </v-alert> -->
+
     <div class="d-flex align-center my-4">
       <v-spacer></v-spacer>
       <div class="form-controls">
@@ -34,6 +40,7 @@
     <div>
       <div v-if="!isLoading">
         <cz-folder-structure
+          v-if="!isExternal"
           ref="folderStructure"
           v-model="uploads"
           @upload="uploadFiles($event)"
@@ -169,7 +176,14 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     return process.env.NODE_ENV === "development"
   }
 
+  protected get isExternal() {
+    return this.repoMetadata[this.repository].isExternal
+  }
+
   protected get formTitle() {
+    if (this.isExternal) {
+      return 'Register Dataset'
+    }
     return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`
   }
 
@@ -215,8 +229,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     const repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
 
     console.info("CzNewSubmission: reading existing files...")
-    const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
-    this.rootDirectory.children = initialStructure
+    if (!this.isExternal) {
+      const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
+      this.rootDirectory.children = initialStructure
+    }
     this.isLoadingInitialFiles = false
 
     if (repositoryRecord) {

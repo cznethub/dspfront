@@ -8,6 +8,13 @@
     :label="computedLabel"
     :hint="control.description"
     :placeholder="appliedOptions.placeholder"
+    :error-messages="control.errors"
+    :required="control.required"
+    :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
+    :counter="control.schema.maxLength !== undefined
+            ? control.schema.maxLength
+            : undefined
+        "
     @change.native="onChange"
     class="my-2"
     dense

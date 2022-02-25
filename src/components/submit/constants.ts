@@ -26,9 +26,9 @@ export const repoMetadata: { [key: string]: IRepository } = {
   },
   [EnumRepositoryKeys.external]: {
     key: EnumRepositoryKeys.external,
-    name: 'Register a product submitted to another repository',
+    name: 'External Repository',
     logoSrc: '',
-    description: 'The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will ensure that your data can be discovered with all of the other CZCN research products.',
+    description: 'We encourage you to submit your data to one of the supported repositories below. We know that these repositories may not be a good fit for every CZNet dataset. If you have submitted a dataset to a different repository, register that dataset here. Registering will create a metadata record for the dataset within the Data Submission Portal to ensure that your data can still be discovered with all of the other CZ Net research products.',
     isExternal: true,
   },
   // sesar: {

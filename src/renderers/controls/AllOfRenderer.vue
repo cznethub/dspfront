@@ -63,7 +63,7 @@ const controlRenderer = defineComponent({
     return useVuetifyControl(useJsonFormsAllOfControl(props));
   },
   created() {
-    console.log(this.control)
+    // console.log(this.control)
   },
   computed: {
     subSchema(): JsonSchema {

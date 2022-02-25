@@ -17,6 +17,7 @@
         :hint="control.description"
         :error-messages="control.errors"
         prepend-icon="mdi-calendar"
+        class="my-2"
         style="max-width: 15rem;"
         outlined
         readonly
