@@ -162,6 +162,7 @@ export default class App extends Vue {
   protected onOpenLogInDialog!: Subscription
   protected onOpenAuthorizeDialog!: Subscription
   protected showMobileNavigation = false
+  protected loggedInSubject = new Subscription()
 
   protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
     message: "",
@@ -276,6 +277,12 @@ export default class App extends Vue {
     if (User.$state.isLoggedIn) {
       await Promise.all([Zenodo.init(), HydroShare.init()])
     }
+    else {
+      // Init the repositories after the user logs in
+      this.loggedInSubject = User.loggedIn$.subscribe(async () => {
+        await Promise.all([Zenodo.init(), HydroShare.init()])
+      })
+    }
 
     // Guards are setup after checking authorization and loading access tokens
     // because they depend on user logged in status
@@ -290,6 +297,7 @@ export default class App extends Vue {
     this.onOpenDialog.unsubscribe()
     this.onOpenLogInDialog.unsubscribe()
     this.onOpenAuthorizeDialog.unsubscribe()
+    this.loggedInSubject.unsubscribe()
   }
 }
 </script>
