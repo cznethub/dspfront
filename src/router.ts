@@ -5,6 +5,7 @@ import User from './models/user.model'
 import HydroShare from './models/hydroshare.model'
 import Repository from './models/repository.model'
 import Zenodo from './models/zenodo.model'
+import External from './models/external.model'
 
 export const router = new VueRouter({
   mode: 'history',
@@ -49,10 +50,11 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
       switch (repo) {
         case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;
         case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
+        case EnumRepositoryKeys.external: activeRepository = External; break;
         default: activeRepository = HydroShare
       }
 
-      if (!(activeRepository?.$state.accessToken)) {
+      if (activeRepository !== External && !(activeRepository?.$state.accessToken)) {
         Repository.openAuthorizeDialog(repo, { path: to.path })
         return from
       }

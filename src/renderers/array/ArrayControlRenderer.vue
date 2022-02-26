@@ -1,5 +1,5 @@
 <template>
-  <fieldset v-if="control.visible" :class="styles.arrayList.root" class="cz-fieldset my-4 mb-8">
+  <fieldset v-if="control.visible" class="cz-fieldset my-4 mb-8" :class="{'is-invalid': tooltipMessages.length }">
     <legend v-if="computedLabel"
       @click="noData ? addButtonClick() : null"
       class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
@@ -69,7 +69,8 @@ import {
   ControlElement,
   JsonSchema,
   Resolve,
-  schemaTypeIs
+  schemaTypeIs,
+  createLabelDescriptionFrom
 } from '@jsonforms/core';
 import { defineComponent } from "@vue/composition-api"
 import {
@@ -82,6 +83,9 @@ import { useVuetifyArrayControl } from '@jsonforms/vue2-vuetify'
 import { useVanillaArrayControl } from "@jsonforms/vue2-vanilla"
 import { Drag, Drop, DropList } from 'vue-easy-dnd'
 import ArrayListElement from './ArrayListElement.vue'
+import findIndex from 'lodash/findIndex'
+import { ErrorObject } from 'ajv';
+import { createControlElement } from '@jsonforms/core/lib/generators/uischema';
 
 const controlRenderer = defineComponent({
   name: 'array-control-renderer',
@@ -113,6 +117,43 @@ const controlRenderer = defineComponent({
     noData(): boolean {
       return !this.control.data || this.control.data.length === 0;
     },
+    tooltipMessages(): string[] {
+      const error: {
+        instancePath: string;
+        schemaPath: string;
+        labels: (string | undefined)[];
+        message: string;
+      }[] = [];
+
+      for (const e of this.control.childErrors) {
+        const errorObject = e as ErrorObject;
+        const index = findIndex(error, { schemaPath: errorObject.schemaPath });
+        if (errorObject.message) {
+          if (index == -1) {
+            error.push({
+              schemaPath: errorObject.schemaPath,
+              instancePath: errorObject.dataPath,
+              labels: [
+                createLabelDescriptionFrom(
+                  createControlElement(errorObject.dataPath),
+                  errorObject.schema as JsonSchema
+                ).text,
+              ],
+              message: errorObject.message,
+            });
+          } else {
+            error[index].labels.push(
+              createLabelDescriptionFrom(
+                createControlElement(errorObject.dataPath),
+                errorObject.schema as JsonSchema
+              ).text
+            );
+          }
+        }
+      }
+
+      return error.map((v) => v.labels.join(',') + ': ' + v.message);
+    }
   },
   methods: {
     composePaths,

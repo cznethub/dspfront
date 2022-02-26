@@ -61,6 +61,7 @@ import { VTabs, VTab, VTabsItems, VTabItem } from 'vuetify/lib'
 import { defineComponent, ref } from "@vue/composition-api"
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import CombinatorProperties from '@/renderers/components/CombinatorProperties.vue'
+
 const controlRenderer = defineComponent({
   name: 'any-of-renderer',
   components: {
@@ -103,7 +104,7 @@ const controlRenderer = defineComponent({
     },
   },
 });
-export default controlRenderer;
+export default controlRenderer
 export const anyOfRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
   tester: rankWith(3, isAnyOfControl),

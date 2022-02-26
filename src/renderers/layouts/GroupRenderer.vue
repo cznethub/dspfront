@@ -1,6 +1,6 @@
 <template>
   <div>  
-    <fieldset v-if="layout.visible" :class="styles.group.root" class="cz-fieldset mt-4 pt-4">
+    <fieldset v-if="layout.visible" class="cz-fieldset mt-4 pt-4">
       <legend v-if="layout.uischema.label" :class="styles.group.label" class="v-label--active">{{ layout.uischema.label }}</legend>
       <div
         v-for="(element, index) in layout.uischema.elements"
@@ -49,9 +49,6 @@ const layoutRenderer = defineComponent({
   },
   setup(props: RendererProps<Layout>) {
     return useVanillaLayout(useJsonFormsLayout(props))
-  },
-  created() {
-    // console.log(this.layout)
   }
 })
 

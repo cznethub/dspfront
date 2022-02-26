@@ -15,6 +15,7 @@
   import { enumControlRenderer } from './controls/EnumControlRenderer.vue'
   import { arrayPrimitiveRenderer } from './array/ArrayPrimitiveControl.vue'
   import { anyOfRenderer } from './controls/AnyOfRenderer.vue'
+  import { allOfRenderer } from './controls/AllOfRenderer.vue'
   import { radioGroupControlRenderer } from './controls/RadioGroupControlRenderer.vue'
 
   const controlRenderer = defineComponent({})
@@ -32,6 +33,7 @@
     objectControlRenderer,
     arrayPrimitiveRenderer,
     anyOfRenderer,
+    allOfRenderer,
     radioGroupControlRenderer
   ]
 </script>

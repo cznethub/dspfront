@@ -5,6 +5,7 @@ import Repository from './repository.model'
 import Zenodo from './zenodo.model'
 import HydroShare from './hydroshare.model'
 import CzNotification from './notifications.model'
+import External from './external.model'
 
 /**
  * Register all the Models here.
@@ -18,6 +19,7 @@ db.register(Submission)
 db.register(Repository)
 db.register(Zenodo)
 db.register(HydroShare)
+db.register(External)
 db.register(CzNotification)
 
 export const orm = db

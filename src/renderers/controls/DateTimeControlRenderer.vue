@@ -16,6 +16,7 @@
         :label="control.label"
         :hint="control.description"
         :error-messages="control.errors"
+        class="my-2"
         prepend-icon="mdi-calendar"
         outlined
         clearable
