@@ -246,7 +246,6 @@ import {
   IRepository,
 } from "@/components/submissions/types"
 import { repoMetadata } from "../submit/constants"
-import { Subscription } from "rxjs"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import Submission from "@/models/submission.model"
@@ -276,7 +275,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
-  protected loggedInSubject = new Subscription()
 
   protected get isFetching() {
     return Submission.$state.isFetching
@@ -320,19 +318,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   async created() {
-    const fetched = await Submission.fetchSubmissions()
-    if (fetched === 401 || fetched === 403) {
-      // User is not logged in or page is forbidden
-
-      // Refetch submissions once user logs in
-      this.loggedInSubject = User.loggedIn$.subscribe(() => {
-        Submission.fetchSubmissions()
-      })
-    }
-  }
-
-  destroyed() {
-    this.loggedInSubject.unsubscribe()
+    Submission.fetchSubmissions()
   }
 
   protected nextPage() {

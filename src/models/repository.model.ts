@@ -14,6 +14,7 @@ export default class Repository extends Model implements IRepository {
   static primaryKey = 'key'
   static isAuthorizeListenerSet = false
   static authorizeDialog$ = new Subject<{ repository: string, redirectTo?: RawLocation | undefined }>()
+  static authorized$ = new Subject<string>()
   public readonly key!: EnumRepositoryKeys
   public readonly name!: string
   public readonly logoSrc!: string
@@ -139,11 +140,12 @@ export default class Repository extends Model implements IRepository {
           if (callback) {
             callback()
           }
+          this.authorized$.next(this.entity)
         }
         else {
           CzNotification.toast({ message: 'Failed to authorize repository' })
         }
-      })
+      }, { "once": true })
     }
   }
 

@@ -151,6 +151,8 @@ import HydroShare from "./models/hydroshare.model"
 import Submission from "./models/submission.model"
 import Repository from "./models/repository.model"
 import External from "./models/external.model"
+import { repoMetadata } from "./components/submit/constants"
+import { EnumRepositoryKeys } from "./components/submissions/types"
 
 @Component({
   name: "app",
@@ -164,6 +166,7 @@ export default class App extends Vue {
   protected onOpenAuthorizeDialog!: Subscription
   protected showMobileNavigation = false
   protected loggedInSubject = new Subscription()
+  protected authorizedSubject = new Subscription()
 
   protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
     message: "",
@@ -257,8 +260,14 @@ export default class App extends Vue {
     this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe((params: { repository: string, redirectTo?: RawLocation | undefined }) => {
       this.authorizeDialog.repo = params.repository
       this.authorizeDialog.isActive = true
-      this.authorizeDialog.onAuthorized = () => {
+      this.authorizeDialog.onAuthorized = async () => {
         if (params.redirectTo) {
+          if (params.repository === EnumRepositoryKeys.hydroshare) {
+            await HydroShare.init()
+          }
+          else if (params.repository === EnumRepositoryKeys.zenodo) {
+            await Zenodo.init()
+          }
           this.$router.push(params.redirectTo)
         }
         this.authorizeDialog.isActive = false
@@ -286,8 +295,18 @@ export default class App extends Vue {
       // Init the repositories after the user logs in
       this.loggedInSubject = User.loggedIn$.subscribe(async () => {
         await Promise.all([Zenodo.init(), HydroShare.init()])
+        Submission.fetchSubmissions()
       })
     }
+
+    // this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
+    //   if (repository === EnumRepositoryKeys.hydroshare) {
+    //     await HydroShare.init()
+    //   }
+    //   else if (repository === EnumRepositoryKeys.zenodo) {
+    //     await Zenodo.init()
+    //   }
+    // })
 
     // Guards are setup after checking authorization and loading access tokens
     // because they depend on user logged in status
