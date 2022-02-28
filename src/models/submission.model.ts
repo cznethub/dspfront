@@ -50,11 +50,51 @@ export default class Submission extends Model implements ISubmission {
     }
   }
 
-  // Used to transform submission data that comes from CzHub database
-  static getInsertData(apiSubmission): ISubmission {
+  static getInsertDataFromDb(dbSubmission) {
+    return {
+      title: dbSubmission.title,
+      authors: dbSubmission.authors.map(a => a.name),
+      repository: dbSubmission.repo_type,
+      date: new Date(dbSubmission.submitted).getTime(),
+      identifier: dbSubmission.identifier,
+      url: getViewUrl(dbSubmission.identifier, dbSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
+    }
+  }
+
+  // Used to transform submission data that comes from the repository API
+  static getInsertData(apiSubmission, repository: EnumRepositoryKeys): ISubmission {
+    if (repository === EnumRepositoryKeys.hydroshare) {
+      return {
+        title: apiSubmission.title,
+        authors: apiSubmission.creators.map(c => c.name),
+        repository: repository,
+        date: new Date(apiSubmission.created).getTime(),
+        identifier: apiSubmission.identifier.split('/').pop(),
+        url: getViewUrl(apiSubmission.identifier, repository)
+      }
+    }
+    else if (repository === EnumRepositoryKeys.zenodo) {
+      const authors = apiSubmission.creators 
+        ? apiSubmission.creators.map(c => c.name)
+        : apiSubmission.authors || []
+
+      return {
+        title: apiSubmission.title,
+        authors: authors,
+        repository: apiSubmission.repo_type,
+        date: new Date(apiSubmission.submitted).getTime(),
+        identifier: apiSubmission.identifier,
+        url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
+      }
+    }
+    else if (repository === EnumRepositoryKeys.external) {
+      console.log(apiSubmission)
+    }
+
+    // default
     return {
       title: apiSubmission.title,
-      authors: [],
+      authors: apiSubmission.authors,
       repository: apiSubmission.repo_type,
       date: new Date(apiSubmission.submitted).getTime(),
       identifier: apiSubmission.identifier,
@@ -75,7 +115,7 @@ export default class Submission extends Model implements ISubmission {
 
       if (resp.status === 200) {
         let data = resp.data as any[]
-        data = data.map(this.getInsertData)
+        data = data.map(this.getInsertDataFromDb)
         this.insertOrUpdate({ data })
       }
       else if (resp.status === 401) {
