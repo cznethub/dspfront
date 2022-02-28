@@ -285,16 +285,12 @@ export default class App extends Vue {
     // }
 
     if (User.$state.isLoggedIn) {
-      await Promise.all([
-        Zenodo.init(), 
-        HydroShare.init(), 
-        External.init()
-      ])
+      await this._initRepositories()
     }
     else {
       // Init the repositories after the user logs in
       this.loggedInSubject = User.loggedIn$.subscribe(async () => {
-        await Promise.all([Zenodo.init(), HydroShare.init()])
+        await this._initRepositories()
         Submission.fetchSubmissions()
       })
     }
@@ -313,6 +309,14 @@ export default class App extends Vue {
     setupRouteGuards()
 
     this.isLoading = false;
+  }
+
+  private _initRepositories() {
+    return Promise.all([
+      HydroShare.init(),
+      Zenodo.init(),
+      External.init()
+    ])
   }
 
   beforeDestroy() {

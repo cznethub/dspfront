@@ -167,11 +167,13 @@
                         <v-icon class="mr-1">mdi-pencil</v-icon> Edit
                       </v-btn>
                       <v-btn
-                        rounded
+                        v-if="!repoMetadata[item.repository].isExternal"
                         @click="onUpdateRecord(item)"
-                        :disabled="isUpdating[`${item.repository}-${item.identifier}`]">
-                          <v-icon v-if="isUpdating[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
-                          <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
+                        :disabled="isUpdating[`${item.repository}-${item.identifier}`]"
+                        rounded
+                      >
+                        <v-icon v-if="isUpdating[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
+                        <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                       </v-btn>
                       <v-btn @click="onDelete(item)" :disabled="isDeleting[`${item.repository}-${item.identifier}`]" rounded>
                         <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>

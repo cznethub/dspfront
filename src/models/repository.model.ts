@@ -300,12 +300,12 @@ export default class Repository extends Model implements IRepository {
    * @param {string} identifier - the identifier of the resource in the repository
    * @param {string} repositiry - the repository key
   */
-  static async refetchSubmission(identifier: string, repository: string) {
+  static async refetchSubmission(identifier: string, repository: EnumRepositoryKeys) {
     try {
       const response = await axios.put(`/api/metadata/${repository}/${identifier}`, { 
         params: { "access_token": User.$state.orcidAccessToken },
       })
-      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data) })
+      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data, repository) })
       CzNotification.toast({ message: 'Your submission has been reloaded with its latest changes' })
     }
     catch(e) {
