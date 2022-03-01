@@ -302,7 +302,7 @@ export default class Repository extends Model implements IRepository {
   */
   static async refetchSubmission(identifier: string, repository: EnumRepositoryKeys) {
     try {
-      const response = await axios.put(`/api/metadata/${repository}/${identifier}`, { 
+      const response = await axios.put(`/api/submit/${repository}/${identifier}`, {
         params: { "access_token": User.$state.orcidAccessToken },
       })
       await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data, repository) })
