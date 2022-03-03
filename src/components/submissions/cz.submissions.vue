@@ -250,6 +250,7 @@ import {
 import { repoMetadata } from "../submit/constants"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { Subscription } from "rxjs"
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -277,6 +278,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
+  protected loggedInSubject = new Subscription()
 
   protected get isFetching() {
     return Submission.$state.isFetching
@@ -322,8 +324,18 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
-  async created() {
-    Submission.fetchSubmissions()
+  created() {
+    if (User.$state.isLoggedIn) {
+      Submission.fetchSubmissions()
+    }
+    
+    this.loggedInSubject = User.loggedIn$.subscribe(() => {
+      Submission.fetchSubmissions()
+    })
+  }
+
+  beforeDestroy() {
+    this.loggedInSubject.unsubscribe()
   }
 
   protected nextPage() {
