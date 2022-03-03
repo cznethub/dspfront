@@ -308,8 +308,22 @@ export default class Repository extends Model implements IRepository {
       await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data, repository) })
       CzNotification.toast({ message: 'Your submission has been reloaded with its latest changes' })
     }
-    catch(e) {
+    catch(e: any) {
       console.log(e)
+      if (e.response.status === 401) {
+        // Token has expired
+        this.commit((state) => {
+          state.accessToken = ''
+        })
+        CzNotification.toast({
+          message: 'Authorization token is invalid or has expired.'
+        })
+
+        Repository.openAuthorizeDialog(this.entity)
+      }
+      else {
+        console.error(`${repository}: failed to update submission.`, e.response)
+      }
       CzNotification.toast({ message: 'Failed to update record' })
     }
   }

@@ -11,6 +11,9 @@ function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
   else if (repo === EnumRepositoryKeys.zenodo) {
     return  `https://sandbox.zenodo.org/deposit/${identifier}`
   }
+  else if (repo === EnumRepositoryKeys.external) {
+    return  `/api/metadata/external/${identifier}`
+  }
   return ''
 }
 
@@ -57,38 +60,37 @@ export default class Submission extends Model implements ISubmission {
       repository: dbSubmission.repo_type,
       date: new Date(dbSubmission.submitted).getTime(),
       identifier: dbSubmission.identifier,
+      // TODO: get this url directly from the backend
       url: getViewUrl(dbSubmission.identifier, dbSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
     }
   }
 
   // Used to transform submission data that comes from the repository API
-  static getInsertData(apiSubmission, repository: EnumRepositoryKeys): ISubmission {
+  static getInsertData(apiSubmission, repository: EnumRepositoryKeys): ISubmission | Partial<Submission> {
     if (repository === EnumRepositoryKeys.hydroshare) {
       return {
         title: apiSubmission.title,
         authors: apiSubmission.creators.map(c => c.name),
         repository: repository,
-        date: new Date(apiSubmission.created).getTime(),
+        // Do not override the date we stored on creation. The one HydroShare stores has a different timezone
+        // date: new Date(apiSubmission.created).getTime(), 
         identifier: apiSubmission.identifier.split('/').pop(),
-        url: getViewUrl(apiSubmission.identifier, repository)
+        url: apiSubmission.url
       }
     }
     else if (repository === EnumRepositoryKeys.zenodo) {
-      const authors = apiSubmission.creators 
-        ? apiSubmission.creators.map(c => c.name)
-        : apiSubmission.authors || []
-
       return {
         title: apiSubmission.title,
-        authors: authors,
-        repository: apiSubmission.repo_type,
-        date: new Date(apiSubmission.submitted).getTime(),
-        identifier: apiSubmission.identifier,
-        url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
+        authors: apiSubmission.authors,
+        repository: repository,
+        // Zenodo returns a date, and we need a datetime, so we don't override the one we stored on creation
+        // date: 
+        identifier: apiSubmission.prereserve_doi.recid.toString(),
+        url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
       }
     }
     else if (repository === EnumRepositoryKeys.external) {
-      console.log(apiSubmission)
+      // Not applicable
     }
 
     // default
