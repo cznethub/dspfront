@@ -60,8 +60,7 @@ export default class Submission extends Model implements ISubmission {
       repository: dbSubmission.repo_type,
       date: new Date(dbSubmission.submitted).getTime(),
       identifier: dbSubmission.identifier,
-      // TODO: get this url directly from the backend
-      url: getViewUrl(dbSubmission.identifier, dbSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
+      url: dbSubmission.url
     }
   }
 
