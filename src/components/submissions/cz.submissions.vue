@@ -85,7 +85,7 @@
           <div v-if="!isFetching">
             <v-data-iterator
               @current-items="currentItems = $event"
-              :items="submissions"
+              :items="filteredSubmissions"
               :items-per-page.sync="itemsPerPage"
               :page.sync="page"
               :search="filters.searchStr"
@@ -222,6 +222,18 @@
                   </div>
                 </div>
               </template>
+
+              <template v-slot:no-data>
+                <div class="text-subtitle-1 text--secondary ma-4">
+                  You don't have any submission that matches the selected criteria.
+                </div>
+              </template>
+
+              <template v-slot:no-results>
+                <div class="text-subtitle-1 text--secondary ma-4">
+                  You don't have any submission that matches the selected criteria.
+                </div>
+              </template>
             </v-data-iterator>
           </div>
         </v-card>
@@ -250,6 +262,7 @@ import {
 import { repoMetadata } from "../submit/constants"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { Subscription } from "rxjs"
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -280,6 +293,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
+  protected loggedInSubject = new Subscription()
 
   protected get isFetching() {
     return Submission.$state.isFetching
@@ -307,10 +321,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     )
   }
 
-  protected get submissions(): ISubmission[] {
+  protected get filteredSubmissions() {
     if (this.filters.repoOptions.length) {
       return Submission.all().filter(s => this.filters.repoOptions.includes(s.repository))
     }
+    return Submission.all()
+  }
+
+  protected get submissions(): ISubmission[] {
     return Submission.all()
   }
 
@@ -325,8 +343,18 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
-  async created() {
-    Submission.fetchSubmissions()
+  created() {
+    if (User.$state.isLoggedIn) {
+      Submission.fetchSubmissions()
+    }
+    
+    this.loggedInSubject = User.loggedIn$.subscribe(() => {
+      Submission.fetchSubmissions()
+    })
+  }
+
+  beforeDestroy() {
+    this.loggedInSubject.unsubscribe()
   }
 
   protected nextPage() {

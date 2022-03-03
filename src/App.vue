@@ -209,7 +209,7 @@ export default class App extends Vue {
   ]
 
   protected get isLoggedIn() {
-    return User.$state.isLoggedIn;
+    return User.$state.isLoggedIn
   }
 
   protected openLogInDialog() {
@@ -288,10 +288,8 @@ export default class App extends Vue {
       await this._initRepositories()
     }
     else {
-      // Init the repositories after the user logs in
       this.loggedInSubject = User.loggedIn$.subscribe(async () => {
         await this._initRepositories()
-        Submission.fetchSubmissions()
       })
     }
 
