@@ -97,7 +97,7 @@
               <template v-slot:header>
                 <v-toolbar elevation="0" class="has-bg-light-gray">
                   <template v-if="$vuetify.breakpoint.mdAndUp">
-                    <v-btn rounded>Export Submissions</v-btn>
+                    <v-btn rounded @click="exportSubmissions">Export Submissions</v-btn>
                     <v-spacer></v-spacer>
                     <v-select
                       :items="sortOptions"
@@ -255,6 +255,8 @@ import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
 
+const fs = require('fs')
+
 @Component({
   name: "cz-submissions",
   components: {  },
@@ -262,6 +264,7 @@ import User from "@/models/user.model"
 export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
+  protected fs = fs
 
   protected filters: {
     repoOptions: string[]
@@ -357,6 +360,35 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       `${submission.repository}-${submission.identifier}`,
       false
     )
+  }
+
+  protected exportSubmissions() {
+    const parsedSubmissions: ISubmission[] = this.submissions.map((s) => {
+      return {
+        title: s.title,
+        authors: s.authors,
+        repository: s.repository,
+        date: s.date,
+        identifier: s.identifier,
+        url: s.url,
+        metadata: s.metadata
+      }
+    })
+
+    // Download as JSON
+    const filename = `CZNet_submissions.json`
+    const jsonStr = JSON.stringify(parsedSubmissions, null, 2)
+
+    const element = document.createElement('a')
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr))
+    element.setAttribute('download', filename)
+
+    element.style.display = 'none';
+    document.body.appendChild(element)
+
+    element.click()
+
+    document.body.removeChild(element)
   }
 
   protected onDelete(submission: ISubmission) {

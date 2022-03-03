@@ -24,6 +24,7 @@ export default class Submission extends Model implements ISubmission {
   public date!: number
   public identifier!: string
   public url!: string
+  public metadata!: any
 
   static get $state() {
     return this.store().state.entities[this.entity]
@@ -46,7 +47,8 @@ export default class Submission extends Model implements ISubmission {
       // @ts-ignore
       date: this.number(0),
       identifier: this.attr(''),
-      url: this.attr('')
+      url: this.attr(''),
+      metadata: this.attr({})
     }
   }
 
@@ -57,7 +59,8 @@ export default class Submission extends Model implements ISubmission {
       repository: dbSubmission.repo_type,
       date: new Date(dbSubmission.submitted).getTime(),
       identifier: dbSubmission.identifier,
-      url: getViewUrl(dbSubmission.identifier, dbSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
+      url: getViewUrl(dbSubmission.identifier, dbSubmission.repo_type),  // TODO: Get from model after fixing circular dependency issue
+      metadata: JSON.parse(dbSubmission.metadata_json)
     }
   }
 
@@ -70,7 +73,8 @@ export default class Submission extends Model implements ISubmission {
         repository: repository,
         date: new Date(apiSubmission.created).getTime(),
         identifier: apiSubmission.identifier.split('/').pop(),
-        url: getViewUrl(apiSubmission.identifier, repository)
+        url: getViewUrl(apiSubmission.identifier, repository),
+        metadata: {}
       }
     }
     else if (repository === EnumRepositoryKeys.zenodo) {
@@ -84,7 +88,8 @@ export default class Submission extends Model implements ISubmission {
         repository: apiSubmission.repo_type,
         date: new Date(apiSubmission.submitted).getTime(),
         identifier: apiSubmission.identifier,
-        url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
+        url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type),  // TODO: Get from model after fixing circular dependency issue
+        metadata: {}
       }
     }
     else if (repository === EnumRepositoryKeys.external) {
@@ -98,7 +103,8 @@ export default class Submission extends Model implements ISubmission {
       repository: apiSubmission.repo_type,
       date: new Date(apiSubmission.submitted).getTime(),
       identifier: apiSubmission.identifier,
-      url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type)  // TODO: Get from model after fixing circular dependency issue
+      url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type),  // TODO: Get from model after fixing circular dependency issue
+      metadata: {}
     }
   }
 

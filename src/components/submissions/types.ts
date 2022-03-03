@@ -5,6 +5,7 @@ export interface ISubmission {
   date: number
   identifier: string
   url: string
+  metadata: any
 }
 
 export enum EnumRepositoryKeys {
