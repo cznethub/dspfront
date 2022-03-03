@@ -85,7 +85,7 @@
           <div v-if="!isFetching">
             <v-data-iterator
               @current-items="currentItems = $event"
-              :items="submissions"
+              :items="filteredSubmissions"
               :items-per-page.sync="itemsPerPage"
               :page.sync="page"
               :search="filters.searchStr"
@@ -222,6 +222,18 @@
                   </div>
                 </div>
               </template>
+
+              <template v-slot:no-data>
+                <div class="text-subtitle-1 text--secondary ma-4">
+                  You don't have any submission that matches the selected criteria.
+                </div>
+              </template>
+
+              <template v-slot:no-results>
+                <div class="text-subtitle-1 text--secondary ma-4">
+                  You don't have any submission that matches the selected criteria.
+                </div>
+              </template>
             </v-data-iterator>
           </div>
         </v-card>
@@ -306,10 +318,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     )
   }
 
-  protected get submissions(): ISubmission[] {
+  protected get filteredSubmissions() {
     if (this.filters.repoOptions.length) {
       return Submission.all().filter(s => this.filters.repoOptions.includes(s.repository))
     }
+    return Submission.all()
+  }
+
+  protected get submissions(): ISubmission[] {
     return Submission.all()
   }
 
