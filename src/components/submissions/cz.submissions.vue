@@ -20,8 +20,9 @@
             <v-select
               v-model="filters.repoOptions"
               :items="repoOptions"
-              :itemText="'test'"
               class="ma-1"
+              small-chips
+              deletable-chips
               clearable
               label="Repository"
               chips
@@ -56,9 +57,11 @@
               </v-btn>
             </template>
 
-            <v-btn v-for="repo of repoMetadata" :key="repo.name" @click="submitTo(repo)">
-              {{ repo.name }}
-            </v-btn>
+              <template v-for="repo of repoMetadata" >
+              <v-btn v-if="!repo.isDisabled" :key="repo.name" @click="submitTo(repo)">
+                {{ repo.name }}
+              </v-btn>
+            </template>
           </v-speed-dial>
         </div>
 
@@ -85,47 +88,43 @@
           <div v-if="!isFetching">
             <v-data-iterator
               @current-items="currentItems = $event"
-              :items="submissions"
+              :items="filteredSubmissions"
               :items-per-page.sync="itemsPerPage"
               :page.sync="page"
               :search="filters.searchStr"
-              :sort-by="sortBy.toLowerCase()"
-              :sort-desc="sortDesc === 'asc'"
+              :sort-by="sortBy.key || Object.keys(enumSubmissionSorts).find(k => enumSubmissionSorts[k] === sortBy)"
+              :sort-desc="sortDirection.key === 'desc' || sortDirection === 'Descending'"
               item-key="identifier"
               hide-default-footer
             >
               <template v-slot:header>
                 <v-toolbar elevation="0" class="has-bg-light-gray">
                   <template v-if="$vuetify.breakpoint.mdAndUp">
-                    <v-btn rounded>Export Submissions</v-btn>
+                    <v-btn rounded @click="exportSubmissions" :disabled="!filteredSubmissions.length">Export Submissions</v-btn>
                     <v-spacer></v-spacer>
-                    <v-select
-                      :items="sortOptions"
-                      v-model="sortBy"
-                      class="mr-1"
-                      outlined
-                      dense
-                      hide-details
-                      label="Sort by"
-                    >
-                      <template v-slot:item="data">
-                        <v-list-item-content>
-                          <v-list-item-title>
-                            {{ data.item.replace(/^./, data.item[0].toUpperCase()) }}
-                          </v-list-item-title>
-                        </v-list-item-content>
-                      </template>
-                    </v-select>
-                    <v-btn-toggle v-model="sortDesc" mandatory>
-                      <v-btn
-                        v-for="sort of sortDirectionOptions"
-                        :value="sort"
-                        :key="sort" depressed
-                      >
-                        <v-icon v-if="sort === 'asc'">mdi-sort-ascending</v-icon>
-                        <v-icon v-else>mdi-sort-descending</v-icon>
-                      </v-btn>
-                    </v-btn-toggle>
+                    <div class="sort-controls">
+                      <v-select
+                        :items="sortOptions"
+                        item-text="label"
+                        v-model="sortBy"
+                        class="mr-1 sort-control"
+                        outlined
+                        dense
+                        hide-details
+                        label="Sort by"
+                      />
+                      
+                      <v-select
+                        :items="sortDirectionOptions"
+                        v-model="sortDirection"
+                        class="sort-control"
+                        item-text="label"
+                        outlined
+                        dense
+                        hide-details
+                        label="Order"
+                      />
+                    </div>
                   </template>
                 </v-toolbar>
               </template>
@@ -222,6 +221,18 @@
                   </div>
                 </div>
               </template>
+
+              <template v-slot:no-data>
+                <div class="text-subtitle-1 text--secondary ma-4">
+                  You don't have any submission that matches the selected criteria.
+                </div>
+              </template>
+
+              <template v-slot:no-results>
+                <div class="text-subtitle-1 text--secondary ma-4">
+                  You don't have any submission that matches the selected criteria.
+                </div>
+              </template>
             </v-data-iterator>
           </div>
         </v-card>
@@ -250,6 +261,7 @@ import {
 import { repoMetadata } from "../submit/constants"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { Subscription } from "rxjs"
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -271,12 +283,13 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected itemsPerPage = 10
   protected itemsPerPageArray = [10, 25, 50]
   protected page = 1
-  protected sortDesc = false
-  protected sortBy = "date"
+  protected sortBy: { key: string, label: string } = { key: '', label: '' }
+  protected sortDirection: { key: string, label: string } = { key: '', label: '' }
   protected repoMetadata = repoMetadata
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
+  protected loggedInSubject = new Subscription()
 
   protected get isFetching() {
     return Submission.$state.isFetching
@@ -287,7 +300,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected get sortOptions() {
-    return Object.keys(EnumSubmissionSorts)
+    return Object.keys(EnumSubmissionSorts).map(key => { return { key: key, label: EnumSubmissionSorts[key]} })
   }
 
   protected get isLoggedIn() {
@@ -295,7 +308,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     }
 
   protected get sortDirectionOptions() {
-    return Object.keys(EnumSortDirections)
+    return Object.keys(EnumSortDirections).map(key => { return { key: key, label: EnumSortDirections[key]} })
   }
 
   protected get isAnyFilterAcitve() {
@@ -304,10 +317,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     )
   }
 
-  protected get submissions(): ISubmission[] {
+  protected get filteredSubmissions() {
     if (this.filters.repoOptions.length) {
       return Submission.all().filter(s => this.filters.repoOptions.includes(s.repository))
     }
+    return Submission.all()
+  }
+
+  protected get submissions(): ISubmission[] {
     return Submission.all()
   }
 
@@ -322,8 +339,22 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
-  async created() {
-    Submission.fetchSubmissions()
+  created() {
+    // TODO: save this to persistent state
+    this.sortDirection = this.sortDirectionOptions[0]
+    this.sortBy = this.sortOptions[0]
+
+    if (User.$state.isLoggedIn) {
+      Submission.fetchSubmissions()
+    }
+    
+    this.loggedInSubject = User.loggedIn$.subscribe(() => {
+      Submission.fetchSubmissions()
+    })
+  }
+
+  beforeDestroy() {
+    this.loggedInSubject.unsubscribe()
   }
 
   protected nextPage() {
@@ -359,10 +390,39 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     )
   }
 
+  protected exportSubmissions() {
+    const parsedSubmissions: ISubmission[] = this.filteredSubmissions.map((s) => {
+      return {
+        title: s.title,
+        authors: s.authors,
+        repository: s.repository,
+        date: s.date,
+        identifier: s.identifier,
+        url: s.url,
+        metadata: s.metadata
+      }
+    })
+
+    // Download as JSON
+    const filename = `CZNet_submissions.json`
+    const jsonStr = JSON.stringify(parsedSubmissions, null, 2)
+
+    const element = document.createElement('a')
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr))
+    element.setAttribute('download', filename)
+
+    element.style.display = 'none';
+    document.body.appendChild(element)
+
+    element.click()
+
+    document.body.removeChild(element)
+  }
+
   protected onDelete(submission: ISubmission) {
     CzNotification.openDialog({
       title: 'Delete this submission?',
-      content: 'Are you sure you want to delete this submission?',
+      content: 'THIS ACTION WILL ALSO ATTEMPT TO DELETE THE SUBMISSION IN THE REPOSITORY.',
       confirmText: 'Delete',
       cancelText: 'Cancel',
       onConfirm: async () => {
@@ -419,6 +479,15 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
 // .cz-submissions--header .v-card {
 // }
+
+.sort-controls {
+  max-width: 30rem;
+  display: flex;
+
+  > * {
+    width: 15rem;
+  }
+}
 
 .v-speed-dial {
   ::v-deep .v-speed-dial__list {

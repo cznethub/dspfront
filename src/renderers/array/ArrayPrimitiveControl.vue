@@ -10,7 +10,7 @@
         v-model="tags"
         @input="onTagsChange"
         hide-no-data
-        :label="control.label"
+        :label="computedLabel"
         :hint="control.description"
         :delimiters="[',']"
         :error-messages="control.errors"
@@ -40,7 +40,7 @@
         <template v-slot:selection="{ attrs, item }">
           <v-chip
             v-bind="attrs"
-            close
+            :close="isRequired(item)"
             small
             @click:close="remove(item)"
           >
@@ -89,8 +89,8 @@ const controlRenderer = defineComponent({
     };
   },
   created() {
-    // console.log(this.control)
     this.tags = this.control.schema.default
+    this.onChange(this.tags)
   },
   methods: {
     onTagsChange() {
@@ -105,6 +105,10 @@ const controlRenderer = defineComponent({
       this.tags.splice(this.tags.indexOf(item), 1)
       this.onTagsChange()
     },
+    isRequired(item: string) {
+      // @ts-ignore
+      return this.control.schema.contains && this.control.schema.contains.const !== item
+    }
   }
 });
 export default controlRenderer;

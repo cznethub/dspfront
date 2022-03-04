@@ -1,13 +1,21 @@
 <template>
   <v-textarea
     :id="control.id + '-input'"
+    @change.native="onChange"
+    :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
+    :counter="control.schema.maxLength !== undefined
+            ? control.schema.maxLength
+            : undefined
+        "
+    :error-messages="control.errors"
+    :required="control.required"
     :class="styles.control.textarea"
+    :hint="control.description"
     :value="control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
     :label="computedLabel"
-    @change.native="onChange"
     outlined
     dense
   />

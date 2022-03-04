@@ -26,7 +26,8 @@ export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmis
     repository: getRandomElementFromArray(repos),
     date: getRandomDate().getTime(),
     identifier: 'http://doi.org/hs.xxxxxxx.123456789',
-    url: 'https://beta.hydroshare.org/resource/72693ac3f5a146fca3b26aee2deefb4a/'
+    url: 'https://beta.hydroshare.org/resource/72693ac3f5a146fca3b26aee2deefb4a/',
+    metadata: {}
   }
 })
 

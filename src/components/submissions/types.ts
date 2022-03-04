@@ -5,6 +5,7 @@ export interface ISubmission {
   date: number
   identifier: string
   url: string
+  metadata: any
 }
 
 export enum EnumRepositoryKeys {
@@ -19,7 +20,7 @@ export enum EnumRepositoryKeys {
 
 export enum EnumSubmissionSorts {
   title = 'Title',
-  date = 'Most Recent',
+  date = 'Submission Date',
   repository = 'Repository',
 }
 

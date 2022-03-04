@@ -9,11 +9,11 @@
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
         @click:clear="selectedDate = null; selectedTime = defaultTime"
-        @change="onChange"
+        @change="onInput"
         :disabled="!control.enabled"
         :value="dataDateTime"
         :id="control.id + '-input'"
-        :label="control.label"
+        :label="computedLabel"
         :hint="control.description"
         :error-messages="control.errors"
         class="my-2"
@@ -31,7 +31,7 @@
       <v-col>
         <v-date-picker
           v-model="selectedDate" 
-          @change="onChange"
+          @change="onInput"
           :disabled="!control.enabled"
           scrollable
         />
@@ -40,7 +40,7 @@
       <v-col>
         <v-time-picker
           v-model="selectedTime"
-          @input="onChange"
+          @input="onInput"
           :disabled="!control.enabled"
           scrollable
         />
@@ -59,6 +59,8 @@ import {
 import { defineComponent } from '@vue/composition-api'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { format, parse } from 'date-fns'
+import { computeLabel } from '@jsonforms/core'
+import { useVanillaControl } from "@jsonforms/vue2-vanilla"
 
 const DEFAULT_TIME = '00:00:00'
 const DEFAULT_TIME_FORMAT = 'HH:mm:ss'
@@ -87,7 +89,7 @@ const controlRenderer = defineComponent({
       selectedTime,
       defaultTime: DEFAULT_TIME,
       menu: false,
-      ...useJsonFormsControl(props)
+      ...useVanillaControl(useJsonFormsControl(props))
     }
   },
   computed: {
@@ -118,9 +120,16 @@ const controlRenderer = defineComponent({
       // @ts-ignore
       return this.selectedDatetime ? format(this.selectedDatetime, DATE_FORMATS[this.dateTimeFormat]) : ''
     },
+    computedLabel(): string {
+      return computeLabel(
+        this.control.label as string,
+        this.control.required,
+        !!this.appliedOptions?.hideRequiredAsterisk
+      );
+    }
   },
   methods: {
-    onChange() {
+    onInput() {
       this.handleChange(this.control.path, this.formattedDatetime)
     },
   },
