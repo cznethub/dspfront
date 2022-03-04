@@ -20,8 +20,9 @@
             <v-select
               v-model="filters.repoOptions"
               :items="repoOptions"
-              :itemText="'test'"
               class="ma-1"
+              small-chips
+              deletable-chips
               clearable
               label="Repository"
               chips
@@ -89,8 +90,8 @@
               :items-per-page.sync="itemsPerPage"
               :page.sync="page"
               :search="filters.searchStr"
-              :sort-by="sortBy.toLowerCase()"
-              :sort-desc="sortDesc === 'asc'"
+              :sort-by="sortBy.key || Object.keys(enumSubmissionSorts).find(k => enumSubmissionSorts[k] === sortBy)"
+              :sort-desc="sortDirection.key === 'desc' || sortDirection === 'Descending'"
               item-key="identifier"
               hide-default-footer
             >
@@ -99,33 +100,29 @@
                   <template v-if="$vuetify.breakpoint.mdAndUp">
                     <v-btn rounded @click="exportSubmissions">Export Submissions</v-btn>
                     <v-spacer></v-spacer>
-                    <v-select
-                      :items="sortOptions"
-                      v-model="sortBy"
-                      class="mr-1"
-                      outlined
-                      dense
-                      hide-details
-                      label="Sort by"
-                    >
-                      <template v-slot:item="data">
-                        <v-list-item-content>
-                          <v-list-item-title>
-                            {{ data.item.replace(/^./, data.item[0].toUpperCase()) }}
-                          </v-list-item-title>
-                        </v-list-item-content>
-                      </template>
-                    </v-select>
-                    <v-btn-toggle v-model="sortDesc" mandatory>
-                      <v-btn
-                        v-for="sort of sortDirectionOptions"
-                        :value="sort"
-                        :key="sort" depressed
-                      >
-                        <v-icon v-if="sort === 'asc'">mdi-sort-ascending</v-icon>
-                        <v-icon v-else>mdi-sort-descending</v-icon>
-                      </v-btn>
-                    </v-btn-toggle>
+                    <div class="sort-controls">
+                      <v-select
+                        :items="sortOptions"
+                        item-text="label"
+                        v-model="sortBy"
+                        class="mr-1 sort-control"
+                        outlined
+                        dense
+                        hide-details
+                        label="Sort by"
+                      />
+                      
+                      <v-select
+                        :items="sortDirectionOptions"
+                        v-model="sortDirection"
+                        class="sort-control"
+                        item-text="label"
+                        outlined
+                        dense
+                        hide-details
+                        label="Order"
+                      />
+                    </div>
                   </template>
                 </v-toolbar>
               </template>
@@ -268,8 +265,6 @@ import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
 
-const fs = require('fs')
-
 @Component({
   name: "cz-submissions",
   components: {  },
@@ -277,7 +272,6 @@ const fs = require('fs')
 export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
-  protected fs = fs
 
   protected filters: {
     repoOptions: string[]
@@ -287,8 +281,8 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected itemsPerPage = 10
   protected itemsPerPageArray = [10, 25, 50]
   protected page = 1
-  protected sortDesc = false
-  protected sortBy = "date"
+  protected sortBy: { key: string, label: string } = { key: '', label: '' }
+  protected sortDirection: { key: string, label: string } = { key: '', label: '' }
   protected repoMetadata = repoMetadata
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
@@ -304,7 +298,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected get sortOptions() {
-    return Object.keys(EnumSubmissionSorts)
+    return Object.keys(EnumSubmissionSorts).map(key => { return { key: key, label: EnumSubmissionSorts[key]} })
   }
 
   protected get isLoggedIn() {
@@ -312,7 +306,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     }
 
   protected get sortDirectionOptions() {
-    return Object.keys(EnumSortDirections)
+    return Object.keys(EnumSortDirections).map(key => { return { key: key, label: EnumSortDirections[key]} })
   }
 
   protected get isAnyFilterAcitve() {
@@ -344,6 +338,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   created() {
+    // TODO: save this to persistent state
+    this.sortDirection = this.sortDirectionOptions[0]
+    this.sortBy = this.sortOptions[0]
+
     if (User.$state.isLoggedIn) {
       Submission.fetchSubmissions()
     }
@@ -479,6 +477,15 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
 // .cz-submissions--header .v-card {
 // }
+
+.sort-controls {
+  max-width: 30rem;
+  display: flex;
+
+  > * {
+    width: 15rem;
+  }
+}
 
 .v-speed-dial {
   ::v-deep .v-speed-dial__list {

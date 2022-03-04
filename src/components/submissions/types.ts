@@ -20,7 +20,7 @@ export enum EnumRepositoryKeys {
 
 export enum EnumSubmissionSorts {
   title = 'Title',
-  date = 'Most Recent',
+  date = 'Submission Date',
   repository = 'Repository',
 }
 
