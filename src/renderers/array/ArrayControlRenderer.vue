@@ -25,7 +25,31 @@
       </template>
       {{ `Add to ${control.label}` }}
     </v-tooltip>
-    <drop-list v-if="control.data && control.data.length" name="list-complete" class="list-elements-container mt-4 pb-2" 
+    <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
+      <array-list-element
+        v-for="(item, index) of control.data"
+        :key="index"
+        class="list-complete-item mt-2"
+        :styles="styles"
+        :moveUp="moveUp(control.path, index)"
+        :moveDown="moveDown(control.path, index)"
+        :delete="removeItems(control.path, [index])"
+        :moveUpEnabled="index > 0"
+        :moveDownEnabled="index < control.data.length - 1"
+        :label="childLabelForIndex(index)"
+      >
+        <dispatch-renderer
+          :schema="control.schema"
+          :uischema="childUiSchema"
+          :path="composePaths(control.path, `${index}`)"
+          :enabled="control.enabled"
+          :renderers="control.renderers"
+          :cells="control.cells"
+        />
+      </array-list-element>
+    </div>
+    <!-- Layout with drag and drop: -->
+    <!-- <drop-list v-if="control.data && control.data.length" name="list-complete" class="list-elements-container mt-4 pb-2" 
       :items="control.data || []"
       @reorder="reorderElements($event.from, $event.to)"
     >
@@ -56,7 +80,7 @@
       <template v-slot:feedback="{data}">
         <div class="item feedback" :key="data">{{data}}</div>
       </template>
-    </drop-list>
+    </drop-list> -->
   </fieldset>
 </template>
 
