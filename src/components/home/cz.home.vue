@@ -18,7 +18,7 @@
     <section>
       <div>
         <div class="text-center d-flex flex-column align-center">
-          <div class="has-space-bottom text-h4">Submit Your Research Products</div>
+          <div class="has-space-bottom text-h4">Submit Your Data and Research Products</div>
           <p class="text--secondary text-center text-subtitle-1">Created for the Critical Zone Collaborative Network (CZCN), this Data Submission Portal provides tools for determining which repository to use for data submission along with enhanced submission tools to encourage data standards, complete metadata, and high-quality submissions.</p>
         </div>
 

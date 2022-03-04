@@ -57,9 +57,11 @@
               </v-btn>
             </template>
 
-            <v-btn v-for="repo of repoMetadata" :key="repo.name" @click="submitTo(repo)">
-              {{ repo.name }}
-            </v-btn>
+              <template v-for="repo of repoMetadata" >
+              <v-btn v-if="!repo.isDisabled" :key="repo.name" @click="submitTo(repo)">
+                {{ repo.name }}
+              </v-btn>
+            </template>
           </v-speed-dial>
         </div>
 
@@ -420,7 +422,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected onDelete(submission: ISubmission) {
     CzNotification.openDialog({
       title: 'Delete this submission?',
-      content: 'Are you sure you want to delete this submission?',
+      content: 'THIS ACTION WILL ALSO ATTEMPT TO DELETE THE SUBMISSION IN THE REPOSITORY.',
       confirmText: 'Delete',
       cancelText: 'Cancel',
       onConfirm: async () => {
