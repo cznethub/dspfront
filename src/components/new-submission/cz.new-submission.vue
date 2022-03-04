@@ -357,4 +357,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   background-color: #FFF;
   padding-right: 0.2rem;
 }
+
+::v-deep .horizontal-layout {
+  gap: 2rem;
+}
 </style>

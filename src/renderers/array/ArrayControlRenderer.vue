@@ -1,5 +1,5 @@
 <template>
-  <fieldset v-if="control.visible" class="cz-fieldset my-4 mb-8" :class="{'is-invalid': tooltipMessages.length }">
+  <fieldset v-if="control.visible" class="cz-fieldset mt-2 mb-8" :class="{'is-invalid': tooltipMessages.length }">
     <legend v-if="computedLabel"
       @click="noData ? addButtonClick() : null"
       class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
@@ -211,6 +211,12 @@ export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
 
     ::v-deep .v-card {
       margin: 0;
+    }
+
+    ::v-deep .list-complete-item > .v-card__text {
+      overflow: auto;
+      resize: vertical;
+      max-height: 20rem;
     }
   }
 

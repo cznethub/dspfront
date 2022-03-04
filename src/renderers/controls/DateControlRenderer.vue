@@ -9,8 +9,9 @@
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
         @click:clear="selectedDate = null"
-        @change="onChange"
+        @change="onInput"
         :disabled="!control.enabled"
+        :hidden="control.hidden"
         :value="dataDate"
         :id="control.id + '-input'"
         :label="control.label"
@@ -30,7 +31,7 @@
 
     <v-date-picker
       v-model="selectedDate"
-      @change="onChange" 
+      @change="onInput" 
       @input="menu = false"
       :value="control.data" 
       :disabled="!control.enabled"
@@ -49,6 +50,8 @@ import {
 import { defineComponent } from '@vue/composition-api'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { format, parse } from 'date-fns'
+import { computeLabel } from '@jsonforms/core'
+import { useVanillaControl } from "@jsonforms/vue2-vanilla"
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
@@ -70,8 +73,11 @@ const controlRenderer = defineComponent({
     return {
       selectedDate,
       menu: false,
-      ...useJsonFormsControl(props)
+      ...useVanillaControl(useJsonFormsControl(props))
     }
+  },
+  created() {
+    console.log(this.control)
   },
   computed: {
     dataDate(): string {
@@ -96,9 +102,16 @@ const controlRenderer = defineComponent({
       // @ts-ignore
       return this.control.schema.format || "date"
     },
+    computedLabel(): string {
+      return computeLabel(
+        this.control.label as string,
+        this.control.required,
+        !!this.appliedOptions?.hideRequiredAsterisk
+      );
+    }
   },
   methods: {
-    onChange() {
+    onInput() {
       this.handleChange(this.control.path, this.formattedDate)
     },
   },

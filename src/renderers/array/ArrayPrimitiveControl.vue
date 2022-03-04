@@ -40,7 +40,7 @@
         <template v-slot:selection="{ attrs, item }">
           <v-chip
             v-bind="attrs"
-            close
+            :close="control.schema.contains.const !== item"
             small
             @click:close="remove(item)"
           >
@@ -89,8 +89,8 @@ const controlRenderer = defineComponent({
     };
   },
   created() {
-    // console.log(this.control)
     this.tags = this.control.schema.default
+    this.onChange(this.tags)
   },
   methods: {
     onTagsChange() {
