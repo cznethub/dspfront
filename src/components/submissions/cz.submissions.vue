@@ -98,7 +98,7 @@
               <template v-slot:header>
                 <v-toolbar elevation="0" class="has-bg-light-gray">
                   <template v-if="$vuetify.breakpoint.mdAndUp">
-                    <v-btn rounded @click="exportSubmissions">Export Submissions</v-btn>
+                    <v-btn rounded @click="exportSubmissions" :disabled="!filteredSubmissions.length">Export Submissions</v-btn>
                     <v-spacer></v-spacer>
                     <div class="sort-controls">
                       <v-select
@@ -389,7 +389,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected exportSubmissions() {
-    const parsedSubmissions: ISubmission[] = this.submissions.map((s) => {
+    const parsedSubmissions: ISubmission[] = this.filteredSubmissions.map((s) => {
       return {
         title: s.title,
         authors: s.authors,
