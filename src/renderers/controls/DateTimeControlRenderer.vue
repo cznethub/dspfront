@@ -9,7 +9,7 @@
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
         @click:clear="selectedDate = null; selectedTime = defaultTime"
-        @change="onInput"
+        @change="onInput($event)"
         :disabled="!control.enabled"
         :value="dataDateTime"
         :id="control.id + '-input'"
@@ -31,7 +31,7 @@
       <v-col>
         <v-date-picker
           v-model="selectedDate" 
-          @change="onInput"
+          @change="onInput($event)"
           :disabled="!control.enabled"
           scrollable
         />
@@ -40,7 +40,7 @@
       <v-col>
         <v-time-picker
           v-model="selectedTime"
-          @input="onInput"
+          @input="onInput($event)"
           :disabled="!control.enabled"
           scrollable
         />
