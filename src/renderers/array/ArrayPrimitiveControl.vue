@@ -10,7 +10,7 @@
         v-model="tags"
         @input="onTagsChange"
         hide-no-data
-        :label="control.label"
+        :label="computedLabel"
         :hint="control.description"
         :delimiters="[',']"
         :error-messages="control.errors"
