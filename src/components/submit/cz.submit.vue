@@ -11,14 +11,9 @@
       </div>
 
       <v-container>
-        <div class="d-flex justify-center align-center flex-column mb-8">
-          <p class="text-subtitle-1 text-center">{{ externalRepoMetadata.description }}</p>
-          <v-btn @click="submitTo(externalRepoMetadata)" color="primary">Register Dataset</v-btn>
-        </div>
+        <div class="text-h4 my-8 text-center">Repositories</div>
 
-        <div class="text-h4 mb-4 mt-8 text-center">Repositories</div>
-
-        <div class="has-space-bottom-2x">
+        <div class="mb-4">
           <div class="repositories justify-space-around px-4">
             <template  v-for="repo of repoMetadata">
               <v-hover :key="repo.key">
