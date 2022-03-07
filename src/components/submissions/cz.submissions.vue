@@ -224,13 +224,13 @@
 
               <template v-slot:no-data>
                 <div class="text-subtitle-1 text--secondary ma-4">
-                  You don't have any submission that matches the selected criteria.
+                  You don't have any submissions that match the selected criteria.
                 </div>
               </template>
 
               <template v-slot:no-results>
                 <div class="text-subtitle-1 text--secondary ma-4">
-                  You don't have any submission that matches the selected criteria.
+                  You don't have any submissions that match the selected criteria.
                 </div>
               </template>
             </v-data-iterator>

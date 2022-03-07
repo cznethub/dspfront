@@ -3,9 +3,9 @@
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
     <v-alert class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
-      <b>Instructions</b>: Fill in the required fields (marked with *).
+      <b>Instructions</b>: Fill in the required fields (marked with * and highlighted in red).
       Press the "Save" button to upload your
-      submission to the repository.
+      submission.
 
       <v-img
         class="my-4"
@@ -182,7 +182,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected get formTitle() {
     if (this.isExternal) {
-      return 'Register Dataset'
+      return 'Register Dataset from External Repository'
     }
     return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`
   }
