@@ -16,7 +16,7 @@
           <v-btn @click="submitTo(externalRepoMetadata)" color="primary">Register Dataset</v-btn>
         </div>
 
-        <div class="text-h4 mb-4 mt-8 text-center">Supported Repositories</div>
+        <div class="text-h4 mb-4 mt-8 text-center">Repositories</div>
 
         <div class="has-space-bottom-2x">
           <div class="repositories justify-space-around px-4">
@@ -48,6 +48,32 @@
                 </template>
               </v-hover>
             </template>
+            <v-hover>
+              <template v-slot:default="{ hover }">
+                <v-card  @click.native="submitTo(externalRepoMetadata)"
+                  class="has-cursor-pointer transition-swing"
+                  max-width="40rem"
+                  :disabled="externalRepoMetadata.isDisabled"
+                  :class="`elevation-${ hover ? 12 : 2 }`">
+                  <v-card-title class="v-card-media justify-center">
+                    <v-icon>mdi-text-box-plus</v-icon>
+                  </v-card-title>
+
+                  <v-card-title>
+                    <div class="text-h4">{{ externalRepoMetadata.name }}</div>
+                  </v-card-title>
+
+                  <v-card-text class="text--secondary">
+                    <div class="text-subtitle-1">{{ externalRepoMetadata.description }}</div>
+                    
+                    <template v-if="externalRepoMetadata.isDisabled">
+                      <v-divider class="has-space-top has-space-bottom" />
+                      <v-chip>Coming soon...</v-chip>
+                    </template>
+                  </v-card-text>
+                </v-card>
+              </template>
+            </v-hover>
           </div>
         </div>
       </v-container>
