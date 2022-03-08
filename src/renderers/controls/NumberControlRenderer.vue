@@ -9,7 +9,7 @@
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
-    @change.native="onChanges"
+    @change.native="onChange"
     dense
     outlined
   />

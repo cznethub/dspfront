@@ -1,8 +1,8 @@
 <template>
-  <v-container class="cz-new-submission">
+  <v-container class="cz-new-submission px-4">
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
-    <v-alert class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
+    <v-alert v-if="!isLoading && wasLoaded" class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
       <b>Instructions</b>: Fill in the required fields (marked with * and highlighted in red).
       Press the "Save" button to upload your
       submission.
@@ -16,31 +16,22 @@
       />
     </v-alert>
 
-    <!-- <v-alert>
-      <ul>
-        <li v-for="(error, index) of errors" :key="index"><b>{{ error.dataPath.split('.').pop() }}</b> {{ error.message }}</li>
-      </ul>
-    </v-alert> -->
-
-    <div class="d-flex align-center my-4">
-      <v-spacer></v-spacer>
-      <div class="form-controls">
-        <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
-          >UI Schema</v-btn
-        > -->
-        <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
-          >Cancel</v-btn
-        >
-        <v-btn @click="save()" color="primary" :disabled="isSaving || !!errors.length" rounded>
-          {{ isSaving ? "Saving..." : submitText }}
-        </v-btn>
-      </div>
-    </div>
+    <cz-new-submission-actions
+      v-if="!isLoading && wasLoaded"
+      :isEditMode="isEditMode"
+      :isDevMode="isDevMode"
+      :isSaving="isSaving"
+      :confirmText="submitText"
+      :errors="errors"
+      @show-ui-schema="onShowUISchema"
+      @save="save"
+      @cancel="goToSubmissions"
+    />
 
     <div>
       <div v-if="!isLoading">
         <cz-folder-structure
-          v-if="!isExternal"
+          v-if="!isExternal && wasLoaded"
           ref="folderStructure"
           v-model="uploads"
           @upload="uploadFiles($event)"
@@ -51,6 +42,7 @@
         />
 
         <json-forms
+          v-if="wasLoaded"
           @change="onChange"
           :disabled="isSaving"
           :data="data"
@@ -61,24 +53,26 @@
         />
       </div>
 
-      <v-progress-circular v-else indeterminate color="primary" />
-
-      <!-- TODO: MOVE INTO COMPONENT AND REUSE -->
-      <div
-        v-if="!isLoading"
-        class="form-controls has-space-top-2x text-right"
-      >
-        <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
-          >UI Schema</v-btn
-        > -->
-        <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
-          >Cancel</v-btn
-        >
-        <v-btn @click="save()" color="primary" :disabled="isSaving || !!errors.length" rounded>
-          {{ isSaving ? "Saving..." : submitText }}
-        </v-btn>
+      <div v-else class="d-flex justify-center mt-8">
+        <v-progress-circular indeterminate color="primary" />
       </div>
+
+      <cz-new-submission-actions
+        v-if="!isLoading && wasLoaded"
+        :isEditMode="isEditMode"
+        :isDevMode="isDevMode"
+        :isSaving="isSaving"
+        :confirmText="submitText"
+        :errors="errors"
+        @showUiSchema="onShowUISchema"
+        @save="save"
+        @cancel="goToSubmissions"
+      />
     </div>
+
+    <v-container v-if="!isLoading && !wasLoaded">
+      <v-skeleton-loader type="actions, article, actions"></v-skeleton-loader>
+    </v-container>
 
     <v-dialog v-if="isDevMode" v-model="showUISchema">
       <v-card>
@@ -115,11 +109,13 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
 import { IFile, IFolder } from '@/components/new-submission/types'
-import { ErrorObject } from 'ajv';
+import { ErrorObject } from 'ajv'
+import { Subscription } from "rxjs"
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
+import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
 // import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
 const sprintf = require("sprintf-js").sprintf
@@ -132,7 +128,7 @@ const renderers = [
 
 @Component({
   name: "cz-new-submission",
-  components: { JsonForms, JsonViewer, CzFolderStructure },
+  components: { JsonForms, JsonViewer, CzFolderStructure, CzNewSubmissionActions },
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms
@@ -151,6 +147,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected repoMetadata = repoMetadata
   protected uploads: (IFile | IFolder)[] = []
   protected errors: ErrorObject[]  = []
+  protected repositoryRecord: any = null
+  protected authorizedSubject = new Subscription()
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined
@@ -173,7 +171,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected get isDevMode() {
-    return process.env.NODE_ENV === "development"
+    return false
+    // TODO: uncomment when this env variable is properly setup in production
+    // return process.env.NODE_ENV === "development"
   }
 
   protected get isExternal() {
@@ -189,6 +189,12 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected get submitText() {
     return this.isEditMode ? "Save Changes" : "Save"
+  }
+
+  protected get wasLoaded() {
+    return this.isEditMode
+      ? !!this.repositoryRecord
+      : true
   }
 
   created() {
@@ -216,6 +222,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     }
   }
 
+  beforeDestroy() {
+    this.authorizedSubject.unsubscribe()
+  }
+
   protected goToSubmissions() {
     // TODO: add discard confirm dialog if the form was changed
     this.$router.push({
@@ -226,24 +236,28 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected async loadExistingSubmission() {
     // TODO: these 2 calls can be performed in parallel
     console.info("CzNewSubmission: reading existing record...")
-    const repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
+    this.repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
 
     console.info("CzNewSubmission: reading existing files...")
-    if (!this.isExternal) {
+    if (!this.isExternal && this.repositoryRecord) {
       const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
       this.rootDirectory.children = initialStructure
     }
     this.isLoadingInitialFiles = false
 
-    if (repositoryRecord) {
+    if (this.repositoryRecord) {
       this.data = {
         ...this.data,
-        ...repositoryRecord,
-      };
+        ...this.repositoryRecord,
+      }
       // this.links = repositoryRecord?.formMetadata.links // Has useful links, i.e: bucket for upload
     }
     else {
-      // TODO: indicate in the UI that submission was not loaded
+      // Try again when user has authorized the repository
+      this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
+        this.isLoading = true
+        await this.loadExistingSubmission()
+      })
     }
 
     this.isLoading = false
