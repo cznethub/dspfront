@@ -89,8 +89,11 @@ const controlRenderer = defineComponent({
     };
   },
   created() {
-    this.tags = this.control.schema.default
-    this.onChange(this.tags)
+    // TODO: load initial value and OR against default
+    if (!this.control.data && this.control.schema.default) {
+      this.tags = this.control.schema.default
+      this.onChange(this.control.schema.default)
+    }
   },
   methods: {
     onTagsChange() {

@@ -11,12 +11,10 @@
     :error-messages="control.errors"
     :required="control.required"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
-    :counter="control.schema.maxLength !== undefined
-            ? control.schema.maxLength
-            : undefined
-        "
+    :counter="control.schema.maxLength !== undefined ? control.schema.maxLength : undefined"
     @change.native="onChange"
     class="my-2"
+    persistent-hint
     dense
     outlined
   />
@@ -42,13 +40,18 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVanillaControl(useJsonFormsControl(props))
   },
+  created() {
+    if (!this.control.data && this.control.schema.default) {
+      this.control.data = this.control.schema.default
+    }
+  },
   computed: {
     computedLabel(): string {
       return computeLabel(
         this.control.label as string,
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
-      );
+      )
     }
   }
 })

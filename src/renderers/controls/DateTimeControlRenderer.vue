@@ -16,6 +16,7 @@
         :label="computedLabel"
         :hint="control.description"
         :error-messages="control.errors"
+        persistent-hint
         class="my-2"
         prepend-icon="mdi-calendar"
         outlined

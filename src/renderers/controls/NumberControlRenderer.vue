@@ -9,7 +9,9 @@
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
+    :hint="control.description"
     @change.native="onChange"
+    persistent-hint
     dense
     outlined
   />

@@ -13,11 +13,11 @@
       :autofocus="appliedOptions.focus"
       :placeholder="appliedOptions.placeholder"
       :hint="control.description"
-      :persistent-hint="persistentHint()"
       :required="control.required"
       :error-messages="control.errors"
-      row
       :value="control.data"
+      persistent-hint
+      row
       @change="onChange"
       @focus="isFocused = true"
       @blur="isFocused = false"

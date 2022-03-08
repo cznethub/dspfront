@@ -16,6 +16,7 @@
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
     :label="computedLabel"
+    persistent-hint
     outlined
     dense
   />

@@ -1,87 +1,90 @@
 <template>
-  <fieldset v-if="control.visible" class="cz-fieldset mt-2 mb-8" :class="{'is-invalid': tooltipMessages.length }">
-    <legend v-if="computedLabel"
-      @click="noData ? addButtonClick() : null"
-      class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
-      {{ computedLabel }}
-    </legend>
-    <v-tooltip bottom transition="fade">
-      <template v-slot:activator="{ on: onTooltip }">
-        <v-btn icon color="primary"
-          @click="addButtonClick" 
-          :class="styles.arrayList.addButton"
-          class="btn-add" 
-          :aria-label="`Add to ${control.label}`"
-          v-on="onTooltip"
-          :disabled="
-            !control.enabled ||
-            (appliedOptions.restrict &&
-              arraySchema !== undefined &&
-              arraySchema.maxItems !== undefined &&
-              control.data.length >= arraySchema.maxItems)
-          ">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-      </template>
-      {{ `Add to ${control.label}` }}
-    </v-tooltip>
-    <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
-      <array-list-element
-        v-for="(item, index) of control.data"
-        :key="index"
-        class="list-complete-item mt-2"
-        :styles="styles"
-        :moveUp="moveUp(control.path, index)"
-        :moveDown="moveDown(control.path, index)"
-        :delete="removeItems(control.path, [index])"
-        :moveUpEnabled="index > 0"
-        :moveDownEnabled="index < control.data.length - 1"
-        :label="childLabelForIndex(index)"
+  <div>
+    <fieldset v-if="control.visible" class="cz-fieldset mt-2" :class="{'is-invalid': tooltipMessages.length }">
+      <legend v-if="computedLabel"
+        @click="noData ? addButtonClick() : null"
+        class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
+        {{ computedLabel }}
+      </legend>
+      <v-tooltip bottom transition="fade">
+        <template v-slot:activator="{ on: onTooltip }">
+          <v-btn icon color="primary"
+            @click="addButtonClick" 
+            :class="styles.arrayList.addButton"
+            class="btn-add" 
+            :aria-label="`Add to ${control.label}`"
+            v-on="onTooltip"
+            :disabled="
+              !control.enabled ||
+              (appliedOptions.restrict &&
+                arraySchema !== undefined &&
+                arraySchema.maxItems !== undefined &&
+                control.data.length >= arraySchema.maxItems)
+            ">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </template>
+        {{ `Add to ${control.label}` }}
+      </v-tooltip>
+      <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
+        <array-list-element
+          v-for="(item, index) of control.data"
+          :key="index"
+          class="list-complete-item mt-2"
+          :styles="styles"
+          :moveUp="moveUp(control.path, index)"
+          :moveDown="moveDown(control.path, index)"
+          :delete="removeItems(control.path, [index])"
+          :moveUpEnabled="index > 0"
+          :moveDownEnabled="index < control.data.length - 1"
+          :label="childLabelForIndex(index)"
+        >
+          <dispatch-renderer
+            :schema="control.schema"
+            :uischema="childUiSchema"
+            :path="composePaths(control.path, `${index}`)"
+            :enabled="control.enabled"
+            :renderers="control.renderers"
+            :cells="control.cells"
+          />
+        </array-list-element>
+      </div>
+      <!-- Layout with drag and drop: -->
+      <!-- <drop-list v-if="control.data && control.data.length" name="list-complete" class="list-elements-container mt-4 pb-2" 
+        :items="control.data || []"
+        @reorder="reorderElements($event.from, $event.to)"
       >
-        <dispatch-renderer
-          :schema="control.schema"
-          :uischema="childUiSchema"
-          :path="composePaths(control.path, `${index}`)"
-          :enabled="control.enabled"
-          :renderers="control.renderers"
-          :cells="control.cells"
-        />
-      </array-list-element>
-    </div>
-    <!-- Layout with drag and drop: -->
-    <!-- <drop-list v-if="control.data && control.data.length" name="list-complete" class="list-elements-container mt-4 pb-2" 
-      :items="control.data || []"
-      @reorder="reorderElements($event.from, $event.to)"
-    >
-      <template v-slot:item="{ index }">
-        <drag class="item" :key="index">
-          <array-list-element
-            class="list-complete-item mt-2"
-            :styles="styles"
-            :moveUp="moveUp(control.path, index)"
-            :moveDown="moveDown(control.path, index)"
-            :delete="removeItems(control.path, [index])"
-            :moveUpEnabled="index > 0"
-            :moveDownEnabled="index < control.data.length - 1"
-            :label="childLabelForIndex(index)"
-          >
-            <dispatch-renderer
-              :schema="control.schema"
-              :uischema="childUiSchema"
-              :path="composePaths(control.path, `${index}`)"
-              :enabled="control.enabled"
-              :renderers="control.renderers"
-              :cells="control.cells"
-            />
-          </array-list-element>
-        </drag>
-      </template>
+        <template v-slot:item="{ index }">
+          <drag class="item" :key="index">
+            <array-list-element
+              class="list-complete-item mt-2"
+              :styles="styles"
+              :moveUp="moveUp(control.path, index)"
+              :moveDown="moveDown(control.path, index)"
+              :delete="removeItems(control.path, [index])"
+              :moveUpEnabled="index > 0"
+              :moveDownEnabled="index < control.data.length - 1"
+              :label="childLabelForIndex(index)"
+            >
+              <dispatch-renderer
+                :schema="control.schema"
+                :uischema="childUiSchema"
+                :path="composePaths(control.path, `${index}`)"
+                :enabled="control.enabled"
+                :renderers="control.renderers"
+                :cells="control.cells"
+              />
+            </array-list-element>
+          </drag>
+        </template>
 
-      <template v-slot:feedback="{data}">
-        <div class="item feedback" :key="data">{{data}}</div>
-      </template>
-    </drop-list> -->
-  </fieldset>
+        <template v-slot:feedback="{data}">
+          <div class="item feedback" :key="data">{{data}}</div>
+        </template>
+      </drop-list> -->
+    </fieldset>
+    <div class="text--secondary text-caption mb-8 ml-4">{{ control.schema.description }}</div>
+  </div>
 </template>
 
 <script lang="ts">

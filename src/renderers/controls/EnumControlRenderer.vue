@@ -17,12 +17,12 @@
         :placeholder="appliedOptions.placeholder"
         :label="computedLabel"
         :hint="control.description"
-        :persistent-hint="persistentHint()"
         :required="control.required"
         :error-messages="control.errors"
         :clearable="hover"
         :value="control.data"
         :items="control.options"
+        persistent-hint
         class="my-2"
         item-text="label"
         item-value="value"
