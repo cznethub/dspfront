@@ -10,6 +10,9 @@
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
     :hint="control.description"
+    :max="control.schema.exclusiveMaximum"
+    :min="control.schema.exclusiveMinumum"
+    :error-messages="control.errors"
     @change.native="onChange"
     persistent-hint
     dense
@@ -41,7 +44,10 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVanillaControl(useJsonFormsControl(props), target =>
       Number(target.value)
-    );
+    )
+  },
+  created() {
+    // console.log(this.control)
   },
   computed: {
     step(): number {

@@ -34,8 +34,8 @@ import { defineComponent } from '@vue/composition-api'
 import {
   DispatchRenderer,
   rendererProps,
+  RendererProps,
   useJsonFormsLayout,
-  RendererProps
 } from '@jsonforms/vue2'
 import { useVuetifyLayout } from '@jsonforms/vue2-vuetify'
 
