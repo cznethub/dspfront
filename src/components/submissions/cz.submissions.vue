@@ -403,17 +403,17 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       }
     })
 
-    const rows = Object.keys(parsedSubmissions)
+    const rows = parsedSubmissions.map((s) => {
+      return Object.keys(s).map( key => s[key])
+    })
 
-    let csvContent = "data:text/csv;charset=utf-8," 
-        + rows.map(e => e.join(",")).join("\n")
+    const csvContent = rows.map(c => c.join(",")).join("\n")
 
     // Download as CSV
     const filename = `CZNet_submissions.csv`
-    const jsonStr = JSON.stringify(parsedSubmissions, null, 2)
 
     const element = document.createElement('a')
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr))
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(csvContent))
     element.setAttribute('download', filename)
 
     element.style.display = 'none';
