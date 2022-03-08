@@ -16,6 +16,12 @@
                 {{ isSaving ? "Saving..." : confirmText }}
               </v-btn>
             </v-badge>
+
+            <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
+              <v-btn @click="$emit('save-and-finish')" class="ml-2" color="primary" :disabled="isSaving || !!errors.length" rounded>
+                Finish
+              </v-btn>
+            </v-badge>
           </div>
         </template>
 

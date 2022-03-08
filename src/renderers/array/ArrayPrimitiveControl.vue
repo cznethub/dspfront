@@ -110,7 +110,7 @@ const controlRenderer = defineComponent({
     },
     isRequired(item: string) {
       // @ts-ignore
-      return this.control.schema.contains && this.control.schema.contains.const !== item
+      return this.control.schema.contains && this.control.schema.contains.const === item
     }
   }
 });

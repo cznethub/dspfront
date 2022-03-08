@@ -24,7 +24,8 @@
       :confirmText="submitText"
       :errors="errors"
       @show-ui-schema="onShowUISchema"
-      @save="save"
+      @save-and-finish="onSaveAndFinish"
+      @save="onSave"
       @cancel="goToSubmissions"
     />
 
@@ -65,7 +66,8 @@
         :confirmText="submitText"
         :errors="errors"
         @showUiSchema="onShowUISchema"
-        @save="save"
+        @save="onSave"
+        @save-and-finish="onSaveAndFinish"
         @cancel="goToSubmissions"
       />
     </div>
@@ -272,7 +274,20 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.showUISchema = true
   }
 
-  protected async save() {
+  protected async onSaveAndFinish() {
+    await this._save()
+    this.$router.push({ name: "submissions" })
+  }
+
+  protected async onSave() {
+    await this._save()
+    if (!this.isEditMode) {
+      // If creating, redirect to the edit page
+      this.$router.push({ path: `submissions/${this.identifier}/${this.activeRepository.entity}`})
+    }
+  }
+
+  private async _save() {
     this.isSaving = true
     let submission
 
@@ -319,7 +334,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         ? "Your changes have been saved"
         : "Your submission has been saved!",
     })
-    this.$router.push({ name: "submissions" })
   }
 
   protected onChange(event: JsonFormsChangeEvent) {

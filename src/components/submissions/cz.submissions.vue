@@ -391,7 +391,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected exportSubmissions() {
-    const parsedSubmissions: ISubmission[] = this.filteredSubmissions.map((s) => {
+    const parsedSubmissions: Partial<ISubmission>[] = this.filteredSubmissions.map((s) => {
       return {
         title: s.title,
         authors: s.authors,
@@ -399,12 +399,17 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
         date: s.date,
         identifier: s.identifier,
         url: s.url,
-        metadata: s.metadata
+        // metadata: s.metadata
       }
     })
 
-    // Download as JSON
-    const filename = `CZNet_submissions.json`
+    const rows = Object.keys(parsedSubmissions)
+
+    let csvContent = "data:text/csv;charset=utf-8," 
+        + rows.map(e => e.join(",")).join("\n")
+
+    // Download as CSV
+    const filename = `CZNet_submissions.csv`
     const jsonStr = JSON.stringify(parsedSubmissions, null, 2)
 
     const element = document.createElement('a')
