@@ -341,8 +341,8 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   created() {
     // TODO: save this to persistent state
-    this.sortDirection = this.sortDirectionOptions[0]
-    this.sortBy = this.sortOptions[0]
+    this.sortDirection = this.sortDirectionOptions[1] //desc
+    this.sortBy = this.sortOptions[1] // date
 
     if (User.$state.isLoggedIn) {
       Submission.fetchSubmissions()

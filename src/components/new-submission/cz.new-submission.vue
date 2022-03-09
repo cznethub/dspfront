@@ -1,5 +1,5 @@
 <template>
-  <v-container class="cz-new-submission px-4">
+  <v-container id="cz-new-submission" class="cz-new-submission px-4">
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
     <v-alert v-if="!isLoading && wasLoaded" class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
@@ -47,7 +47,7 @@
           @change="onChange"
           :disabled="isSaving"
           :data="data"
-          :renderers="renderers"
+          :renderers="Object.freeze(renderers)"
           :schema="schema"
           :uischema="uischema"
           ref="form"
@@ -97,6 +97,31 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog
+      :value="isSaving"
+      no-click-animation
+      hide-overlay
+      persistent
+      width="300"
+      attach="#cz-new-submission"
+    >
+      <v-card
+        class="py-4"
+        color="primary"
+        dark
+      >
+        <v-card-text >
+          <p>Saving...</p>
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-overlay class="backdrop" absolute v-if="isSaving" />
   </v-container>
 </template>
 
@@ -118,6 +143,7 @@ import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
 import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
+import User from "@/models/user.model"
 // import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
 const sprintf = require("sprintf-js").sprintf
@@ -151,6 +177,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected errors: ErrorObject[]  = []
   protected repositoryRecord: any = null
   protected authorizedSubject = new Subscription()
+  protected hasUnsavedChanges = true
+  protected timesChanged = 0
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined
@@ -200,8 +228,18 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   created() {
+    this.init()
+  }
+
+  beforeDestroy() {
+    this.authorizedSubject.unsubscribe()
+  }
+
+  init() {
     this.isLoading = true
     this.data = this.schemaDefaults
+    this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
+
     const routeRepositoryKey = this.$route.params
       .repository as EnumRepositoryKeys
 
@@ -211,7 +249,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     ) {
       // Check that the key from the url is actually a EnumRepositoryKeys
       if (EnumRepositoryKeys[routeRepositoryKey]) {
-        this.setActiveRepository(routeRepositoryKey);
+        this.setActiveRepository(routeRepositoryKey)
       }
     }
 
@@ -222,10 +260,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     } else {
       this.isLoading = false
     }
-  }
-
-  beforeDestroy() {
-    this.authorizedSubject.unsubscribe()
   }
 
   protected goToSubmissions() {
@@ -276,14 +310,25 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected async onSaveAndFinish() {
     await this._save()
+    User.commit((state) => {
+      state.hasUnsavedChanges = false
+    })
     this.$router.push({ name: "submissions" })
   }
 
   protected async onSave() {
     await this._save()
     if (!this.isEditMode) {
+      User.commit((state) => {
+        state.hasUnsavedChanges = false
+      })
+      this.isSaving = false
       // If creating, redirect to the edit page
-      this.$router.push({ path: `submissions/${this.identifier}/${this.activeRepository.entity}`})
+      this.$router.push({
+        name: "submit.repository",
+        params: { repository: this.activeRepository.entity, id: this.identifier },
+      })
+      this.init()
     }
   }
 
@@ -337,6 +382,24 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected onChange(event: JsonFormsChangeEvent) {
+    // Pristine/dirty checks are currently not supported in jsonforms.
+    // We use onChange event for now by ignoring the two times it is called when the form is rendered.
+    // https://spectrum.chat/jsonforms/general/pristine-and-dirty-checking~2ece93ab-7783-41cb-8ba1-804414eb1da4?m=MTU2MzM0OTY0NDQxNg==
+    if (this.timesChanged <= 2) {
+      this.timesChanged = this.timesChanged + 1
+    }
+
+    if (this.timesChanged > 2) {
+      User.commit((state) => {
+        state.hasUnsavedChanges = true
+      })
+    }
+    else {
+      User.commit((state) => {
+        state.hasUnsavedChanges = false
+      })
+    }
+
     this.errors = event.errors || []
     this.data = event.data
   }
@@ -378,6 +441,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   button + button {
     margin-left: 1rem;
   }
+}
+
+::v-deep .v-overlay.backdrop {
+  z-index: 4 !important;
 }
 
 ::v-deep .v-label--active {

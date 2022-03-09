@@ -66,7 +66,7 @@ export const routes: RouteConfig[] = [
         components: {
           default: CzNewSubmission,
         },
-        meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true },
+        meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true, hasUnsavedChangesGuard: true }
       },
     ]
   },

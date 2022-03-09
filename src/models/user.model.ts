@@ -14,7 +14,8 @@ export interface IUserState {
   isLoggedIn: boolean
   orcid: string
   orcidAccessToken: string
-  next: string
+  next: string,
+  hasUnsavedChanges: boolean
 }
 
 export default class User extends Model {
@@ -44,7 +45,8 @@ export default class User extends Model {
       isLoggedIn: false,
       orcid: '',
       orcidAccessToken: '',
-      next: ''
+      next: '',
+      hasUnsavedChanges: false
     }
   }
 
