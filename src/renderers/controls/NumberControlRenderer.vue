@@ -13,7 +13,7 @@
     :max="control.schema.exclusiveMaximum"
     :min="control.schema.exclusiveMinumum"
     :error-messages="control.errors"
-    @change.native="onChange"
+    @change.native="beforeChange"
     class="my-4"
     persistent-hint
     dense
@@ -61,6 +61,16 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       );
+    }
+  },
+  methods: {
+    beforeChange(event) {
+      if (event.target.value.trim() === '') {
+        this.handleChange(this.control.path, undefined)
+      }
+      else {
+        this.onChange(event)
+      }
     }
   }
 })

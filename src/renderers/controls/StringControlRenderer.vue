@@ -12,7 +12,7 @@
     :required="control.required"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined ? control.schema.maxLength : undefined"
-    @change.native="onChange"
+    @change.native="beforeChange($event)"
     class="my-4"
     persistent-hint
     dense
@@ -52,6 +52,17 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       )
+    }
+  },
+  methods: {
+    // If value changed to an empty string, we need to set the data to undefined in order to trigger validation error
+    beforeChange(event) {
+      if (event.target.value.trim() === '') {
+        this.handleChange(this.control.path, undefined)
+      }
+      else {
+        this.onChange(event)
+      }
     }
   }
 })

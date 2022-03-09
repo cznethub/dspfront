@@ -1,7 +1,7 @@
 <template>
   <v-textarea
     :id="control.id + '-input'"
-    @change.native="onChange"
+    @change.native="beforeChange"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined
             ? control.schema.maxLength
@@ -56,8 +56,19 @@ const controlRenderer = defineComponent({
         !!this.appliedOptions?.hideRequiredAsterisk
       );
     }
+  },
+  methods: {
+    // If value changed to an empty string, we need to set the data to undefined in order to trigger validation error
+    beforeChange(event) {
+      if (event.target.value.trim() === '') {
+        this.handleChange(this.control.path, undefined)
+      }
+      else {
+        this.onChange(event)
+      }
+    }
   }
-});
+})
 
 export default controlRenderer;
 
