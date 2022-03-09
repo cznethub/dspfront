@@ -85,7 +85,10 @@
         </template>
       </drop-list> -->
     </fieldset>
-    <div class="text--secondary text-caption mb-8 ml-4">{{ control.schema.description }}</div>
+    <div class="text--secondary text-caption ml-2">{{ control.schema.description }}</div>
+    <div class="ml-2 mb-8 v-messages error--text" :class="styles.control.error">
+      {{ control.errors }}
+    </div>
   </div>
 </template>
 
@@ -137,6 +140,17 @@ const controlRenderer = defineComponent({
   },
   created() {
     // console.log(this.control)
+    // @ts-ignore
+    const requiredValues = this.control.schema.contains
+    
+    if (requiredValues) {
+      this.control.data = [...requiredValues, ...(this.control.data || [])]
+    }
+
+    if (this.control.schema.default) {
+      this.control.data = [...this.control.schema.default, ...(this.control.data || [])]
+      console.log(this.control.data)
+    }
   },
   computed: {
     arraySchema(): JsonSchema | undefined {
@@ -147,7 +161,7 @@ const controlRenderer = defineComponent({
       )
     },
     noData(): boolean {
-      return !this.control.data || this.control.data.length === 0;
+      return !this.control.data || this.control.data.length === 0
     },
     tooltipMessages(): string[] {
       const error: {

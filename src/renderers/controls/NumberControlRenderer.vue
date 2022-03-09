@@ -49,6 +49,10 @@ const controlRenderer = defineComponent({
   },
   created() {
     // console.log(this.control)
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
   },
   computed: {
     step(): number {

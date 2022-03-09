@@ -44,6 +44,11 @@ const controlRenderer = defineComponent({
     if (!this.control.data && this.control.schema.default) {
       this.control.data = this.control.schema.default
     }
+    
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
   },
   computed: {
     computedLabel(): string {
@@ -57,7 +62,7 @@ const controlRenderer = defineComponent({
   methods: {
     // If value changed to an empty string, we need to set the data to undefined in order to trigger validation error
     beforeChange(event) {
-      if (event.target.value.trim() === '') {
+      if (event.target.value === null || event.target.value.trim() === '') {
         this.handleChange(this.control.path, undefined)
       }
       else {

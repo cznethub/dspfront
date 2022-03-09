@@ -78,7 +78,7 @@ const controlRenderer = defineComponent({
     }
   },
   created() {
-    console.log(this.control)
+    // console.log(this.control)
   },
   computed: {
     dataDate(): string {

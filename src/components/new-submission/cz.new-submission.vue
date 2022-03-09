@@ -274,6 +274,15 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     console.info("CzNewSubmission: reading existing record...")
     this.repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
 
+    // TODO: all of this should be cleaned in the backend. Make fields with null values undefined
+    if (this.repositoryRecord) {
+      Object.keys(this.repositoryRecord).map((key) => {
+        if (this.repositoryRecord[key] === null) {
+          this.repositoryRecord[key] = undefined
+        }
+      })
+    }
+
     console.info("CzNewSubmission: reading existing files...")
     if (!this.isExternal && this.repositoryRecord) {
       const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
@@ -309,16 +318,19 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected async onSaveAndFinish() {
-    await this._save()
-    User.commit((state) => {
-      state.hasUnsavedChanges = false
-    })
-    this.$router.push({ name: "submissions" })
+    const wasSaved = await this._save()
+
+    if (wasSaved) {
+      User.commit((state) => {
+        state.hasUnsavedChanges = false
+      })
+      this.$router.push({ name: "submissions" })
+    }
   }
 
   protected async onSave() {
-    await this._save()
-    if (!this.isEditMode) {
+    const wasSaved = await this._save()
+    if (wasSaved && !this.isEditMode) {
       User.commit((state) => {
         state.hasUnsavedChanges = false
       })
@@ -345,7 +357,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         console.log(e)
         CzNotification.toast({ message: 'Failed to create submission' })
         this.isSaving = false
-        return
+        return false
       }
 
       if (submission?.identifier) {
@@ -379,6 +391,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         ? "Your changes have been saved"
         : "Your submission has been saved!",
     })
+
+    return true
   }
 
   protected onChange(event: JsonFormsChangeEvent) {

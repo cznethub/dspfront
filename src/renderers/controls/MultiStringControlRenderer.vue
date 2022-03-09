@@ -48,6 +48,12 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVanillaControl(useJsonFormsControl(props));
   },
+  created() {
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
+  },
   computed: {
     computedLabel(): string {
       return computeLabel(
