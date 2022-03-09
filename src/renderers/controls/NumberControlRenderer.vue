@@ -14,6 +14,7 @@
     :min="control.schema.exclusiveMinumum"
     :error-messages="control.errors"
     @change.native="onChange"
+    class="my-4"
     persistent-hint
     dense
     outlined

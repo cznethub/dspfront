@@ -13,7 +13,7 @@
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined ? control.schema.maxLength : undefined"
     @change.native="onChange"
-    class="my-2"
+    class="my-4"
     persistent-hint
     dense
     outlined

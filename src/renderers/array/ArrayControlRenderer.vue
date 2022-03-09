@@ -6,10 +6,11 @@
         class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
         {{ computedLabel }}
       </legend>
+
       <v-tooltip bottom transition="fade">
         <template v-slot:activator="{ on: onTooltip }">
           <v-btn icon color="primary"
-            @click="addButtonClick" 
+            @click="addButtonClick()" 
             :class="styles.arrayList.addButton"
             class="btn-add" 
             :aria-label="`Add to ${control.label}`"
@@ -26,6 +27,7 @@
         </template>
         {{ `Add to ${control.label}` }}
       </v-tooltip>
+
       <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
         <array-list-element
           v-for="(item, index) of control.data"
@@ -109,10 +111,10 @@ import {
 import { useVuetifyArrayControl } from '@jsonforms/vue2-vuetify'
 import { useVanillaArrayControl } from "@jsonforms/vue2-vanilla"
 import { Drag, Drop, DropList } from 'vue-easy-dnd'
-import ArrayListElement from './ArrayListElement.vue'
-import findIndex from 'lodash/findIndex'
 import { ErrorObject } from 'ajv';
 import { createControlElement } from '@jsonforms/core/lib/generators/uischema';
+import ArrayListElement from './ArrayListElement.vue'
+import findIndex from 'lodash/findIndex'
 
 const controlRenderer = defineComponent({
   name: 'array-control-renderer',
@@ -132,6 +134,9 @@ const controlRenderer = defineComponent({
         useJsonFormsArrayControl(props)
       )
     )
+  },
+  created() {
+    console.log(this.control)
   },
   computed: {
     arraySchema(): JsonSchema | undefined {
@@ -167,14 +172,14 @@ const controlRenderer = defineComponent({
                 ).text,
               ],
               message: errorObject.message,
-            });
+            })
           } else {
             error[index].labels.push(
               createLabelDescriptionFrom(
                 createControlElement(errorObject.dataPath),
                 errorObject.schema as JsonSchema
               ).text
-            );
+            )
           }
         }
       }
@@ -199,7 +204,9 @@ const controlRenderer = defineComponent({
     },
   },
 })
-export default controlRenderer;
+
+export default controlRenderer
+
 export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
   tester: rankWith(3, schemaTypeIs('array'))
@@ -208,10 +215,6 @@ export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
 
 <style lang="scss" scoped>
   .list-elements-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
-    gap: 2rem;
-
     ::v-deep .v-card {
       margin: 0;
     }
@@ -219,7 +222,6 @@ export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
     ::v-deep .list-complete-item > .v-card__text {
       overflow: auto;
       resize: vertical;
-      max-height: 20rem;
     }
   }
 
