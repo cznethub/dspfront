@@ -1,87 +1,95 @@
 <template>
-  <fieldset v-if="control.visible" class="cz-fieldset mt-2 mb-8" :class="{'is-invalid': tooltipMessages.length }">
-    <legend v-if="computedLabel"
-      @click="noData ? addButtonClick() : null"
-      class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
-      {{ computedLabel }}
-    </legend>
-    <v-tooltip bottom transition="fade">
-      <template v-slot:activator="{ on: onTooltip }">
-        <v-btn icon color="primary"
-          @click="addButtonClick" 
-          :class="styles.arrayList.addButton"
-          class="btn-add" 
-          :aria-label="`Add to ${control.label}`"
-          v-on="onTooltip"
-          :disabled="
-            !control.enabled ||
-            (appliedOptions.restrict &&
-              arraySchema !== undefined &&
-              arraySchema.maxItems !== undefined &&
-              control.data.length >= arraySchema.maxItems)
-          ">
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-      </template>
-      {{ `Add to ${control.label}` }}
-    </v-tooltip>
-    <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
-      <array-list-element
-        v-for="(item, index) of control.data"
-        :key="index"
-        class="list-complete-item mt-2"
-        :styles="styles"
-        :moveUp="moveUp(control.path, index)"
-        :moveDown="moveDown(control.path, index)"
-        :delete="removeItems(control.path, [index])"
-        :moveUpEnabled="index > 0"
-        :moveDownEnabled="index < control.data.length - 1"
-        :label="childLabelForIndex(index)"
-      >
-        <dispatch-renderer
-          :schema="control.schema"
-          :uischema="childUiSchema"
-          :path="composePaths(control.path, `${index}`)"
-          :enabled="control.enabled"
-          :renderers="control.renderers"
-          :cells="control.cells"
-        />
-      </array-list-element>
-    </div>
-    <!-- Layout with drag and drop: -->
-    <!-- <drop-list v-if="control.data && control.data.length" name="list-complete" class="list-elements-container mt-4 pb-2" 
-      :items="control.data || []"
-      @reorder="reorderElements($event.from, $event.to)"
-    >
-      <template v-slot:item="{ index }">
-        <drag class="item" :key="index">
-          <array-list-element
-            class="list-complete-item mt-2"
-            :styles="styles"
-            :moveUp="moveUp(control.path, index)"
-            :moveDown="moveDown(control.path, index)"
-            :delete="removeItems(control.path, [index])"
-            :moveUpEnabled="index > 0"
-            :moveDownEnabled="index < control.data.length - 1"
-            :label="childLabelForIndex(index)"
-          >
-            <dispatch-renderer
-              :schema="control.schema"
-              :uischema="childUiSchema"
-              :path="composePaths(control.path, `${index}`)"
-              :enabled="control.enabled"
-              :renderers="control.renderers"
-              :cells="control.cells"
-            />
-          </array-list-element>
-        </drag>
-      </template>
+  <div class="mb-8">
+    <fieldset v-if="control.visible" class="cz-fieldset mt-2" :class="{'is-invalid': tooltipMessages.length }">
+      <legend v-if="computedLabel"
+        @click="noData ? addButtonClick() : null"
+        class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
+        {{ computedLabel }}
+      </legend>
 
-      <template v-slot:feedback="{data}">
-        <div class="item feedback" :key="data">{{data}}</div>
-      </template>
-    </drop-list> -->
-  </fieldset>
+      <v-tooltip bottom transition="fade">
+        <template v-slot:activator="{ on: onTooltip }">
+          <v-btn icon color="primary"
+            @click="addButtonClick()" 
+            :class="styles.arrayList.addButton"
+            class="btn-add" 
+            :aria-label="`Add to ${control.label}`"
+            v-on="onTooltip"
+            :disabled="
+              !control.enabled ||
+              (appliedOptions.restrict &&
+                arraySchema !== undefined &&
+                arraySchema.maxItems !== undefined &&
+                control.data.length >= arraySchema.maxItems)
+            ">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+        </template>
+        {{ `Add to ${control.label}` }}
+      </v-tooltip>
+
+      <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
+        <array-list-element
+          v-for="(item, index) of control.data"
+          :key="index"
+          class="list-complete-item mt-2"
+          :styles="styles"
+          :moveUp="moveUp(control.path, index)"
+          :moveDown="moveDown(control.path, index)"
+          :delete="removeItems(control.path, [index])"
+          :moveUpEnabled="index > 0"
+          :moveDownEnabled="index < control.data.length - 1"
+          :label="childLabelForIndex(index)"
+        >
+          <dispatch-renderer
+            :schema="control.schema"
+            :uischema="childUiSchema"
+            :path="composePaths(control.path, `${index}`)"
+            :enabled="control.enabled"
+            :renderers="control.renderers"
+            :cells="control.cells"
+          />
+        </array-list-element>
+      </div>
+      <!-- Layout with drag and drop: -->
+      <!-- <drop-list v-if="control.data && control.data.length" name="list-complete" class="list-elements-container mt-4 pb-2" 
+        :items="control.data || []"
+        @reorder="reorderElements($event.from, $event.to)"
+      >
+        <template v-slot:item="{ index }">
+          <drag class="item" :key="index">
+            <array-list-element
+              class="list-complete-item mt-2"
+              :styles="styles"
+              :moveUp="moveUp(control.path, index)"
+              :moveDown="moveDown(control.path, index)"
+              :delete="removeItems(control.path, [index])"
+              :moveUpEnabled="index > 0"
+              :moveDownEnabled="index < control.data.length - 1"
+              :label="childLabelForIndex(index)"
+            >
+              <dispatch-renderer
+                :schema="control.schema"
+                :uischema="childUiSchema"
+                :path="composePaths(control.path, `${index}`)"
+                :enabled="control.enabled"
+                :renderers="control.renderers"
+                :cells="control.cells"
+              />
+            </array-list-element>
+          </drag>
+        </template>
+
+        <template v-slot:feedback="{data}">
+          <div class="item feedback" :key="data">{{data}}</div>
+        </template>
+      </drop-list> -->
+    </fieldset>
+    <div class="text--secondary text-caption ml-2">{{ control.schema.description }}</div>
+    <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
+      {{ control.errors }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -106,10 +114,10 @@ import {
 import { useVuetifyArrayControl } from '@jsonforms/vue2-vuetify'
 import { useVanillaArrayControl } from "@jsonforms/vue2-vanilla"
 import { Drag, Drop, DropList } from 'vue-easy-dnd'
-import ArrayListElement from './ArrayListElement.vue'
-import findIndex from 'lodash/findIndex'
 import { ErrorObject } from 'ajv';
 import { createControlElement } from '@jsonforms/core/lib/generators/uischema';
+import ArrayListElement from './ArrayListElement.vue'
+import findIndex from 'lodash/findIndex'
 
 const controlRenderer = defineComponent({
   name: 'array-control-renderer',
@@ -130,6 +138,26 @@ const controlRenderer = defineComponent({
       )
     )
   },
+  created() {
+    // console.log(this.control)
+    // @ts-ignore
+    const requiredValues = this.control.schema.contains
+    
+    if (requiredValues) {
+      this.control.data = [...requiredValues, ...(this.control.data || [])]
+    }
+
+    if (this.control.schema.default) {
+      // TODO: this is not propagating to the component
+      // this.control.data = [...this.control.schema.default, ...(this.control.data || [])]
+      this.control.schema.default.map(item => {
+        this.addItem(
+          this.control.path,
+          item
+        )()
+      })
+    }
+  },
   computed: {
     arraySchema(): JsonSchema | undefined {
       return Resolve.schema(
@@ -139,7 +167,7 @@ const controlRenderer = defineComponent({
       )
     },
     noData(): boolean {
-      return !this.control.data || this.control.data.length === 0;
+      return !this.control.data || this.control.data.length === 0
     },
     tooltipMessages(): string[] {
       const error: {
@@ -164,14 +192,14 @@ const controlRenderer = defineComponent({
                 ).text,
               ],
               message: errorObject.message,
-            });
+            })
           } else {
             error[index].labels.push(
               createLabelDescriptionFrom(
                 createControlElement(errorObject.dataPath),
                 errorObject.schema as JsonSchema
               ).text
-            );
+            )
           }
         }
       }
@@ -196,7 +224,9 @@ const controlRenderer = defineComponent({
     },
   },
 })
-export default controlRenderer;
+
+export default controlRenderer
+
 export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
   tester: rankWith(3, schemaTypeIs('array'))
@@ -205,10 +235,6 @@ export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
 
 <style lang="scss" scoped>
   .list-elements-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(25rem, 1fr));
-    gap: 2rem;
-
     ::v-deep .v-card {
       margin: 0;
     }
@@ -216,7 +242,6 @@ export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
     ::v-deep .list-complete-item > .v-card__text {
       overflow: auto;
       resize: vertical;
-      max-height: 20rem;
     }
   }
 

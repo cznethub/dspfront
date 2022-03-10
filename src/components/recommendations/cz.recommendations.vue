@@ -38,7 +38,19 @@
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
                 <div class="has-text-weight-medium has-space-bottom text-center has-space-top spacer text-h6">I want to submit multiple types of data together</div>
-                <p class="text--secondary text-center text-subtitle-1">Learn more about best practices for assembling multiple datasets for a project or publication. </p>
+                <p class="text--secondary text-center text-subtitle-1">Learn more about best practices for assembling multiple datasets for a project or publication.</p>
+              </v-card-text>
+            </v-card>
+          </template>
+        </v-hover>
+
+        <v-hover>
+          <template v-slot:default="{ hover }">
+            <v-card :class="`elevation-${ hover ? 12 : 2 } has-cursor-pointer transition-swing`">
+              <v-card-text class="text-center">
+                <v-icon>mdi-plus-circle-outline</v-icon>
+                <div class="has-text-weight-medium has-space-bottom text-center has-space-top spacer text-h6">I have time series data from sensors</div>
+                <p class="text--secondary text-center text-subtitle-1">Learn more about more about formats, best practices, and repositories for geospatial data.</p>
               </v-card-text>
             </v-card>
           </template>

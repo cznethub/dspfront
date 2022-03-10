@@ -1,7 +1,7 @@
 <template>
   <v-textarea
     :id="control.id + '-input'"
-    @change.native="onChange"
+    @change.native="beforeChange"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined
             ? control.schema.maxLength
@@ -16,6 +16,8 @@
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
     :label="computedLabel"
+    class="my-8"
+    persistent-hint
     outlined
     dense
   />
@@ -46,6 +48,12 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVanillaControl(useJsonFormsControl(props));
   },
+  created() {
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
+  },
   computed: {
     computedLabel(): string {
       return computeLabel(
@@ -54,8 +62,19 @@ const controlRenderer = defineComponent({
         !!this.appliedOptions?.hideRequiredAsterisk
       );
     }
+  },
+  methods: {
+    // If value changed to an empty string, we need to set the data to undefined in order to trigger validation error
+    beforeChange(event) {
+      if (event.target.value.trim() === '') {
+        this.handleChange(this.control.path, undefined)
+      }
+      else {
+        this.onChange(event)
+      }
+    }
   }
-});
+})
 
 export default controlRenderer;
 

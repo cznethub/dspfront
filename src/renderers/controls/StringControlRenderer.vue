@@ -11,12 +11,10 @@
     :error-messages="control.errors"
     :required="control.required"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
-    :counter="control.schema.maxLength !== undefined
-            ? control.schema.maxLength
-            : undefined
-        "
-    @change.native="onChange"
-    class="my-2"
+    :counter="control.schema.maxLength !== undefined ? control.schema.maxLength : undefined"
+    @change.native="beforeChange($event)"
+    class="my-4"
+    persistent-hint
     dense
     outlined
   />
@@ -42,13 +40,34 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVanillaControl(useJsonFormsControl(props))
   },
+  created() {
+    if (!this.control.data && this.control.schema.default) {
+      this.control.data = this.control.schema.default
+    }
+    
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
+  },
   computed: {
     computedLabel(): string {
       return computeLabel(
         this.control.label as string,
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
-      );
+      )
+    }
+  },
+  methods: {
+    // If value changed to an empty string, we need to set the data to undefined in order to trigger validation error
+    beforeChange(event) {
+      if (event.target.value === null || event.target.value.trim() === '') {
+        this.handleChange(this.control.path, undefined)
+      }
+      else {
+        this.onChange(event)
+      }
     }
   }
 })

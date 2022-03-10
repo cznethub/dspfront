@@ -18,7 +18,8 @@
         :hint="control.description"
         :error-messages="control.errors"
         prepend-icon="mdi-calendar"
-        class="my-2"
+        persistent-hint
+        class="my-4"
         style="max-width: 15rem;"
         outlined
         readonly
@@ -77,7 +78,7 @@ const controlRenderer = defineComponent({
     }
   },
   created() {
-    console.log(this.control)
+    // console.log(this.control)
   },
   computed: {
     dataDate(): string {

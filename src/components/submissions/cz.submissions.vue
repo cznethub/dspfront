@@ -224,13 +224,13 @@
 
               <template v-slot:no-data>
                 <div class="text-subtitle-1 text--secondary ma-4">
-                  You don't have any submission that matches the selected criteria.
+                  You don't have any submissions that match the selected criteria.
                 </div>
               </template>
 
               <template v-slot:no-results>
                 <div class="text-subtitle-1 text--secondary ma-4">
-                  You don't have any submission that matches the selected criteria.
+                  You don't have any submissions that match the selected criteria.
                 </div>
               </template>
             </v-data-iterator>
@@ -341,8 +341,8 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   created() {
     // TODO: save this to persistent state
-    this.sortDirection = this.sortDirectionOptions[0]
-    this.sortBy = this.sortOptions[0]
+    this.sortDirection = this.sortDirectionOptions[1] //desc
+    this.sortBy = this.sortOptions[1] // date
 
     if (User.$state.isLoggedIn) {
       Submission.fetchSubmissions()
@@ -391,7 +391,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected exportSubmissions() {
-    const parsedSubmissions: ISubmission[] = this.filteredSubmissions.map((s) => {
+    const parsedSubmissions: Partial<ISubmission>[] = this.filteredSubmissions.map((s) => {
       return {
         title: s.title,
         authors: s.authors,
@@ -399,16 +399,21 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
         date: s.date,
         identifier: s.identifier,
         url: s.url,
-        metadata: s.metadata
+        // metadata: s.metadata
       }
     })
 
-    // Download as JSON
-    const filename = `CZNet_submissions.json`
-    const jsonStr = JSON.stringify(parsedSubmissions, null, 2)
+    const rows = parsedSubmissions.map((s) => {
+      return Object.keys(s).map( key => s[key])
+    })
+
+    const csvContent = rows.map(c => c.join(",")).join("\n")
+
+    // Download as CSV
+    const filename = `CZNet_submissions.csv`
 
     const element = document.createElement('a')
-    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(jsonStr))
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(csvContent))
     element.setAttribute('download', filename)
 
     element.style.display = 'none';

@@ -43,6 +43,9 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVuetifyControl(useJsonFormsControlWithDetail(props))
   },
+  created() {
+    // console.log(this.control)
+  },
   computed: {
     detailUiSchema(): UISchemaElement {
       const result = findUISchema(

@@ -6,12 +6,13 @@ import HydroShare from './models/hydroshare.model'
 import Repository from './models/repository.model'
 import Zenodo from './models/zenodo.model'
 import External from './models/external.model'
+import CzNotification from './models/notifications.model'
 
 export const router = new VueRouter({
   mode: 'history',
   routes,
   scrollBehavior(to, from, savedPosition) {
-    document.getElementsByTagName('html')[0]?.scrollTo({ left: 0, top: 0});
+    document.getElementsByTagName('html')[0]?.scrollTo({ left: 0, top: 0})
   }
 })
 
@@ -61,7 +62,28 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
     }
 
     return null
-  }
+  },
+
+  // hasUnsavedChangesGuard
+  (to, from?, next?): RawLocation | null => {
+    if (from && from.meta?.hasUnsavedChangesGuard && User.$state.hasUnsavedChanges) {
+      CzNotification.openDialog({
+        title: 'You have unsaved changes',
+        content: 'Do you want to continue and discard your changes?',
+        confirmText: 'Discard',
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          User.commit((state) => {
+            state.hasUnsavedChanges = false
+          })
+          router.push(to)
+        }
+      })
+      return from
+    }
+
+    return null
+  },
 ]
 
 export function setupRouteGuards() {

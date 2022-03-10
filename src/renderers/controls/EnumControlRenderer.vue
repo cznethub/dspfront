@@ -17,12 +17,12 @@
         :placeholder="appliedOptions.placeholder"
         :label="computedLabel"
         :hint="control.description"
-        :persistent-hint="persistentHint()"
         :required="control.required"
         :error-messages="control.errors"
         :clearable="hover"
         :value="control.data"
         :items="control.options"
+        persistent-hint
         class="my-2"
         item-text="label"
         item-value="value"
@@ -50,7 +50,6 @@ import { default as ControlWrapper } from './ControlWrapper.vue'
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import { VSelect, VHover } from 'vuetify/lib'
 
-
 const controlRenderer = defineComponent({
   name: 'enum-control-renderer',
   components: {
@@ -68,9 +67,12 @@ const controlRenderer = defineComponent({
     return useVuetifyControl(
       useJsonFormsEnumControl(props),
       (value) => value || undefined
-    );
+    )
   },
-});
+  methods: {
+    
+  }
+})
 export default controlRenderer;
 export const enumControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,

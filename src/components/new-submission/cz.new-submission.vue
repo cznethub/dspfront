@@ -1,11 +1,11 @@
 <template>
-  <v-container class="cz-new-submission">
+  <v-container id="cz-new-submission" class="cz-new-submission px-4">
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
-    <v-alert class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
-      <b>Instructions</b>: Fill in the required fields (marked with *).
+    <v-alert v-if="!isLoading && wasLoaded" class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
+      <b>Instructions</b>: Fill in the required fields (marked with * and highlighted in red).
       Press the "Save" button to upload your
-      submission to the repository.
+      submission.
 
       <v-img
         class="my-4"
@@ -16,31 +16,23 @@
       />
     </v-alert>
 
-    <!-- <v-alert>
-      <ul>
-        <li v-for="(error, index) of errors" :key="index"><b>{{ error.dataPath.split('.').pop() }}</b> {{ error.message }}</li>
-      </ul>
-    </v-alert> -->
-
-    <div class="d-flex align-center my-4">
-      <v-spacer></v-spacer>
-      <div class="form-controls">
-        <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
-          >UI Schema</v-btn
-        > -->
-        <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
-          >Cancel</v-btn
-        >
-        <v-btn @click="save()" color="primary" :disabled="isSaving || !!errors.length" rounded>
-          {{ isSaving ? "Saving..." : submitText }}
-        </v-btn>
-      </div>
-    </div>
+    <cz-new-submission-actions
+      v-if="!isLoading && wasLoaded"
+      :isEditMode="isEditMode"
+      :isDevMode="isDevMode"
+      :isSaving="isSaving"
+      :confirmText="submitText"
+      :errors="errors"
+      @show-ui-schema="onShowUISchema"
+      @save-and-finish="onSaveAndFinish"
+      @save="onSave"
+      @cancel="goToSubmissions"
+    />
 
     <div>
       <div v-if="!isLoading">
         <cz-folder-structure
-          v-if="!isExternal"
+          v-if="!isExternal && wasLoaded"
           ref="folderStructure"
           v-model="uploads"
           @upload="uploadFiles($event)"
@@ -51,34 +43,38 @@
         />
 
         <json-forms
+          v-if="wasLoaded"
           @change="onChange"
           :disabled="isSaving"
           :data="data"
-          :renderers="renderers"
+          :renderers="Object.freeze(renderers)"
           :schema="schema"
           :uischema="uischema"
           ref="form"
         />
       </div>
 
-      <v-progress-circular v-else indeterminate color="primary" />
-
-      <!-- TODO: MOVE INTO COMPONENT AND REUSE -->
-      <div
-        v-if="!isLoading"
-        class="form-controls has-space-top-2x text-right"
-      >
-        <!-- <v-btn v-if="isDevMode" @click="onShowUISchema()" rounded
-          >UI Schema</v-btn
-        > -->
-        <v-btn v-if="isEditMode" @click="goToSubmissions()" rounded
-          >Cancel</v-btn
-        >
-        <v-btn @click="save()" color="primary" :disabled="isSaving || !!errors.length" rounded>
-          {{ isSaving ? "Saving..." : submitText }}
-        </v-btn>
+      <div v-else class="d-flex justify-center mt-8">
+        <v-progress-circular indeterminate color="primary" />
       </div>
+
+      <cz-new-submission-actions
+        v-if="!isLoading && wasLoaded"
+        :isEditMode="isEditMode"
+        :isDevMode="isDevMode"
+        :isSaving="isSaving"
+        :confirmText="submitText"
+        :errors="errors"
+        @showUiSchema="onShowUISchema"
+        @save="onSave"
+        @save-and-finish="onSaveAndFinish"
+        @cancel="goToSubmissions"
+      />
     </div>
+
+    <v-container v-if="!isLoading && !wasLoaded">
+      <v-skeleton-loader type="actions, article, actions"></v-skeleton-loader>
+    </v-container>
 
     <v-dialog v-if="isDevMode" v-model="showUISchema">
       <v-card>
@@ -101,6 +97,31 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <v-dialog
+      :value="isSaving"
+      no-click-animation
+      hide-overlay
+      persistent
+      width="300"
+      attach="#cz-new-submission"
+    >
+      <v-card
+        class="py-4"
+        color="primary"
+        dark
+      >
+        <v-card-text >
+          <p>Saving...</p>
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-overlay class="backdrop" absolute v-if="isSaving" />
   </v-container>
 </template>
 
@@ -115,11 +136,14 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
 import { IFile, IFolder } from '@/components/new-submission/types'
-import { ErrorObject } from 'ajv';
+import { ErrorObject } from 'ajv'
+import { Subscription } from "rxjs"
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
+import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
+import User from "@/models/user.model"
 // import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
 const sprintf = require("sprintf-js").sprintf
@@ -132,7 +156,7 @@ const renderers = [
 
 @Component({
   name: "cz-new-submission",
-  components: { JsonForms, JsonViewer, CzFolderStructure },
+  components: { JsonForms, JsonViewer, CzFolderStructure, CzNewSubmissionActions },
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms
@@ -151,6 +175,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected repoMetadata = repoMetadata
   protected uploads: (IFile | IFolder)[] = []
   protected errors: ErrorObject[]  = []
+  protected repositoryRecord: any = null
+  protected authorizedSubject = new Subscription()
+  protected hasUnsavedChanges = true
+  protected timesChanged = 0
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined
@@ -173,7 +201,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected get isDevMode() {
-    return process.env.NODE_ENV === "development"
+    return false
+    // TODO: uncomment when this env variable is properly setup in production
+    // return process.env.NODE_ENV === "development"
   }
 
   protected get isExternal() {
@@ -182,7 +212,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected get formTitle() {
     if (this.isExternal) {
-      return 'Register Dataset'
+      return 'Register Dataset from External Repository'
     }
     return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`
   }
@@ -191,9 +221,25 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     return this.isEditMode ? "Save Changes" : "Save"
   }
 
+  protected get wasLoaded() {
+    return this.isEditMode
+      ? !!this.repositoryRecord
+      : true
+  }
+
   created() {
+    this.init()
+  }
+
+  beforeDestroy() {
+    this.authorizedSubject.unsubscribe()
+  }
+
+  init() {
     this.isLoading = true
     this.data = this.schemaDefaults
+    this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
+
     const routeRepositoryKey = this.$route.params
       .repository as EnumRepositoryKeys
 
@@ -203,7 +249,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     ) {
       // Check that the key from the url is actually a EnumRepositoryKeys
       if (EnumRepositoryKeys[routeRepositoryKey]) {
-        this.setActiveRepository(routeRepositoryKey);
+        this.setActiveRepository(routeRepositoryKey)
       }
     }
 
@@ -226,24 +272,37 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected async loadExistingSubmission() {
     // TODO: these 2 calls can be performed in parallel
     console.info("CzNewSubmission: reading existing record...")
-    const repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
+    this.repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
+
+    // TODO: all of this should be cleaned in the backend. Make fields with null values undefined
+    if (this.repositoryRecord) {
+      Object.keys(this.repositoryRecord).map((key) => {
+        if (this.repositoryRecord[key] === null) {
+          this.repositoryRecord[key] = undefined
+        }
+      })
+    }
 
     console.info("CzNewSubmission: reading existing files...")
-    if (!this.isExternal) {
+    if (!this.isExternal && this.repositoryRecord) {
       const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
       this.rootDirectory.children = initialStructure
     }
     this.isLoadingInitialFiles = false
 
-    if (repositoryRecord) {
+    if (this.repositoryRecord) {
       this.data = {
         ...this.data,
-        ...repositoryRecord,
-      };
+        ...this.repositoryRecord,
+      }
       // this.links = repositoryRecord?.formMetadata.links // Has useful links, i.e: bucket for upload
     }
     else {
-      // TODO: indicate in the UI that submission was not loaded
+      // Try again when user has authorized the repository
+      this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
+        this.isLoading = true
+        await this.loadExistingSubmission()
+      })
     }
 
     this.isLoading = false
@@ -258,7 +317,34 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.showUISchema = true
   }
 
-  protected async save() {
+  protected async onSaveAndFinish() {
+    const wasSaved = await this._save()
+
+    if (wasSaved) {
+      User.commit((state) => {
+        state.hasUnsavedChanges = false
+      })
+      this.$router.push({ name: "submissions" })
+    }
+  }
+
+  protected async onSave() {
+    const wasSaved = await this._save()
+    if (wasSaved && !this.isEditMode) {
+      User.commit((state) => {
+        state.hasUnsavedChanges = false
+      })
+      this.isSaving = false
+      // If creating, redirect to the edit page
+      this.$router.push({
+        name: "submit.repository",
+        params: { repository: this.activeRepository.entity, id: this.identifier },
+      })
+      this.init()
+    }
+  }
+
+  private async _save() {
     this.isSaving = true
     let submission
 
@@ -271,7 +357,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         console.log(e)
         CzNotification.toast({ message: 'Failed to create submission' })
         this.isSaving = false
-        return
+        return false
       }
 
       if (submission?.identifier) {
@@ -305,10 +391,29 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         ? "Your changes have been saved"
         : "Your submission has been saved!",
     })
-    this.$router.push({ name: "submissions" })
+
+    return true
   }
 
   protected onChange(event: JsonFormsChangeEvent) {
+    // Pristine/dirty checks are currently not supported in jsonforms.
+    // We use onChange event for now by ignoring the two times it is called when the form is rendered.
+    // https://spectrum.chat/jsonforms/general/pristine-and-dirty-checking~2ece93ab-7783-41cb-8ba1-804414eb1da4?m=MTU2MzM0OTY0NDQxNg==
+    if (this.timesChanged <= 2) {
+      this.timesChanged = this.timesChanged + 1
+    }
+
+    if (this.timesChanged > 2) {
+      User.commit((state) => {
+        state.hasUnsavedChanges = true
+      })
+    }
+    else {
+      User.commit((state) => {
+        state.hasUnsavedChanges = false
+      })
+    }
+
     this.errors = event.errors || []
     this.data = event.data
   }
@@ -350,6 +455,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   button + button {
     margin-left: 1rem;
   }
+}
+
+::v-deep .v-overlay.backdrop {
+  z-index: 4 !important;
 }
 
 ::v-deep .v-label--active {

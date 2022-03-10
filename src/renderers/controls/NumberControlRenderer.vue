@@ -9,7 +9,13 @@
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
-    @change.native="onChanges"
+    :hint="control.description"
+    :max="control.schema.exclusiveMaximum"
+    :min="control.schema.exclusiveMinumum"
+    :error-messages="control.errors"
+    @change.native="beforeChange"
+    class="my-4"
+    persistent-hint
     dense
     outlined
   />
@@ -39,7 +45,14 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVanillaControl(useJsonFormsControl(props), target =>
       Number(target.value)
-    );
+    )
+  },
+  created() {
+    // console.log(this.control)
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
   },
   computed: {
     step(): number {
@@ -52,6 +65,16 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       );
+    }
+  },
+  methods: {
+    beforeChange(event) {
+      if (event.target.value.trim() === '') {
+        this.handleChange(this.control.path, undefined)
+      }
+      else {
+        this.onChange(event)
+      }
     }
   }
 })

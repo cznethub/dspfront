@@ -15,7 +15,7 @@
         :delimiters="[',']"
         :error-messages="control.errors"
         :menu-props="{ openOnClick: false }"
-        class="my-2 mb-0"
+        class="my-4 mb-0"
         small-chips
         multiple
         no-filter
@@ -89,8 +89,26 @@ const controlRenderer = defineComponent({
     };
   },
   created() {
-    this.tags = this.control.schema.default
-    this.onChange(this.tags)
+    // If no initial value, load default
+    if (!this.control.data && this.control.schema.default) {
+      this.tags = this.control.schema.default
+      this.onChange(this.tags)
+    }
+    else if (this.control.data) {
+      this.tags = this.control.data
+      this.onChange(this.tags)
+    }
+
+    // @ts-ignore
+    const requiredValues = this.control.schema.contains.enum
+
+    if (requiredValues) {
+      if (this.control.data) {
+        // TODO: add the requried value to the submission in the repository
+        this.tags = [...new Set([...requiredValues, ...this.control.data])]
+        this.onChange(this.tags)
+      }
+    }
   },
   methods: {
     onTagsChange() {
@@ -107,7 +125,7 @@ const controlRenderer = defineComponent({
     },
     isRequired(item: string) {
       // @ts-ignore
-      return this.control.schema.contains && this.control.schema.contains.const !== item
+      return this.control.schema.contains && this.control.schema.contains.enum.includes(item)
     }
   }
 });
