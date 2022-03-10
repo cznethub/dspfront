@@ -151,7 +151,6 @@ import HydroShare from "./models/hydroshare.model"
 import Submission from "./models/submission.model"
 import Repository from "./models/repository.model"
 import External from "./models/external.model"
-import { repoMetadata } from "./components/submit/constants"
 import { EnumRepositoryKeys } from "./components/submissions/types"
 
 @Component({
