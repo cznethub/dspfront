@@ -26,7 +26,7 @@ import {
   JsonFormsRendererRegistryEntry,
   rankWith,
   isStringControl
-} from '@jsonforms/core';
+} from '@jsonforms/core'
 import { defineComponent } from '@vue/composition-api'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { useVanillaControl } from "@jsonforms/vue2-vanilla"
@@ -41,13 +41,14 @@ const controlRenderer = defineComponent({
     return useVanillaControl(useJsonFormsControl(props))
   },
   created() {
-    if (!this.control.data && this.control.schema.default) {
-      this.control.data = this.control.schema.default
-    }
-    
     // If the value that was loaded is null, turn it into undefined
     if (this.control.data === null) {
       this.handleChange(this.control.path, undefined)
+    }
+
+    if (!this.control.data && this.control.schema.default) {
+      this.control.data = this.control.schema.default
+      this.handleChange(this.control.path, this.control.data)
     }
   },
   computed: {
