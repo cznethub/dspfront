@@ -63,7 +63,7 @@ export default class User extends Model {
 
     if (!this.isLoginListenerSet) {
       window.addEventListener("message", async (message) => {
-        this.isLoginListenerSet = true; // Prevents registering the listener more than once
+        this.isLoginListenerSet = true // Prevents registering the listener more than once
         if (message.data.token) {
           CzNotification.toast({ 
             message: 'You have logged in!', 
@@ -116,6 +116,7 @@ export default class User extends Model {
         // state.orcid = ''
         state.orcidAccessToken = ''
       })
+      this.isLoginListenerSet = false
 
       CzNotification.toast({ 
         message: 'You have logged out!', 
