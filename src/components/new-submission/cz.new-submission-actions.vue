@@ -12,7 +12,7 @@
         <template v-slot:activator="{ on, attrs}">
           <div v-bind="attrs" v-on="on">
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn @click="$emit('save')" color="primary" :disabled="isSaving || !!errors.length" rounded>
+              <v-btn @click="$emit('save')" color="primary" :disabled="isSaving || !!errors.length || !hasUnsavedChanges" rounded>
                 {{ isSaving ? "Saving..." : confirmText }}
               </v-btn>
             </v-badge>
@@ -45,6 +45,7 @@ import { Component, Vue, Prop } from "vue-property-decorator"
 export default class CzNewSubmissionActions extends Vue {
   @Prop() isEditMode!: boolean
   @Prop() isDevMode!: boolean
+  @Prop() hasUnsavedChanges!: boolean
   @Prop() isSaving!: boolean
   @Prop() confirmText!: string
   @Prop() errors!: string[]
