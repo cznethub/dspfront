@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mb-8">
     <fieldset v-if="control.visible" class="cz-fieldset mt-2" :class="{'is-invalid': tooltipMessages.length }">
       <legend v-if="computedLabel"
         @click="noData ? addButtonClick() : null"
@@ -86,7 +86,7 @@
       </drop-list> -->
     </fieldset>
     <div class="text--secondary text-caption ml-2">{{ control.schema.description }}</div>
-    <div class="ml-2 mb-8 v-messages error--text" :class="styles.control.error">
+    <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
       {{ control.errors }}
     </div>
   </div>
@@ -148,8 +148,14 @@ const controlRenderer = defineComponent({
     }
 
     if (this.control.schema.default) {
-      this.control.data = [...this.control.schema.default, ...(this.control.data || [])]
-      console.log(this.control.data)
+      // TODO: this is not propagating to the component
+      // this.control.data = [...this.control.schema.default, ...(this.control.data || [])]
+      this.control.schema.default.map(item => {
+        this.addItem(
+          this.control.path,
+          item
+        )()
+      })
     }
   },
   computed: {

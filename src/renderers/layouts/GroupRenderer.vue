@@ -1,6 +1,5 @@
 <template>
-  <div>  
-    <fieldset v-if="layout.visible" :class="`cz-fieldset mt-2 pt-4 ${styles.group.root}`" >
+    <fieldset v-if="layout.visible" :class="`cz-fieldset mb-8 pt-4 ${styles.group.root}` " >
       <legend v-if="layout.uischema.label" :class="styles.group.label" class="v-label--active">{{ layout.uischema.label }}</legend>
       <div
         v-for="(element, index) in layout.uischema.elements"
@@ -17,8 +16,6 @@
         />
       </div>
     </fieldset>
-    <div class="text--secondary text-caption mb-8 ml-4">{{ layout.schema.description }}</div>
-  </div>
 </template>
 
 <script lang="ts">
