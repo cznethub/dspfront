@@ -330,18 +330,21 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected async onSave() {
     const wasSaved = await this._save()
-    if (wasSaved && !this.isEditMode) {
+    if (wasSaved) {
       User.commit((state) => {
         state.hasUnsavedChanges = false
       })
-      this.isSaving = false
-      // If creating, redirect to the edit page
-      this.$router.push({
-        name: "submit.repository",
-        params: { repository: this.activeRepository.entity, id: this.identifier },
-      })
-      this.init()
+
+      if (!this.isEditMode) {
+        // If creating, redirect to the edit page
+        this.$router.push({
+          name: "submit.repository",
+          params: { repository: this.activeRepository.entity, id: this.identifier },
+        })
+        this.init()
+      }
     }
+    this.isSaving = false
   }
 
   private async _save() {

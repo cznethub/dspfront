@@ -53,6 +53,16 @@ const controlRenderer = defineComponent({
     if (this.control.data === null) {
       this.handleChange(this.control.path, undefined)
     }
+
+    if (!this.control.data && this.control.schema.default) {
+      this.control.data = this.control.schema.default
+      this.handleChange(this.control.path, this.control.data)
+    }
+    
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
   },
   computed: {
     computedLabel(): string {

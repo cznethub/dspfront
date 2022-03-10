@@ -250,8 +250,9 @@ export default class Repository extends Model implements IRepository {
         return { 
           identifier: 
             (response.data.identifier ? response.data.identifier.split('/').pop() : '')   // HydroShare
-            || response.data.prereserve_doi.recid,                                        // Zenodo
-          formMetadata: response.data
+            || response.data.prereserve_doi.recid                                         // Zenodo
+            || response.data.identifier,                                                  // External
+            formMetadata: response.data
         }
       }
     }
@@ -302,15 +303,15 @@ export default class Repository extends Model implements IRepository {
   */
   static async refetchSubmission(identifier: string, repository: EnumRepositoryKeys) {
     try {
-      const response = await axios.put(`/api/submit/${repository}/${identifier}`, {
+      const response = await axios.get(`/api/metadata/${repository}/${identifier}`, {
         params: { "access_token": User.$state.orcidAccessToken },
       })
-      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data, repository) })
+      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data, repository, identifier) })
       CzNotification.toast({ message: 'Your submission has been reloaded with its latest changes' })
     }
     catch(e: any) {
       console.log(e)
-      if (e.response.status === 401) {
+      if (e.response?.status === 401) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''

@@ -283,13 +283,31 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected itemsPerPage = 10
   protected itemsPerPageArray = [10, 25, 50]
   protected page = 1
-  protected sortBy: { key: string, label: string } = { key: '', label: '' }
-  protected sortDirection: { key: string, label: string } = { key: '', label: '' }
   protected repoMetadata = repoMetadata
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
   protected loggedInSubject = new Subscription()
+
+  protected get sortBy() {
+    return Submission.$state.sortBy
+  }
+
+  protected  set sortBy(sortBy: { key: string, label: string }) {
+    Submission.commit((state) => {
+      state.sortBy = sortBy
+    })
+  }
+
+  protected get sortDirection() {
+    return Submission.$state.sortDirection
+  }
+
+  protected set sortDirection(sortDirection: { key: string, label: string }) {
+    Submission.commit((state) => {
+      state.sortDirection = sortDirection
+    })
+  }
 
   protected get isFetching() {
     return Submission.$state.isFetching
@@ -341,8 +359,8 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   created() {
     // TODO: save this to persistent state
-    this.sortDirection = this.sortDirectionOptions[1] //desc
-    this.sortBy = this.sortOptions[1] // date
+    // this.sortDirection = this.sortDirectionOptions[1] //desc
+    // this.sortBy = this.sortOptions[1] // date
 
     if (User.$state.isLoggedIn) {
       Submission.fetchSubmissions()
