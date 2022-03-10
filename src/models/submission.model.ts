@@ -2,6 +2,10 @@ import { ISubmission, EnumRepositoryKeys } from '@/components/submissions/types'
 import { Model } from '@vuex-orm/core'
 import axios from "axios"
 import User from './user.model'
+import {
+  EnumSubmissionSorts,
+  EnumSortDirections,
+} from "@/components/submissions/types"
 
 // temporary workaround to circular dependecy error
 function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
@@ -17,6 +21,12 @@ function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
   return ''
 }
 
+export interface ISubmisionState {
+  sortBy: { key: string, label: string },
+  sortDirection: { key: string, label: string },
+  isFetching: boolean
+}
+
 export default class Submission extends Model implements ISubmission {
   // This is the name used as module name of the Vuex Store.
   static entity = 'submissions'
@@ -29,12 +39,14 @@ export default class Submission extends Model implements ISubmission {
   public url!: string
   public metadata!: any
 
-  static get $state() {
+  static get $state(): ISubmisionState {
     return this.store().state.entities[this.entity]
   }
 
   static state() {
     return {
+      sortBy: { key: 'date', label: EnumSubmissionSorts.date },
+      sortDirection: { 'desc': '', label: EnumSortDirections.desc },
       isFetching: false
     }
   }
