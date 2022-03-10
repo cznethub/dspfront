@@ -250,8 +250,9 @@ export default class Repository extends Model implements IRepository {
         return { 
           identifier: 
             (response.data.identifier ? response.data.identifier.split('/').pop() : '')   // HydroShare
-            || response.data.prereserve_doi.recid,                                        // Zenodo
-          formMetadata: response.data
+            || response.data.prereserve_doi.recid                                         // Zenodo
+            || response.data.identifier,                                                  // External
+            formMetadata: response.data
         }
       }
     }
