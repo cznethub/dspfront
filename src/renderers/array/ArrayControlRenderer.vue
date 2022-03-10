@@ -32,7 +32,6 @@
         <array-list-element
           v-for="(item, index) of control.data"
           :key="index"
-          class="list-complete-item mt-2"
           :styles="styles"
           :moveUp="moveUp(control.path, index)"
           :moveDown="moveDown(control.path, index)"
@@ -40,6 +39,7 @@
           :moveUpEnabled="index > 0"
           :moveDownEnabled="index < control.data.length - 1"
           :label="childLabelForIndex(index)"
+          class="list-complete-item mt-2"
         >
           <dispatch-renderer
             :schema="control.schema"
@@ -144,10 +144,10 @@ const controlRenderer = defineComponent({
     const requiredValues = this.control.schema.contains
     
     if (requiredValues) {
-      this.control.data = [...requiredValues, ...(this.control.data || [])]
+      this.control.data = [...new Set([...requiredValues, ...(this.control.data || [])])]
     }
 
-    if (this.control.schema.default) {
+    if (this.control.schema.default && !this.control.data) {
       // TODO: this is not propagating to the component
       // this.control.data = [...this.control.schema.default, ...(this.control.data || [])]
       this.control.schema.default.map(item => {
