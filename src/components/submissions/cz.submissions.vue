@@ -174,7 +174,7 @@
                         <v-icon v-if="isUpdating[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                       </v-btn>
-                      <v-btn @click="onDelete(item)" :disabled="isDeleting[`${item.repository}-${item.identifier}`]" rounded>
+                      <v-btn @click="onDelete(item, repoMetadata[item.repository].isExternal)" :disabled="isDeleting[`${item.repository}-${item.identifier}`]" rounded>
                         <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-delete</v-icon><span class="ml-1">
                         {{ isDeleting[`${item.repository}-${item.identifier}`] ? 'Deleting...' : 'Delete' }}</span>
@@ -257,6 +257,7 @@ import {
   EnumSubmissionSorts,
   EnumSortDirections,
   IRepository,
+  EnumRepositoryKeys,
 } from "@/components/submissions/types"
 import { repoMetadata } from "../submit/constants"
 import { mixins } from 'vue-class-component'
@@ -442,10 +443,12 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     document.body.removeChild(element)
   }
 
-  protected onDelete(submission: ISubmission) {
+  protected onDelete(submission: ISubmission, isExternal: boolean) {
     CzNotification.openDialog({
       title: 'Delete this submission?',
-      content: 'THIS ACTION WILL ALSO ATTEMPT TO DELETE THE SUBMISSION IN THE REPOSITORY.',
+      content: isExternal 
+        ? 'This action will delete metadata about your submission from the Data Submission Portal. It will not affect your resource in the external repository.'
+        : 'THIS ACTION WILL ALSO ATTEMPT TO DELETE THE SUBMISSION IN THE REPOSITORY.',
       confirmText: 'Delete',
       cancelText: 'Cancel',
       onConfirm: async () => {
