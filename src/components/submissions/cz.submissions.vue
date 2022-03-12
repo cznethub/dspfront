@@ -57,10 +57,16 @@
               </v-btn>
             </template>
 
-              <template v-for="repo of repoMetadata" >
-              <v-btn v-if="!repo.isDisabled" :key="repo.name" @click="submitTo(repo)">
-                {{ repo.name }}
-              </v-btn>
+            <template v-for="repo of repoMetadata" >
+              <v-tooltip :key="repo.name" left transition="fade">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs">
+                    {{ repo.name }}
+                  </v-btn>
+                </template>
+                <span>{{ repo.submitTooltip }}</span>
+              </v-tooltip>
+              
             </template>
           </v-speed-dial>
         </div>
@@ -257,7 +263,6 @@ import {
   EnumSubmissionSorts,
   EnumSortDirections,
   IRepository,
-  EnumRepositoryKeys,
 } from "@/components/submissions/types"
 import { repoMetadata } from "../submit/constants"
 import { mixins } from 'vue-class-component'

@@ -229,6 +229,7 @@ const controlRenderer = defineComponent({
       } // Already at the top or bottom.
       this.control.data.splice(newIndex, 0, this.control.data.splice(index, 1)[0])
     },
+    // TODO: currently no way to propagate this to array elements.
     isRequired(item) {
       // @ts-ignore
       return this.control.schema.contains?.enum.includes(item)
