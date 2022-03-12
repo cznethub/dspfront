@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="my-4">
     <fieldset v-if="control.visible" class="cz-fieldset">
       <legend v-if="control.schema.title" class="v-label--active">{{ control.schema.title }}</legend>
       <template v-if="delegateUISchema">

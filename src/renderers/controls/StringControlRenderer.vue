@@ -3,15 +3,16 @@
     :id="control.id + '-input'"
     :class="styles.control.input"
     :value="control.data"
-    :disabled="!control.enabled"
+    :disabled="!control.enabled || control.schema.readOnly"
     :autofocus="appliedOptions.focus"
     :label="computedLabel"
     :hint="control.description"
-    :placeholder="appliedOptions.placeholder"
+    :placeholder="placeholder || appliedOptions.placeholder"
     :error-messages="control.errors"
     :required="control.required"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined ? control.schema.maxLength : undefined"
+    :readonly="control.schema.readOnly"
     @change.native="beforeChange($event)"
     class="my-4"
     persistent-hint
@@ -41,6 +42,7 @@ const controlRenderer = defineComponent({
     return useVanillaControl(useJsonFormsControl(props))
   },
   created() {
+    // console.log(this.control.data, this)
     // If the value that was loaded is null, turn it into undefined
     if (this.control.data === null) {
       this.handleChange(this.control.path, undefined)
@@ -58,6 +60,10 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       )
+    },
+    placeholder(): string {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder || ''
     }
   },
   methods: {

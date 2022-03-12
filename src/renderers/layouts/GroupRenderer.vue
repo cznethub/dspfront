@@ -1,21 +1,22 @@
 <template>
-    <fieldset v-if="layout.visible" :class="`cz-fieldset mb-8 pt-4 ${styles.group.root}` " >
-      <legend v-if="layout.uischema.label" :class="styles.group.label" class="v-label--active">{{ layout.uischema.label }}</legend>
-      <div
-        v-for="(element, index) in layout.uischema.elements"
-        :key="`${layout.path}-${index}`"
-        :class="styles.group.item"
-      >
-        <dispatch-renderer
-          :schema="layout.schema"
-          :uischema="element"
-          :path="layout.path"
-          :enabled="layout.enabled"
-          :renderers="layout.renderers"
-          :cells="layout.cells"
-        />
-      </div>
-    </fieldset>
+  <fieldset v-if="layout.visible" :class="`cz-fieldset my-8 ${styles.group.root}` " >
+    <legend v-if="layout.uischema.label" :class="styles.group.label" class="v-label--active">{{ layout.uischema.label }}</legend>
+    <div
+      v-for="(element, index) in layout.uischema.elements"
+      :key="`${layout.path}-${index}`"
+      class="my-4"
+      :class="styles.group.item"
+    >
+      <dispatch-renderer
+        :schema="layout.schema"
+        :uischema="element"
+        :path="layout.path"
+        :enabled="layout.enabled"
+        :renderers="layout.renderers"
+        :cells="layout.cells"
+      />
+    </div>
+  </fieldset>
 </template>
 
 <script lang="ts">
