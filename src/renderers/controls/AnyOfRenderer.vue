@@ -1,40 +1,76 @@
 <template>
   <div class="my-4">
     <fieldset v-if="control.visible" :class="styles.control.root" class="cz-fieldset">
-      <legend v-if="control.uischema.label" :class="styles.control.label" class="v-label--active">{{ control.uischema.label }}</legend>
-      <combinator-properties
-        :schema="subSchema"
-        combinatorKeyword="anyOf"
-        :path="path"
-      />
+      <legend v-if="control.uischema.label" 
+        @click="showForm()" :class="{ 'v-label--active': isAdded }" class="v-label">{{ control.uischema.label }}</legend>
 
-      <v-tabs v-model="selectedIndex">
-        <v-tab
-          v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
-          :key="`${control.path}-${anyOfIndex}`"
-        >
-          {{ anyOfRenderInfo.label }}
-        </v-tab>
-      </v-tabs>
-      <v-divider></v-divider>
+      <div v-if="!control.required" :class="{ 'mb-6': isAdded }">
+        <v-tooltip v-if="!isAdded" bottom transition="fade">
+          <template v-slot:activator="{ on: onTooltip }">
+            <v-btn icon color="primary"
+              @click="showForm()" 
+              :class="styles.arrayList.addButton"
+              class="btn-add" 
+              :aria-label="`Add to ${control.label}`"
+              v-on="onTooltip"
+            >
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+          {{ `Add ${control.uischema.label}` }}
+        </v-tooltip>
 
-      <v-tabs-items v-model="selectedIndex">
-        <v-tab-item
-          v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
-          :key="`${control.path}-${anyOfIndex}`"
-        >
-          <div class="pt-4">
-            <dispatch-renderer
-              v-if="selectedIndex === anyOfIndex"
-              :schema="anyOfRenderInfo.schema"
-              :uischema="anyOfRenderInfo.uischema"
-              :path="control.path"
-              :renderers="control.renderers"
-              :cells="control.cells"
-            />
-          </div>
-        </v-tab-item>
-      </v-tabs-items>
+        <v-tooltip v-else bottom transition="fade">
+          <template v-slot:activator="{ on: onTooltip }">
+            <v-btn icon color="error"
+              @click="removeForm()" 
+              :class="styles.arrayList.addButton"
+              class="btn-add" 
+              aria-label="Remove"
+              v-on="onTooltip"
+            >
+              <v-icon>mdi-minus</v-icon>
+            </v-btn>
+          </template>
+          Remove
+        </v-tooltip>
+      </div>
+
+      <template v-if="isAdded || control.required">
+        <combinator-properties
+          :schema="subSchema"
+          combinatorKeyword="anyOf"
+          :path="path"
+        />
+
+        <v-tabs v-model="selectedIndex">
+          <v-tab
+            v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
+            :key="`${control.path}-${anyOfIndex}`"
+          >
+            {{ anyOfRenderInfo.label }}
+          </v-tab>
+        </v-tabs>
+        <v-divider></v-divider>
+
+        <v-tabs-items v-model="selectedIndex">
+          <v-tab-item
+            v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
+            :key="`${control.path}-${anyOfIndex}`"
+          >
+            <div class="pt-4">
+              <dispatch-renderer
+                v-if="selectedIndex === anyOfIndex"
+                :schema="anyOfRenderInfo.schema"
+                :uischema="anyOfRenderInfo.uischema"
+                :path="control.path"
+                :renderers="control.renderers"
+                :cells="control.cells"
+              />
+            </div>
+          </v-tab-item>
+        </v-tabs-items>
+      </template>
     </fieldset>
     <div class="text-caption text--secondary">{{ control.schema.description }}</div>
   </div>
@@ -80,9 +116,12 @@ const controlRenderer = defineComponent({
     const control = (input.control as any).value as typeof input.control;
     const selectedIndex = ref(control.indexOfFittingSchema || 0);
     return {
+      isAdded: false,
       ...useVuetifyControl(input),
       selectedIndex,
-    };
+    }
+  },
+  created() {
   },
   computed: {
     subSchema(): JsonSchema {
@@ -90,7 +129,7 @@ const controlRenderer = defineComponent({
         this.control.schema,
         this.control.rootSchema,
         'anyOf'
-      );
+      )
     },
     anyOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
       return createCombinatorRenderInfos(
@@ -103,7 +142,18 @@ const controlRenderer = defineComponent({
       );
     },
   },
-});
+  methods: {
+    showForm() {
+      this.isAdded = true
+
+    },
+    removeForm() {
+      this.isAdded = false
+      this.handleChange(this.control.path, undefined)
+    }
+  }
+})
+
 export default controlRenderer
 export const anyOfRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,

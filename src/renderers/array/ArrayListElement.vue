@@ -10,7 +10,7 @@
         <v-icon>mdi-arrow-down</v-icon>
       </v-btn>
 
-      <v-btn elevation="1" fab small @click="deleteClicked" color="#ff6961" style="color: #FFF;">
+      <v-btn v-if="!isRequired" elevation="1" fab small @click="deleteClicked" color="#ff6961" style="color: #FFF;">
         <v-icon>mdi-delete</v-icon>
       </v-btn>
     </v-card-actions>
@@ -36,6 +36,11 @@ const listItem = defineComponent({
       required: false,
       type: String,
       default: ''
+    },
+    isRequired: {
+      required: false,
+      type: Boolean,
+      default: false
     },
     needsConfirmToDelete: {
       required: false,

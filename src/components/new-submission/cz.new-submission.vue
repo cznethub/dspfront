@@ -23,6 +23,7 @@
       :isSaving="isSaving"
       :confirmText="submitText"
       :errors="errors"
+      :hasUnsavedChanges="hasUnsavedChanges"
       @show-ui-schema="onShowUISchema"
       @save-and-finish="onSaveAndFinish"
       @save="onSave"
@@ -177,7 +178,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected errors: ErrorObject[]  = []
   protected repositoryRecord: any = null
   protected authorizedSubject = new Subscription()
-  protected hasUnsavedChanges = true
   protected timesChanged = 0
 
   protected get isEditMode() {
@@ -227,6 +227,16 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       : true
   }
 
+  protected get hasUnsavedChanges(): boolean {
+    return User.$state.hasUnsavedChanges
+  }
+
+  protected set hasUnsavedChanges(value: boolean) {
+    User.commit((state) => {
+      state.hasUnsavedChanges = value
+    })
+  }
+
   created() {
     this.init()
   }
@@ -239,6 +249,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.isLoading = true
     this.data = this.schemaDefaults
     this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
+    this.hasUnsavedChanges = false
 
     const routeRepositoryKey = this.$route.params
       .repository as EnumRepositoryKeys
@@ -318,12 +329,16 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected async onSaveAndFinish() {
-    const wasSaved = await this._save()
+    if (this.hasUnsavedChanges) {
+      const wasSaved = await this._save()
 
-    if (wasSaved) {
-      User.commit((state) => {
-        state.hasUnsavedChanges = false
-      })
+      if (wasSaved) {
+        this.hasUnsavedChanges = false
+        this.$router.push({ name: "submissions" })
+      }
+    }
+    // If nothing to save, just redirect to submissions page
+    else {
       this.$router.push({ name: "submissions" })
     }
   }
@@ -331,9 +346,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected async onSave() {
     const wasSaved = await this._save()
     if (wasSaved) {
-      User.commit((state) => {
-        state.hasUnsavedChanges = false
-      })
+      this.hasUnsavedChanges = false
 
       if (!this.isEditMode) {
         // If creating, redirect to the edit page
@@ -406,17 +419,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       this.timesChanged = this.timesChanged + 1
     }
 
-    if (this.timesChanged > 2) {
-      User.commit((state) => {
-        state.hasUnsavedChanges = true
-      })
-    }
-    else {
-      User.commit((state) => {
-        state.hasUnsavedChanges = false
-      })
-    }
-
+    this.hasUnsavedChanges = this.timesChanged > 2
     this.errors = event.errors || []
     this.data = event.data
   }

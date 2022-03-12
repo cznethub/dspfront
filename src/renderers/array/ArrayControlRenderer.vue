@@ -1,6 +1,6 @@
 <template>
   <div class="mb-8">
-    <fieldset v-if="control.visible" class="cz-fieldset mt-2" :class="{'is-invalid': tooltipMessages.length }">
+    <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': tooltipMessages.length }">
       <legend v-if="computedLabel"
         @click="noData ? addButtonClick() : null"
         class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
@@ -31,8 +31,8 @@
       <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
         <array-list-element
           v-for="(item, index) of control.data"
+          :isRequired="isRequired(item)"
           :key="index"
-          class="list-complete-item mt-2"
           :styles="styles"
           :moveUp="moveUp(control.path, index)"
           :moveDown="moveDown(control.path, index)"
@@ -40,12 +40,13 @@
           :moveUpEnabled="index > 0"
           :moveDownEnabled="index < control.data.length - 1"
           :label="childLabelForIndex(index)"
+          class="list-complete-item mt-2"
         >
           <dispatch-renderer
             :schema="control.schema"
             :uischema="childUiSchema"
             :path="composePaths(control.path, `${index}`)"
-            :enabled="control.enabled"
+            :enabled="control.enabled && !isRequired(item)"
             :renderers="control.renderers"
             :cells="control.cells"
           />
@@ -141,15 +142,21 @@ const controlRenderer = defineComponent({
   created() {
     // console.log(this.control)
     // @ts-ignore
-    const requiredValues = this.control.schema.contains
+    const requiredItems = this.control.schema.contains?.enum || []
     
-    if (requiredValues) {
-      this.control.data = [...requiredValues, ...(this.control.data || [])]
-    }
+    requiredItems.map(item => {
+      if (!this.control.data) {
+        this.control.data = []
+      }
+      if (!this.control.data.includes(item)) {
+        this.addItem(
+          this.control.path,
+          item
+        )()
+      }
+    })
 
-    if (this.control.schema.default) {
-      // TODO: this is not propagating to the component
-      // this.control.data = [...this.control.schema.default, ...(this.control.data || [])]
+    if (this.control.schema.default && !this.control.data) {
       this.control.schema.default.map(item => {
         this.addItem(
           this.control.path,
@@ -222,6 +229,11 @@ const controlRenderer = defineComponent({
       } // Already at the top or bottom.
       this.control.data.splice(newIndex, 0, this.control.data.splice(index, 1)[0])
     },
+    // TODO: currently no way to propagate this to array elements.
+    isRequired(item) {
+      // @ts-ignore
+      return this.control.schema.contains?.enum.includes(item)
+    }
   },
 })
 

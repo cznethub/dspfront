@@ -12,16 +12,17 @@
         @blur="isFocused = false"
         :id="control.id + '-input'"
         :class="styles.control.input"
-        :disabled="!control.enabled"
+        :disabled="!control.enabled || control.schema.readOnly"
         :autofocus="appliedOptions.focus"
         :placeholder="appliedOptions.placeholder"
         :label="computedLabel"
         :hint="control.description"
         :required="control.required"
         :error-messages="control.errors"
-        :clearable="hover"
+        :clearable="hover && !control.schema.readOnly"
         :value="control.data"
         :items="control.options"
+        :readonly="control.schema.readOnly"
         persistent-hint
         class="my-2"
         item-text="label"
@@ -62,6 +63,11 @@ const controlRenderer = defineComponent({
   },
   props: {
     ...rendererProps<ControlElement>(),
+  },
+  created() {
+    if (!this.control.data && this.control.schema.default) {
+      this.handleChange(this.control.path, this.control.schema.default)
+    }
   },
   setup(props: RendererProps<ControlElement>) {
     return useVuetifyControl(

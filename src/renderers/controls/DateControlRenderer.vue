@@ -78,7 +78,12 @@ const controlRenderer = defineComponent({
     }
   },
   created() {
-    // console.log(this.control)
+    if (this.dataDate) {
+      // Format data value and populate the form
+      const selected = new Date(this.control.data)
+      const formatted = format(selected, DATE_FORMATS[this.dateFormat])
+      this.handleChange(this.control.path, formatted)
+    }
   },
   computed: {
     dataDate(): string {

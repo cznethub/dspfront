@@ -93,6 +93,14 @@ const controlRenderer = defineComponent({
       ...useVanillaControl(useJsonFormsControl(props))
     }
   },
+  created() {
+    if (this.dataDateTime) {
+      // Format data value and populate the form
+      const selected = new Date(this.control.data)
+      const formatted = format(selected, DATE_FORMATS[this.dateTimeFormat])
+      this.handleChange(this.control.path, formatted)
+    }
+  },
   computed: {
     dataDateTime(): string {
       return (this.control.data ?? '').substr(0, 16)
@@ -118,8 +126,10 @@ const controlRenderer = defineComponent({
       return DEFAULT_DATE_FORMAT + ' ' + DEFAULT_TIME_FORMAT
     },
     formattedDatetime() {
-      // @ts-ignore
-      return this.selectedDatetime ? format(this.selectedDatetime, DATE_FORMATS[this.dateTimeFormat]) : ''
+      return this.selectedDatetime 
+        // @ts-ignore
+        ? format(this.selectedDatetime, DATE_FORMATS[this.dateTimeFormat])
+        : ''
     },
     computedLabel(): string {
       return computeLabel(
