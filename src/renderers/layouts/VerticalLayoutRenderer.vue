@@ -49,9 +49,6 @@ const layoutRenderer = defineComponent({
   props: {
     ...rendererProps<Layout>(),
   },
-  created() {
-    console.log(this)
-  },
   setup(props: RendererProps<Layout>) {
     return useVuetifyLayout(useJsonFormsLayout(props));
   },
