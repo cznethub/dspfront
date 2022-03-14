@@ -415,23 +415,25 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected exportSubmissions() {
-    const parsedSubmissions: Partial<ISubmission>[] = this.filteredSubmissions.map((s) => {
+    const parsedSubmissions = this.filteredSubmissions.map((s) => {
       return {
-        title: s.title,
-        authors: s.authors,
-        repository: s.repository,
+        authors: s.authors.join('; '),
         date: s.date,
-        identifier: s.identifier,
+        title: s.title,
+        repository: s.repository,
         url: s.url,
         // metadata: s.metadata
       }
     })
 
+    const columnLabels = ['Authors', 'Publication Date', 'Title', 'Repository', 'URL']
+
+    const headerRow = columnLabels.join(',') + '\n'
     const rows = parsedSubmissions.map((s) => {
-      return Object.keys(s).map( key => s[key])
+      return Object.keys(s).map( key => `"${s[key]}"`)
     })
 
-    const csvContent = rows.map(c => c.join(",")).join("\n")
+    const csvContent = headerRow + rows.map(c => c.join(",")).join("\n")
 
     // Download as CSV
     const filename = `CZNet_submissions.csv`
