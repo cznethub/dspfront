@@ -232,7 +232,7 @@ const controlRenderer = defineComponent({
     // TODO: currently no way to propagate this to array elements.
     isRequired(item) {
       // @ts-ignore
-      return this.control.schema.contains?.enum.includes(item)
+      return this.control.schema.contains?.enum?.includes(item)
     }
   },
 })

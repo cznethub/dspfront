@@ -1,10 +1,10 @@
 <template>
   <v-app app>
-    <v-app-bar color="blue-grey lighten-4" prominent elevate-on-scroll fixed app>
+    <v-app-bar ref="appBar" id="app-bar" color="blue-grey lighten-4" prominent elevate-on-scroll shrink-on-scroll fixed app>
       <v-container class="d-flex align-end full-height">
         <router-link
           :to="{ path: `/` }"
-          :src="require('@/assets/img/CZN_Logo.png')"
+          :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
           tag="img"
           class="logo"
           alt="Critical Zone Network logo"
@@ -141,6 +141,7 @@ import { setupRouteGuards } from "./router"
 import { Subscription } from "rxjs"
 import { DEFAULT_TOAST_DURATION } from "./constants"
 import { RawLocation } from "vue-router"
+import { EnumRepositoryKeys } from "./components/submissions/types"
 import CzNotification, { IDialog, IToast } from "./models/notifications.model"
 import CzFooter from "@/components/base/cz.footer.vue"
 import CzLogin from "@/components/account/cz.login.vue"
@@ -151,7 +152,6 @@ import HydroShare from "./models/hydroshare.model"
 import Submission from "./models/submission.model"
 import Repository from "./models/repository.model"
 import External from "./models/external.model"
-import { EnumRepositoryKeys } from "./components/submissions/types"
 
 @Component({
   name: "app",
@@ -166,6 +166,13 @@ export default class App extends Vue {
   protected showMobileNavigation = false
   protected loggedInSubject = new Subscription()
   protected authorizedSubject = new Subscription()
+  protected isAppBarExtended = true
+
+  mounted() {
+    this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
+      this.isAppBarExtended = newValue > oldValue
+    })
+  }
 
   protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
     message: "",
@@ -339,6 +346,13 @@ export default class App extends Vue {
   min-height: unset;
   margin-top: 4rem;
   box-shadow: none;
+}
+
+.v-toolbar.v-app-bar--is-scrolled > .v-toolbar__content > .container {
+  align-items: center !important;
+  will-change: padding;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .nav-items {
