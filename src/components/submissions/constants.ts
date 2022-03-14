@@ -1,0 +1,1 @@
+export const itemsPerPageArray = [10, 25, 50]
