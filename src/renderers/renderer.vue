@@ -17,6 +17,8 @@
   import { anyOfRenderer } from './controls/AnyOfRenderer.vue'
   import { allOfRenderer } from './controls/AllOfRenderer.vue'
   import { radioGroupControlRenderer } from './controls/RadioGroupControlRenderer.vue'
+  import { verticalLayoutRenderer } from './layouts/VerticalLayoutRenderer.vue'
+  import { horizontalLayoutRenderer } from './layouts/HorizontalLayoutRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -34,6 +36,8 @@
     arrayPrimitiveRenderer,
     anyOfRenderer,
     allOfRenderer,
-    radioGroupControlRenderer
+    radioGroupControlRenderer,
+    verticalLayoutRenderer,
+    horizontalLayoutRenderer
   ]
 </script>
