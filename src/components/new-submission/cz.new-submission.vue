@@ -66,9 +66,10 @@
         :isSaving="isSaving"
         :confirmText="submitText"
         :errors="errors"
-        @showUiSchema="onShowUISchema"
-        @save="onSave"
+        :hasUnsavedChanges="hasUnsavedChanges"
+        @show-ui-schema="onShowUISchema"
         @save-and-finish="onSaveAndFinish"
+        @save="onSave"
         @cancel="goToSubmissions"
       />
     </div>

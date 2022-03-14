@@ -42,7 +42,6 @@ const controlRenderer = defineComponent({
     return useVanillaControl(useJsonFormsControl(props))
   },
   created() {
-    // console.log(this.control.data, this)
     // If the value that was loaded is null, turn it into undefined
     if (this.control.data === null) {
       this.handleChange(this.control.path, undefined)
