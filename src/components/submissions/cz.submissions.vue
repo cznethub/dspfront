@@ -272,6 +272,7 @@ import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
+import { itemsPerPageArray } from '@/components/submissions/constants'
 
 @Component({
   name: "cz-submissions",
@@ -286,8 +287,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     searchStr: string
   } = { repoOptions: [], searchStr: "" }
 
-  protected itemsPerPage = 10
-  protected itemsPerPageArray = [10, 25, 50]
+  protected itemsPerPageArray = itemsPerPageArray
   protected page = 1
   protected repoMetadata = repoMetadata
   protected enumSubmissionSorts = EnumSubmissionSorts
@@ -312,6 +312,16 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected set sortDirection(sortDirection: { key: string, label: string }) {
     Submission.commit((state) => {
       state.sortDirection = sortDirection
+    })
+  }
+
+  protected get itemsPerPage() {
+    return Submission.$state.itemsPerPage
+  }
+
+  protected set itemsPerPage(itemsPerPage: number) {
+    Submission.commit((state) => {
+      state.itemsPerPage = itemsPerPage
     })
   }
 
@@ -364,10 +374,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   created() {
-    // TODO: save this to persistent state
-    // this.sortDirection = this.sortDirectionOptions[1] //desc
-    // this.sortBy = this.sortOptions[1] // date
-
     if (User.$state.isLoggedIn) {
       Submission.fetchSubmissions()
     }
@@ -415,23 +421,25 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected exportSubmissions() {
-    const parsedSubmissions: Partial<ISubmission>[] = this.filteredSubmissions.map((s) => {
+    const parsedSubmissions = this.filteredSubmissions.map((s) => {
       return {
-        title: s.title,
-        authors: s.authors,
-        repository: s.repository,
+        authors: s.authors.join('; '),
         date: s.date,
-        identifier: s.identifier,
+        title: s.title,
+        repository: s.repository,
         url: s.url,
         // metadata: s.metadata
       }
     })
 
+    const columnLabels = ['Authors', 'Publication Date', 'Title', 'Repository', 'URL']
+
+    const headerRow = columnLabels.join(',') + '\n'
     const rows = parsedSubmissions.map((s) => {
-      return Object.keys(s).map( key => s[key])
+      return Object.keys(s).map( key => `"${s[key]}"`)
     })
 
-    const csvContent = rows.map(c => c.join(",")).join("\n")
+    const csvContent = headerRow + rows.map(c => c.join(",")).join("\n")
 
     // Download as CSV
     const filename = `CZNet_submissions.csv`

@@ -63,6 +63,7 @@ export default class User extends Model {
 
     if (!this.isLoginListenerSet) {
       window.addEventListener("message", async (message) => {
+        console.info(`User: listening to login window...`)
         this.isLoginListenerSet = true // Prevents registering the listener more than once
         if (message.data.token) {
           CzNotification.toast({ 

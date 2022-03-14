@@ -1,5 +1,5 @@
 <template>
-  <div v-if="control.visible">
+  <div v-if="control.visible" class="cz-object" :class="{ 'is-invalid': control.errors && control.errors.length > 0}">
     <dispatch-renderer
       :visible="control.visible"
       :enabled="control.enabled"
@@ -9,6 +9,9 @@
       :renderers="control.renderers"
       :cells="control.cells"
     />
+    <div v-if="control.errors" class="ml-2 v-messages error--text" style="margin-top: -2rem;" :class="styles.control.error">
+      {{ control.errors }}
+    </div>
   </div>
 </template>
 
@@ -60,7 +63,7 @@ const controlRenderer = defineComponent({
       if (isEmpty(this.control.path)) {
         result.type = 'VerticalLayout'
       } else {
-        (result as GroupLayout).label  = this.control.label as string
+        (result as GroupLayout).label  = this.computedLabel as string
       }
       return result
     },

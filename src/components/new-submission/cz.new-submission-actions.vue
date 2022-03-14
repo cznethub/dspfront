@@ -27,7 +27,7 @@
 
         <div class="pa-4 has-bg-white">
           <ul v-for="(error, index) of errors" :key="index" class="text-subtitle-1">
-            <li><b>{{ error.dataPath.split('.').pop() }}</b> {{ error.message }}.</li>
+            <li><b>{{ getTitle(error) }}</b> {{ error.message }}.</li>
           </ul>
         </div>
       </v-menu>
@@ -49,6 +49,11 @@ export default class CzNewSubmissionActions extends Vue {
   @Prop() isSaving!: boolean
   @Prop() confirmText!: string
   @Prop() errors!: string[]
+
+  protected getTitle(error: any) {
+    const propName = error.dataPath.split('.').pop()
+    return error.schema[propName]?.title || error.dataPath
+  }
 }
 </script>
 

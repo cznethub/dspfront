@@ -108,6 +108,14 @@ p {
   max-width: 70rem;
 }
 
+.cz-object {
+  &.is-invalid {
+    & > fieldset > legend {
+      color: #ff5252;
+    }
+  }
+}
+
 .cz-fieldset {
   background-color: #fff;
   color: rgba(0,0,0,.87);
@@ -119,7 +127,8 @@ p {
   min-height: 2rem;
 
   &.is-invalid {
-    legend {
+    legend, 
+    & > fieldset > legend {
       color: #ff5252;
     }
   }

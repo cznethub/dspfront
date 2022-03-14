@@ -131,6 +131,7 @@ export default class Repository extends Model implements IRepository {
     if (!this.isAuthorizeListenerSet) {
       window.addEventListener("message", async (message) => {
         this.isAuthorizeListenerSet = true; // Prevents registering the listener more than once
+        console.info(`Repository: listening to authorization window...`)
 
         if (message.data.token) {
           activeRepository.commit((state) => {
@@ -145,7 +146,7 @@ export default class Repository extends Model implements IRepository {
         else {
           CzNotification.toast({ message: 'Failed to authorize repository' })
         }
-      }, { "once": true })
+      })
     }
   }
 

@@ -6,6 +6,7 @@ import {
   EnumSubmissionSorts,
   EnumSortDirections,
 } from "@/components/submissions/types"
+import { itemsPerPageArray } from '@/components/submissions/constants'
 
 // temporary workaround to circular dependecy error
 function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
@@ -24,6 +25,7 @@ function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
 export interface ISubmisionState {
   sortBy: { key: string, label: string },
   sortDirection: { key: string, label: string },
+  itemsPerPage: number
   isFetching: boolean
 }
 
@@ -47,6 +49,7 @@ export default class Submission extends Model implements ISubmission {
     return {
       sortBy: { key: 'date', label: EnumSubmissionSorts.date },
       sortDirection: { 'desc': '', label: EnumSortDirections.desc },
+      itemsPerPage: itemsPerPageArray[0],
       isFetching: false
     }
   }
