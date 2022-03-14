@@ -136,7 +136,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Ref, Watch } from "vue-property-decorator"
+import { Component, Vue } from "vue-property-decorator"
 import { setupRouteGuards } from "./router"
 import { Subscription } from "rxjs"
 import { DEFAULT_TOAST_DURATION } from "./constants"
@@ -158,7 +158,6 @@ import External from "./models/external.model"
   components: { CzFooter, CzLogin, CzAuthorize },
 })
 export default class App extends Vue {
-  // @Ref('appbar') appBar
   protected isLoading = true
   protected onToast!: Subscription
   protected onOpenDialog!: Subscription
@@ -168,11 +167,6 @@ export default class App extends Vue {
   protected loggedInSubject = new Subscription()
   protected authorizedSubject = new Subscription()
   protected isAppBarExtended = true
-
-  // @Watch('$refs.appBar.isExtended', { deep: true, immediate: true })
-  // onChanged(newVal) {
-  //   console.log(newVal)
-  // }
 
   mounted() {
     this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
