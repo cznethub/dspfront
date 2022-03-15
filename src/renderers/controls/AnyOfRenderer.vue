@@ -122,6 +122,7 @@ const controlRenderer = defineComponent({
     }
   },
   created() {
+    this.isAdded = !!(this.control.data)
   },
   computed: {
     subSchema(): JsonSchema {
