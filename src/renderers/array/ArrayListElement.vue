@@ -105,12 +105,14 @@ const listItem = defineComponent({
           onConfirm: () => {
             // @ts-ignore
             this.delete?.()
+            this.$emit('deleted')
           }
         })
       }
       else {
         // @ts-ignore
         this.delete?.()
+        this.$emit('deleted')
       }
     },
   }

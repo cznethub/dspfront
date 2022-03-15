@@ -31,6 +31,7 @@
       <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
         <array-list-element
           v-for="(item, index) of control.data"
+          @deleted="afterDelete"
           :isRequired="isRequired(item)"
           :key="index"
           :styles="styles"
@@ -111,14 +112,18 @@ import {
   rendererProps,
   useJsonFormsArrayControl,
   RendererProps,
+  useJsonFormsControl,
 } from '@jsonforms/vue2'
 import { useVuetifyArrayControl } from '@jsonforms/vue2-vuetify'
 import { useVanillaArrayControl } from "@jsonforms/vue2-vanilla"
 import { Drag, Drop, DropList } from 'vue-easy-dnd'
 import { ErrorObject } from 'ajv';
-import { createControlElement } from '@jsonforms/core/lib/generators/uischema';
+import { createControlElement } from '@jsonforms/core/lib/generators/uischema'
+import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import ArrayListElement from './ArrayListElement.vue'
 import findIndex from 'lodash/findIndex'
+
+const isEqual = require('lodash.isequal')
 
 const controlRenderer = defineComponent({
   name: 'array-control-renderer',
@@ -133,11 +138,17 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>(),
   },
   setup(props: RendererProps<ControlElement>) {
-    return useVuetifyArrayControl(
-      useVanillaArrayControl(
-        useJsonFormsArrayControl(props)
+    return {
+      ...useVuetifyControl(
+        useJsonFormsControl(props),
+        (value) => value || undefined
+      ),  // Needed for handleChange function
+      ...useVuetifyArrayControl(
+        useVanillaArrayControl(
+          useJsonFormsArrayControl(props),
+        ),
       )
-    )
+    }
   },
   created() {
     // console.log(this.control)
@@ -148,7 +159,9 @@ const controlRenderer = defineComponent({
       if (!this.control.data) {
         this.control.data = []
       }
-      if (!this.control.data.includes(item)) {
+      // We most use isEqual to compare objects instead of Arra.includes
+      const isIncluded = this.control.data.some(existingItem => isEqual(item, existingItem))
+      if (!isIncluded) {
         this.addItem(
           this.control.path,
           item
@@ -233,6 +246,12 @@ const controlRenderer = defineComponent({
     isRequired(item) {
       // @ts-ignore
       return this.control.schema.contains?.enum?.includes(item)
+    },
+    afterDelete() {
+      if (this.control.data.length === 0) {
+        // TODO: find how to import this
+        this.handleChange(this.control.path, undefined)
+      }
     }
   },
 })
