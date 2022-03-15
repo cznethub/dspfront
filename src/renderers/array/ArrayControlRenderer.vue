@@ -120,6 +120,8 @@ import { createControlElement } from '@jsonforms/core/lib/generators/uischema';
 import ArrayListElement from './ArrayListElement.vue'
 import findIndex from 'lodash/findIndex'
 
+const isEqual = require('lodash.isequal')
+
 const controlRenderer = defineComponent({
   name: 'array-control-renderer',
   components: {
@@ -148,7 +150,9 @@ const controlRenderer = defineComponent({
       if (!this.control.data) {
         this.control.data = []
       }
-      if (!this.control.data.includes(item)) {
+      // We most use isEqual to compare objects instead of Arra.includes
+      const isIncluded = this.control.data.some(existingItem => isEqual(item, existingItem))
+      if (!isIncluded) {
         this.addItem(
           this.control.path,
           item
