@@ -1,232 +1,480 @@
 <template>
-  <div class="cz-new-submission">
-    <h1 class="md-display-1">New Submission</h1>
-    <hr>
-    <section class="section">
-      <div class="container">
-        <div class="md-layout md-alignment-center-space-between">
-          <img :src="activeRepository.get().logoSrc" :alt="activeRepository.get().name" style="width: 20rem;">
-          <div>
-            <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
-            <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
-              {{ isSaving ? 'Saving...' : 'Save' }}
-            </md-button>
+  <v-container id="cz-new-submission" class="cz-new-submission px-4">
+    <h1 class="text-h4">{{ formTitle }}</h1>
+    <v-divider class="mb-4"></v-divider>
+    <v-alert v-if="!isLoading && wasLoaded" class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
+      <b>Instructions</b>: Fill in the required fields (marked with * and highlighted in red).
+      Press the "Save" button to upload your
+      submission.
+
+      <v-img
+        class="my-4"
+        :src="activeRepository.get().logoSrc"
+        :alt="activeRepository.get().name"
+        width="200px"
+        contain
+      />
+    </v-alert>
+
+    <cz-new-submission-actions
+      v-if="!isLoading && wasLoaded"
+      :isEditMode="isEditMode"
+      :isDevMode="isDevMode"
+      :isSaving="isSaving"
+      :confirmText="submitText"
+      :errors="errors"
+      :hasUnsavedChanges="hasUnsavedChanges"
+      @show-ui-schema="onShowUISchema"
+      @save-and-finish="onSaveAndFinish"
+      @save="onSave"
+      @cancel="goToSubmissions"
+    />
+
+    <div>
+      <div v-if="!isLoading">
+        <cz-folder-structure
+          v-if="!isExternal && wasLoaded"
+          ref="folderStructure"
+          v-model="uploads"
+          @upload="uploadFiles($event)"
+          :rootDirectory.sync="rootDirectory"
+          :allowFolders="repoMetadata[repository].hasFolderStructure"
+          :isEditMode="isEditMode"
+          :identifier="identifier"
+        />
+
+        <json-forms
+          v-if="wasLoaded"
+          @change="onChange"
+          :disabled="isSaving"
+          :data="data"
+          :renderers="Object.freeze(renderers)"
+          :schema="schema"
+          :uischema="uischema"
+          ref="form"
+        />
+      </div>
+
+      <div v-else class="d-flex justify-center mt-8">
+        <v-progress-circular indeterminate color="primary" />
+      </div>
+
+      <cz-new-submission-actions
+        v-if="!isLoading && wasLoaded"
+        :isEditMode="isEditMode"
+        :isDevMode="isDevMode"
+        :isSaving="isSaving"
+        :confirmText="submitText"
+        :errors="errors"
+        :hasUnsavedChanges="hasUnsavedChanges"
+        @show-ui-schema="onShowUISchema"
+        @save-and-finish="onSaveAndFinish"
+        @save="onSave"
+        @cancel="goToSubmissions"
+      />
+    </div>
+
+    <v-container v-if="!isLoading && !wasLoaded">
+      <v-skeleton-loader type="actions, article, actions"></v-skeleton-loader>
+    </v-container>
+
+    <v-dialog v-if="isDevMode" v-model="showUISchema">
+      <v-card>
+        <v-card-title> UI Schema </v-card-title>
+        <v-card-text>
+          <div class="schema-wrapper">
+            <json-viewer
+              :value="usedUISchema"
+              :expand-depth="5"
+              copyable
+              expanded
+              sort
+            />
           </div>
-        </div>
-        <p><b>Instructions</b>: Fill in the required fields (marked with *). Press the "Save" button to save your upload for later editing. When the form is complete, click the "Submit" button to upload your submission to the repository.</p>
-      </div>
-    </section>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="showUISchema = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
-    <section class="section">
-      <div class="container" style="min-height: 20rem;">
-        <b-loading :is-full-page="false" :active="isLoading" />
-
-        <div v-if="!isLoading" style="max-width: 60rem;">
-          <b-field>
-            <b-upload v-model="dropFiles" multiple drag-drop expanded>
-              <section class="section">
-                <div class="content has-text-centered">
-                  <p>
-                    <b-icon icon="upload" size="is-large"></b-icon>
-                  </p>
-                  <p class="is-size-4">Drop your files here or click to upload</p>
-                </div>
-              </section>
-            </b-upload>
-          </b-field>
-
-          <div class="tags">
-            <span v-for="(file, index) in dropFiles" :key="index" class="tag is-primary is-size-4">
-              {{ file.name }}
-              <button class="delete is-small" type="button" @click="deleteDropFile(index)"></button>
-            </span>
-          </div>
-
-          <json-forms
-            :disabled="isSaving"
-            :data="data"
-            :renderers="renderers"
-            :schema="schema"
-            :uischema="uischema"
-            @change="onChange"
-            ref="form"
-          />
-        </div>
-        <div class="has-space-top-2x md-layout md-alignment-center-right">
-          <md-button v-if="isDevMode" @click="onShowUISchema()" class="md-raised">UI Schema</md-button>
-          <md-button class="md-raised md-accent" @click="save()" :disabled="isSaving">
-            {{ isSaving ? 'Saving...' : 'Save' }}
-          </md-button>
-        </div>
-      </div>
-    </section>
-
-    <md-dialog v-if="isDevMode" :md-active.sync="showUISchema" :md-fullscreen="true">
-      <md-dialog-title>UI Schema</md-dialog-title>
-      <div class="schema-wrapper">
-        <json-viewer
-          :value="usedUISchema"
-          :expand-depth="5"
-          copyable
-          expanded
-          sort />
-      </div>
-    </md-dialog>
-  </div>
+    <v-dialog
+      :value="isSaving"
+      no-click-animation
+      hide-overlay
+      persistent
+      width="300"
+      attach="#cz-new-submission"
+    >
+      <v-card
+        class="py-4"
+        color="primary"
+        dark
+      >
+        <v-card-text >
+          <p>Saving...</p>
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          ></v-progress-linear>
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-overlay class="backdrop" absolute v-if="isSaving" />
+  </v-container>
 </template>
 
 <script lang="ts">
-  import { Component, Vue, Ref } from 'vue-property-decorator'
-  import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
-  import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
-  import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
-  import { CzRenderers } from '@/renderers/renderer.vue'
-  import { EnumRepositoryKeys } from '../submissions/types'
-  import JsonViewer from 'vue-json-viewer'
-  import Repository from '@/models/repository.model'
-  import HydroShare from '@/models/hydroshare.model'
-  import Zenodo from '@/models/zenodo.model'
+import { Component, Ref } from "vue-property-decorator"
+import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
+import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
+import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
+import { CzRenderers } from "@/renderers/renderer.vue"
+import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types"
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { repoMetadata } from "../submit/constants"
+import { IFile, IFolder } from '@/components/new-submission/types'
+import { ErrorObject } from 'ajv'
+import { Subscription } from "rxjs"
+import JsonViewer from "vue-json-viewer"
+import Repository from "@/models/repository.model"
+import CzNotification from "@/models/notifications.model"
+import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
+import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
+import User from "@/models/user.model"
+// import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
-  const sprintf = require('sprintf-js').sprintf
+const sprintf = require("sprintf-js").sprintf
 
-  const renderers = [
-    ...vanillaRenderers,
-    ...CzRenderers,
-  ];
+const renderers = [
+  ...vanillaRenderers, 
+  ...CzRenderers,
+  // ...vuetifyRenderers
+]
 
-  @Component({
-    name: 'cz-new-submission',
-    components: { JsonForms, JsonViewer },
-  })
-  export default class CzNewSubmission extends Vue {
-    @Ref('form') jsonForm!: typeof JsonForms 
-    protected isLoading = false
-    protected isSaving = false
-    protected recordId = ''
-    protected data: any = {}
-    protected links: any = {}
-    protected renderers: JsonFormsRendererRegistryEntry[] = renderers
-    protected dropFiles: File[] = []
-    protected showUISchema = false
-    protected usedUISchema = {}
+@Component({
+  name: "cz-new-submission",
+  components: { JsonForms, JsonViewer, CzFolderStructure, CzNewSubmissionActions },
+})
+export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  @Ref("form") jsonForm!: typeof JsonForms
+  // @Ref("folderStructure") folderStructure!: InstanceType<typeof CzFolderStructure>
 
-    protected get schema() {
-      return this.activeRepository?.get()?.schema
+  protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '', path: '' }
+  protected isLoading = false
+  protected isLoadingInitialFiles = false
+  protected isSaving = false
+  protected identifier = ""
+  protected data: any = {}
+  protected links: any = {}
+  protected renderers: JsonFormsRendererRegistryEntry[] = renderers
+  protected showUISchema = false
+  protected usedUISchema = {}
+  protected repoMetadata = repoMetadata
+  protected uploads: (IFile | IFolder)[] = []
+  protected errors: ErrorObject[]  = []
+  protected repositoryRecord: any = null
+  protected authorizedSubject = new Subscription()
+  protected timesChanged = 0
+
+  protected get isEditMode() {
+    return this.$route.params.id !== undefined
+  }
+
+  protected get repository() {
+    return this.$route.params.repository
+  }
+
+  protected get schema() {
+    return this.activeRepository?.get()?.schema
+  }
+
+  protected get uischema() {
+    return this.activeRepository?.get()?.uischema || undefined
+  }
+
+  protected get schemaDefaults() {
+    return this.activeRepository?.get()?.schemaDefaults
+  }
+
+  protected get isDevMode() {
+    return false
+    // TODO: uncomment when this env variable is properly setup in production
+    // return process.env.NODE_ENV === "development"
+  }
+
+  protected get isExternal() {
+    return this.repoMetadata[this.repository].isExternal
+  }
+
+  protected get formTitle() {
+    if (this.isExternal) {
+      return 'Register Dataset from External Repository'
     }
+    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`
+  }
 
-    protected get uischema() {
-      return this.activeRepository?.get()?.uischema || undefined
-    }
+  protected get submitText() {
+    return this.isEditMode ? "Save Changes" : "Save"
+  }
 
-    protected get schemaDefaults() {
-      return this.activeRepository?.get()?.schemaDefaults
-    }
+  protected get wasLoaded() {
+    return this.isEditMode
+      ? !!this.repositoryRecord
+      : true
+  }
 
-    protected get isDevMode() {
-      return process.env.NODE_ENV === 'development'
-    }
+  protected get hasUnsavedChanges(): boolean {
+    return User.$state.hasUnsavedChanges
+  }
 
-    // TODO: add to a mixin and reuse
-    protected get activeRepository() {
-      const key = Repository.$state.submittingTo
-      switch (key) {
-        case EnumRepositoryKeys.hydroshare: return HydroShare
-        case EnumRepositoryKeys.zenodo: return Zenodo
-        default: return Zenodo
+  protected set hasUnsavedChanges(value: boolean) {
+    User.commit((state) => {
+      state.hasUnsavedChanges = value
+    })
+  }
+
+  created() {
+    this.init()
+  }
+
+  beforeDestroy() {
+    this.authorizedSubject.unsubscribe()
+  }
+
+  init() {
+    this.isLoading = true
+    this.data = this.schemaDefaults
+    this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
+    this.hasUnsavedChanges = false
+
+    const routeRepositoryKey = this.$route.params
+      .repository as EnumRepositoryKeys
+
+    if (
+      !this.activeRepository ||
+      this.activeRepository.get()?.key !== routeRepositoryKey
+    ) {
+      // Check that the key from the url is actually a EnumRepositoryKeys
+      if (EnumRepositoryKeys[routeRepositoryKey]) {
+        this.setActiveRepository(routeRepositoryKey)
       }
     }
 
-    created() {
-      this.data = this.schemaDefaults
-      const routeRepositoryKey = this.$route.params.repository as EnumRepositoryKeys
-      
-      if (!this.activeRepository || this.activeRepository.get()?.key !== routeRepositoryKey) {
-        // Check that the key from the url is actually a EnumRepositoryKeys
-        if (EnumRepositoryKeys[routeRepositoryKey]) {
-          this.setActiveRepository(routeRepositoryKey)
-        }
-      }
-    }
-
-    protected onShowUISchema() {
-      if (this.jsonForm) {
-        this.usedUISchema = this.jsonForm.uischemaToUse
-      }
-      else {
-        this.usedUISchema = {}  // default
-      }
-      this.showUISchema = true
-    }
-
-    protected async save() {
-      this.isSaving = true
-
-      // If first time saving, create a new record
-      if (!this.recordId) {
-        console.info('CzNewSubmission: creating new record...')
-        const submission = await this.activeRepository?.createSubmission(this.data)
-
-        if (submission?.recordId) {
-          this.data = {
-            ...this.data,
-            ...submission?.formMetadata.metadata,
-          }
-          this.links = submission?.formMetadata.links // Has useful links, i.e: bucket for upload
-          this.recordId = submission?.recordId
-        }
-      }
-      else {
-        this.activeRepository?.updateMetadata(this.data, this.recordId)
-      }
-
-      // If files have been selected for upload, upload them
-      if (this.dropFiles.length) {
-        const url = sprintf(this.activeRepository?.get()?.urls?.fileCreateUrl, this.recordId) 
-        this.activeRepository?.uploadFiles(url, this.dropFiles)
-      }
-
-      this.isSaving = false
-    }
-
-    protected deleteDropFile(index) {
-      this.dropFiles.splice(index, 1);
-    }
-
-    protected onChange(event: JsonFormsChangeEvent) {
-      this.data = event.data
-    }
-
-    private setActiveRepository(key: EnumRepositoryKeys) {
-      Repository.commit((state) => {
-        state.submittingTo = key
-      })
+    if (this.isEditMode) {
+      const identifier = this.$route.params.id
+      this.identifier = identifier
+      this.loadExistingSubmission()
+    } else {
+      this.isLoading = false
     }
   }
+
+  protected goToSubmissions() {
+    // TODO: add discard confirm dialog if the form was changed
+    this.$router.push({
+      name: "submissions",
+    })
+  }
+
+  protected async loadExistingSubmission() {
+    // TODO: these 2 calls can be performed in parallel
+    console.info("CzNewSubmission: reading existing record...")
+    this.repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
+
+    // TODO: all of this should be cleaned in the backend. Make fields with null values undefined
+    if (this.repositoryRecord) {
+      Object.keys(this.repositoryRecord).map((key) => {
+        if (this.repositoryRecord[key] === null) {
+          this.repositoryRecord[key] = undefined
+        }
+      })
+    }
+
+    console.info("CzNewSubmission: reading existing files...")
+    if (!this.isExternal && this.repositoryRecord) {
+      const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
+      this.rootDirectory.children = initialStructure
+    }
+    this.isLoadingInitialFiles = false
+
+    if (this.repositoryRecord) {
+      this.data = {
+        ...this.data,
+        ...this.repositoryRecord,
+      }
+      // this.links = repositoryRecord?.formMetadata.links // Has useful links, i.e: bucket for upload
+    }
+    else {
+      // Try again when user has authorized the repository
+      this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
+        this.isLoading = true
+        await this.loadExistingSubmission()
+      })
+    }
+
+    this.isLoading = false
+  }
+
+  protected onShowUISchema() {
+    if (this.jsonForm) {
+      this.usedUISchema = this.jsonForm.uischemaToUse;
+    } else {
+      this.usedUISchema = {} // default
+    }
+    this.showUISchema = true
+  }
+
+  protected async onSaveAndFinish() {
+    if (this.hasUnsavedChanges) {
+      const wasSaved = await this._save()
+
+      if (wasSaved) {
+        this.hasUnsavedChanges = false
+        this.$router.push({ name: "submissions" })
+      }
+    }
+    // If nothing to save, just redirect to submissions page
+    else {
+      this.$router.push({ name: "submissions" })
+    }
+  }
+
+  protected async onSave() {
+    const wasSaved = await this._save()
+    if (wasSaved) {
+      this.hasUnsavedChanges = false
+
+      if (!this.isEditMode) {
+        // If creating, redirect to the edit page
+        this.$router.push({
+          name: "submit.repository",
+          params: { repository: this.activeRepository.entity, id: this.identifier },
+        })
+        this.init()
+      }
+    }
+    this.isSaving = false
+  }
+
+  private async _save() {
+    this.isSaving = true
+    let submission
+
+    // If first time saving, create a new record
+    if (!this.identifier) {
+      console.info("CzNewSubmission: creating new record...")
+      try {
+        submission = await this.activeRepository?.createSubmission(this.data, this.repository)
+      } catch (e) {
+        console.log(e)
+        CzNotification.toast({ message: 'Failed to create submission' })
+        this.isSaving = false
+        return false
+      }
+
+      if (submission?.identifier) {
+        // this.data = {
+        //   ...this.data,
+        //   ...submission?.formMetadata.metadata,
+        // };
+        // this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
+        // TODO: getting a full url as identifier instead of just the identifier
+        // I.e: http://beta.hydroshare.org/resource/99b2bc413274446185eb489ed312de45
+        // Parsing it for now...
+        // HydroShare
+        this.identifier = submission.identifier
+      }
+    } else {
+      console.info("CzNewSubmission: Saving to existing record...")
+      await this.activeRepository?.updateSubmission(
+        this.identifier,
+        this.data
+      )
+    }
+
+    // If we are in edit mode, files have already been saved
+    if (!this.isEditMode) {
+      await this.uploadFiles(this.uploads)
+    }
+
+    // Indicate that changes have been saved
+    CzNotification.toast({
+      message: this.isEditMode
+        ? "Your changes have been saved"
+        : "Your submission has been saved!",
+    })
+
+    return true
+  }
+
+  protected onChange(event: JsonFormsChangeEvent) {
+    // Pristine/dirty checks are currently not supported in jsonforms.
+    // We use onChange event for now by ignoring the two times it is called when the form is rendered.
+    // https://spectrum.chat/jsonforms/general/pristine-and-dirty-checking~2ece93ab-7783-41cb-8ba1-804414eb1da4?m=MTU2MzM0OTY0NDQxNg==
+    if (this.timesChanged <= 2) {
+      this.timesChanged = this.timesChanged + 1
+    }
+
+    this.hasUnsavedChanges = this.timesChanged > 2
+    this.errors = event.errors || []
+    this.data = event.data
+  }
+
+  protected async uploadFiles(files: (IFolder | IFile)[]) {
+    const repoUrls: IRepositoryUrls | undefined  = this.activeRepository?.get()?.urls
+
+    if (files.length && repoUrls) {
+       const url = sprintf(
+        repoUrls.fileCreateUrl,
+        this.identifier
+      )
+
+      const createFolderUrl = sprintf(
+        repoUrls.folderCreateUrl,
+        this.identifier,
+        '%s'  // replaced file by file inside repo model
+      )
+      await this.activeRepository?.uploadFiles(url, files, createFolderUrl)
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-  .cz-new-submission {
-    padding: 2rem;
-  }
-  /deep/ .vertical-layout-item {
-    margin: 1rem 0;
+// .cz-new-submission {
+// }
 
-    select {
-      width: 100%;
-    }
-  }
+.schema-wrapper {
+  max-width: 100%;
+  height: 0;
+  flex: 1;
+  overflow: auto;
+  border-top: 1px solid #ddd;
+  min-height: 75vh;
+}
 
-  .schema-wrapper {
-    width: 100rem;
-    max-width: 100%;
-    height: 0;
-    flex: 1;
-    overflow: auto;
-    border-top: 1px solid #DDD;
-    min-height: 75vh;
+.form-controls {
+  button + button {
+    margin-left: 1rem;
   }
+}
 
-  .md-dialog /deep/.md-dialog-container {
-    max-width: 100rem;
-  }
+::v-deep .v-overlay.backdrop {
+  z-index: 4 !important;
+}
+
+::v-deep .v-label--active {
+  transform: translateY(-26px) scale(1) !important;
+  background-color: #FFF;
+  padding-right: 0.2rem;
+}
+
+::v-deep .horizontal-layout {
+  gap: 2rem;
+}
 </style>

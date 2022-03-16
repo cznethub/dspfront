@@ -1,8 +1,9 @@
-import { DEFAULT_TOAST_DURATION } from '@/constants'
 import { router } from '@/router'
 import { Model } from '@vuex-orm/core'
-import { ToastProgrammatic } from 'buefy'
+import { Subject } from 'rxjs'
+import { RawLocation } from 'vue-router'
 import axios from "axios"
+import CzNotification from './notifications.model'
 
 export interface ICzCurrentUserState {
   orcid: string
@@ -13,12 +14,15 @@ export interface IUserState {
   isLoggedIn: boolean
   orcid: string
   orcidAccessToken: string
-  next: string
+  next: string,
+  hasUnsavedChanges: boolean
 }
 
 export default class User extends Model {
   static entity = 'users'
-  
+  static isLoginListenerSet = false
+  static logInDialog$ = new Subject<RawLocation | undefined>()
+  static loggedIn$ = new Subject<void>()
   
   static fields () {
     return {}
@@ -41,39 +45,64 @@ export default class User extends Model {
       isLoggedIn: false,
       orcid: '',
       orcidAccessToken: '',
-      next: ''
+      next: '',
+      hasUnsavedChanges: false
+    }
+  }
+
+  static openLogInDialog(redirectTo?: RawLocation) {
+    this.logInDialog$.next(redirectTo)
+  }
+
+  static async logIn(callback?: () => any) {
+    window.open(
+      `${window.location.origin}/api/login?window_close=True`,
+      "_blank",
+      "location=1,status=1,scrollbars=1, width=800,height=800"
+    )
+
+    if (!this.isLoginListenerSet) {
+      window.addEventListener("message", async (message) => {
+        console.info(`User: listening to login window...`)
+        this.isLoginListenerSet = true // Prevents registering the listener more than once
+        if (message.data.token) {
+          CzNotification.toast({ 
+            message: 'You have logged in!', 
+          })
+          await User.commit((state) => {
+            state.isLoggedIn = true
+            state.orcid = message.data.orcid
+            state.orcidAccessToken = message.data.token
+          })
+          document.cookie = `Authorization=Bearer ${message.data.token}; expires=${message.data.expiresIn}; path=/`
+          this.loggedIn$.next()
+          if (callback) {
+            callback()
+          }
+        }
+        else {
+          CzNotification.toast({ message: 'Failed to Log In' })
+        }
+
+      }, { "once": true })
     }
   }
 
   static async checkAuthorization() {
     try {
-      const response = await axios.get("/api")
+      const response = await axios.get('/api', { 
+        params: { "access_token": User.$state.orcidAccessToken }
+      })
       
-      if (response.status === 200) {
-        if (!User.$state.isLoggedIn) {
-          // Just logged in
-          ToastProgrammatic.open({
-            message: 'You have logged in!',
-            type: 'is-success',
-            duration: DEFAULT_TOAST_DURATION
-          })
-
-          await User.commit((state) => {
-            state.isLoggedIn = true
-            state.orcid = response.data.orcid
-            state.orcidAccessToken = response.data.orcid_access_token
-          })
-        }
-      }
-      else {
-        
+      if (response.status !== 200) {
         // Something went wrong, authorization may be invalid
         User.commit((state) => {
           state.isLoggedIn = false
         })
       }
     }
-    catch(e) {
+    catch(e: any) {
+      // console.log(e.response.status)
       User.commit((state) => {
         state.isLoggedIn = false
       })
@@ -82,18 +111,20 @@ export default class User extends Model {
 
   static async logOut() {
     try {
-      const response = await axios.get("/api/logout")
-      if (response.status === 200) {
-        await User.commit((state) => {
-          state.isLoggedIn = false
-        })
-        if (router.currentRoute.meta?.hasLoggedInGuard) {
-          router.push({ path: '/' })
-        }
-        ToastProgrammatic.open({
-          message: 'You have logged out!',
-          duration: DEFAULT_TOAST_DURATION
-        })
+      await axios.get('/api/logout')  // We don't care about the response status. We at least log the user out in the frontend.
+      await User.commit((state) => {
+        state.isLoggedIn = false,
+        // state.orcid = ''
+        state.orcidAccessToken = ''
+      })
+      this.isLoginListenerSet = false
+
+      CzNotification.toast({ 
+        message: 'You have logged out!', 
+      })
+
+      if (router.currentRoute.meta?.hasLoggedInGuard) {
+        router.push({ path: '/' })
       }
     }
     catch(e) {

@@ -1,174 +1,374 @@
 <template>
-  <div class="page-container">
-    <md-app md-waterfall md-mode="overlap">
-      <md-app-toolbar class="md-primary md-layout md-alignment-top-center">
-        <div class="md-toolbar-row md-layout-item content">
-          <router-link :to="{ path: `/` }">
-            <img class="logo" :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network logo">
-          </router-link>
-          <div class="spacer"></div>
-          <div id="nav-items" class="has-space-right md-elevation-2">
-            <router-link to="/">
-              <md-button :class="{'is-active md-raised md-accent': isPathActive('/')}" :md-ripple="false">Home</md-button>
-            </router-link>
-            <router-link v-for="path of paths" :key="path.to" :to="path.to">
-              <md-button :class="{'is-active md-raised md-accent': isPathActive(path.to)}" :md-ripple="false">{{ path.label }}</md-button>
-            </router-link>
-          </div>
-          <router-link v-if="!isLoggedIn" to="/login"><md-button class="md-raised">Log In</md-button></router-link>
-          <md-button v-else class="md-raised" @click="logOut()">Log Out</md-button>
-        </div>
-      </md-app-toolbar>
+  <v-app app>
+    <v-app-bar ref="appBar" id="app-bar" color="blue-grey lighten-4" prominent elevate-on-scroll shrink-on-scroll fixed app>
+      <v-container class="d-flex align-end full-height">
+        <router-link
+          :to="{ path: `/` }"
+          :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
+          tag="img"
+          class="logo"
+          alt="Critical Zone Network logo"
+        >
+        </router-link>
+        <div class="spacer"></div>
+        <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
+          <v-btn to="/" :elevation="0" active-class="is-active">Home</v-btn>
+          <v-btn v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
+        </v-card>
 
-      <md-app-content id="main-content" class="md-layout-item">
-        <router-view v-if="!isLoading" name="content" />
-      </md-app-content>
+        <template v-if="!$vuetify.breakpoint.mdAndDown">
+          <v-btn v-if="!isLoggedIn" @click="openLogInDialog()" rounded>Log In</v-btn>
+          <v-btn v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
+        </template>
 
-      <md-app-content id="footer">
-        <router-view name="footer" /> 
-      </md-app-content>
-    </md-app>
+        <v-app-bar-nav-icon @click.stop="showMobileNavigation = true" v-if="$vuetify.breakpoint.mdAndDown" />
+      </v-container>
+    </v-app-bar>
 
-    <md-snackbar :md-position="position" :md-duration="isInfinity ? Infinity : duration" :md-active.sync="showSnackbar" md-persistent>
-      <span>Connection timeout. Showing limited messages!</span>
-      <md-button class="md-primary" @click="showSnackbar = false">Retry</md-button>
-    </md-snackbar>
+    <v-main app>
+      <v-container id="main-container">
+        <v-sheet :elevation="$route.meta.hideMainSheet ? 0 : 2">
+          <router-view v-if="!isLoading" name="content" />
+        </v-sheet>
+      </v-container>
+    </v-main>
 
-    <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
-  </div>
+    <v-footer>
+      <router-view name="footer" />
+    </v-footer>
+
+    <v-navigation-drawer class="mobile-nav-items" v-model="showMobileNavigation" temporary app>
+      <v-list nav dense class="nav-items">
+        <v-list-item-group class="text-body-1">
+          <v-list-item @click="showMobileNavigation = false" to="/" active-class="is-active">
+            <v-icon class="mr-2">mdi-home</v-icon>
+            <span>Home</span>
+          </v-list-item>
+
+          <v-list-item
+            v-for="path of paths"
+            :key="path.to"
+            :to="path.to"
+            @click="showMobileNavigation = false"
+            active-class="is-active"
+          >
+            <v-icon class="mr-2">{{ path.icon }}</v-icon>
+            <span >{{ path.label }}</span>
+          </v-list-item>
+        </v-list-item-group>
+
+        <v-divider class="my-4"></v-divider>
+
+        <v-list-item-group class="text-body-1">
+          <v-list-item v-if="!isLoggedIn" @click="openLogInDialog(); showMobileNavigation = false">
+            <v-icon class="mr-2">mdi-login</v-icon>
+            <span>Log In</span>
+          </v-list-item>
+
+          <v-list-item v-else @click="logOut()">
+            <v-icon class="mr-2">mdi-logout</v-icon>
+            <span>Log Out</span>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+    </v-navigation-drawer>
+
+    <v-snackbar
+      v-model="snackbar.isActive"
+      :timeout="snackbar.isInfinite ? -1 : snackbar.duration"
+    >
+      <span>{{ snackbar.message }}</span>
+
+      <template v-slot:action="{ attrs }">
+        <v-btn
+          @click="snackbar.isActive = false"
+          v-bind="attrs"
+          >Dismiss</v-btn
+        >
+      </template>
+    </v-snackbar>
+
+    <v-dialog
+      v-model="dialog.isActive"
+      persistent
+      width="500"
+    >
+      <v-card>
+        <v-card-title>{{ dialog.title }}</v-card-title>
+        <v-card-text>{{ dialog.content }}</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            @click="
+              dialog.isActive = false;
+              dialog.onCancel();
+            "
+            color="green darken-1"
+            text
+          >
+            {{ dialog.cancelText }}
+          </v-btn>
+
+          <v-btn
+            @click="
+              dialog.isActive = false;
+              dialog.onConfirm();
+            "
+            color="green darken-1"
+            text
+          >
+            {{ dialog.confirmText }}
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-dialog v-model="logInDialog.isActive" width="500">
+      <cz-login @cancel="logInDialog.isActive = false" @logged-in="logInDialog.onLoggedIn"></cz-login>
+    </v-dialog>
+
+    <v-dialog v-model="authorizeDialog.isActive" width="500">
+      <cz-authorize @authorized="authorizeDialog.onAuthorized" :repo="authorizeDialog.repo"></cz-authorize>
+    </v-dialog>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+  </v-app>
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
-  import { setupRouteGuards } from './router'
-  import CzFooter from '@/components/base/cz.footer.vue'
-  import CzHeaderNav from '@/components/base/cs.header-nav.vue'
-  import User from '@/models/user.model'
-  import Zenodo from '@/models/zenodo.model'
-  import HydroShare from './models/hydroshare.model'
-  
-  @Component({
-    name: 'app',
-    components: { CzFooter, CzHeaderNav },
-  })
-  export default class App extends Vue {
-    protected isLoading = true
+import { Component, Vue } from "vue-property-decorator"
+import { setupRouteGuards } from "./router"
+import { Subscription } from "rxjs"
+import { DEFAULT_TOAST_DURATION } from "./constants"
+import { RawLocation } from "vue-router"
+import { EnumRepositoryKeys } from "./components/submissions/types"
+import CzNotification, { IDialog, IToast } from "./models/notifications.model"
+import CzFooter from "@/components/base/cz.footer.vue"
+import CzLogin from "@/components/account/cz.login.vue"
+import CzAuthorize from "@/components/authorize/cz.authorize.vue"
+import User from "@/models/user.model"
+import Zenodo from "@/models/zenodo.model"
+import HydroShare from "./models/hydroshare.model"
+import Submission from "./models/submission.model"
+import Repository from "./models/repository.model"
+import External from "./models/external.model"
 
-    protected showSnackbar = false
-    protected position = 'center'
-    protected duration = 4000
-    protected isInfinity = false
+@Component({
+  name: "app",
+  components: { CzFooter, CzLogin, CzAuthorize },
+})
+export default class App extends Vue {
+  protected isLoading = true
+  protected onToast!: Subscription
+  protected onOpenDialog!: Subscription
+  protected onOpenLogInDialog!: Subscription
+  protected onOpenAuthorizeDialog!: Subscription
+  protected showMobileNavigation = false
+  protected loggedInSubject = new Subscription()
+  protected authorizedSubject = new Subscription()
+  protected isAppBarExtended = true
 
-    protected paths = [
-      { to: '/submissions', label: 'My Submissions'},
-      { to: '/resources', label: 'Resources'},
-      { to: '/submit', label: 'Submit Data'},
-      { to: '/about', label: 'About'},
-      { to: '/contact', label: 'Contact'},
-    ]
-
-    protected get isLoggedIn() {
-      return User.$state.isLoggedIn
-    }
-
-    protected logOut() {
-      User.logOut()
-    }
-
-    protected isPathActive(path: string) {
-      const matchedRoute = this.$router.match(path)
-      const isActive = this.$route.matched.some(r => r.name === matchedRoute.name)
-
-      if (isActive) {
-        return true
-      }
-      // Check if the route is active pending a redirect
-      else if (this.$router.currentRoute.query.next) {
-        const matchedNextRoute = this.$router.match(this.$router.currentRoute.query.next as string)
-        return matchedNextRoute.name === matchedRoute.name
-      }
-
-      return false  // default
-    }
-
-    async created() {
-      document.title = 'CZ Hub'
-      
-      // Check for Authorization cookie instead. 
-      // const isAuthorized = this.$cookies.get('Authorization')
-
-      // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
-      // Reproducible if the server is restarted
-      
-      // if (isAuthorized && !User.$state.isLoggedIn) {
-      await User.checkAuthorization()
-      // Guards are setup after checking authorization because they depend on user logged in status
-      setupRouteGuards()
-      // }
-      
-      if (User.$state.isLoggedIn) {
-        await Promise.all([
-          Zenodo.init(),
-          HydroShare.init()
-        ])
-      }
-
-      this.isLoading = false
-    }
+  mounted() {
+    this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
+      this.isAppBarExtended = newValue > oldValue
+    })
   }
+
+  protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
+    message: "",
+    duration: DEFAULT_TOAST_DURATION,
+    position: "center",
+    isActive: false,
+    isInfinite: false,
+    // isPersistent: false,
+  }
+
+  protected dialog: IDialog & { isActive: boolean } = {
+    title: "",
+    content: "",
+    confirmText: "",
+    cancelText: "",
+    isActive: false,
+    onConfirm: () => {},
+    onCancel: () => {},
+  }
+
+  protected logInDialog: any & { isActive: boolean } = {
+    isActive: false,
+    onLoggedIn: () => {},
+    onCancel: () => {},
+  }
+
+  protected authorizeDialog: any & { isActive: boolean } = {
+    isActive: false,
+    repo: '',
+    onAuthorized: () => {},
+    onCancel: () => {},
+  }
+
+  protected paths = [
+    { to: "/submissions", label: "My Submissions", icon: "mdi-bookmark-multiple" },
+    { to: "/resources", label: "Resources", icon: "mdi-library" },
+    { to: "/submit", label: "Submit Data", icon: "mdi-book-plus" },
+    { to: "/about", label: "About", icon: "mdi-help" },
+    { to: "/contact", label: "Contact", icon: "mdi-book-open-blank-variant" },
+  ]
+
+  protected get isLoggedIn() {
+    return User.$state.isLoggedIn
+  }
+
+  protected openLogInDialog() {
+    User.openLogInDialog()
+  }
+
+  protected logOut() {
+    CzNotification.openDialog({
+      title: "Log out?",
+      content: "Are you sure you want to log out?",
+      confirmText: "Log Out",
+      cancelText: "Cancel",
+      onConfirm: () => {
+        User.logOut();
+      },
+    })
+  }
+
+  async created() {
+    document.title = "CZ Hub"
+
+    if (this.$route.name !== "submissions") {
+      // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
+      Submission.fetchSubmissions()
+    }
+
+    this.onToast = CzNotification.toast$.subscribe((toast: IToast) => {
+      this.snackbar = { ...this.snackbar, ...toast }
+      this.snackbar.isActive = true
+    })
+
+    this.onOpenDialog = CzNotification.dialog$.subscribe((dialog: IDialog) => {
+      this.dialog = { ...this.dialog, ...dialog }
+      this.dialog.isActive = true
+    })
+
+    this.onOpenLogInDialog = User.logInDialog$.subscribe((redirectTo: RawLocation | undefined) => {
+      this.logInDialog.isActive = true
+
+      this.logInDialog.onLoggedIn = () => {
+        if (redirectTo) {
+          this.$router.push(redirectTo)
+        }
+        this.logInDialog.isActive = false
+      }
+    })
+
+    this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe((params: { repository: string, redirectTo?: RawLocation | undefined }) => {
+      this.authorizeDialog.repo = params.repository
+      this.authorizeDialog.isActive = true
+      this.authorizeDialog.onAuthorized = async () => {
+        if (params.redirectTo) {
+          if (params.repository === EnumRepositoryKeys.hydroshare) {
+            await HydroShare.init()
+          }
+          else if (params.repository === EnumRepositoryKeys.zenodo) {
+            await Zenodo.init()
+          }
+          this.$router.push(params.redirectTo)
+        }
+        this.authorizeDialog.isActive = false
+      }
+    })
+
+    // Check for Authorization cookie instead.
+    // const isAuthorized = this.$cookies.get('Authorization')
+
+    // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
+    // Reproducible if the server is restarted
+
+    // if (isAuthorized && !User.$state.isLoggedIn) {
+    await User.checkAuthorization()
+    // }
+
+    if (User.$state.isLoggedIn) {
+      await this._initRepositories()
+    }
+    else {
+      this.loggedInSubject = User.loggedIn$.subscribe(async () => {
+        await this._initRepositories()
+      })
+    }
+
+    // this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
+    //   if (repository === EnumRepositoryKeys.hydroshare) {
+    //     await HydroShare.init()
+    //   }
+    //   else if (repository === EnumRepositoryKeys.zenodo) {
+    //     await Zenodo.init()
+    //   }
+    // })
+
+    // Guards are setup after checking authorization and loading access tokens
+    // because they depend on user logged in status
+    setupRouteGuards()
+
+    this.isLoading = false;
+  }
+
+  private _initRepositories() {
+    return Promise.all([
+      HydroShare.init(),
+      Zenodo.init(),
+      External.init()
+    ])
+  }
+
+  beforeDestroy() {
+    // Good practice
+    this.onToast.unsubscribe()
+    this.onOpenDialog.unsubscribe()
+    this.onOpenLogInDialog.unsubscribe()
+    this.onOpenAuthorizeDialog.unsubscribe()
+    this.loggedInSubject.unsubscribe()
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-  .md-toolbar.md-overlap-off .logo {
-    max-height: 7rem;
-    margin-top: unset;
-    padding: 1rem 0;
-  }
+.logo {
+  max-height: 100%;
+  cursor: pointer;
+}
 
-  .md-toolbar {
-    // background: linear-gradient(-45deg, rgb(52, 107, 184) 0%, rgba(28,206,234,0.82) 100%);
-  }
+#footer {
+  width: 100%;
+  margin: 0;
+  min-height: unset;
+  margin-top: 4rem;
+  box-shadow: none;
+}
 
-  .logo {
-    max-height: 117px;
-    transition: max-height 0.25s ease;
-    will-change: max-height, margin-top;
-    margin-top: -6rem;
-  }
+.v-toolbar.v-app-bar--is-scrolled > .v-toolbar__content > .container {
+  align-items: center !important;
+  will-change: padding;
+  padding-top: 0;
+  padding-bottom: 0;
+}
 
-  .md-app {
-    height: 100vh;
-  }
+.nav-items {
+  border-radius: 2rem !important;
+  overflow: hidden;
 
-  /deep/ .md-app-scroller {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  #footer {
-    width: 100%;
+  .v-btn {
     margin: 0;
-    min-height: unset;
-    margin-top: 4rem;
-    background: var(--md-theme-default-primary);
-    box-shadow: none;
+    border-radius: 0;
+    height: 39px !important;
   }
+}
 
-  #nav-items {
-    background: var(--md-theme-default-background, #fff);
-    border-radius: 2rem;
-    overflow: hidden;
-
-    a.router-link-exact-active .md-button::before,
-    .md-button.is-active::before {
-      background-color: currentColor;
-      opacity: .12;
-    }
-
-    .md-button {
-      margin: 0;
-      border-radius: 0;
-    }
-  }
+.nav-items .v-btn.is-active,
+.mobile-nav-items .v-list-item.is-active {
+  background-color: #1976d2;
+  color: #FFF;
+}
 </style>

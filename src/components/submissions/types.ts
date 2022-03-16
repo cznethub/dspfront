@@ -1,27 +1,18 @@
 export interface ISubmission {
-  id: number,
   title: string
   authors: string[]
   repository: EnumRepositoryKeys
-  date: Date
-  status: EnumSubmissionStatus
+  date: number
   identifier: string
-}
-
-export interface IFolder {
-  folders?: IFolder[]
-  files?: any[]
-}
-
-export enum EnumSubmissionStatus {
-  draft = 'Draft',
-  submitted = 'Submitted'
+  url: string
+  metadata: any
 }
 
 export enum EnumRepositoryKeys {
   hydroshare = 'hydroshare',
   zenodo = 'zenodo',
-  // earthChemLibrary = 'earthChemLibrary',
+  earthChemLibrary = 'earthChemLibrary',
+  external = 'external',
   // openTopography = 'openTopography',
   // sesar = 'sesar',
   // other = 'other'
@@ -29,7 +20,7 @@ export enum EnumRepositoryKeys {
 
 export enum EnumSubmissionSorts {
   title = 'Title',
-  date = 'Most Recent',
+  date = 'Submission Date',
   repository = 'Repository',
 }
 
@@ -45,11 +36,17 @@ export interface IRepositoryUrls {
   createUrl: string
   updateUrl: string // To update metadata
   readUrl: string
+  deleteUrl: string,
   fileCreateUrl: string
   fileDeleteUrl: string
   fileReadUrl: string
+  folderCreateUrl?: string
+  folderReadUrl?: string
+  folderDeleteUrl?: string
+  moveOrRenameUrl?: string
   accessTokenUrl: string
   authorizeUrl: string
+  viewUrl: string
 }
 
 export interface IRepository {
@@ -62,4 +59,9 @@ export interface IRepository {
   schema?: any,
   uischema?: any
   schemaDefaults?: any
+  isDisabled?: boolean
+  isExternal?: boolean
+  hasFolderStructure?: boolean
+  url?: string,
+  submitTooltip?: string
 }

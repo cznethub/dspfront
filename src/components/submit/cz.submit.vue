@@ -1,90 +1,115 @@
 <template>
   <div class="cz-submit">
     <template v-if="isInSubmitLandingPage">
-      <div class="banner has-text-centered has-text-shadow md-layout md-alignment-center-center"
+      <div class="banner text-center"
         :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.35), rgba(28, 37, 65, 0.3)), url(' + require('@/assets/img/bg-1.jpg') + ')' }">
-        <div class="">
-          <h1 class="md-display-2 has-text-white">Submit Data</h1>
-          <h2 class="md-display-1 has-text-white has-space-top-2x has-space-bottom">Not sure which repository to use?</h2>
-          <router-link to="/recommendations">
-            <md-button class="md-raised">Help Me Decide</md-button>
-          </router-link>
+        <div>
+          <div class="has-text-white text-h2 has-text-shadow">Submit Data</div>
+          <div class="has-text-white mt-4 has-space-bottom text-h4 has-text-shadow">Not sure which repository to use?</div>
+          <v-btn to="/resources/recommendations">Help Me Decide</v-btn>
         </div>
       </div>
 
-      <section>
-        <h1 class="md-display-1 has-space-bottom-2x has-text-centered has-space-top-2x">Submit to a Supported Repository</h1>
+      <v-container>
+        <div class="text-h4 my-8 text-center">Repositories</div>
 
-        <div class="has-space-bottom-2x">
-          <div class="repositories">
-            <md-card v-for="repo of repoMetadata" :key="repo.key" @click.native="submitTo(repo)" class="md-primary" md-theme="grey-card" md-with-hover>
-              <md-card-media class="md-layout md-alignment-center-center" style="height: 10rem; padding: 2rem;">
-                <img :src="repo.logoSrc" :alt="repo.name" class="md-layout-item">
-              </md-card-media>
-              <md-card-header>
-                <div class="md-title">{{ repo.name }}</div>
-              </md-card-header>
-              <md-card-content class="has-text-mute">{{ repo.description }}</md-card-content>
-            </md-card>
+        <div class="mb-4">
+          <div class="repositories justify-space-around px-4">
+            <template  v-for="repo of repoMetadata">
+              <v-hover :key="repo.key">
+                <template v-slot:default="{ hover }">
+                  <v-card  @click.native="submitTo(repo)"
+                    class="has-cursor-pointer transition-swing"
+                    max-width="40rem"
+                    :disabled="repo.isDisabled"
+                    :class="`elevation-${ hover ? 12 : 2 }`">
+                    <v-card-title class="v-card-media justify-center">
+                      <img :src="repo.logoSrc" :alt="repo.name">
+                    </v-card-title>
+
+                    <v-card-title>
+                      <div class="text-h4">{{ repo.name }}</div>
+                    </v-card-title>
+
+                    <v-card-text class="text--secondary">
+                      <div class="text-subtitle-1">{{ repo.description }}</div>
+                      
+                      <template v-if="repo.isDisabled">
+                        <v-divider class="has-space-top has-space-bottom" />
+                        <v-chip>Coming soon...</v-chip>
+                      </template>
+                    </v-card-text>
+                  </v-card>
+                </template>
+              </v-hover>
+            </template>
+            <v-hover>
+              <template v-slot:default="{ hover }">
+                <v-card  @click.native="submitTo(externalRepoMetadata)"
+                  class="has-cursor-pointer transition-swing"
+                  max-width="40rem"
+                  :disabled="externalRepoMetadata.isDisabled"
+                  :class="`elevation-${ hover ? 12 : 2 }`">
+                  <v-card-title class="v-card-media justify-center">
+                    <v-icon>mdi-text-box-plus</v-icon>
+                  </v-card-title>
+
+                  <v-card-title>
+                    <div class="text-h4">{{ externalRepoMetadata.name }}</div>
+                  </v-card-title>
+
+                  <v-card-text class="text--secondary">
+                    <div class="text-subtitle-1">{{ externalRepoMetadata.description }}</div>
+                    
+                    <template v-if="externalRepoMetadata.isDisabled">
+                      <v-divider class="has-space-top has-space-bottom" />
+                      <v-chip>Coming soon...</v-chip>
+                    </template>
+                  </v-card-text>
+                </v-card>
+              </template>
+            </v-hover>
           </div>
         </div>
-      </section>
-
-      <hr>
-
-      <section class="md-layout md-gutter">
-        <div class="md-layout-item md-size-50 md-small-size-100 has-space-bottom-2x">
-          <h1 class="md-display-1">Register a product submitted to another repository</h1>
-          <p class="has-text-mute">The repositories above may not be a good fit for every CZCN dataset. If you decide to submit a dataset with another repository, register it here. Registering will create a metadata record for the dataset within the HydroShare repository to ensure that your data can still be discovered with all of the other CZCN research products.</p>
-          <md-button class="md-raised md-accent">Register</md-button>
-        </div>
-        <!-- <md-icon class="md-size-4x md-layout-item md-size-50">post_add</md-icon> -->
-        <img class="md-layout-item md-size-50 md-small-size-100" :src="require('@/assets/img/placeholder.png')" alt="">
-      </section>
+      </v-container>
     </template>
     <template v-else>
-      <router-view></router-view>
+      <router-view />
     </template>
   </div>
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import { Component } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
-  import { EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
-  import Repository from '@/models/repository.model'
+  import { mixins } from 'vue-class-component'
+  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
   @Component({
     name: 'cz-submit',
     components: { },
   })
-  export default class CzSubmit extends Vue {
+  export default class CzSubmit extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+    protected get repoCollection() {
+      return Object.keys(repoMetadata)
+        .map(r => repoMetadata[r])
+    }
+
     protected get repoMetadata() {
-      return Object.keys(repoMetadata).map(r => repoMetadata[r])
+      return this.repoCollection.filter(r => !r.isExternal)
+    }
+
+    protected get externalRepoMetadata() {
+      return this.repoCollection.find(r => r.isExternal)
     }
 
     protected get isInSubmitLandingPage() {
       return !(this.$route.params.repository)
     }
-    
-    protected submitTo(repo: IRepository) {
-      if (Object.keys(EnumRepositoryKeys).includes(repo.key)) {
-        this.setActiveRepository(repo.key)
-      }
-      this.$router.push({ name: 'submit.repository', params: { repository: repo.key } }).catch(() => {})
-    }
-
-    private setActiveRepository(key: EnumRepositoryKeys) {
-      Repository.commit((state) => {
-        state.submittingTo = key
-      })
-    }
   }
 </script>
 
 <style lang="scss" scoped>
-  $md-padding: 17px;
-
   section {
     padding: 4rem 0;
   }
@@ -96,16 +121,21 @@
 
   .repositories {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40rem, 1fr));
-    justify-content: space-around;
-    gap: 4rem;
+    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+    gap: 2rem;
 
-    .md-card-media {
-      background: linear-gradient(135deg, #f1f3f5 0%, var(--md-theme-default-primary) 100%);
+    ::v-deep .v-card-media {
+      background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);
+      height: 10rem; 
+      padding: 2rem;
 
       img {
         height: 100%;
         flex: 0;
+      }
+
+      .v-icon {
+        font-size: 7rem;
       }
     }
   }
@@ -115,7 +145,6 @@
     background-repeat: no-repeat;
     padding-top: 9rem;
     padding-bottom: 9rem;
-    margin: -$md-padding;
     margin-bottom: 2rem;
     min-height: 30rem;
     flex-direction: column;

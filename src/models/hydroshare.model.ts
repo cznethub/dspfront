@@ -1,10 +1,11 @@
 
 import { EnumRepositoryKeys } from '@/components/submissions/types'
-import { router } from '@/router';
+import { IFolder, IFile } from '@/components/new-submission/types'
 import axios from "axios"
 import Repository from './repository.model'
+import CzNotification from './notifications.model'
 
-const sprintf = require('sprintf-js').sprintf
+const sprintf = require("sprintf-js").sprintf
 
 export default class HydroShare extends Repository {
   static entity = EnumRepositoryKeys.hydroshare
@@ -16,120 +17,223 @@ export default class HydroShare extends Repository {
     }
   }
 
-  static async updateMetadata(data: { [key: string]: any }, recordId?: string) {
-    const hydroShare = this.get()
-    if (hydroShare) {
-      const url = sprintf(hydroShare.urls?.readUrl, recordId)
-      const resp = await axios.put(
-        url, 
-        JSON.stringify(data),
-        { 
-          headers: {"Content-Type": "application/json"}, 
-          params: { access_token: this.accessToken },
-        },
-      )
-    }
-  }
+  static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
+    itemsToUpload.map(i => i.isDisabled = true)
+    const filesToUpload = itemsToUpload.filter(i => i.hasOwnProperty('file'))
+    const foldersToUpload = itemsToUpload.filter(i => i.hasOwnProperty('children'))
 
-  static async createSubmission(data?: any): Promise<{ recordId: string, formMetadata: any} | null> {
-    console.info("HydroShare: Creating submission...")
-    const hydroShare = this.get()
+    let folderPaths = foldersToUpload.map(f => `${f.path ? f.path + '/' : ''}${f.name}`)
+    // Get unique paths
+    folderPaths = [...new Set(folderPaths)].sort((a, b) => b.split('/').length - a.split('/').length)
+
+    // HydroShare can only create multiple folders at a time if the parent folder already exists
+    // So we traverse the tree by depth and create folders in each depth at a time
+    const that = this
     
-    if (hydroShare) {
-      try {
-        const depositionMetadata = data
-          ? { metadata: data }
-          : { }
-        const resp = await axios.post(
-          hydroShare.urls?.createUrl || '',
+    if (folderPaths.length) {
+      // Create folders
+      await _createFoldersByDepth(folderPaths, 1)
+    }
+    else {
+      // No folders to create. Just upload files directly.
+      await _uploadFiles()
+    }
+    itemsToUpload.map(i => i.isDisabled = false)
+
+    async function _createFoldersByDepth(paths: string[], depth: number) {
+      const depthPaths = paths.filter(p => p.split('/').length === depth)
+
+      const folderCreatePromises = depthPaths.map((path: string) => {
+        const folderCreateUrl = sprintf(
+          createFolderUrl,
+          encodeURIComponent(path)
+        )
+  
+        return axios.put(
+          folderCreateUrl,
           {},
           { 
-            headers: { "Content-Type": "application/json"},
-            params: { "access_token": this.accessToken }
+            // headers: { 'Content-Type': 'multipart/form-data', }, 
+            params: { "access_token": that.accessToken }
           }
         )
-
-        console.log(resp)
-
-        if (resp.status === 201) {
-          // resp.links
-          const recordId = resp.data.record_id
-          const formMetadata = await this.read(recordId)
-
-          // Save to CZHub
-          const czResp = await axios.get(`/api/draft/${this.entity}/${recordId}`)
-          // console.log(czResp)
-
-          // TODO: insert into Submission model
-
-          return { recordId, formMetadata }
-        }
-        else {
-          // Unexpected response
-          console.info("HydroShare: Failed to create submission. Unknown response status.", resp)
-        }
+      })
+      await Promise.allSettled(folderCreatePromises)
+      const remaining = paths.filter(p => p.split('/').length > depth)
+      if (remaining.length) {
+        _createFoldersByDepth(remaining, depth + 1)
       }
-      catch(e: any) {
-        if (e.response.status === 401) {
-          // Token has expired
-          this.commit((state) => {
-            state.accessToken = ''
-          })
-          router.push({ path: '/authorize', query: { repo: this.entity, next: `/submit/${this.entity}` } })
-          
-          console.info("HydroShare: Authorization token is invalid or has expired.")
-          console.info("HydroShare: Redirecting to authorization page...")
-        }
-        else {
-          console.error("HydroShare: failed to create submission. ", e.response)
-        }
+      else {
+        // Finished creating folders. Files can be added.
+        _uploadFiles()
       }
     }
-    return null
+
+    async function _uploadFiles() {
+      const fileUploadPromises = filesToUpload.map((file: IFile) => {
+        let url = bucketUrl
+        const form = new window.FormData()
+        if (file.file) {
+          form.append('file', file.file, file.name)
+        }
+  
+        // Check if the file is in a folder
+        if (file.path) {
+          url = `${url}${ encodeURIComponent(file.path) }/`
+        }
+  
+        return axios.post(
+          url,
+          form,
+          { 
+            headers: { 
+              'Content-Type': 'multipart/form-data', 
+            }, 
+            params: { "access_token": that.accessToken }
+          }
+        )
+      })
+
+      const response: PromiseSettledResult<any>[] = await Promise.allSettled(fileUploadPromises)
+
+      // HydroShare replaces spaces with '_' when uploading files. We must update the name here with their changes.
+      filesToUpload.map((f, index) => {
+        if (response[index].status === 'fulfilled') {
+          // @ts-ignore
+          f.name = (response[index]).value.data.file_name
+        }
+        else {
+          // Uplaod failed for this file
+          f.parent.children = f.parent.children.filter(file => file.name !== f.name)
+        }
+      })
+
+      // TODO: figure out how to identify that fail was due to a name that already exists
+      if (response.some(r => r.status === 'rejected')) {
+        CzNotification.toast({ message: 'Some of your files failed to upload'})
+      }
+    }
   }
 
-  static async uploadFiles(bucketUrl: string, filesToUpload: { name: string, data: any }[] | any[]) {
-    const promises = filesToUpload.map((file) => {
-      // const url = `${bucketUrl}/${file.name}` // new api
-      const url = bucketUrl // new api
-      const form = new window.FormData()
-      form.append('file', file, file.name)
+  static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
+    return this._readFolderRecursive(identifier, path, rootDirectory)
+  }
 
-      return axios.post(
-        url,
+  static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string): Promise<boolean> {
+    const pathPrefix = 'data/contents/'
+    const url = this.get()?.urls?.moveOrRenameUrl
+    const renameUrl = sprintf(url, identifier)
+
+    const form = new window.FormData()
+
+    form.append('source_path', pathPrefix + (item.path ? item.path + '/' + item.name : item.name))
+    form.append('target_path', pathPrefix + newPath)
+    try {
+      const response = await axios.post(
+        renameUrl,
         form,
         { 
-          headers: { 'Content-Type': 'multipart/form-data' }, 
+          headers: { 
+            'Content-Type': 'multipart/form-data', 
+          }, 
           params: { "access_token": this.accessToken }
         }
       )
-    })
-
-    const resp: PromiseSettledResult<any>[] = await Promise.allSettled(promises)
-    // TODO: indicate to Cz api that files were uploaded
+  
+      if (response.status === 200) {
+        return true
+      }
+      return false
+    }
+    catch(e: any) {
+      console.log(e)
+      return false
+    }
   }
 
-  private static async read(recordId: string) {
-    const hydroShare = this.get()
-    if (hydroShare) {
-      const url = sprintf(hydroShare.urls?.readUrl, recordId)
-      const resp = await axios.get(url, { params: { "access_token": this.accessToken } })
-      if (resp.status === 200) {
-        return resp.data
+  static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
+    const path = `${item.path ? item.path + '/' : ''}${item.name}`
+    const isFolder = item.hasOwnProperty('children')
+    const url = isFolder ? this.get()?.urls?.folderDeleteUrl : this.get()?.urls?.fileDeleteUrl
+    const deleteUrl = sprintf(url, identifier, encodeURIComponent(path))
+
+    try {
+      const response = await axios.delete(deleteUrl, { 
+        params: { "access_token": this.accessToken }
+      })
+  
+      if (response.status === 200) {
+        return true
       }
-      else {
-        return {}
-      }
-      // .then((resp) => {
-      //   this.data = this.metadataKey ? resp.data["metadata"] : resp.data;
-      //   this.edit = true;
-      //   this.loadFiles = true
-      // })
-      // .catch((error) => {
-      //   this.data = {}
-      //   this.edit = false;
-      //   this.message = error.message;
-      // });
     }
+    catch(e: any) {
+      console.log(e)
+      CzNotification.toast({ message: 'Failed to delete file' })
+    }
+
+    return false
+  }
+
+  private static async _readFolderRecursive(identifier: string, path: string, folder: IFolder): Promise<(IFile | IFolder)[]> {
+    const url = this.get()?.urls?.folderReadUrl
+    const folderReadUrl = sprintf(
+      url,
+      identifier,
+      encodeURIComponent(path || ' ') // HydroShare accepts ' ' to indicate root directory
+    )
+    
+    try {
+      const response = await axios.get(
+        folderReadUrl,
+        { params: { "access_token": this.accessToken } }
+      )
+  
+      if (response.status === 200) {
+        const files: IFile[] = response.data.files.map((fileName: string, index: number): IFile => {
+          return {
+            name: fileName,
+            parent: folder,
+            isRenaming: false,
+            isCutting: false,
+            isDisabled: false,
+            key: `${Date.now().toString()}-a-${index}`,
+            path: path,
+            file: null,
+          }
+        })
+  
+        const folders: IFolder[] = response.data.folders.map((folderName: string, index: number): IFolder => {
+          return {
+            name: folderName,
+            parent: folder,
+            isRenaming: false,
+            isCutting: false,
+            isDisabled: false,
+            key: `${Date.now().toString()}-b-${index}`,
+            path: path,
+            children: [],
+          }
+        })
+  
+        if (folders.length) {
+          const readSubfolderPromises: (Promise<(IFile | IFolder)[]>)[] = folders.map((f: IFolder) => {
+            const newPath = path ? `${path}/${f.name}` : f.name
+            return this._readFolderRecursive(identifier, newPath, f)
+          })
+          const responses: (IFile | IFolder)[][] = await Promise.all(readSubfolderPromises)
+  
+          folders.map((f, i) => {
+            f.children = responses[i] || []
+          })
+        }
+  
+        return [...folders, ...files]
+      }
+    }
+    catch(e: any) {
+      console.log(e)
+    }
+
+    return []
   }
 }

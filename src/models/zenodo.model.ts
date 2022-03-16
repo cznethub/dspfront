@@ -1,10 +1,12 @@
 
 import { EnumRepositoryKeys } from '@/components/submissions/types'
-import { router } from '@/router';
+import { IFile, IFolder } from '@/components/new-submission/types'
 import axios from "axios"
 import Repository from './repository.model'
+import { fi } from 'date-fns/locale'
+import CzNotification from './notifications.model'
 
-const sprintf = require('sprintf-js').sprintf
+const sprintf = require("sprintf-js").sprintf
 
 export default class Zenodo extends Repository {
   static entity = EnumRepositoryKeys.zenodo
@@ -16,117 +18,137 @@ export default class Zenodo extends Repository {
     }
   }
 
-  static async updateMetadata(data: { [key: string]: any }, recordId?: string) {
-    const zenodo = this.get()
-    if (zenodo) {
-      const url = sprintf(zenodo.urls?.readUrl, recordId)
-      const resp = await axios.put(
-        url, 
-        JSON.stringify(data),
-        { 
-          headers: {"Content-Type": "application/json"}, 
-          params: { access_token: this.accessToken }, 
-        },
-      )
-    }
-  }
+  static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
+    const uploadPromises: Promise<boolean>[] = itemsToUpload.map((file) => {
+      return _uploadFile(file, this.accessToken)
+    })
 
-  static async createSubmission(data?: any): Promise<{ recordId: string, formMetadata: any} | null> {
-    console.info("Zenodo: Creating submission...")
-    const zenodo = this.get()
-    
-    if (zenodo) {
-      try {
-        const depositionMetadata = data
-          ? { metadata: data }
-          : { }
-        const resp = await axios.post(
-          zenodo.urls?.createUrl || '',
-          depositionMetadata,
-          { 
-            headers: { "Content-Type": "application/json"},
-            params: { "access_token": this.accessToken } 
-          }
-        )
-
-        if (resp.status === 201) {
-          // resp.links
-          const recordId = resp.data.record_id
-          const formMetadata = await this.read(recordId)
-
-          // Save to CZHub
-          const czResp = await axios.get(`/api/draft/${this.entity}/${recordId}`)
-          // console.log(czResp)
-
-          // TODO: insert into Submission model
-          return { recordId, formMetadata }
-        }
-        else {
-          // Unexpected response
-          console.info("Zenodo: Failed to create submission. Unknown response status.", resp)
-        }
-      }
-      catch(e: any) {
-        if (e.response.status === 401) {
-          // Token has expired
-          this.commit((state) => {
-            state.accessToken = ''
-          })
-          router.push({ path: '/authorize', query: { repo: this.entity, next: `/submit/${this.entity}` } })
-          
-          console.info("Zenodo: Authorization token is invalid or has expired.")
-          console.info("Zenodo: Redirecting to authorization page...")
-        }
-        else {
-          console.error("Zenodo: failed to create submission. ", e.response)
-        }
-      }
-    }
-    return null
-  }
-
-  static async uploadFiles(bucketUrl: string, filesToUpload: { name: string, data: any }[] | any[]) {
-    const promises = filesToUpload.map((file) => {
-      // const url = `${bucketUrl}/${file.name}` // new api
+    async function _uploadFile(file, accessToken) {
       const url = bucketUrl // new api
       const form = new window.FormData()
-      form.append('file', file, file.name)
+      form.append('file', file.file, file.name)
 
-      return axios.post(
+      file.isDisabled = true
+      const response = await axios.post(
         url,
         form,
         { 
           headers: { 'Content-Type': 'multipart/form-data' }, 
+          params: { "access_token": accessToken }
+        }
+      )
+      file.isDisabled = false
+
+      if (response.status === 200) {
+        return true
+      }
+      
+      return false
+    }
+
+    const response = await Promise.allSettled(uploadPromises)
+
+    itemsToUpload.map((f, index) => {
+      if (response[index].status !== 'fulfilled') {
+        // Uplaod failed for this file
+        f.parent.children = f.parent.children.filter(file => file.name !== f.name)
+      }
+    })
+    console.log(response)
+
+    // TODO: figure out how to identify that fail was due to a name that already exists
+    if (response.some(r => r.status === 'rejected')) {
+      CzNotification.toast({ message: 'Some of your files failed to upload'})
+    }
+  }
+
+  static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
+    const url = this.get()?.urls?.fileReadUrl
+    const folderReadUrl = sprintf(
+      url,
+      identifier,
+      // encodeURIComponent(path || '')
+    )
+    
+    const response = await axios.get(
+      folderReadUrl,
+      { params: { "access_token": this.accessToken } }
+    )
+    if (response.status === 200) {
+      const files: IFile[] = response.data.map((file: any): IFile => {
+        return {
+          name: file.filename,
+          parent: rootDirectory,
+          isRenaming: false,
+          isCutting: false,
+          isDisabled: false,
+          key: file.id, // We use the file id in this case, so we can use it again as reference to edit files
+          path: path,
+          file: null,
+        }
+      })
+
+      return files
+    }
+
+    return []
+  }
+
+  static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string): Promise<boolean> {
+    const url = this.get()?.urls?.moveOrRenameUrl
+    const renameUrl = sprintf(url, identifier, item.key)
+
+    const form = new window.FormData()
+
+    const newName = newPath.split('/').pop()
+    if (!newName) {
+      return false
+    }
+    form.append('filename ', newName)
+    try {
+      const response = await axios.put(
+        renameUrl,
+        form,
+        { 
+          headers: { 
+            'Content-Type': 'multipart/form-data', 
+          }, 
           params: { "access_token": this.accessToken }
         }
       )
-    })
 
-    const resp: PromiseSettledResult<any>[] = await Promise.allSettled(promises)
-    // TODO: indicate to Cz api that files were uploaded
+      console.log(response)
+  
+      if (response.status === 200) {
+        return true
+      }
+      return false
+    }
+    catch(e: any) {
+      console.log(e)
+      return false
+    }
   }
 
-  private static async read(recordId: string) {
-    const zenodo = this.get()
-    if (zenodo) {
-      const url = sprintf(zenodo.urls?.readUrl, recordId)
-      const resp = await axios.get(url, { params: { "access_token": this.accessToken } })
-      if (resp.status === 200) {
-        return resp.data
+  static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
+    const url = this.get()?.urls?.fileDeleteUrl
+    const deleteUrl = sprintf(url, identifier, item.key)
+
+    try {
+      const response = await axios.delete(deleteUrl, { 
+        params: { "access_token": this.accessToken }
+      })
+  
+      if (response.status === 200 || response.status === 204) {
+        return true
       }
-      else {
-        return {}
-      }
-      // .then((resp) => {
-      //   this.data = this.metadataKey ? resp.data["metadata"] : resp.data;
-      //   this.edit = true;
-      //   this.loadFiles = true
-      // })
-      // .catch((error) => {
-      //   this.data = {}
-      //   this.edit = false;
-      //   this.message = error.message;
-      // });
+      return false
     }
+    catch(e: any) {
+      console.log(e)
+      CzNotification.toast({ message: 'Failed to delete file' })
+    }
+
+    return false
   }
 }

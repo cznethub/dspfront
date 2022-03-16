@@ -1,7 +1,8 @@
-FROM node:latest
+FROM node:14
 WORKDIR /dspfront
 COPY package*.json ./
-RUN npm install
+RUN npm i @vue/cli-service
+RUN npm install --production
 COPY . .
 RUN npm run build
 EXPOSE 5001

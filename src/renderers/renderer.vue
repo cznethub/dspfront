@@ -4,20 +4,40 @@
    */
   import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
   import { defineComponent } from '@vue/composition-api'
-  import { inputDateRenderer } from './cz.input-date.renderer.vue'
-  import { inputRenderer } from './cz.input.renderer.vue'
-  import { listInputObjectRenderer } from './cz.list-input-object.renderer.vue'
-  import { enumControlRenderer } from './cz.enum-control.renderer.vue'
-  import { selectRenderer } from './cz.select.renderer.vue'
+  import { arrayControlRenderer } from './array/ArrayControlRenderer.vue'
+  import { groupRenderer } from './layouts/GroupRenderer.vue'
+  import { numberControlRenderer } from './controls/NumberControlRenderer.vue'
+  import { stringControlRenderer } from './controls/StringControlRenderer.vue'
+  import { multiStringControlRenderer } from './controls/MultiStringControlRenderer.vue'
+  import { dateControlRenderer } from './controls/DateControlRenderer.vue'
+  import { dateTimeControlRenderer } from './controls/DateTimeControlRenderer.vue'
+  import { objectControlRenderer } from './controls/ObjectControlRenderer.vue'
+  import { enumControlRenderer } from './controls/EnumControlRenderer.vue'
+  import { arrayPrimitiveRenderer } from './array/ArrayPrimitiveControl.vue'
+  import { anyOfRenderer } from './controls/AnyOfRenderer.vue'
+  import { allOfRenderer } from './controls/AllOfRenderer.vue'
+  import { radioGroupControlRenderer } from './controls/RadioGroupControlRenderer.vue'
+  import { verticalLayoutRenderer } from './layouts/VerticalLayoutRenderer.vue'
+  import { horizontalLayoutRenderer } from './layouts/HorizontalLayoutRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
 
   export const CzRenderers: JsonFormsRendererRegistryEntry[] = [
-    inputRenderer,
-    inputDateRenderer,
-    selectRenderer,
     enumControlRenderer,
-    // listInputObjectRenderer,
+    arrayControlRenderer,
+    groupRenderer,
+    numberControlRenderer,
+    stringControlRenderer,
+    multiStringControlRenderer,
+    dateControlRenderer,
+    dateTimeControlRenderer,
+    objectControlRenderer,
+    arrayPrimitiveRenderer,
+    anyOfRenderer,
+    allOfRenderer,
+    radioGroupControlRenderer,
+    verticalLayoutRenderer,
+    horizontalLayoutRenderer
   ]
 </script>
