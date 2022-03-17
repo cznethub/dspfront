@@ -5,20 +5,20 @@
       <v-btn v-if="isDevMode" @click="$emit('show-ui-schema')" rounded
         >UI Schema</v-btn
       >
-      <v-btn :id="$id('cancel')" v-if="isEditMode" @click="$emit('cancel')" rounded
+      <v-btn :id="dup_location+'-cancel'" v-if="isEditMode" @click="$emit('cancel')" rounded
         >Cancel</v-btn
       >
       <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
         <template v-slot:activator="{ on, attrs}">
           <div v-bind="attrs" v-on="on">
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn :id="$id('save')" @click="$emit('save')" color="primary" :disabled="isSaving || !!errors.length || !hasUnsavedChanges" rounded>
+              <v-btn :id="dup_location+'-save'" @click="$emit('save')" color="primary" :disabled="isSaving || !!errors.length || !hasUnsavedChanges" rounded>
                 {{ isSaving ? "Saving..." : confirmText }}
               </v-btn>
             </v-badge>
 
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn :id="$id('finish')" @click="$emit('save-and-finish')" class="ml-2" color="primary" :disabled="isSaving || !!errors.length" rounded>
+              <v-btn :id="dup_location+'-finish'" @click="$emit('save-and-finish')" class="ml-2" color="primary" :disabled="isSaving || !!errors.length" rounded>
                 Finish
               </v-btn>
             </v-badge>
@@ -37,20 +37,19 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from "vue-property-decorator"
-import { mixins } from 'vue-class-component'
-import { IdentifiersMixin } from '@/mixins/identifiers.mixin'
 
 @Component({
   name: "cz-new-submission-actions",
   components: {  },
 })
-export default class CzNewSubmissionActions extends mixins<IdentifiersMixin>(IdentifiersMixin) {
+export default class CzNewSubmissionActions extends Vue {
   @Prop() isEditMode!: boolean
   @Prop() isDevMode!: boolean
   @Prop() hasUnsavedChanges!: boolean
   @Prop() isSaving!: boolean
   @Prop() confirmText!: string
   @Prop() errors!: string[]
+  @Prop() dup_location!: string[]
 
   protected getTitle(error: any) {
     const propName = error.dataPath.split('.').pop()

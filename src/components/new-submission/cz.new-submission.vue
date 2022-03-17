@@ -29,6 +29,7 @@
       @save-and-finish="onSaveAndFinish"
       @save="onSave"
       @cancel="goToSubmissions"
+      dup_location="top"
     />
 
     <div>
@@ -74,6 +75,7 @@
         @save-and-finish="onSaveAndFinish"
         @save="onSave"
         @cancel="goToSubmissions"
+        dup_location="bottom"
       />
     </div>
 
