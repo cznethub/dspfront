@@ -5,20 +5,20 @@
       <v-btn v-if="isDevMode" @click="$emit('show-ui-schema')" rounded
         >UI Schema</v-btn
       >
-      <v-btn v-if="isEditMode" @click="$emit('cancel')" rounded
+      <v-btn v-if="isEditMode" @click="$emit('cancel')" rounded class="submission-cancel"
         >Cancel</v-btn
       >
       <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
         <template v-slot:activator="{ on, attrs}">
           <div v-bind="attrs" v-on="on">
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn @click="$emit('save')" color="primary" :disabled="isSaving || !!errors.length || !hasUnsavedChanges" rounded>
+              <v-btn @click="$emit('save')" color="primary" class="submission-save" :disabled="isSaving || !!errors.length || !hasUnsavedChanges" rounded>
                 {{ isSaving ? "Saving..." : confirmText }}
               </v-btn>
             </v-badge>
 
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn @click="$emit('save-and-finish')" class="ml-2" color="primary" :disabled="isSaving || !!errors.length" rounded>
+              <v-btn @click="$emit('save-and-finish')" class="ml-2 submission-finish" color="primary" :disabled="isSaving || !!errors.length" rounded>
                 Finish
               </v-btn>
             </v-badge>

@@ -13,12 +13,12 @@
         <div class="spacer"></div>
         <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
           <v-btn to="/" :elevation="0" active-class="is-active">Home</v-btn>
-          <v-btn v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
+          <v-btn :id="`navbar-nav-` + path.label.replaceAll(`/`, ``)" v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
-          <v-btn v-if="!isLoggedIn" @click="openLogInDialog()" rounded>Log In</v-btn>
-          <v-btn v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
+          <v-btn id="navbar-login" v-if="!isLoggedIn" @click="openLogInDialog()" rounded>Log In</v-btn>
+          <v-btn id="navbar-logout" v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
         </template>
 
         <v-app-bar-nav-icon @click.stop="showMobileNavigation = true" v-if="$vuetify.breakpoint.mdAndDown" />
@@ -47,6 +47,7 @@
 
           <v-list-item
             v-for="path of paths"
+            :id="`drawer-nav-` + path.label.replaceAll(`/`, ``)"
             :key="path.to"
             :to="path.to"
             @click="showMobileNavigation = false"
@@ -60,12 +61,12 @@
         <v-divider class="my-4"></v-divider>
 
         <v-list-item-group class="text-body-1">
-          <v-list-item v-if="!isLoggedIn" @click="openLogInDialog(); showMobileNavigation = false">
+          <v-list-item id="drawer-nav-login" v-if="!isLoggedIn" @click="openLogInDialog(); showMobileNavigation = false">
             <v-icon class="mr-2">mdi-login</v-icon>
             <span>Log In</span>
           </v-list-item>
 
-          <v-list-item v-else @click="logOut()">
+          <v-list-item id="drawer-nav-logout" v-else @click="logOut()">
             <v-icon class="mr-2">mdi-logout</v-icon>
             <span>Log Out</span>
           </v-list-item>
@@ -89,6 +90,7 @@
     </v-snackbar>
 
     <v-dialog
+      :id="`dialog-` + dialog.title.replaceAll(` `, ``)"
       v-model="dialog.isActive"
       persistent
       width="500"
@@ -99,6 +101,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
+            class="dialog-cancel"
             @click="
               dialog.isActive = false;
               dialog.onCancel();
@@ -110,6 +113,7 @@
           </v-btn>
 
           <v-btn
+            class="dialog-confirm"
             @click="
               dialog.isActive = false;
               dialog.onConfirm();
