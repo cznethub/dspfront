@@ -13,7 +13,7 @@
         <div class="spacer"></div>
         <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
           <v-btn to="/" :elevation="0" active-class="is-active">Home</v-btn>
-          <v-btn :id="'navbar-nav-'+path.label.replaceAll('/','')" v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
+          <v-btn :id="`navbar-nav-` + path.label.replaceAll(`/`, ``)" v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
@@ -47,7 +47,7 @@
 
           <v-list-item
             v-for="path of paths"
-            :id="'drawer-nav-'+path.label.replaceAll('/','')"
+            :id="`drawer-nav-` + path.label.replaceAll(`/`, ``)"
             :key="path.to"
             :to="path.to"
             @click="showMobileNavigation = false"
@@ -90,7 +90,7 @@
     </v-snackbar>
 
     <v-dialog
-      :id="'dialog-'+dialog.title.replaceAll(' ','')"
+      :id="`dialog-` + dialog.title.replaceAll(` `, ``)"
       v-model="dialog.isActive"
       persistent
       width="500"
@@ -101,7 +101,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
-            id="dialog-cancel"
+            class="dialog-cancel"
             @click="
               dialog.isActive = false;
               dialog.onCancel();
@@ -113,7 +113,7 @@
           </v-btn>
 
           <v-btn
-            id="dialog-confirm"
+            class="dialog-confirm"
             @click="
               dialog.isActive = false;
               dialog.onConfirm();
