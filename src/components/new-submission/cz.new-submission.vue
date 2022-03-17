@@ -2,7 +2,7 @@
   <v-container id="cz-new-submission" class="cz-new-submission px-4">
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
-    <v-alert v-if="!isLoading && wasLoaded" class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
+    <v-alert :id="$id('instructions')" v-if="!isLoading && wasLoaded" class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
       <b>Instructions</b>: Fill in the required fields (marked with * and highlighted in red).
       Press the "Save" button to upload your
       submission.
@@ -33,6 +33,7 @@
     <div>
       <div v-if="!isLoading">
         <cz-folder-structure
+          :id="$id('cz-folder-structure')"
           v-if="!isExternal && wasLoaded"
           ref="folderStructure"
           v-model="uploads"
@@ -56,7 +57,7 @@
       </div>
 
       <div v-else class="d-flex justify-center mt-8">
-        <v-progress-circular indeterminate color="primary" />
+        <v-progress-circular :id="$id('progress')" indeterminate color="primary" />
       </div>
 
       <cz-new-submission-actions
@@ -78,7 +79,7 @@
       <v-skeleton-loader type="actions, article, actions"></v-skeleton-loader>
     </v-container>
 
-    <v-dialog v-if="isDevMode" v-model="showUISchema">
+    <v-dialog :id="$id('ui-schema')" v-if="isDevMode" v-model="showUISchema">
       <v-card>
         <v-card-title> UI Schema </v-card-title>
         <v-card-text>
@@ -101,6 +102,7 @@
     </v-dialog>
 
     <v-dialog
+      :id="$id('is-saving')"
       :value="isSaving"
       no-click-animation
       hide-overlay
@@ -136,6 +138,7 @@ import { CzRenderers } from "@/renderers/renderer.vue"
 import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { IdentifiersMixin } from '@/mixins/identifiers.mixin'
 import { repoMetadata } from "../submit/constants"
 import { IFile, IFolder } from '@/components/new-submission/types'
 import { ErrorObject } from 'ajv'
@@ -160,7 +163,7 @@ const renderers = [
   name: "cz-new-submission",
   components: { JsonForms, JsonViewer, CzFolderStructure, CzNewSubmissionActions },
 })
-export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin, IdentifiersMixin) {
   @Ref("form") jsonForm!: typeof JsonForms
   // @Ref("folderStructure") folderStructure!: InstanceType<typeof CzFolderStructure>
 
