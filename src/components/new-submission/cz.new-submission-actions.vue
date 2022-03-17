@@ -18,7 +18,7 @@
             </v-badge>
 
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn @click="$emit('save-and-finish')" class="ml-2 submission-cancel" color="primary" :disabled="isSaving || !!errors.length" rounded>
+              <v-btn @click="$emit('save-and-finish')" class="ml-2 submission-finish" color="primary" :disabled="isSaving || !!errors.length" rounded>
                 Finish
               </v-btn>
             </v-badge>
