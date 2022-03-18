@@ -19,7 +19,7 @@
               <v-hover :key="repo.key">
                 <template v-slot:default="{ hover }">
                   <v-card 
-                    :id="repo.name.replaceAll(` `, ``) + `-card`"
+                    :id="`${repo.name.replaceAll(/[\/\s]/g, ``)}-card`"
                     @click.native="submitTo(repo)"
                     class="has-cursor-pointer transition-swing"
                     max-width="40rem"

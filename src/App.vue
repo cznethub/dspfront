@@ -12,8 +12,8 @@
         </router-link>
         <div class="spacer"></div>
         <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
-          <v-btn to="/" :elevation="0" active-class="is-active">Home</v-btn>
-          <v-btn :id="`navbar-nav-` + path.label.replaceAll(`/`, ``)" v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
+          <v-btn id="navbar-nav-home" to="/" :elevation="0" active-class="is-active">Home</v-btn>
+          <v-btn :id="`navbar-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`" v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
@@ -40,14 +40,14 @@
     <v-navigation-drawer class="mobile-nav-items" v-model="showMobileNavigation" temporary app>
       <v-list nav dense class="nav-items">
         <v-list-item-group class="text-body-1">
-          <v-list-item @click="showMobileNavigation = false" to="/" active-class="is-active">
+          <v-list-item id="drawer-nav-home" @click="showMobileNavigation = false" to="/" active-class="is-active">
             <v-icon class="mr-2">mdi-home</v-icon>
             <span>Home</span>
           </v-list-item>
 
           <v-list-item
             v-for="path of paths"
-            :id="`drawer-nav-` + path.label.replaceAll(`/`, ``)"
+            :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
             :key="path.to"
             :to="path.to"
             @click="showMobileNavigation = false"

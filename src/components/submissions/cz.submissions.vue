@@ -7,6 +7,7 @@
         <div class="d-flex align-center">
           <div v-if="!isFetching && submissions.length" class="d-flex">
             <v-text-field
+              id="my_submissions_search"
               class="ma-1"
               v-model="filters.searchStr"
               dense
@@ -82,7 +83,7 @@
     <template v-else>
       <div v-if="submissions.length">
         <div>
-          <div class="has-space-bottom text-h6">
+          <div id="total_submissions" class="has-space-bottom text-h6">
             {{ submissions.length }} Total Submissions
           </div>
           <p v-if="isAnyFilterAcitve" class="text--secondary">
@@ -110,6 +111,7 @@
                     <v-spacer></v-spacer>
                     <div class="sort-controls">
                       <v-select
+                        id="sort-by"
                         :items="sortOptions"
                         item-text="label"
                         v-model="sortBy"
@@ -121,6 +123,7 @@
                       />
                       
                       <v-select
+                        id="sort-order"
                         :items="sortDirectionOptions"
                         v-model="sortDirection"
                         class="sort-control"
@@ -137,13 +140,13 @@
 
               <template v-slot:default="{ items }">
                 <v-divider />
-                <div v-for="item in items" :key="item.identifier">
+                <div :id="`submission-${index}`" v-for="(item, index) in items" :key="item.identifier">
                   <div class="table-item d-flex justify-space-between">
                     <div class="flex-grow-1 mr-4">
                       <table class="text-body-1">
                         <tr>
                           <th class="pr-4"></th>
-                          <td class="text-h6">{{ item.title }}</td>
+                          <td :id="`sub-${index}-title`" class="text-h6">{{ item.title }}</td>
                         </tr>
                         <tr v-if="item.authors.length">
                           <th class="pr-4">Authors:</th>
@@ -155,7 +158,7 @@
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Date:</th>
-                          <td>{{ new Date(item.date).toLocaleString() }}</td>
+                          <td :id="`sub-${index}-date`">{{ new Date(item.date).toLocaleString() }}</td>
                         </tr>
                         <tr>
                           <th class="pr-4">Identifier:</th>
@@ -165,13 +168,14 @@
                     </div>
 
                     <div class="d-flex flex-column actions">
-                      <v-btn :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
+                      <v-btn :id="`sub-${index}-view`" :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
                       </v-btn>
-                      <v-btn @click="goToEditSubmission(item)" rounded>
+                      <v-btn :id="`sub-${index}-edit`" @click="goToEditSubmission(item)" rounded>
                         <v-icon class="mr-1">mdi-pencil</v-icon> Edit
                       </v-btn>
                       <v-btn
+                        :id="`sub-${index}-update`"
                         v-if="!repoMetadata[item.repository].isExternal"
                         @click="onUpdateRecord(item)"
                         :disabled="isUpdating[`${item.repository}-${item.identifier}`]"
@@ -180,7 +184,7 @@
                         <v-icon v-if="isUpdating[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                       </v-btn>
-                      <v-btn @click="onDelete(item, repoMetadata[item.repository].isExternal)" :disabled="isDeleting[`${item.repository}-${item.identifier}`]" rounded>
+                      <v-btn :id="`sub-${index}-delete`" @click="onDelete(item, repoMetadata[item.repository].isExternal)" :disabled="isDeleting[`${item.repository}-${item.identifier}`]" rounded>
                         <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-delete</v-icon><span class="ml-1">
                         {{ isDeleting[`${item.repository}-${item.identifier}`] ? 'Deleting...' : 'Delete' }}</span>
