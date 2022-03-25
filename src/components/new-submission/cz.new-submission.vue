@@ -117,7 +117,7 @@
         dark
       >
         <v-card-text >
-          <p id="saving">Saving...</p>
+          <p id="new-submission-saving">Saving...</p>
           <v-progress-linear
             indeterminate
             color="white"
