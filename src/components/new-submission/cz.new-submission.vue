@@ -104,7 +104,6 @@
     </v-dialog>
 
     <v-dialog
-      id="is-saving"
       :value="isSaving"
       no-click-animation
       hide-overlay
@@ -118,7 +117,7 @@
         dark
       >
         <v-card-text >
-          <p>Saving...</p>
+          <p id="saving">Saving...</p>
           <v-progress-linear
             indeterminate
             color="white"
@@ -206,7 +205,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected get isDevMode() {
-    return false
+    return true
     // TODO: uncomment when this env variable is properly setup in production
     // return process.env.NODE_ENV === "development"
   }
