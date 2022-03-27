@@ -205,7 +205,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected get isDevMode() {
-    return true
+    return false
     // TODO: uncomment when this env variable is properly setup in production
     // return process.env.NODE_ENV === "development"
   }
