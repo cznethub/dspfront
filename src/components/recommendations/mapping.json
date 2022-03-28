@@ -3,7 +3,7 @@
   "options": [
     {
       "label": "Geochemistry",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Field measurements / experiments / samples",
@@ -40,7 +40,7 @@
     },
     {
       "label": "Geomorphology",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Topographic data",
@@ -67,7 +67,7 @@
     },
     {
       "label": "Geophysics",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Field measurements / experiments",
@@ -80,7 +80,7 @@
     },
     {
       "label": "Biology / Ecology",
-      "next": "What type of files are in your data",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Time series data / sensor data",
@@ -121,7 +121,7 @@
     },
     {
       "label": "Microbiological",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Time series data / sensor data",
@@ -148,7 +148,7 @@
     },
     {
       "label": "Hydrology/Water Quality",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Time series data / sensor data",
@@ -182,7 +182,7 @@
     },
     {
       "label": "Soils",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Time series data / sensor data",
@@ -223,7 +223,7 @@
     },
     {
       "label": "Meteorological",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Time series data",
@@ -243,7 +243,7 @@
     },
     {
       "label": "Imagery",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Model development",
@@ -263,7 +263,7 @@
     },
     {
       "label": "Education",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Student persistence and degree completion",
@@ -290,7 +290,7 @@
     },
     {
       "label": "Other",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Video/audio recordings of workshops",
@@ -303,7 +303,7 @@
     },
     {
       "label": "Geospatial Data",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "Geospatial feature data",
@@ -337,7 +337,7 @@
     },
     {
       "label": "Samples",
-      "next": "What type of files are in your data?",
+      "next": "What type of files will you be submitting?",
       "options": [
         {
           "label": "",

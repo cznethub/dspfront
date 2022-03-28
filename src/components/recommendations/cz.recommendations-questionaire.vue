@@ -3,10 +3,11 @@
     <div class="text-h4">Repository Recommendations</div>
     <v-divider class="has-space-bottom" />
 
-    <v-stepper v-model="currentStepIndex">
+    <v-stepper v-model="currentStepIndex" flat outlined>
       <v-stepper-header>
         <template v-for="(step, index) in steps">
-          <v-stepper-step :key="`${index}-step`" :complete="currentStepIndex > index" :step="index" editable edit-icon="mdi-check">
+          <v-stepper-step :key="`${index}-step`"
+            :complete="currentStepIndex > index" :step="index" editable edit-icon="mdi-check">
             <div>{{ step.next || 'Recommendations' }}</div>
             <v-chip v-if="step.selectedOption" class="mt-2" color="success">{{ step.selectedOption.label }}</v-chip>
           </v-stepper-step>
@@ -129,6 +130,10 @@
 
     .v-stepper__step {
       align-items: flex-start;
+    }
+
+    .v-stepper__step--active {
+      background: rgba(0,0,0,0.05);
     }
   }
 
