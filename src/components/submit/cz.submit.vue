@@ -15,62 +15,8 @@
 
         <div class="mb-4">
           <div class="repositories justify-space-around px-4">
-            <template  v-for="repo of repoMetadata">
-              <v-hover :key="repo.key">
-                <template v-slot:default="{ hover }">
-                  <v-card 
-                    :id="repo.name.replaceAll(` `, ``) + `-card`"
-                    @click.native="submitTo(repo)"
-                    class="has-cursor-pointer transition-swing"
-                    max-width="40rem"
-                    :disabled="repo.isDisabled"
-                    :class="`elevation-${ hover ? 12 : 2 }`">
-                    <v-card-title class="v-card-media justify-center">
-                      <img :src="repo.logoSrc" :alt="repo.name">
-                    </v-card-title>
-
-                    <v-card-title>
-                      <div class="text-h4">{{ repo.name }}</div>
-                    </v-card-title>
-
-                    <v-card-text class="text--secondary">
-                      <div class="text-subtitle-1">{{ repo.description }}</div>
-                      
-                      <template v-if="repo.isDisabled">
-                        <v-divider class="has-space-top has-space-bottom" />
-                        <v-chip>Coming soon...</v-chip>
-                      </template>
-                    </v-card-text>
-                  </v-card>
-                </template>
-              </v-hover>
-            </template>
-            <v-hover>
-              <template v-slot:default="{ hover }">
-                <v-card  @click.native="submitTo(externalRepoMetadata)"
-                  class="has-cursor-pointer transition-swing"
-                  max-width="40rem"
-                  :disabled="externalRepoMetadata.isDisabled"
-                  :class="`elevation-${ hover ? 12 : 2 }`">
-                  <v-card-title class="v-card-media justify-center">
-                    <v-icon>mdi-text-box-plus</v-icon>
-                  </v-card-title>
-
-                  <v-card-title>
-                    <div class="text-h4">{{ externalRepoMetadata.name }}</div>
-                  </v-card-title>
-
-                  <v-card-text class="text--secondary">
-                    <div class="text-subtitle-1">{{ externalRepoMetadata.description }}</div>
-                    
-                    <template v-if="externalRepoMetadata.isDisabled">
-                      <v-divider class="has-space-top has-space-bottom" />
-                      <v-chip>Coming soon...</v-chip>
-                    </template>
-                  </v-card-text>
-                </v-card>
-              </template>
-            </v-hover>
+            <cz-repository-submit-card v-for="repo of repoMetadata" :repo="repo" :key="repo.key" />
+            <cz-repository-submit-card :repo="externalRepoMetadata" />
           </div>
         </div>
       </v-container>
@@ -82,16 +28,15 @@
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
-  import { mixins } from 'vue-class-component'
-  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+  import CzRepositorySubmitCard from '@/components/submit/cz.repository-submit-card.vue'
 
   @Component({
     name: 'cz-submit',
-    components: { },
+    components: { CzRepositorySubmitCard },
   })
-  export default class CzSubmit extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  export default class CzSubmit extends Vue {
     protected get repoCollection() {
       return Object.keys(repoMetadata)
         .map(r => repoMetadata[r])
@@ -112,37 +57,15 @@
 </script>
 
 <style lang="scss" scoped>
-  section {
-    padding: 4rem 0;
+  .repositories {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+    gap: 2rem;
   }
 
   .banner {
     padding: 4rem 2rem;
     background: var(--bg-light-gray);
-  }
-
-  .repositories {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
-    gap: 2rem;
-
-    ::v-deep .v-card-media {
-      background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);
-      height: 10rem; 
-      padding: 2rem;
-
-      img {
-        height: 100%;
-        flex: 0;
-      }
-
-      .v-icon {
-        font-size: 7rem;
-      }
-    }
-  }
-
-  .banner {
     background-size: cover;
     background-repeat: no-repeat;
     padding-top: 9rem;

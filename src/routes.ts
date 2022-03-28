@@ -7,6 +7,7 @@ import CzSubmit from '@/components/submit/cz.submit.vue'
 import CzResources from '@/components/resources/cz.resources.vue'
 import CzContact from '@/components/contact/cz.contact.vue'
 import CzRecommendations from '@/components/recommendations/cz.recommendations.vue'
+import CzRecomendationsQuestionaire from '@/components/recommendations/cz.recommendations-questionaire.vue'
 import CzSubmissions from '@/components/submissions/cz.submissions.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
 
@@ -40,6 +41,14 @@ export const routes: RouteConfig[] = [
     path: '/resources/recommendations',
     components: {
       content: CzRecommendations,
+      footer: CzFooter
+    },
+  },
+  {
+    name: 'recommendations-questionaire',
+    path: '/resources/recommendations-questionaire',
+    components: {
+      content: CzRecomendationsQuestionaire,
       footer: CzFooter
     },
   },
