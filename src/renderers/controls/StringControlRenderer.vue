@@ -1,6 +1,6 @@
 <template>
   <v-text-field
-    :id="control.id + '-input'"
+    :id="computedId"
     :class="styles.control.input"
     :value="control.data"
     :disabled="!control.enabled || control.schema.readOnly"
@@ -31,7 +31,7 @@ import {
 import { defineComponent } from '@vue/composition-api'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { useVanillaControl } from "@jsonforms/vue2-vanilla"
-import { computeLabel } from '@jsonforms/core'
+import { computeLabel, createId } from '@jsonforms/core'
 
 const controlRenderer = defineComponent({
   name: 'string-control-renderer',
@@ -58,6 +58,11 @@ const controlRenderer = defineComponent({
         this.control.label as string,
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
+      )
+    },
+    computedId(): string {
+      return createId(
+        `string-${this.control.id}-input`
       )
     },
     placeholder(): string {

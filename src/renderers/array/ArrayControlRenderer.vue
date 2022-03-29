@@ -31,6 +31,7 @@
       <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
         <array-list-element
           v-for="(item, index) of control.data"
+          :id="generateId(index)"
           @deleted="afterDelete"
           :isRequired="isRequired(item)"
           :key="index"
@@ -104,7 +105,8 @@ import {
   JsonSchema,
   Resolve,
   schemaTypeIs,
-  createLabelDescriptionFrom
+  createLabelDescriptionFrom,
+  createId
 } from '@jsonforms/core';
 import { defineComponent } from "@vue/composition-api"
 import {
@@ -252,6 +254,11 @@ const controlRenderer = defineComponent({
         // TODO: find how to import this
         this.handleChange(this.control.path, undefined)
       }
+    },
+    generateId(ind) {
+      return createId(
+        `array-${this.control.id}-${ind}`
+      )
     }
   },
 })
