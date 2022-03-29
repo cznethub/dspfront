@@ -1,5 +1,9 @@
 <template>
-  <div v-if="control.visible" class="cz-object" :class="{ 'is-invalid': control.errors && control.errors.length > 0}" :data-id="computedLabel.replaceAll(` `, ``)">
+  <div v-if="control.visible"
+    class="cz-object" 
+    :class="{ 'is-invalid': control.errors && control.errors.length > 0}" 
+    :data-id="computedLabel.replaceAll(` `, ``)"
+    >
     <dispatch-renderer
       :visible="control.visible"
       :enabled="control.enabled"

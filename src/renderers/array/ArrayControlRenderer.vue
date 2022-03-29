@@ -105,8 +105,7 @@ import {
   JsonSchema,
   Resolve,
   schemaTypeIs,
-  createLabelDescriptionFrom,
-  createId
+  createLabelDescriptionFrom
 } from '@jsonforms/core';
 import { defineComponent } from "@vue/composition-api"
 import {

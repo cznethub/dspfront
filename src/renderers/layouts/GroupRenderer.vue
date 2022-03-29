@@ -48,7 +48,7 @@ const layoutRenderer = defineComponent({
   },
   computed: {
     generateId(): string {
-      return `group-${this.layout.uischema.label.replaceAll(` `, ``)}`
+      return `group-${this.layout.uischema.label.replaceAll(" ", "")}`
     },
   },
   setup(props: RendererProps<Layout>) {
