@@ -5,7 +5,7 @@
   >
     <v-row
       v-for="(element, index) in layout.uischema.elements"
-      :id="generateId(index)"
+      :data-id="`vertical-${index}`"
       :key="`${layout.path}-${index}`"
       no-gutters
     >
@@ -50,15 +50,6 @@ const layoutRenderer = defineComponent({
   },
   props: {
     ...rendererProps<Layout>(),
-  },
-  methods: {
-    generateId(ind): string {
-      return createId(
-        "vertical-" + ind
-      )
-    },
-  },
-  computed: {
   },
   setup(props: RendererProps<Layout>) {
     return useVuetifyLayout(useJsonFormsLayout(props));

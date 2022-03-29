@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" :class="styles.control.root" :id="id">
+  <div v-if="visible" :class="styles.control.root" :id="id" :data-id="computedLabel.replaceAll(` `, ``)">
     <!-- <label :for="id + '-input'" :class="styles.control.label">
       {{ computedLabel }}
     </label> -->

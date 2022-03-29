@@ -1,5 +1,5 @@
 <template>
-  <div class="mb-8">
+  <div class="mb-8" :data-id="computedLabel.replaceAll(` `, ``)">
     <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': tooltipMessages.length }">
       <legend v-if="computedLabel"
         @click="noData ? addButtonClick() : null"
@@ -31,7 +31,7 @@
       <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
         <array-list-element
           v-for="(item, index) of control.data"
-          :id="generateId(index)"
+          :data-id="`array-item-${index}`"
           @deleted="afterDelete"
           :isRequired="isRequired(item)"
           :key="index"
@@ -254,13 +254,8 @@ const controlRenderer = defineComponent({
         // TODO: find how to import this
         this.handleChange(this.control.path, undefined)
       }
-    },
-    generateId(ind) {
-      return createId(
-        `array-${this.control.id}-${ind}`
-      )
     }
-  },
+  }
 })
 
 export default controlRenderer

@@ -1,5 +1,5 @@
 <template>
-  <div class="my-4">
+  <div class="my-4" :data-id="control.schema.title.replaceAll(` `, ``)">
     <fieldset v-if="control.visible" class="cz-fieldset">
       <legend v-if="control.schema.title" class="v-label--active">{{ control.schema.title }}</legend>
       <template v-if="delegateUISchema">

@@ -1,7 +1,8 @@
 <template>
   <v-text-field
-    :id="computedId"
+    :id="control.id + '-input'"
     :class="styles.control.input"
+    :data-id="computedLabel.replaceAll(` `, ``)"
     :value="control.data"
     :disabled="!control.enabled || control.schema.readOnly"
     :autofocus="appliedOptions.focus"
@@ -60,7 +61,7 @@ const controlRenderer = defineComponent({
         !!this.appliedOptions?.hideRequiredAsterisk
       )
     },
-    computedId(): string {
+    generateId(): string {
       return createId(
         `string-${this.control.id}-input`
       )
