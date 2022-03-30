@@ -6,6 +6,7 @@
     <v-row>
       <v-col
         v-for="(element, index) in layout.uischema.elements"
+        :data-id="`horizontal-${index}`"
         :key="`${layout.path}-${index}`"
         :class="styles.horizontalLayout.item"
       >

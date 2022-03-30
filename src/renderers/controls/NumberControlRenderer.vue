@@ -4,6 +4,7 @@
     :label="computedLabel"
     :step="step"
     :id="control.id + '-input'"
+    :data-id="computedLabel.replaceAll(` `, ``)"
     :class="styles.control.input"
     :value="control.data"
     :disabled="!control.enabled"

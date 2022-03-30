@@ -14,6 +14,7 @@
         :hidden="control.hidden"
         :value="dataDate"
         :id="control.id + '-input'"
+        :data-id="computedLabel.replaceAll(` `, ``)"
         :label="control.label"
         :hint="control.description"
         :error-messages="control.errors"

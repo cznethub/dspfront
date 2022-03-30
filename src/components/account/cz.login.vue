@@ -10,7 +10,7 @@
     <v-card-actions>
       <v-spacer></v-spacer>
       <v-btn @click="onCancel">Cancel</v-btn>
-      <v-btn @click="openLogInDialog()" color="primary">
+      <v-btn id="orcid_login_continue" @click="openLogInDialog()" color="primary">
         <v-icon class="mr-2">fab fa-orcid</v-icon>
         <span>Log In Using ORCID</span>
       </v-btn>
