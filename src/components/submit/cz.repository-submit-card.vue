@@ -10,9 +10,9 @@
           class="has-cursor-pointer transition-swing"
           max-width="40rem"
         >
-
           <v-card-title v-if="!repo.isExternal" class="v-card-media justify-center">
-            <img :src="repo.logoSrc" :alt="repo.name">
+            <v-icon v-if="!repo.isSupported || repo.isComingSoon" class="open-in-new">mdi-open-in-new</v-icon>
+            <div class="repo-logo" :style="{'background-image':`url(${repo.logoSrc})`}"></div>
           </v-card-title>
 
           <v-card-title v-else class="v-card-media justify-center">
@@ -20,15 +20,15 @@
           </v-card-title>
 
           <v-card-title>
-            <div class="text-h4">{{ repo.name }}</div>
+            <div class="text-h4 repo-name">{{ repo.name }}</div>
           </v-card-title>
 
           <v-card-text class="text--secondary">
             <div class="text-subtitle-1">{{ repo.description }}</div>
             
-            <template v-if="repo.isDisabled">
+            <template v-if="repo.isComingSoon">
               <v-divider class="has-space-top has-space-bottom" />
-              <v-chip>Coming soon...</v-chip>
+              <v-chip>CzNet support coming soon...</v-chip>
             </template>
           </v-card-text>
         </v-card>
@@ -57,6 +57,7 @@
     background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);
     height: 10rem; 
     padding: 2rem;
+    position: relative;
 
     img {
       height: 100%;
@@ -65,6 +66,21 @@
 
     .v-icon {
       font-size: 7rem;
+    }
+
+    .repo-logo {
+      width: 100%;
+      height: 100%;
+      background-position: center center;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
+    .v-icon.open-in-new {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      font-size: 1.5rem;
     }
   }
 

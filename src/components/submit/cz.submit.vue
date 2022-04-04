@@ -15,7 +15,7 @@
 
         <div class="mb-4">
           <div class="repositories justify-space-around px-4">
-            <cz-repository-submit-card v-for="repo of repoMetadata" :repo="repo" :key="repo.key" />
+            <cz-repository-submit-card v-for="repo of supportedRepoMetadata" :repo="repo" :key="repo.key" />
             <cz-repository-submit-card :repo="externalRepoMetadata" />
           </div>
         </div>
@@ -30,6 +30,7 @@
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
+  import { IRepository } from '../submissions/types'
   import CzRepositorySubmitCard from '@/components/submit/cz.repository-submit-card.vue'
 
   @Component({
@@ -37,13 +38,13 @@
     components: { CzRepositorySubmitCard },
   })
   export default class CzSubmit extends Vue {
-    protected get repoCollection() {
+    protected get repoCollection(): IRepository[] {
       return Object.keys(repoMetadata)
         .map(r => repoMetadata[r])
     }
 
-    protected get repoMetadata() {
-      return this.repoCollection.filter(r => !r.isExternal)
+    protected get supportedRepoMetadata() {
+      return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
     }
 
     protected get externalRepoMetadata() {

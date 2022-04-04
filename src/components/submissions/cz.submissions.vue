@@ -66,7 +66,6 @@
                 </template>
                 <span>{{ repo.submitTooltip }}</span>
               </v-tooltip>
-              
             </template>
           </v-speed-dial>
         </div>

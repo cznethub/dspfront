@@ -35,26 +35,24 @@
           </template>
 
           <template v-if="step.finish">
-            <v-row>
-              <v-col>
-                <div class="text-heading-5 mb-8">Recommended Repositories:</div>
-                <template v-if="getRepoMetadataFromKeys(step.finish.prefer).length">
-                  <div class="repositories justify-space-around px-4">
-                    <cz-repository-submit-card v-for="preferred in getRepoMetadataFromKeys(step.finish.prefer)" :repo="preferred" :key="preferred.key" class="mb-2" />
-                  </div>
-                </template>
-                <div class="text-subtitle-1 text--secondary" v-else>We have nothing specific to recommend for your query.</div>
-              </v-col>
-
-              <v-col v-if="step.finish.consider && getRepoMetadataFromKeys(step.finish.consider).length">
-                <div class="text-heading-5 my-8">Also consider:</div>
+            <div>
+              <div class="text-heading-5 mb-8">Recommended Repositories:</div>
+              <template v-if="getRepoMetadataFromKeys(step.finish.prefer)">
                 <div class="repositories justify-space-around px-4">
-                  <template v-for="considered in getRepoMetadataFromKeys(step.finish.consider)">
-                    <cz-repository-submit-card :repo="considered" :key="considered.key" class="mb-2" />
-                  </template>
+                  <cz-repository-submit-card v-for="preferred in getRepoMetadataFromKeys(step.finish.prefer)" :repo="preferred" :key="preferred.key" class="mb-2" />
                 </div>
-              </v-col>
-            </v-row>
+              </template>
+              <div class="text-subtitle-1 text--secondary" v-else>We have nothing specific to recommend for your query.</div>
+            </div>
+
+            <div v-if="step.finish.consider && getRepoMetadataFromKeys(step.finish.consider)">
+              <div class="text-heading-5 my-8">Also consider:</div>
+              <div class="repositories justify-space-around px-4">
+                <template v-for="considered in getRepoMetadataFromKeys(step.finish.consider)">
+                  <cz-repository-submit-card :repo="considered" :key="considered.key" class="mb-2" />
+                </template>
+              </div>
+            </div>
           </template>
         </v-stepper-content>
       </v-stepper-items>
@@ -64,7 +62,7 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
-  import { EnumRepositoryKeys } from '../submissions/types'
+  import { EnumRepositoryKeys, IRepository } from '../submissions/types'
   import { repoMetadata } from '@/components/submit/constants'
   import CzRepositorySubmitCard from '@/components/submit/cz.repository-submit-card.vue'
 
@@ -104,10 +102,18 @@
       })
     }
 
-    protected getRepoMetadataFromKeys(repoKeys: string[]) {
+    protected getRepoMetadataFromKeys(repoKeys: string[]): IRepository[] {
       return repoKeys
         .filter(key => !!this.repoMetadata[key])
         .map(key => this.repoMetadata[key])
+        // Uncomment if we want to sort supported repositories first
+        // .sort((a, b) => {
+        //   if (a.isSupported === b.isSupported) {
+        //     return 0
+        //   }
+          
+        //   return a.isSupported ? -1 : 1
+        // })
     }
 
     protected onOptionChanged(option: CzStep) {

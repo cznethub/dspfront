@@ -46,21 +46,21 @@
           "label": "Topographic data",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["zenodo", "panagea"]
+            "consider": ["zenodo", "pangaea"]
           }
         },
         {
           "label": "Soil erosion",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["zenodo", "panagea"]
+            "consider": ["zenodo", "pangaea"]
           }
         },
         {
           "label": "High-resolution (meter to sub-meter scale) topographic data",
           "finish": {
             "prefer": ["openTopography"],
-            "consider": ["zenodo", "panagea"]
+            "consider": ["zenodo", "pangaea"]
           }
         }
       ]
@@ -86,14 +86,14 @@
           "label": "Time series data / sensor data",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["edi", "driad"]
+            "consider": ["edi", "dryad"]
           }
         },
         {
           "label": "Field measurements / experiments",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["edi", "driad"]
+            "consider": ["edi", "dryad"]
           }
         },
         {
@@ -330,26 +330,6 @@
           "label": "Infrastructure locations ",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["zenodo"]
-          }
-        }
-      ]
-    },
-    {
-      "label": "Samples",
-      "next": "What type of files will you be submitting?",
-      "options": [
-        {
-          "label": "",
-          "finish": {
-            "prefer": ["sesar"],
-            "consider": ["zenodo"]
-          }
-        },
-        {
-          "label": "",
-          "finish": {
-            "prefer": ["earthChemLibrary"],
             "consider": ["zenodo"]
           }
         }
