@@ -37,7 +37,7 @@
           <template v-if="step.finish">
             <div>
               <div class="text-heading-5 mb-8">Recommended Repositories:</div>
-              <template v-if="getRepoMetadataFromKeys(step.finish.prefer)">
+              <template v-if="getRepoMetadataFromKeys(step.finish.prefer).length">
                 <div class="repositories justify-space-around px-4">
                   <cz-repository-submit-card v-for="preferred in getRepoMetadataFromKeys(step.finish.prefer)" :repo="preferred" :key="preferred.key" class="mb-2" />
                 </div>
@@ -45,7 +45,7 @@
               <div class="text-subtitle-1 text--secondary" v-else>We have nothing specific to recommend for your query.</div>
             </div>
 
-            <div v-if="step.finish.consider && getRepoMetadataFromKeys(step.finish.consider)">
+            <div v-if="step.finish.consider && getRepoMetadataFromKeys(step.finish.consider).length">
               <div class="text-heading-5 my-8">Also consider:</div>
               <div class="repositories justify-space-around px-4">
                 <template v-for="considered in getRepoMetadataFromKeys(step.finish.consider)">
