@@ -8,7 +8,7 @@
         {
           "label": "Field measurements / experiments / samples",
           "finish": {
-            "prefer": ["earthChemLibrary"],
+            "prefer": ["earthchem"],
             "consider": ["edi"]
           }
         },
@@ -33,7 +33,7 @@
         {
           "label": "Physical samples",
           "finish": {
-            "prefer": ["earthChemLibrary", "sesar"]
+            "prefer": ["earthchem", "sesar"]
           }
         }
       ]

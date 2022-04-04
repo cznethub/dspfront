@@ -58,16 +58,20 @@
               </v-btn>
             </template>
 
-            <template v-for="repo of repoMetadata" >
-              <v-tooltip :key="repo.name" left transition="fade">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs">
-                    {{ repo.name }}
-                  </v-btn>
+            <v-card color="blue-grey lighten-4">
+              <v-card-text>
+                <template v-for="repo of supportedRepoMetadata" >
+                  <v-tooltip :key="repo.name" left transition="fade">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs">
+                        {{ repo.name }}
+                      </v-btn>
+                    </template>
+                    <span>{{ repo.submitTooltip }}</span>
+                  </v-tooltip>
                 </template>
-                <span>{{ repo.submitTooltip }}</span>
-              </v-tooltip>
-            </template>
+              </v-card-text>
+            </v-card>
           </v-speed-dial>
         </div>
 
@@ -298,6 +302,15 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected currentItems = []
   protected loggedInSubject = new Subscription()
 
+  protected get repoCollection(): IRepository[] {
+    return Object.keys(repoMetadata)
+      .map(r => repoMetadata[r])
+  }
+
+  protected get supportedRepoMetadata() {
+    return this.repoCollection.filter(r => r.isExternal || r.isSupported)
+  }
+
   protected get sortBy() {
     return Submission.$state.sortBy
   }
@@ -334,6 +347,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   protected get repoOptions() {
     return Object.keys(repoMetadata)
+      .filter(key => repoMetadata[key].isSupported)
   }
 
   protected get sortOptions() {
@@ -533,8 +547,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
 .v-speed-dial {
   ::v-deep .v-speed-dial__list {
+    width: auto;
+
     .v-btn {
-      width: 12rem;
+      min-width: 12rem;
     }
   }
 }

@@ -11,14 +11,13 @@ export const repoMetadata: { [key: string]: IRepository } = {
     hasFolderStructure: true,
     url: 'https://www.hydroshare.org',
   },
-  [EnumRepositoryKeys.earthChemLibrary]: {
-    key: EnumRepositoryKeys.earthChemLibrary,
+  [EnumRepositoryKeys.earthchem]: {
+    key: EnumRepositoryKeys.earthchem,
     name: 'EarthChem Library',
     logoSrc: require('@/assets/img/earthchem.png'),
     description: 'EarthChem provides open data services to the geochemical, petrological, mineralogical, and related communities. Services include data preservation, discovery, access, and visualization.',
     submitTooltip: 'Submit a dataset to the EarthChem repository.',
     isSupported: true,
-    isComingSoon: true,
     url: 'https://www.earthchem.org',
   },
   [EnumRepositoryKeys.zenodo]: {

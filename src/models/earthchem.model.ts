@@ -7,8 +7,8 @@ import CzNotification from './notifications.model'
 
 const sprintf = require("sprintf-js").sprintf
 
-export default class Zenodo extends Repository {
-  static entity = EnumRepositoryKeys.zenodo
+export default class EarthChem extends Repository {
+  static entity = EnumRepositoryKeys.earthchem
   static baseEntity = 'repository'
 
   static state() {

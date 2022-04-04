@@ -16,6 +16,9 @@ function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
   else if (repo === EnumRepositoryKeys.zenodo) {
     return  `https://sandbox.zenodo.org/deposit/${identifier}`
   }
+  else if (repo === EnumRepositoryKeys.earthchem) {
+    return  `https://ecl.earthchem.org/view.php?id=${identifier}`
+  }
   else if (repo === EnumRepositoryKeys.external) {
     return  `/api/metadata/external/${identifier}`
   }
@@ -84,6 +87,7 @@ export default class Submission extends Model implements ISubmission {
 
   // Used to transform submission data that comes from the repository API
   static getInsertData(apiSubmission, repository: EnumRepositoryKeys, identifier: string): ISubmission | Partial<Submission> {
+    console.log(apiSubmission)
     if (repository === EnumRepositoryKeys.hydroshare) {
       return {
         title: apiSubmission.title,
@@ -93,7 +97,7 @@ export default class Submission extends Model implements ISubmission {
         // date: new Date(apiSubmission.created).getTime(), 
         identifier: identifier,
         metadata: {},
-        url: apiSubmission.url
+        // url: apiSubmission.url
       }
     }
     else if (repository === EnumRepositoryKeys.zenodo) {

@@ -68,6 +68,7 @@ export default class Repository extends Model implements IRepository {
   //   return {
   //     [Zenodo.entity]: Zenodo,
   //     [HydroShare.entity]: HydroShare,
+  //     [EarthChem.entity]: EarthChem,
   //   }
   // }
 

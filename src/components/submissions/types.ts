@@ -11,7 +11,7 @@ export interface ISubmission {
 export enum EnumRepositoryKeys {
   hydroshare = 'hydroshare',
   zenodo = 'zenodo',
-  earthChemLibrary = 'earthChemLibrary',
+  earthchem = 'earthchem',
   external = 'external',
   openTopography = 'openTopography',
   sesar = 'sesar',
