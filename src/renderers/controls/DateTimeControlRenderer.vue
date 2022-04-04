@@ -13,6 +13,7 @@
         :disabled="!control.enabled"
         :value="dataDateTime"
         :id="control.id + '-input'"
+        :data-id="computedLabel.replaceAll(` `, ``)"
         :label="computedLabel"
         :hint="control.description"
         :error-messages="control.errors"

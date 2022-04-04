@@ -2,6 +2,7 @@
   <v-text-field
     :id="control.id + '-input'"
     :class="styles.control.input"
+    :data-id="computedLabel.replaceAll(` `, ``)"
     :value="control.data"
     :disabled="!control.enabled || control.schema.readOnly"
     :autofocus="appliedOptions.focus"

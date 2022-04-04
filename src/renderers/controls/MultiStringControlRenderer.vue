@@ -1,6 +1,7 @@
 <template>
   <v-textarea
     :id="control.id + '-input'"
+    :data-id="computedLabel.replaceAll(` `, ``)"
     @change.native="beforeChange"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined

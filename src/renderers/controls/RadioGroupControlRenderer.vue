@@ -8,6 +8,7 @@
     <v-label :for="control.id + '-input'">{{ computedLabel }}</v-label>
     <v-radio-group
       :id="control.id + '-input'"
+      :data-id="computedLabel.replaceAll(` `, ``)"
       :class="styles.control.input"
       :disabled="!control.enabled"
       :autofocus="appliedOptions.focus"

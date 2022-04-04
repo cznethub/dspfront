@@ -1,8 +1,9 @@
 <template>
-  <fieldset v-if="layout.visible" :class="`cz-fieldset my-8 ${styles.group.root}` " >
+  <fieldset v-if="layout.visible" :class="`cz-fieldset my-8 ${styles.group.root}` " :data-id="generateId">
     <legend v-if="layout.uischema.label" :class="styles.group.label" class="v-label--active">{{ layout.uischema.label }}</legend>
     <div
       v-for="(element, index) in layout.uischema.elements"
+      :data-id="`group-${index}`"
       :key="`${layout.path}-${index}`"
       class="my-4"
       :class="styles.group.item"
@@ -44,6 +45,12 @@ const layoutRenderer = defineComponent({
   },
   props: {
     ...rendererProps<Layout>()
+  },
+  computed: {
+    generateId(): string {
+      // @ts-ignore
+      return `group-${this.layout.uischema.label.replaceAll(" ", "")}`
+    },
   },
   setup(props: RendererProps<Layout>) {
     return useVuetifyLayout(

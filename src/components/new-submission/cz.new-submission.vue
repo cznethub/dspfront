@@ -104,7 +104,6 @@
     </v-dialog>
 
     <v-dialog
-      id="is-saving"
       :value="isSaving"
       no-click-animation
       hide-overlay
@@ -118,7 +117,7 @@
         dark
       >
         <v-card-text >
-          <p>Saving...</p>
+          <p id="new-submission-saving">Saving...</p>
           <v-progress-linear
             indeterminate
             color="white"

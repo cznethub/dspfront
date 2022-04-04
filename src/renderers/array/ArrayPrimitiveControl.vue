@@ -11,6 +11,7 @@
         @input="onTagsChange"
         hide-no-data
         :label="computedLabel"
+        :data-id="computedLabel.replaceAll(` `, ``)"
         :hint="control.description"
         :delimiters="[',']"
         :error-messages="control.errors"

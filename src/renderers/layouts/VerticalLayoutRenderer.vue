@@ -5,6 +5,7 @@
   >
     <v-row
       v-for="(element, index) in layout.uischema.elements"
+      :data-id="`vertical-${index}`"
       :key="`${layout.path}-${index}`"
       no-gutters
     >
@@ -38,6 +39,7 @@ import {
 } from '@jsonforms/vue2';
 import { useVuetifyLayout } from '@jsonforms/vue2-vuetify'
 import { VContainer, VRow, VCol } from 'vuetify/lib';
+import { createId } from '@jsonforms/core'
 const layoutRenderer = defineComponent({
   name: 'vertical-layout-renderer',
   components: {
