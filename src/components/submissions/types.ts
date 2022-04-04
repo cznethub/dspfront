@@ -13,8 +13,33 @@ export enum EnumRepositoryKeys {
   zenodo = 'zenodo',
   earthChemLibrary = 'earthChemLibrary',
   external = 'external',
-  // openTopography = 'openTopography',
-  // sesar = 'sesar',
+  openTopography = 'openTopography',
+  sesar = 'sesar',
+  dryad = 'dryad',
+  pangaea = 'pangaea',
+  edi = 'edi',
+  scienceBase = 'scienceBase',
+  osf = 'osf',
+  geo = 'geo',
+  bioSample = 'bioSample',
+  sra = 'sra',
+  itrdb = 'itrdb',
+  mgds = 'mgds',
+  harvardDataverse = 'harvardDataverse',
+  figshare = 'figshare',
+  magIc = 'magIc',
+  ornlDaac = 'ornlDaac',
+  bcoDmo = 'bcoDmo',
+  vegBank = 'vegBank',
+  essDive = 'geo',
+  socib = 'socib',
+  polarRock = 'polarRock',
+  crystalography = 'crystalography',
+  digitalRocksPortal = 'digitalRocksPortal',
+  doe = 'doe',
+  scienceDataBank = 'scienceDataBank',
+  tpdc = 'tpdc',
+  dataOne = 'dataOne',
   // other = 'other'
 }
 
@@ -60,6 +85,8 @@ export interface IRepository {
   uischema?: any
   schemaDefaults?: any
   isDisabled?: boolean
+  isSupported?: boolean
+  isComingSoon?: boolean
   isExternal?: boolean
   hasFolderStructure?: boolean
   url?: string,
