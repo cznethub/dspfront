@@ -1,27 +1,33 @@
 <template>
-  <div class="mb-8">
-    <v-container fluid v-if="control.visible" class="cz-fieldset"
-      :class="{'is-invalid': control.errors.length }">
-      <legend v-if="control.schema.title" class="v-label--active">{{ computedLabel }}</legend>
-      <v-row>
-        <v-col v-for="(o, index) in control.options" :key="o.value">
-          <v-checkbox
-            :label="o.label"
-            :input-value="dataHasEnum(o.value)"
-            :id="control.id + `-input-${index}`"
-            :path="composePaths(control.path, `${index}`)"
-            :error-messages="control.errors"
-            :disabled="!control.enabled"
-            @change="(value) => toggle(o.value, value)"
-          />
-        </v-col>
-      </v-row>
-    </v-container>
-    <div v-if="control.errors" class="ml-2 v-messages error--text"
-      :class="styles.control.error">
-      {{ control.errors }}
-    </div>
-  </div>
+  <v-hover v-slot="{ hover }">
+    <v-select
+      @change="onChange"
+      :id="control.id + '-input'"
+      :data-id="computedLabel.replaceAll(` `, ``)"
+      :class="styles.control.input"
+      :disabled="!control.enabled || control.schema.readOnly"
+      :autofocus="appliedOptions.focus"
+      :placeholder="appliedOptions.placeholder"
+      :label="computedLabel"
+      :hint="control.description"
+      :required="control.required"
+      :error-messages="control.errors"
+      :clearable="hover && !control.schema.readOnly"
+      :value="control.data"
+      :items="control.options"
+      :readonly="control.schema.readOnly"
+      small-chips
+      deletable-chips
+      persistent-hint
+      class="my-2"
+      item-text="label"
+      item-value="value"
+      outlined
+      dense
+      multiple
+      chips
+    ></v-select>
+  </v-hover>
 </template>
 
 <script lang="ts">
@@ -46,6 +52,7 @@ import {
   RendererProps,
   useControl,
   ControlProps,
+  useJsonFormsControl,
 } from '@jsonforms/vue2';
 import { defineComponent } from "@vue/composition-api"
 import { useVuetifyBasicControl } from '@jsonforms/vue2-vuetify'
@@ -60,6 +67,8 @@ const useJsonFormsMultiEnumControl = (props: ControlProps) => {
   );
 };
 
+import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
+
 const controlRenderer = defineComponent({
   name: 'enum-array-renderer',
   components: {
@@ -73,19 +82,18 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>(),
   },
   setup(props: RendererProps<ControlElement>) {
-    return useVuetifyBasicControl(useJsonFormsMultiEnumControl(props));
+    return {
+      ...useVuetifyControl(
+        useJsonFormsControl(props),
+        (value) => value || undefined
+      ),  // Needed for handleChange function
+      ...useVuetifyBasicControl(
+        useJsonFormsMultiEnumControl(props)
+      )
+    }
   },
   created() {
-    console.log(this.control)
-  },
-  computed: {
-    computedLabel(): string {
-      return computeLabel(
-        this.control.label as string,
-        this.control.required,
-        !!this.appliedOptions?.hideRequiredAsterisk
-      );
-    }
+    // console.log(this.control)
   },
   methods: {
     dataHasEnum(value: any) {
