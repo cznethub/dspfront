@@ -263,6 +263,9 @@ export default class Repository extends Model implements IRepository {
           case EnumRepositoryKeys.external:
             identifier = response.data.identifier
             break
+          case EnumRepositoryKeys.gitlab:
+            identifier = response.data.id
+            break
         }
 
         return {

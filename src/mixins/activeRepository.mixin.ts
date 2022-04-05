@@ -6,6 +6,7 @@ import Zenodo from '@/models/zenodo.model'
 import Repository from '@/models/repository.model'
 import External from '@/models/external.model'
 import EarthChem from '@/models/earthchem.model'
+import GitLab from '@/models/gitlab.model'
 
 @Component
 export class ActiveRepositoryMixin extends Vue {
@@ -19,6 +20,7 @@ export class ActiveRepositoryMixin extends Vue {
       case EnumRepositoryKeys.hydroshare: return HydroShare
       case EnumRepositoryKeys.zenodo: return Zenodo
       case EnumRepositoryKeys.earthchem: return EarthChem
+      case EnumRepositoryKeys.gitlab: return GitLab
       case EnumRepositoryKeys.external: return External
       default: return HydroShare
     }

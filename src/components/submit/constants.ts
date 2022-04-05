@@ -38,6 +38,16 @@ export const repoMetadata: { [key: string]: IRepository } = {
     isExternal: true,
     submitTooltip: 'Register a dataset submitted to another repository.'
   },
+  [EnumRepositoryKeys.gitlab]: {
+    key: EnumRepositoryKeys.gitlab,
+    name: 'GitLab',
+    logoSrc: require('@/assets/img/hydroshare.png'),
+    description: 'Git resource for working records',
+    submitTooltip: 'Submit a dataset to a git repository hosted on gitlab.',
+    isSupported: true,
+    hasFolderStructure: true,
+    url: 'https://gitlab.com',
+  },
   [EnumRepositoryKeys.sesar]: {
     key: EnumRepositoryKeys.sesar,
     name: 'System for Earth Sample Registration (SESAR)',

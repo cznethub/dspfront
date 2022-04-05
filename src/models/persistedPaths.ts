@@ -5,6 +5,7 @@ import Repository from "./repository.model";
 import External from "./external.model";
 import Submission from "./submission.model";
 import EarthChem from "./earthchem.model";
+import GitLab from './gitlab.model'
 
 export const persistedPaths = [
   'entities.' + User.entity,
@@ -13,6 +14,7 @@ export const persistedPaths = [
   'entities.' + HydroShare.entity,
   'entities.' + EarthChem.entity,
   'entities.' + External.entity,
+  'entities.' + GitLab.entity,
   'entities.' + Submission.entity + '.sortBy',
   'entities.' + Submission.entity + '.sortDirection',
   'entities.' + Submission.entity + '.itemsPerPage',

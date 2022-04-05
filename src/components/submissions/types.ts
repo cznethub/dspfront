@@ -13,6 +13,7 @@ export enum EnumRepositoryKeys {
   zenodo = 'zenodo',
   earthchem = 'earthchem',
   external = 'external',
+  gitlab = 'gitlab',
   openTopography = 'openTopography',
   sesar = 'sesar',
   dryad = 'dryad',

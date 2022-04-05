@@ -19,6 +19,9 @@ function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
   else if (repo === EnumRepositoryKeys.earthchem) {
     return  `https://ecl.earthchem.org/view.php?id=${identifier}`
   }
+  else if (repo === EnumRepositoryKeys.gitlab) {
+    return  `https://gitlab.com/view.php?id=${identifier}`
+  }
   else if (repo === EnumRepositoryKeys.external) {
     return  `/api/metadata/external/${identifier}`
   }
@@ -117,6 +120,15 @@ export default class Submission extends Model implements ISubmission {
         repository: repository,
         identifier: identifier,
         url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
+      }
+    }
+    else if (repository === EnumRepositoryKeys.gitlab) {
+      return {
+        title: apiSubmission.title,
+        authors: apiSubmission.creators.map(c => c.name),
+        repository: repository,
+        identifier: identifier,
+        metadata: {},
       }
     }
     else if (repository === EnumRepositoryKeys.external) {

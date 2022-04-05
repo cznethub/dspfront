@@ -7,6 +7,7 @@ import HydroShare from './hydroshare.model'
 import CzNotification from './notifications.model'
 import External from './external.model'
 import EarthChem from './earthchem.model'
+import GitLab from './gitlab.model'
 
 /**
  * Register all the Models here.
@@ -22,6 +23,7 @@ db.register(Zenodo)
 db.register(HydroShare)
 db.register(EarthChem)
 db.register(External)
+db.register(GitLab)
 db.register(CzNotification)
 
 export const orm = db
