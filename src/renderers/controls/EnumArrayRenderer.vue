@@ -1,20 +1,27 @@
 <template>
-  <v-container fluid v-if="control.visible" class="cz-fieldset">
-    <legend v-if="control.schema.title" class="v-label--active">{{ control.schema.title }}</legend>
-    <v-row>
-      <v-col v-for="(o, index) in control.options" :key="o.value">
-        <v-checkbox
-          :label="o.label"
-          :input-value="dataHasEnum(o.value)"
-          :id="control.id + `-input-${index}`"
-          :path="composePaths(control.path, `${index}`)"
-          :error-messages="control.errors"
-          :disabled="!control.enabled"
-          @change="(value) => toggle(o.value, value)"
-        />
-      </v-col>
-    </v-row>
-  </v-container>
+  <div class="mb-8">
+    <v-container fluid v-if="control.visible" class="cz-fieldset"
+      :class="{'is-invalid': control.errors.length }">
+      <legend v-if="control.schema.title" class="v-label--active">{{ computedLabel }}</legend>
+      <v-row>
+        <v-col v-for="(o, index) in control.options" :key="o.value">
+          <v-checkbox
+            :label="o.label"
+            :input-value="dataHasEnum(o.value)"
+            :id="control.id + `-input-${index}`"
+            :path="composePaths(control.path, `${index}`)"
+            :error-messages="control.errors"
+            :disabled="!control.enabled"
+            @change="(value) => toggle(o.value, value)"
+          />
+        </v-col>
+      </v-row>
+    </v-container>
+    <div v-if="control.errors" class="ml-2 v-messages error--text"
+      :class="styles.control.error">
+      {{ control.errors }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -42,6 +49,7 @@ import {
 } from '@jsonforms/vue2';
 import { defineComponent } from "@vue/composition-api"
 import { useVuetifyBasicControl } from '@jsonforms/vue2-vuetify'
+import { computeLabel } from '@jsonforms/core'
 
 //TODO: move into JsonForm Vue project under src/components/jsonFormsCompositions.ts
 const useJsonFormsMultiEnumControl = (props: ControlProps) => {
@@ -69,6 +77,15 @@ const controlRenderer = defineComponent({
   },
   created() {
     console.log(this.control)
+  },
+  computed: {
+    computedLabel(): string {
+      return computeLabel(
+        this.control.label as string,
+        this.control.required,
+        !!this.appliedOptions?.hideRequiredAsterisk
+      );
+    }
   },
   methods: {
     dataHasEnum(value: any) {
