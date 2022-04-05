@@ -19,12 +19,16 @@
   import { radioGroupControlRenderer } from './controls/RadioGroupControlRenderer.vue'
   import { verticalLayoutRenderer } from './layouts/VerticalLayoutRenderer.vue'
   import { horizontalLayoutRenderer } from './layouts/HorizontalLayoutRenderer.vue'
+  import { integerControlRenderer } from './controls/IntegerControlRenderer.vue'
+  import { anyOfStringOrControlRenderer } from './controls/AnyOfStringOrControlRenderer.vue'
+  import { enumArrayRenderer } from './controls/EnumArrayRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
 
   export const CzRenderers: JsonFormsRendererRegistryEntry[] = [
     enumControlRenderer,
+    enumArrayRenderer,
     arrayControlRenderer,
     groupRenderer,
     numberControlRenderer,
@@ -38,6 +42,8 @@
     allOfRenderer,
     radioGroupControlRenderer,
     verticalLayoutRenderer,
-    horizontalLayoutRenderer
+    horizontalLayoutRenderer,
+    integerControlRenderer,
+    anyOfStringOrControlRenderer
   ]
 </script>

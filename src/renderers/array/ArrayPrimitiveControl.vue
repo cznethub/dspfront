@@ -90,6 +90,7 @@ const controlRenderer = defineComponent({
     };
   },
   created() {
+    console.log(this.control)
     // If no initial value, load default
     if (!this.control.data && this.control.schema.default) {
       this.tags = this.control.schema.default
@@ -101,7 +102,7 @@ const controlRenderer = defineComponent({
     }
 
     // @ts-ignore
-    const requiredValues = this.control.schema.contains.enum
+    const requiredValues = this.control.schema.contains?.enum
 
     if (requiredValues) {
       if (this.control.data) {
