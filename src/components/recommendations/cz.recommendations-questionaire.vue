@@ -39,7 +39,7 @@
               <div class="text-heading-5 mb-8">Recommended Repositories:</div>
               <template v-if="getRepoMetadataFromKeys(step.finish.prefer).length">
                 <div class="repositories justify-space-around px-4">
-                  <cz-repository-submit-card v-for="preferred in getRepoMetadataFromKeys(step.finish.prefer)" :repo="preferred" :key="preferred.key" class="mb-2" />
+                  <cz-repository-submit-card v-for="preferred in getRepoMetadataFromKeys(step.finish.prefer)" :repo="preferred" :key="preferred.key" :hideLogo="true" class="mb-2" />
                 </div>
               </template>
               <div class="text-subtitle-1 text--secondary" v-else>We have nothing specific to recommend for your query.</div>
@@ -49,7 +49,7 @@
               <div class="text-heading-5 my-8">Also consider:</div>
               <div class="repositories justify-space-around px-4">
                 <template v-for="considered in getRepoMetadataFromKeys(step.finish.consider)">
-                  <cz-repository-submit-card :repo="considered" :key="considered.key" class="mb-2" />
+                  <cz-repository-submit-card :repo="considered" :key="considered.key" :hideLogo="true" class="mb-2" />
                 </template>
               </div>
             </div>
