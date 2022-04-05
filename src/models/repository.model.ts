@@ -247,19 +247,32 @@ export default class Repository extends Model implements IRepository {
           params: { "access_token": User.$state.orcidAccessToken }
         }
       )
-      if (response.status === 201) {
+      if (response?.status === 201) {
         // TODO: get these identifiers from the backend
-        return { 
-          identifier: 
-            (response.data.identifier ? response.data.identifier.split('/').pop() : '')   // HydroShare
-            || response.data.prereserve_doi.recid                                         // Zenodo
-            || response.data.identifier,                                                  // External
-            formMetadata: response.data
+        let identifier = ''
+        switch (this.entity) {
+          case EnumRepositoryKeys.hydroshare:
+            identifier = response.data.identifier?.split('/').pop()
+            break
+          case EnumRepositoryKeys.zenodo:
+            identifier = response.data.prereserve_doi?.recid
+            break
+          case EnumRepositoryKeys.earthchem:
+            identifier = response.data.id
+            break
+          case EnumRepositoryKeys.external:
+            identifier = response.data.identifier
+            break
+        }
+
+        return {
+          identifier,
+          formMetadata: response.data
         }
       }
     }
     catch(e: any) {
-      if (e.response.status === 401) {
+      if (e.response?.status === 401) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''

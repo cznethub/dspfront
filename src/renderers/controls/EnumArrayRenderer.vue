@@ -1,7 +1,7 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-select
-      @change="onChange"
+      @change="beforeChange"
       :id="control.id + '-input'"
       :data-id="computedLabel.replaceAll(` `, ``)"
       :class="styles.control.input"
@@ -16,6 +16,8 @@
       :value="control.data"
       :items="control.options"
       :readonly="control.schema.readOnly"
+      dense
+      chips
       small-chips
       deletable-chips
       persistent-hint
@@ -23,10 +25,8 @@
       item-text="label"
       item-value="value"
       outlined
-      dense
       multiple
-      chips
-    ></v-select>
+    />
   </v-hover>
 </template>
 
@@ -100,14 +100,15 @@ const controlRenderer = defineComponent({
       return !!this.control.data?.includes(value);
     },
     composePaths,
-    toggle(value: any, add: boolean) {
-      if (add) {
-        this.addItem(this.control.path, value);
-      } else {
-        // mistyped in core
-        this.removeItem?.(this.control.path, value);
+    // If value changed to an empty array, we need to set the data to undefined in order to trigger validation errors
+    beforeChange(items) {
+      if (!items.length) {
+        this.handleChange(this.control.path, undefined)
       }
-    },
+      else {
+        this.onChange(items)
+      }
+    }
   },
 });
 

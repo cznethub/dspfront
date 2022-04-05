@@ -87,7 +87,6 @@ export default class Submission extends Model implements ISubmission {
 
   // Used to transform submission data that comes from the repository API
   static getInsertData(apiSubmission, repository: EnumRepositoryKeys, identifier: string): ISubmission | Partial<Submission> {
-    console.log(apiSubmission)
     if (repository === EnumRepositoryKeys.hydroshare) {
       return {
         title: apiSubmission.title,
@@ -107,6 +106,15 @@ export default class Submission extends Model implements ISubmission {
         repository: repository,
         // Zenodo returns a date, and we need a datetime, so we don't override the one we stored on creation
         // date: 
+        identifier: identifier,
+        url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
+      }
+    }
+    else if (repository === EnumRepositoryKeys.earthchem) {
+      return {
+        title: apiSubmission.title,
+        authors: apiSubmission.authors.map(a => `${a.familyName}, ${a.givenName}`),
+        repository: repository,
         identifier: identifier,
         url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
       }

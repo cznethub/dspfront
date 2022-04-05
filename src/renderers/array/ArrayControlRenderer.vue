@@ -152,7 +152,6 @@ const controlRenderer = defineComponent({
     }
   },
   created() {
-    // console.log(this.control)
     // @ts-ignore
     const requiredItems = this.control.schema.contains?.enum || []
     

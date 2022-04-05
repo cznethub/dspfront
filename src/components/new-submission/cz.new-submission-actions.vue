@@ -52,7 +52,7 @@ export default class CzNewSubmissionActions extends Vue {
 
   protected getTitle(error: any) {
     const propName = error.dataPath.split('.').pop()
-    return error.schema[propName]?.title || error.dataPath
+    return error.schema[propName]?.title || error.dataPath.split('.').pop()
   }
 }
 </script>
