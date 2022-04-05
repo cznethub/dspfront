@@ -113,7 +113,7 @@ export default class Submission extends Model implements ISubmission {
     else if (repository === EnumRepositoryKeys.earthchem) {
       return {
         title: apiSubmission.title,
-        authors: apiSubmission.authors.map(a => `${a.familyName}, ${a.givenName}`),
+        authors: apiSubmission.creators?.map(a => `${a.familyName}, ${a.givenName}`),
         repository: repository,
         identifier: identifier,
         url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
