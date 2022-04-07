@@ -124,6 +124,10 @@ const controlRenderer = defineComponent({
   created() {
     this.isAdded = !!(this.control.data)
   },
+  mounted() {
+    // indexOfFittingSchema is only populated after mounted hook
+    this.selectedIndex = this.control.indexOfFittingSchema || 0
+  },
   computed: {
     subSchema(): JsonSchema {
       return resolveSubSchemas(
