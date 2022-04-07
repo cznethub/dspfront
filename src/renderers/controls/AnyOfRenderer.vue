@@ -1,6 +1,6 @@
 <template>
-  <div class="my-4" :data-id="control.schema.title.replaceAll(` `, ``)">
-    <fieldset v-if="control.visible" :class="styles.control.root" class="cz-fieldset">
+  <div class="my-4">
+    <fieldset v-if="control.visible" :class="styles.control.root" class="cz-fieldset" :data-id="control.schema.title.replaceAll(` `, ``)">
       <legend v-if="control.uischema.label" 
         @click="showForm()" :class="{ 'v-label--active': isAdded }" class="v-label">{{ control.uischema.label }}</legend>
 
@@ -123,10 +123,6 @@ const controlRenderer = defineComponent({
   },
   created() {
     this.isAdded = !!(this.control.data)
-  },
-  mounted() {
-    // indexOfFittingSchema is only populated after mounted hook
-    this.selectedIndex = this.control.indexOfFittingSchema || 0
   },
   computed: {
     subSchema(): JsonSchema {
