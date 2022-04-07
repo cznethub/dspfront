@@ -32,10 +32,14 @@ export class ActiveRepositoryMixin extends Vue {
     if (repo.isDisabled) {
       return
     }
-    if (Object.keys(EnumRepositoryKeys).includes(repo.key)) {
+
+    if (repo.isSupported && !repo.isComingSoon) {
       this.setActiveRepository(repo.key)
+      this.$router.push({ name: 'submit.repository', params: { repository: repo.key } })
+      .catch(() => {})
     }
-    this.$router.push({ name: 'submit.repository', params: { repository: repo.key } })
-    .catch(() => {})
+    else {
+      window.open(repo.url, '_blank')
+    }
   }
 }

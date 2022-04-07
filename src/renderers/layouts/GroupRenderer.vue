@@ -48,6 +48,7 @@ const layoutRenderer = defineComponent({
   },
   computed: {
     generateId(): string {
+      // @ts-ignore
       return `group-${this.layout.uischema.label.replaceAll(" ", "")}`
     },
   },
