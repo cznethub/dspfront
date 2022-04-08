@@ -329,7 +329,8 @@ export default class App extends Vue {
       HydroShare.init(),
       EarthChem.init(),
       Zenodo.init(),
-      External.init()
+      External.init(),
+      GitLab.init()
     ])
   }
 
