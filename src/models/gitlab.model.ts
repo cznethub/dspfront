@@ -3,6 +3,7 @@ import { IFile, IFolder } from '@/components/new-submission/types'
 import axios from "axios"
 import Repository from './repository.model'
 import CzNotification from './notifications.model'
+import User from "@/models/user.model";
 
 const sprintf = require("sprintf-js").sprintf
 
@@ -18,7 +19,7 @@ export default class GitLab extends Repository {
 
   static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
     const uploadPromises: Promise<boolean>[] = itemsToUpload.map((file) => {
-      return _uploadFile(file, this.accessToken)
+      return _uploadFile(file, User.$state.orcidAccessToken)
     })
 
     async function _uploadFile(file, accessToken) {
@@ -70,7 +71,7 @@ export default class GitLab extends Repository {
 
     const response = await axios.get(
       folderReadUrl,
-      { params: { "access_token": this.accessToken } }
+      { params: { "access_token": User.$state.orcidAccessToken } }
     )
     if (response.status === 200) {
       const files: IFile[] = response.data.map((file: any): IFile => {
@@ -111,7 +112,7 @@ export default class GitLab extends Repository {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-          params: { "access_token": this.accessToken }
+          params: { "access_token": User.$state.orcidAccessToken }
         }
       )
 
@@ -134,7 +135,7 @@ export default class GitLab extends Repository {
 
     try {
       const response = await axios.delete(deleteUrl, {
-        params: { "access_token": this.accessToken }
+        params: { "access_token": User.$state.orcidAccessToken }
       })
 
       if (response.status === 200 || response.status === 204) {
