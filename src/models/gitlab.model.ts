@@ -76,7 +76,7 @@ export default class GitLab extends Repository {
     if (response.status === 200) {
       const files: IFile[] = response.data.map((file: any): IFile => {
         return {
-          name: file.filename,
+          name: file.name,
           parent: rootDirectory,
           isRenaming: false,
           isCutting: false,
