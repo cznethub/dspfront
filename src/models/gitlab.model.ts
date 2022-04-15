@@ -18,10 +18,6 @@ export default class GitLab extends Repository {
   }
 
   static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
-    const uploadPromises: Promise<boolean>[] = itemsToUpload.map((file) => {
-      return _uploadFile(file, User.$state.orcidAccessToken)
-    })
-
     async function _uploadFile(file, accessToken) {
       const url = bucketUrl // new api
       const form = new window.FormData()
@@ -45,49 +41,76 @@ export default class GitLab extends Repository {
       return false
     }
 
-    const response = await Promise.allSettled(uploadPromises)
-
-    itemsToUpload.map((f, index) => {
-      if (response[index].status !== 'fulfilled') {
-        // Uplaod failed for this file
-        f.parent.children = f.parent.children.filter(file => file.name !== f.name)
-      }
+    const uploadPromises: Promise<boolean>[] = itemsToUpload.map((file) => {
+      return _uploadFile(file, User.$state.orcidAccessToken)
     })
-    console.log(response)
 
-    // TODO: figure out how to identify that fail was due to a name that already exists
-    if (response.some(r => r.status === 'rejected')) {
-      CzNotification.toast({ message: 'Some of your files failed to upload'})
-    }
+    const response = await Promise.allSettled(uploadPromises)
   }
 
   static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
-    const url = this.get()?.urls?.fileReadUrl
+    return this._readFolderRecursive(identifier, path, rootDirectory)
+  }
+
+  private static async _readFolderRecursive(identifier: string, path: string, folder: IFolder): Promise<(IFile | IFolder)[]> {
+    const url = this.get()?.urls?.folderReadUrl
     const folderReadUrl = sprintf(
       url,
       identifier,
-      // encodeURIComponent(path || '')
+      encodeURIComponent(path || ' ') // HydroShare accepts ' ' to indicate root directory
     )
 
-    const response = await axios.get(
-      folderReadUrl,
-      { params: { "access_token": User.$state.orcidAccessToken } }
-    )
-    if (response.status === 200) {
-      const files: IFile[] = response.data.map((file: any): IFile => {
-        return {
-          name: file.name,
-          parent: rootDirectory,
-          isRenaming: false,
-          isCutting: false,
-          isDisabled: false,
-          key: file.id, // We use the file id in this case, so we can use it again as reference to edit files
-          path: path,
-          file: null,
+    try {
+      const response = await axios.get(
+        folderReadUrl,
+        { params: { "access_token": User.$state.orcidAccessToken, "path": path} }
+      )
+
+      if (response.status === 200) {
+        const files: IFile[] = response.data.files.map((f: any, index: number): IFile => {
+          return {
+            name: f.name,
+            parent: folder,
+            isRenaming: false,
+            isCutting: false,
+            isDisabled: false,
+            key: `${Date.now().toString()}-a-${index}`,
+            path: path,
+            file: null,
+          }
+        })
+
+        const folders: IFolder[] = response.data.folders.map((f: any, index: number): IFolder => {
+          return {
+            name: f.name,
+            parent: folder,
+            isRenaming: false,
+            isCutting: false,
+            isDisabled: false,
+            key: `${Date.now().toString()}-b-${index}`,
+            path: path,
+            children: [],
+          }
+        })
+
+        if (folders.length) {
+          console.log(folders)
+          const readSubfolderPromises: (Promise<(IFile | IFolder)[]>)[] = folders.map((f: IFolder) => {
+            const newPath = path ? `${path}/${f.name}` : f.name
+            return this._readFolderRecursive(identifier, newPath, f)
+          })
+          const responses: (IFile | IFolder)[][] = await Promise.all(readSubfolderPromises)
+
+          folders.map((f, i) => {
+            f.children = responses[i] || []
+          })
         }
-      })
 
-      return files
+        return [...folders, ...files]
+      }
+    }
+    catch(e: any) {
+      console.log(e)
     }
 
     return []
