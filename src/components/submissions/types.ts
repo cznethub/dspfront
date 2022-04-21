@@ -90,5 +90,6 @@ export interface IRepository {
   isExternal?: boolean
   hasFolderStructure?: boolean
   url?: string,
+  supportUrl?: string,
   submitTooltip?: string
 }

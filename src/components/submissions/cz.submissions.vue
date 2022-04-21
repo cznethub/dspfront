@@ -271,15 +271,15 @@ import {
   EnumSortDirections,
   IRepository,
 } from "@/components/submissions/types"
-import { repoMetadata } from "../submit/constants"
+import { repoMetadata } from "@/components/submit/constants"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { Subscription } from "rxjs"
+import { itemsPerPageArray } from '@/components/submissions/constants'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
-import { itemsPerPageArray } from '@/components/submissions/constants'
 
 @Component({
   name: "cz-submissions",

@@ -8,7 +8,6 @@
           :disabled="repo.isDisabled"
           :class="`elevation-${ hover ? 12 : 2 }`"
           class="has-cursor-pointer transition-swing"
-          max-width="40rem"
         >
           <v-icon v-if="!repo.isSupported || repo.isComingSoon" class="open-in-new">mdi-open-in-new</v-icon>
           <template v-if="!hideLogo">
@@ -46,7 +45,7 @@
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
   @Component({
-    name: 'cz-submit',
+    name: 'cz-repository-submit-card',
     components: { },
   })
   export default class CzRepositorySubmitCard extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
