@@ -52,17 +52,19 @@
             <template v-if="getRepoMetadataFromKeys(step.finish.prefer).length">
               <div class="repositories justify-space-around px-1">
                 <cz-recommendation-card v-for="preferred in getRepoMetadataFromKeys(step.finish.prefer)"
-                  :repo="preferred" :key="preferred.key" :hideLogo="false" class="mb-2" />
+                  :repo="preferred" :key="preferred.key" :hideLogo="false" class="mb-4" />
               </div>
             </template>
             <div class="text-subtitle-1 text--secondary" v-else>We have nothing specific to recommend for this query.</div>
 
             <div v-if="step.finish.consider && getRepoMetadataFromKeys(step.finish.consider).length">
               <div class="text-heading-5 my-8">Also consider:</div>
-              <div class="repositories justify-space-around px-1">
+              <ul class="repositories px-1">
                 <template v-for="considered in getRepoMetadataFromKeys(step.finish.consider)">
                   <template v-if="considered.isSupported">
-                    <cz-recommendation-card :repo="considered" :key="considered.key" :hideLogo="true" class="mb-4" />
+                    <li :key="considered.key">
+                      <cz-recommendation-card :repo="considered" class="mb-4" />
+                    </li>
                   </template>
                   <template v-else>
                     <li :key="considered.key" class="my-2">
@@ -72,7 +74,7 @@
                     </li>
                   </template>
                 </template>
-              </div>
+              </ul>
             </div>
           </template>
         </v-stepper-content>
@@ -139,14 +141,14 @@
       return repoKeys
         .filter(key => !!this.repoMetadata[key])
         .map(key => this.repoMetadata[key])
-        // Uncomment if we want to sort supported repositories first
-        // .sort((a, b) => {
-        //   if (a.isSupported === b.isSupported) {
-        //     return 0
-        //   }
+        // Sort supported repositories first
+        .sort((a, b) => {
+          if (a.isSupported === b.isSupported) {
+            return 0
+          }
           
-        //   return a.isSupported ? -1 : 1
-        // })
+          return a.isSupported ? -1 : 1
+        })
     }
 
     protected onOptionChanged(option: CzStep) {
