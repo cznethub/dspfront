@@ -216,7 +216,7 @@ export default class Repository extends Model implements IRepository {
         this.commit((state) => {
           state.accessToken = ''
         })
-        if (e.response.status === 404) {
+        if (e.response?.status === 404) {
           // Token not set
         }
         else {
@@ -411,7 +411,7 @@ export default class Repository extends Model implements IRepository {
           message: 'Authorization token is invalid or has expired.'
         })
 
-        Repository.openAuthorizeDialog(this.entity)
+        Repository.openAuthorizeDialog(repository)
       }
       else {
         console.error(`${repository}: failed to read submission.`, e.response)

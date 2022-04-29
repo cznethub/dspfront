@@ -279,7 +279,7 @@ export default class App extends Vue {
           else if (params.repository === EnumRepositoryKeys.zenodo) {
             await Zenodo.init()
           }
-           else if (params.repository === EnumRepositoryKeys.earthchem) {
+          else if (params.repository === EnumRepositoryKeys.earthchem) {
             await EarthChem.init()
           }
           this.$router.push(params.redirectTo)
