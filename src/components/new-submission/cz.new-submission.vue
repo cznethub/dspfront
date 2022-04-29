@@ -83,9 +83,19 @@
       />
     </div>
 
-    <v-container v-if="!isLoading && !wasLoaded">
+    <v-container v-if="isLoading">
       <v-skeleton-loader type="actions, article, actions"></v-skeleton-loader>
     </v-container>
+
+    <template v-if="!isLoading && !wasLoaded">
+      <v-alert class="text-subtitle-1" border="left" colored-border type="error" elevation="2">
+        We could not load this submission. The service might be unavailable or  the submission might have been deleted.
+      </v-alert>
+
+      <div class="d-flex justify-center mt-8">
+        <v-icon style="font-size: 8rem;" class="text--disabled">mdi-database-off-outline</v-icon>
+      </div>
+    </template>
 
     <v-dialog id="show-ui-schema" v-if="isDevMode" v-model="showUISchema">
       <v-card>
@@ -295,6 +305,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     console.info("CzNewSubmission: reading existing record...")
     this.repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
 
+    console.log(this.repositoryRecord)
+
     // TODO: all of this should be cleaned in the backend. Make fields with null values undefined
     if (this.repositoryRecord) {
       Object.keys(this.repositoryRecord).map((key) => {
@@ -302,6 +314,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
           this.repositoryRecord[key] = undefined
         }
       })
+    }
+    else {
+      this.isLoading = false
+      return
     }
 
     console.info("CzNewSubmission: reading existing files...")
