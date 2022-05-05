@@ -2,7 +2,7 @@
   <div class="mb-8" :data-id="computedLabel.replaceAll(` `, ``)">
     <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': tooltipMessages.length }">
       <legend v-if="computedLabel"
-        @click="noData ? addButtonClick() : null"
+        @click="noData && control.enabled ? addButtonClick() : null"
         class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
         {{ computedLabel }}
       </legend>

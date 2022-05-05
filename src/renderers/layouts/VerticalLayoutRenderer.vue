@@ -29,17 +29,17 @@ import {
   JsonFormsRendererRegistryEntry,
   Layout,
   rankWith,
-} from '@jsonforms/core';
+} from '@jsonforms/core'
 import { defineComponent } from '@vue/composition-api'
 import {
   DispatchRenderer,
   rendererProps,
   useJsonFormsLayout,
   RendererProps,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue2'
 import { useVuetifyLayout } from '@jsonforms/vue2-vuetify'
-import { VContainer, VRow, VCol } from 'vuetify/lib';
-import { createId } from '@jsonforms/core'
+import { VContainer, VRow, VCol } from 'vuetify/lib'
+
 const layoutRenderer = defineComponent({
   name: 'vertical-layout-renderer',
   components: {
@@ -52,12 +52,15 @@ const layoutRenderer = defineComponent({
     ...rendererProps<Layout>(),
   },
   setup(props: RendererProps<Layout>) {
-    return useVuetifyLayout(useJsonFormsLayout(props));
+    return useVuetifyLayout(
+      useJsonFormsLayout(props)
+    )
   },
-});
-export default layoutRenderer;
+})
+
+export default layoutRenderer
 export const verticalLayoutRenderer: JsonFormsRendererRegistryEntry = {
   renderer: layoutRenderer,
   tester: rankWith(2, uiTypeIs('VerticalLayout')),
-};
+}
 </script>

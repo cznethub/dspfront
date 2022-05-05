@@ -1,6 +1,6 @@
 <template>
   <div v-if="control.visible"
-    class="cz-object" 
+    class="cz-object mb-8" 
     :class="{ 'is-invalid': control.errors && control.errors.length > 0}" 
     :data-id="computedLabel.replaceAll(` `, ``)"
     >
