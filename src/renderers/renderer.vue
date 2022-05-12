@@ -22,6 +22,7 @@
   import { integerControlRenderer } from './controls/IntegerControlRenderer.vue'
   import { anyOfStringOrControlRenderer } from './controls/AnyOfStringOrControlRenderer.vue'
   import { enumArrayRenderer } from './controls/EnumArrayRenderer.vue'
+  import { oneOfRenderer } from './controls/OneOfRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -39,6 +40,7 @@
     objectControlRenderer,
     arrayPrimitiveRenderer,
     anyOfRenderer,
+    oneOfRenderer,
     allOfRenderer,
     radioGroupControlRenderer,
     verticalLayoutRenderer,
