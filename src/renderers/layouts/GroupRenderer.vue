@@ -60,16 +60,18 @@ import {
   rankWith,
   and,
   isLayout,
-  uiTypeIs
+  uiTypeIs,
+  ControlProps,
 } from '@jsonforms/core'
 import { defineComponent } from '@vue/composition-api'
 import {
   DispatchRenderer,
   rendererProps,
   RendererProps,
+  useJsonFormsControl,
   useJsonFormsLayout
 } from '@jsonforms/vue2'
-import { useVuetifyLayout } from '@jsonforms/vue2-vuetify'
+import { useVuetifyControl, useVuetifyLayout } from '@jsonforms/vue2-vuetify'
 
 const layoutRenderer = defineComponent({
   name: 'group-renderer',
@@ -84,6 +86,23 @@ const layoutRenderer = defineComponent({
       ...useVuetifyLayout(
         useJsonFormsLayout(props)
       ),
+      // Constructed just so we can call handleChange from a layout element
+      ...useVuetifyControl(
+        useJsonFormsControl({
+          uischema: {... props.uischema, scope: ''},
+          schema: props.schema,
+          label: "",
+          errors: '',
+          data: [],
+          id: '',
+          visible: true,
+          rootSchema: props.schema,
+          enabled: props.enabled,
+          path: props.path,
+          handleChange: () => {}
+        } as ControlProps),
+        (value) => value || undefined
+      ),
       isCollapsed: true
     }
   },
@@ -92,6 +111,7 @@ const layoutRenderer = defineComponent({
   },
   methods: {
     collapse() {
+      this.handleChange(this.layout.path, undefined)
       this.isCollapsed = true
     }
   },
@@ -101,8 +121,13 @@ const layoutRenderer = defineComponent({
       return `group-${this.layout.uischema.label.replaceAll(" ", "")}`
     },
     hasToggle(): boolean {
-      // TODO: should return false if field is required
-      return !!this.layout.path // If the layout has a path, it means we are rendering an object
+      // If the layout has a path, it means we are rendering an object and want to be able to collapse it
+      // Unless the field is required, and so we do not enable collapsing/expanding the field.
+      return !!this.layout.path && !this.isRequired
+    },
+    // We have not way of detecting if the field is required from a layout element, so we check it using the computation that was done on the label
+    isRequired(): boolean {
+      return this.computedLabel === `${this.schema.title}*`
     }
   }
 })
