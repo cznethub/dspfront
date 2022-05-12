@@ -55,7 +55,7 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>(),
   },
   created() {
-    if (this.control && !this.control.data && this.control.schema.default) {
+    if (this.control && !this.control.data) {
       this.handleChange(this.control.path, this.control.schema.default)
     }
   },

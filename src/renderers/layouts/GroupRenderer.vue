@@ -20,7 +20,7 @@
 
         <!-- REMOVE BUTTON -->
         <v-btn v-else icon color="error"
-          @click="isCollapsed = true; " 
+          @click="collapse" 
           :aria-label="`Remove ${layout.schema.title}`"
           :disabled="!layout.enabled"
           class="btn-add" 
@@ -67,11 +67,9 @@ import {
   DispatchRenderer,
   rendererProps,
   RendererProps,
-  useJsonFormsLayout,
-  useJsonFormsControl
+  useJsonFormsLayout
 } from '@jsonforms/vue2'
 import { useVuetifyLayout } from '@jsonforms/vue2-vuetify'
-import { useVanillaControl } from "@jsonforms/vue2-vanilla"
 
 const layoutRenderer = defineComponent({
   name: 'group-renderer',
@@ -91,6 +89,11 @@ const layoutRenderer = defineComponent({
   },
   created() {
     this.isCollapsed = !this.layout.data
+  },
+  methods: {
+    collapse() {
+      this.isCollapsed = true
+    }
   },
   computed: {
     generateId(): string {

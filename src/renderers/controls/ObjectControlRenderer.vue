@@ -53,6 +53,8 @@ const controlRenderer = defineComponent({
   created() {
     // console.log(this.control)
   },
+  methods: {
+  },
   computed: {
     detailUiSchema(): UISchemaElement {
       const result = findUISchema(
