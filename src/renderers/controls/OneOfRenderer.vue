@@ -71,6 +71,9 @@ import {
   CombinatorSubSchemaRenderInfo,
   JsonFormsState,
   UISchemaElement,
+  hasEnableRule,
+  isEnabled,
+  getAjv,
 } from '@jsonforms/core';
 import {
   DispatchRenderer,
@@ -108,9 +111,9 @@ const isInherentlyEnabled = (
   if (state?.jsonforms?.readonly) {
     return false;
   }
-  // if (uischema && hasEnableRule(uischema)) {
-  //   return isEnabled(uischema, rootData, ownProps?.path, getAjv(state));
-  // }
+  if (uischema && hasEnableRule(uischema)) {
+    return isEnabled(uischema, rootData, ownProps?.path, getAjv(state));
+  }
   if (typeof uischema?.options?.readonly === 'boolean') {
     return !uischema.options.readonly;
   }
