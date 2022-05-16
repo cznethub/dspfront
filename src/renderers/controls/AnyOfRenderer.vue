@@ -150,7 +150,6 @@ const controlRenderer = defineComponent({
   methods: {
     showForm() {
       this.isAdded = true
-
     },
     removeForm() {
       this.isAdded = false

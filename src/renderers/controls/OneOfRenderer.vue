@@ -1,54 +1,75 @@
 <template>
-  <div v-if="control.visible">
-    <combinator-properties
-      :schema="subSchema"
-      combinatorKeyword="oneOf"
-      :path="path"
-    />
+  <div class="my-4" :data-id="control.schema.title.replaceAll(` `, ``)">
+    <fieldset v-if="control.visible" :class="styles.control.root" class="cz-fieldset">
+      <legend v-if="control.uischema.label" 
+        @click="showForm()" :class="{ 'v-label--active': isAdded }" class="v-label">{{ control.uischema.label }}</legend>
 
-    <v-tabs v-model="tabIndex">
-      <v-tab
-        @change="handleTabChange"
-        v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
-        :key="`${control.path}-${oneOfIndex}`"
-      >
-        {{ oneOfRenderInfo.label }}
-      </v-tab>
-    </v-tabs>
+      <div v-if="!control.required">
+        <v-tooltip v-if="!isAdded" bottom transition="fade">
+          <template v-slot:activator="{ on: onTooltip }">
+            <v-btn icon color="primary"
+              @click="showForm()" 
+              :class="styles.arrayList.addButton"
+              class="btn-add" 
+              :aria-label="`Add to ${control.label}`"
+              v-on="onTooltip"
+            >
+              <v-icon>mdi-plus</v-icon>
+            </v-btn>
+          </template>
+          {{ `Add ${control.uischema.label}` }}
+        </v-tooltip>
 
-    <v-tabs-items v-model="selectedIndex">
-      <v-tab-item
-        v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
-        :key="`${control.path}-${oneOfIndex}`"
-      >
-        <dispatch-renderer
-          v-if="selectedIndex === oneOfIndex"
-          :schema="oneOfRenderInfo.schema"
-          :uischema="oneOfRenderInfo.uischema"
-          :path="control.path"
-          :renderers="control.renderers"
-          :cells="control.cells"
+        <v-tooltip v-else bottom transition="fade">
+          <template v-slot:activator="{ on: onTooltip }">
+            <v-btn icon color="error"
+              @click="removeForm()" 
+              :class="styles.arrayList.addButton"
+              class="btn-add" 
+              aria-label="Remove"
+              v-on="onTooltip"
+            >
+              <v-icon>mdi-minus</v-icon>
+            </v-btn>
+          </template>
+          Remove
+        </v-tooltip>
+      </div>
+
+      <template v-if="isAdded || control.required">
+        <combinator-properties
+          :schema="subSchema"
+          combinatorKeyword="oneOf"
+          :path="path"
         />
-      </v-tab-item>
-    </v-tabs-items>
 
-    <v-dialog v-model="dialog" persistent max-width="600" @keydown.esc="cancel">
-      <v-card>
-        <v-card-title class="text-h5"> Clear form? </v-card-title>
+        <v-tabs v-model="selectedIndex">
+          <v-tab
+            @change="handleTabChange"
+            v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+            :key="`${control.path}-${oneOfIndex}`"
+          >
+            {{ oneOfRenderInfo.label }}
+          </v-tab>
+        </v-tabs>
 
-        <v-card-text>
-          Your data will be cleared if you navigate away from this tab. Do you
-          want to proceed?
-        </v-card-text>
-
-        <v-card-actions>
-          <v-spacer></v-spacer>
-
-          <v-btn text @click="cancel"> No </v-btn>
-          <v-btn text ref="confirm" @click="confirm"> Yes </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        <v-tabs-items v-model="selectedIndex">
+          <v-tab-item
+            v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+            :key="`${control.path}-${oneOfIndex}`"
+          >
+            <dispatch-renderer
+              v-if="selectedIndex === oneOfIndex"
+              :schema="oneOfRenderInfo.schema"
+              :uischema="oneOfRenderInfo.uischema"
+              :path="control.path"
+              :renderers="control.renderers"
+              :cells="control.cells"
+            />
+          </v-tab-item>
+        </v-tabs-items>
+      </template>
+    </fieldset>
   </div>
 </template>
 
@@ -97,8 +118,6 @@ import {
 import { computed, defineComponent, inject, ref } from "@vue/composition-api"
 import CombinatorProperties from '@/renderers/components/CombinatorProperties.vue'
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
-import isEmpty from 'lodash/isEmpty'
-import Vue from 'vue'
 
 const isInherentlyEnabled = (
   state: JsonFormsState,
@@ -137,7 +156,7 @@ const isInherentlyEnabled = (
 
 
 // TODO: currently mapStateToOneOfProps in core does not provide control enabled property
-// currently used in handleTabChange when switching to the next tab and data needs to be cleared but no data changed should happend
+// currently used in handleTabChange when switching to the next tab and data needs to be cleared but no data changed should happen
 // for example when the JsonForm is in read only state no data should be modified
 const isControlEnabled = (
   ownProps: ControlProps,
@@ -183,11 +202,8 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     const input = useJsonFormsOneOfControl(props);
     const control = (input.control as any).value as typeof input.control;
-
+    const tabData: {[key: number]: any } = {} // Dictionary to store form state between tab changes
     const selectedIndex = ref(control.indexOfFittingSchema || 0);
-    const tabIndex = ref(selectedIndex.value);
-    const newSelectedIndex = ref(0);
-    const dialog = ref(false);
 
     // TODO: once the enabled property is mapped by JsonForms core we can remove this jsonforms and controlEnabled variables
     const jsonforms = inject<JsonFormsSubStates>('jsonforms');
@@ -202,12 +218,15 @@ const controlRenderer = defineComponent({
 
     return {
       ...useVuetifyControl(input),
+      isAdded: false,
       selectedIndex,
-      tabIndex,
-      dialog,
-      newSelectedIndex,
+      tabData,
       controlEnabled,
     };
+  },
+  mounted() {
+    // indexOfFittingSchema is only populated after mounted hook
+    this.selectedIndex = this.control.indexOfFittingSchema || 0
   },
   computed: {
     subSchema(): JsonSchema {
@@ -230,40 +249,32 @@ const controlRenderer = defineComponent({
   },
   methods: {
     handleTabChange(): void {
-      // TODO change this.controlEnabled to this.control.enabled once this is suppored by JsonForms core - see above TODO comments
-      if (this.controlEnabled && !isEmpty(this.control.data)) {
-        this.dialog = true;
-        this.$nextTick(() => {
-          this.newSelectedIndex = this.tabIndex;
-          // revert the selection while the dialog is open
-          this.tabIndex = this.selectedIndex;
-        });
-        // this.$nextTick does not work so use setTimeout
-        setTimeout(() =>
-          ((this.$refs.confirm as Vue).$el as HTMLElement).focus()
-        );
-      } else {
-        this.$nextTick(() => {
-          this.selectedIndex = this.tabIndex;
-        });
+      if (!this.controlEnabled) {
+        return
       }
+
+      this.$set(this.tabData, this.selectedIndex, this.control.data)  // Store form state before tab change
+      this.$nextTick(() => {
+        // Tab has changed
+        // If we had form data stored, restore it. Otherwise create default value.
+        if (this.tabData[this.selectedIndex]) {
+          this.handleChange(this.control.path, this.tabData[this.selectedIndex])
+        }
+        else {
+          this.handleChange(
+            this.path,
+            createDefaultValue(this.control.schema.oneOf![this.selectedIndex])
+          )
+        }
+      })
     },
-    confirm(_event: Event): void {
-      this.openNewTab();
-      this.dialog = false;
+    showForm() {
+      this.isAdded = true
     },
-    cancel(_event: Event): void {
-      this.newSelectedIndex = this.selectedIndex;
-      this.dialog = false;
-    },
-    openNewTab(): void {
-      this.handleChange(
-        this.path,
-        createDefaultValue(this.control.schema.oneOf![this.newSelectedIndex])
-      );
-      this.tabIndex = this.newSelectedIndex;
-      this.selectedIndex = this.newSelectedIndex;
-    },
+    removeForm() {
+      this.isAdded = false
+      this.handleChange(this.control.path, undefined)
+    }
   },
 });
 
