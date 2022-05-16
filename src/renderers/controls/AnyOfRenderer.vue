@@ -4,7 +4,7 @@
       <legend v-if="control.uischema.label" 
         @click="showForm()" :class="{ 'v-label--active': isAdded }" class="v-label">{{ control.uischema.label }}</legend>
 
-      <div v-if="!control.required" :class="{ 'mb-6': isAdded }">
+      <div v-if="!control.required">
         <v-tooltip v-if="!isAdded" bottom transition="fade">
           <template v-slot:activator="{ on: onTooltip }">
             <v-btn icon color="primary"

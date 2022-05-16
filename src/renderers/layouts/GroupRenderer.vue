@@ -5,6 +5,8 @@
       class="v-label"
       :class="styles.group.label + (!isCollapsed || !hasToggle ? ' v-label--active' : '')">{{ layout.uischema.label }}</legend>
 
+    <div v-if="layout.uischema.description" class="text-subtitle-1 text--secondary mb-6">{{ layout.uischema.description }}</div>
+
     <v-tooltip v-if="hasToggle" bottom transition="fade">
       <template v-slot:activator="{ on: onTooltip }">
         <!-- ADD BUTTON -->
