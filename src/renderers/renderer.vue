@@ -23,6 +23,7 @@
   import { anyOfStringOrControlRenderer } from './controls/AnyOfStringOrControlRenderer.vue'
   import { enumArrayRenderer } from './controls/EnumArrayRenderer.vue'
   import { oneOfRenderer } from './controls/OneOfRenderer.vue'
+  import { oneOfEnumControlRenderer } from './controls/OneOfEnumControlRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -41,6 +42,7 @@
     arrayPrimitiveRenderer,
     anyOfRenderer,
     oneOfRenderer,
+    oneOfEnumControlRenderer,
     allOfRenderer,
     radioGroupControlRenderer,
     verticalLayoutRenderer,
