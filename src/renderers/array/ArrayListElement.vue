@@ -1,6 +1,7 @@
 <template>
   <v-card outlined>
     <v-card-actions class="has-bg-light-gray">
+      <!-- <div class="text-subtitle-1">{{ label }}</div> -->
       <v-spacer></v-spacer>
       <v-btn elevation="1" fab small @click="moveUpClicked" :disabled="!moveUpEnabled">
         <v-icon>mdi-arrow-up</v-icon>

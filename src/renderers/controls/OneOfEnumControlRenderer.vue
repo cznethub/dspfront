@@ -58,6 +58,11 @@ const controlRenderer = defineComponent({
       (value) => value || undefined
     );
   },
+  created() {
+    if (!this.control.data && this.control.schema.default) {
+      this.handleChange(this.control.path, this.control.schema.default)
+    }
+  }
 });
 
 export default controlRenderer;

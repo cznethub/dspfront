@@ -1,8 +1,9 @@
 <template>
-  <div class="my-4" :data-id="control.schema.title.replaceAll(` `, ``)">
-    <fieldset v-if="control.visible" :class="styles.control.root" class="cz-fieldset">
+  <div v-if="control.visible" class="my-4" :data-id="this.control.schema.title.replaceAll(` `, ``)">
+    <fieldset :class="styles.control.root" class="cz-fieldset">
       <legend v-if="control.uischema.label" 
-        @click="showForm()" :class="{ 'v-label--active': isAdded }" class="v-label">{{ control.uischema.label }}</legend>
+        @click="showForm()" :class="{ 'v-label--active': isAdded }"
+        class="v-label">{{ this.control.schema.title }}</legend>
 
       <div v-if="!control.required">
         <v-tooltip v-if="!isAdded" bottom transition="fade">
@@ -97,6 +98,7 @@ import { VTabs, VTab, VTabsItems, VTabItem } from 'vuetify/lib'
 import { defineComponent, ref } from "@vue/composition-api"
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import CombinatorProperties from '@/renderers/components/CombinatorProperties.vue'
+import { computeLabel } from '@jsonforms/core'
 
 const controlRenderer = defineComponent({
   name: 'any-of-renderer',
@@ -145,7 +147,7 @@ const controlRenderer = defineComponent({
         this.control.path,
         this.control.uischemas
       );
-    },
+    }
   },
   methods: {
     showForm() {

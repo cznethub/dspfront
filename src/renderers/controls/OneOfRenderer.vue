@@ -1,23 +1,30 @@
 <template>
-  <div class="my-4" :data-id="control.schema.title.replaceAll(` `, ``)">
-    <fieldset v-if="control.visible" :class="styles.control.root" class="cz-fieldset">
-      <legend v-if="control.uischema.label" 
-        @click="showForm()" :class="{ 'v-label--active': isAdded }" class="v-label">{{ control.uischema.label }}</legend>
+  <fieldset v-if="control.visible"
+    :class="{
+      ...styles.control.root, 
+      'cz-fieldset my-4': !isFlat,
+      'is-borderless': isFlat,
+    }">
 
-      <div v-if="!control.required">
+    <template v-if="!isFlat">
+      <legend v-if="control.schema.title" 
+        @click="showForm()" :class="{ 'v-label--active': isAdded || !hasToggle }"
+        class="v-label">{{ control.schema.title }}</legend>
+
+      <div v-if="hasToggle">
         <v-tooltip v-if="!isAdded" bottom transition="fade">
           <template v-slot:activator="{ on: onTooltip }">
             <v-btn icon color="primary"
               @click="showForm()" 
               :class="styles.arrayList.addButton"
               class="btn-add" 
-              :aria-label="`Add to ${control.label}`"
+              :aria-label="`Add to ${control.schema.title}`"
               v-on="onTooltip"
             >
               <v-icon>mdi-plus</v-icon>
             </v-btn>
           </template>
-          {{ `Add ${control.uischema.label}` }}
+          {{ `Add ${control.schema.title}` }}
         </v-tooltip>
 
         <v-tooltip v-else bottom transition="fade">
@@ -35,42 +42,43 @@
           Remove
         </v-tooltip>
       </div>
+    </template>
 
-      <template v-if="isAdded || control.required">
-        <combinator-properties
-          :schema="subSchema"
-          combinatorKeyword="oneOf"
-          :path="path"
-        />
+    <template v-if="isAdded || !hasToggle">
+      <combinator-properties
+        :schema="subSchema"
+        :path="path"
+        combinatorKeyword="oneOf"
+      />
 
-        <v-tabs v-model="selectedIndex">
-          <v-tab
-            @change="handleTabChange"
-            v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
-            :key="`${control.path}-${oneOfIndex}`"
-          >
-            {{ oneOfRenderInfo.label }}
-          </v-tab>
-        </v-tabs>
+      <v-tabs v-model="selectedIndex">
+        <v-tab
+          @change="handleTabChange"
+          v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+          :key="`${control.path}-${oneOfIndex}`"
+        >
+          {{ oneOfRenderInfo.label }}
+        </v-tab>
+      </v-tabs>
 
-        <v-tabs-items v-model="selectedIndex">
-          <v-tab-item
-            v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
-            :key="`${control.path}-${oneOfIndex}`"
-          >
-            <dispatch-renderer
-              v-if="selectedIndex === oneOfIndex"
-              :schema="oneOfRenderInfo.schema"
-              :uischema="oneOfRenderInfo.uischema"
-              :path="control.path"
-              :renderers="control.renderers"
-              :cells="control.cells"
-            />
-          </v-tab-item>
-        </v-tabs-items>
-      </template>
-    </fieldset>
-  </div>
+      <v-tabs-items v-model="selectedIndex">
+        <v-tab-item
+          v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+          :key="`${control.path}-${oneOfIndex}`"
+          class="pt-4"
+        >
+          <dispatch-renderer
+            v-if="selectedIndex === oneOfIndex"
+            :schema="oneOfRenderInfo.schema"
+            :uischema="oneOfRenderInfo.uischema"
+            :path="control.path"
+            :renderers="control.renderers"
+            :cells="control.cells"
+          />
+        </v-tab-item>
+      </v-tabs-items>
+    </template>
+  </fieldset>
 </template>
 
 <script lang="ts">
@@ -228,6 +236,8 @@ const controlRenderer = defineComponent({
     // indexOfFittingSchema is only populated after mounted hook
     this.selectedIndex = this.control.indexOfFittingSchema || 0
   },
+  created() {
+  },
   computed: {
     subSchema(): JsonSchema {
       return resolveSubSchemas(
@@ -246,6 +256,14 @@ const controlRenderer = defineComponent({
         this.control.uischemas
       );
     },
+    hasToggle() {
+      // @ts-ignore
+      return !this.control.required && !this.control.schema.options?.flat
+    },
+    isFlat() {
+      // @ts-ignore
+      return this.control.schema.options?.flat
+    }
   },
   methods: {
     handleTabChange(): void {

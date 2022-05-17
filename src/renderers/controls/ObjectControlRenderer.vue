@@ -13,7 +13,8 @@
       :renderers="control.renderers"
       :cells="control.cells"
     />
-    <div v-if="control.errors" class="ml-2 v-messages error--text" style="margin-top: -2rem;" :class="styles.control.error">
+    <div v-if="control.errors" class="ml-2 v-messages error--text" style="margin-top: -2rem;"
+      :class="styles.control.error">
       {{ control.errors }}
     </div>
   </div>

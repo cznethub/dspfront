@@ -31,7 +31,7 @@
           <v-icon>mdi-minus</v-icon>
         </v-btn>
       </template>
-      {{ `Remove ${layout.schema.title}` }}
+      {{ isCollapsed ? 'Add' : 'Remove' }} {{ layout.schema.title }}
     </v-tooltip>
 
     <template v-if="!isCollapsed || !hasToggle">

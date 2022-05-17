@@ -305,8 +305,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     console.info("CzNewSubmission: reading existing record...")
     this.repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
 
-    console.log(this.repositoryRecord)
-
     // TODO: all of this should be cleaned in the backend. Make fields with null values undefined
     if (this.repositoryRecord) {
       Object.keys(this.repositoryRecord).map((key) => {
