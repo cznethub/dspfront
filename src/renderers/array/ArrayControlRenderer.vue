@@ -2,7 +2,7 @@
   <div class="mb-8">
     <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': tooltipMessages.length }" :data-id="computedLabel.replaceAll(` `, ``)">
       <legend v-if="computedLabel"
-        @click="noData ? addButtonClick() : null"
+        @click="noData && control.enabled ? addButtonClick() : null"
         class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
         {{ computedLabel }}
       </legend>
@@ -152,7 +152,6 @@ const controlRenderer = defineComponent({
     }
   },
   created() {
-    // console.log(this.control)
     // @ts-ignore
     const requiredItems = this.control.schema.contains?.enum || []
     

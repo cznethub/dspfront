@@ -1,5 +1,6 @@
 <template>
   <v-text-field
+    v-if="!isHidden"
     :id="control.id + '-input'"
     :class="styles.control.input"
     :data-id="computedLabel.replaceAll(` `, ``)"
@@ -64,6 +65,10 @@ const controlRenderer = defineComponent({
     placeholder(): string {
       // @ts-ignore
       return this.control.schema.options?.placeholder || ''
+    },
+    isHidden(): boolean {
+      // @ts-ignore
+      return this.control.schema.options && this.control.schema.options.hidden
     }
   },
   methods: {

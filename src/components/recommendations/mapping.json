@@ -1,21 +1,22 @@
 {
-  "next": "What kind of data do you want to upload?",
+  "next": "What category of data do you want to submit?",
   "options": [
     {
       "label": "Geochemistry",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Field measurements / experiments / samples",
           "finish": {
-            "prefer": ["earthChemLibrary"],
+            "prefer": ["earthchem"],
             "consider": ["edi"]
           }
         },
         {
           "label": "Time series data / sensor data",
           "finish": {
-            "prefer": ["hydroshare"]
+            "prefer": ["hydroshare"],
+            "linkToGuide": "timeSeriesData"
           }
         },
         {
@@ -33,14 +34,14 @@
         {
           "label": "Physical samples",
           "finish": {
-            "prefer": ["earthChemLibrary", "sesar"]
+            "prefer": ["earthchem", "sesar"]
           }
         }
       ]
     },
     {
       "label": "Geomorphology",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Topographic data",
@@ -67,7 +68,7 @@
     },
     {
       "label": "Geophysics",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Field measurements / experiments",
@@ -80,13 +81,14 @@
     },
     {
       "label": "Biology / Ecology",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Time series data / sensor data",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["edi", "dryad"]
+            "consider": ["edi", "dryad"],
+            "linkToGuide": "timeSeriesData"
           }
         },
         {
@@ -121,13 +123,14 @@
     },
     {
       "label": "Microbiological",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Time series data / sensor data",
           "finish": {
             "prefer": [],
-            "consider": []
+            "consider": [],
+            "linkToGuide": "timeSeriesData"
           }
         },
         {
@@ -148,13 +151,14 @@
     },
     {
       "label": "Hydrology/Water Quality",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Time series data / sensor data",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": []
+            "consider": [],
+            "linkToGuide": "timeSeriesData"
           }
         },
         {
@@ -182,13 +186,14 @@
     },
     {
       "label": "Soils",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Time series data / sensor data",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["zenodo"]
+            "consider": ["zenodo"],
+            "linkToGuide": "timeSeriesData"
           }
         },
         {
@@ -223,7 +228,7 @@
     },
     {
       "label": "Meteorological",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Time series data",
@@ -243,7 +248,7 @@
     },
     {
       "label": "Imagery",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Model development",
@@ -263,7 +268,7 @@
     },
     {
       "label": "Education",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Student persistence and degree completion",
@@ -290,7 +295,7 @@
     },
     {
       "label": "Other",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Video/audio recordings of workshops",
@@ -303,7 +308,7 @@
     },
     {
       "label": "Geospatial Data",
-      "next": "What type of files will you be submitting?",
+      "next": "What type of data will you be submitting?",
       "options": [
         {
           "label": "Geospatial feature data",
@@ -334,6 +339,20 @@
           }
         }
       ]
+    },
+    {
+      "label": "Models or code",
+      "finish": {
+        "prefer": ["hydroshare"],
+        "consider": ["zenodo"]
+      }
+    },
+    {
+      "label": "Multiple types together",
+      "finish": {
+        "prefer": ["hydroshare"],
+        "consider": ["zenodo"]
+      }
     }
   ]
 }

@@ -11,7 +11,7 @@ export interface ISubmission {
 export enum EnumRepositoryKeys {
   hydroshare = 'hydroshare',
   zenodo = 'zenodo',
-  earthChemLibrary = 'earthChemLibrary',
+  earthchem = 'earthchem',
   external = 'external',
   openTopography = 'openTopography',
   sesar = 'sesar',
@@ -90,5 +90,6 @@ export interface IRepository {
   isExternal?: boolean
   hasFolderStructure?: boolean
   url?: string,
+  supportUrl?: string,
   submitTooltip?: string
 }

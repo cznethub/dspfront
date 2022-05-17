@@ -156,6 +156,7 @@ import HydroShare from "./models/hydroshare.model"
 import Submission from "./models/submission.model"
 import Repository from "./models/repository.model"
 import External from "./models/external.model"
+import EarthChem from "./models/earthchem.model"
 
 @Component({
   name: "app",
@@ -278,6 +279,9 @@ export default class App extends Vue {
           else if (params.repository === EnumRepositoryKeys.zenodo) {
             await Zenodo.init()
           }
+          else if (params.repository === EnumRepositoryKeys.earthchem) {
+            await EarthChem.init()
+          }
           this.$router.push(params.redirectTo)
         }
         this.authorizeDialog.isActive = false
@@ -322,6 +326,7 @@ export default class App extends Vue {
   private _initRepositories() {
     return Promise.all([
       HydroShare.init(),
+      EarthChem.init(),
       Zenodo.init(),
       External.init()
     ])

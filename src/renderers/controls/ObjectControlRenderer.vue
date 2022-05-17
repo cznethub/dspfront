@@ -1,6 +1,6 @@
 <template>
   <div v-if="control.visible"
-    class="cz-object" 
+    class="cz-object mb-8" 
     :class="{ 'is-invalid': control.errors && control.errors.length > 0}" 
     :data-id="computedLabel.replaceAll(` `, ``)"
     >
@@ -13,7 +13,8 @@
       :renderers="control.renderers"
       :cells="control.cells"
     />
-    <div v-if="control.errors" class="ml-2 v-messages error--text" style="margin-top: -2rem;" :class="styles.control.error">
+    <div v-if="control.errors" class="ml-2 v-messages error--text" style="margin-top: -2rem;"
+      :class="styles.control.error">
       {{ control.errors }}
     </div>
   </div>
@@ -52,6 +53,8 @@ const controlRenderer = defineComponent({
   },
   created() {
     // console.log(this.control)
+  },
+  methods: {
   },
   computed: {
     detailUiSchema(): UISchemaElement {

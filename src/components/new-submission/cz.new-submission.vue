@@ -2,18 +2,24 @@
   <v-container id="cz-new-submission" class="cz-new-submission px-4">
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
-    <v-alert id="instructions" v-if="!isLoading && wasLoaded" class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
-      <b>Instructions</b>: Fill in the required fields (marked with * and highlighted in red).
-      Press the "Save" button to upload your
-      submission.
+    <v-alert id="instructions" v-if="!isLoading && wasLoaded"
+      class="text-subtitle-1 my-8 " border="left" colored-border type="info" elevation="2">
+      <div class="d-flex flex-wrap-wrap justify-space-between">
+        <div>
+          <div><b>Instructions</b></div>
+          <p>Fill in the required fields (marked with * and highlighted in red).
+                Press the "Save" button to upload your
+                submission.</p>
+        </div>
 
-      <v-img
-        class="my-4"
-        :src="activeRepository.get().logoSrc"
-        :alt="activeRepository.get().name"
-        width="200px"
-        contain
-      />
+        <v-img
+          class="my-4 flex-grow-0"
+          :src="activeRepository.get().logoSrc"
+          :alt="activeRepository.get().name"
+          width="350px"
+          contain
+        />
+      </div>
     </v-alert>
 
     <cz-new-submission-actions
@@ -77,9 +83,19 @@
       />
     </div>
 
-    <v-container v-if="!isLoading && !wasLoaded">
+    <v-container v-if="isLoading">
       <v-skeleton-loader type="actions, article, actions"></v-skeleton-loader>
     </v-container>
+
+    <template v-if="!isLoading && !wasLoaded">
+      <v-alert class="text-subtitle-1" border="left" colored-border type="error" elevation="2">
+        We could not load this submission. The service might be unavailable or  the submission might have been deleted.
+      </v-alert>
+
+      <div class="d-flex justify-center mt-8">
+        <v-icon style="font-size: 8rem;" class="text--disabled">mdi-database-off-outline</v-icon>
+      </div>
+    </template>
 
     <v-dialog id="show-ui-schema" v-if="isDevMode" v-model="showUISchema">
       <v-card>
@@ -297,6 +313,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         }
       })
     }
+    else {
+      this.isLoading = false
+      return
+    }
 
     console.info("CzNewSubmission: reading existing files...")
     if (!this.isExternal && this.repositoryRecord) {
@@ -465,6 +485,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   button + button {
     margin-left: 1rem;
   }
+}
+
+#instructions .d-flex {
+  gap: 4rem;
+  align-items: center;
 }
 
 ::v-deep .v-overlay.backdrop {

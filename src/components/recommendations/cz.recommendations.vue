@@ -63,7 +63,7 @@
     <section class="d-flex flex-column align-center">
       <div class="text-h4 mb-4">Not Sure? Let us Help You Decide</div>
       <p class="text--secondary mb-4 text-center">Click the button below to begin an interactive questionnaire that will help us identify which data formats, best practices, and repository is right for your data. </p>
-      <v-btn to="/resources/recommendations-questionaire" color="primary">Repository Recommendations</v-btn>
+      <v-btn to="/resources/recommendations-questionnaire" color="primary">Repository Recommendations</v-btn>
     </section>
   </div>
 </template>

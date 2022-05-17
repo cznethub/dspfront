@@ -73,12 +73,13 @@
           Discard All
         </v-btn>
       </template>
-      
     </v-sheet>
+
     <v-card-text style="min-height: 10rem;">
       <v-alert v-if="isEditMode" class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
         These are your files as they appear in the repository. Any changes you make here will be immediately applied to your files.
       </v-alert>
+
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem;">
           <v-row>
@@ -211,6 +212,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   protected activeDirectoryItem!: IFolder | IFile
   protected dropFiles: File[] = []
   protected isDeleting = false
+  protected fileReleaseDate = null
 
   protected get itemsToCut() {
     return this._itemsToCutRecursive(this.rootDirectory)
