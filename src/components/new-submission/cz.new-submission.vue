@@ -149,7 +149,6 @@
 <script lang="ts">
 import { Component, Ref } from "vue-property-decorator"
 import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
-import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
 import { CzRenderers } from "@/renderers/renderer.vue"
 import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types"
@@ -157,20 +156,21 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
 import { IFile, IFolder } from '@/components/new-submission/types'
-import { ErrorObject } from 'ajv'
+// import { ErrorObject } from 'ajv'
 import { Subscription } from "rxjs"
+import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
+import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
 import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
 import User from "@/models/user.model"
-// import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 
 const sprintf = require("sprintf-js").sprintf
 
 const renderers = [
-  ...vanillaRenderers, 
+  // ...vanillaRenderers, 
   ...CzRenderers,
   // ...vuetifyRenderers
 ]
@@ -195,7 +195,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected usedUISchema = {}
   protected repoMetadata = repoMetadata
   protected uploads: (IFile | IFolder)[] = []
-  protected errors: ErrorObject[]  = []
+  protected errors: any[]  = []
   protected repositoryRecord: any = null
   protected authorizedSubject = new Subscription()
   protected timesChanged = 0
@@ -445,6 +445,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
     this.hasUnsavedChanges = this.timesChanged > 2
     this.errors = event.errors || []
+    console.log(event.errors)
     this.data = event.data
   }
 

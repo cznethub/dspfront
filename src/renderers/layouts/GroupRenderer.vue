@@ -1,5 +1,5 @@
 <template>
-  <fieldset v-if="layout.visible" :class="`cz-fieldset mb-8 ${styles.group.root}` " :data-id="generateId">
+  <fieldset v-if="layout.visible" :class="`cz-fieldset my-4 ${styles.group.root}` " :data-id="generateId">
     <legend v-if="layout.uischema.label"
       @click="isCollapsed = false"
       class="v-label"

@@ -16,7 +16,8 @@
     :counter="control.schema.maxLength !== undefined ? control.schema.maxLength : undefined"
     :readonly="control.schema.readOnly"
     @change.native="beforeChange($event)"
-    class="my-4"
+    :hide-details="'auto'"
+    class="my-2"
     persistent-hint
     dense
     outlined

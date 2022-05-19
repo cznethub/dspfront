@@ -37,9 +37,7 @@ import {
   findMatchingUISchema,
   isAllOfControl,
   JsonFormsRendererRegistryEntry,
-  JsonSchema,
   rankWith,
-  resolveSubSchemas,
   UISchemaElement,
 } from '@jsonforms/core'
 import {
@@ -66,23 +64,16 @@ const controlRenderer = defineComponent({
     // console.log(this.control)
   },
   computed: {
-    subSchema(): JsonSchema {
-      return resolveSubSchemas(
-        this.control.schema,
-        this.control.rootSchema,
-        'allOf'
-      );
-    },
     delegateUISchema(): UISchemaElement {
       return findMatchingUISchema(this.control.uischemas)(
-        this.subSchema,
+        this.control.schema,
         this.control.uischema.scope,
         this.control.path
       );
     },
     allOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
       return createCombinatorRenderInfos(
-        this.subSchema.allOf!,
+        this.control.schema.allOf!,
         this.control.rootSchema,
         'allOf',
         this.control.uischema,

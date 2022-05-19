@@ -46,9 +46,9 @@
 
     <template v-if="isAdded || !hasToggle">
       <combinator-properties
-        :schema="subSchema"
-        :path="path"
+        :schema="control.schema"
         combinatorKeyword="oneOf"
+        :path="path"
       />
 
       <v-tabs v-model="selectedIndex">
@@ -65,7 +65,6 @@
         <v-tab-item
           v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
           :key="`${control.path}-${oneOfIndex}`"
-          class="pt-4"
         >
           <dispatch-renderer
             v-if="selectedIndex === oneOfIndex"
@@ -74,6 +73,7 @@
             :path="control.path"
             :renderers="control.renderers"
             :cells="control.cells"
+            :enabled="control.enabled"
           />
         </v-tab-item>
       </v-tabs-items>
@@ -90,19 +90,7 @@ import {
   JsonFormsRendererRegistryEntry,
   rankWith,
   createDefaultValue,
-  resolveSubSchemas,
-  JsonFormsSubStates,
-  getConfig,
-  getSchema,
-  getData,
-  ControlProps,
-  JsonSchema,
   CombinatorSubSchemaRenderInfo,
-  JsonFormsState,
-  UISchemaElement,
-  hasEnableRule,
-  isEnabled,
-  getAjv,
 } from '@jsonforms/core';
 import {
   DispatchRenderer,
@@ -110,6 +98,8 @@ import {
   RendererProps,
   useJsonFormsOneOfControl,
 } from '@jsonforms/vue2';
+import { defineComponent, ref } from "@vue/composition-api"
+import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import {
   VDialog,
   VCard,
@@ -123,69 +113,7 @@ import {
   VTabsItems,
   VTabItem,
 } from 'vuetify/lib';
-import { computed, defineComponent, inject, ref } from "@vue/composition-api"
 import CombinatorProperties from '@/renderers/components/CombinatorProperties.vue'
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
-
-const isInherentlyEnabled = (
-  state: JsonFormsState,
-  ownProps: any,
-  uischema: UISchemaElement,
-  schema: JsonSchema & { readOnly?: boolean } | undefined,
-  rootData: any,
-  config: any
-) => {
-  if (state?.jsonforms?.readonly) {
-    return false;
-  }
-  if (uischema && hasEnableRule(uischema)) {
-    return isEnabled(uischema, rootData, ownProps?.path, getAjv(state));
-  }
-  if (typeof uischema?.options?.readonly === 'boolean') {
-    return !uischema.options.readonly;
-  }
-  if (typeof uischema?.options?.readOnly === 'boolean') {
-    return !uischema.options.readOnly;
-  }
-  if (typeof config?.readonly === 'boolean') {
-    return !config.readonly;
-  }
-  if (typeof config?.readOnly === 'boolean') {
-    return !config.readOnly;
-  }
-  if (schema?.readOnly === true) {
-    return false;
-  }
-  if (typeof ownProps?.enabled === 'boolean') {
-    return ownProps.enabled;
-  }
-  return true;
-};
-
-
-// TODO: currently mapStateToOneOfProps in core does not provide control enabled property
-// currently used in handleTabChange when switching to the next tab and data needs to be cleared but no data changed should happen
-// for example when the JsonForm is in read only state no data should be modified
-const isControlEnabled = (
-  ownProps: ControlProps,
-  jsonforms: JsonFormsSubStates
-): boolean => {
-  const state = { jsonforms };
-  const config = getConfig(state);
-  const rootData = getData(state);
-  const { uischema } = ownProps;
-
-  const rootSchema = getSchema(state);
-
-  return isInherentlyEnabled(
-    state,
-    ownProps,
-    uischema,
-    ownProps.schema || rootSchema,
-    rootData,
-    config
-  );
-};
 
 const controlRenderer = defineComponent({
   name: 'one-of-renderer',
@@ -213,42 +141,22 @@ const controlRenderer = defineComponent({
     const tabData: {[key: number]: any } = {} // Dictionary to store form state between tab changes
     const selectedIndex = ref(control.indexOfFittingSchema || 0);
 
-    // TODO: once the enabled property is mapped by JsonForms core we can remove this jsonforms and controlEnabled variables
-    const jsonforms = inject<JsonFormsSubStates>('jsonforms');
-    if (!jsonforms) {
-      throw new Error(
-        "'jsonforms' couldn't be injected. Are you within JSON Forms?"
-      );
-    }
-    const controlEnabled = computed(() =>
-      isControlEnabled(props as ControlProps, jsonforms)
-    );
-
     return {
       ...useVuetifyControl(input),
       isAdded: false,
       selectedIndex,
-      tabData,
-      controlEnabled,
+      tabData
     };
   },
   mounted() {
     // indexOfFittingSchema is only populated after mounted hook
     this.selectedIndex = this.control.indexOfFittingSchema || 0
   },
-  created() {
-  },
   computed: {
-    subSchema(): JsonSchema {
-      return resolveSubSchemas(
-        this.control.schema,
-        this.control.rootSchema,
-        'oneOf'
-      );
-    },
     oneOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
       return createCombinatorRenderInfos(
-        this.subSchema.oneOf!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.control.schema.oneOf!,
         this.control.rootSchema,
         'oneOf',
         this.control.uischema,

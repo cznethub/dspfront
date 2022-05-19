@@ -1,6 +1,6 @@
 <template>
   <div class="mb-8" :data-id="computedLabel.replaceAll(` `, ``)">
-    <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': tooltipMessages.length }">
+    <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': control.childErrors.length }">
       <legend v-if="computedLabel"
         @click="noData && control.enabled ? addButtonClick() : null"
         class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
@@ -118,11 +118,11 @@ import {
 import { useVuetifyArrayControl } from '@jsonforms/vue2-vuetify'
 import { useVanillaArrayControl } from "@jsonforms/vue2-vanilla"
 import { Drag, Drop, DropList } from 'vue-easy-dnd'
-import { ErrorObject } from 'ajv';
-import { createControlElement } from '@jsonforms/core/lib/generators/uischema'
+// import { ErrorObject } from 'ajv';
+// import { createControlElement } from '@jsonforms/core/lib/generators/uischema'
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import ArrayListElement from './ArrayListElement.vue'
-import findIndex from 'lodash/findIndex'
+// import findIndex from 'lodash/findIndex'
 
 const isEqual = require('lodash.isequal')
 
@@ -189,43 +189,43 @@ const controlRenderer = defineComponent({
     noData(): boolean {
       return !this.control.data || this.control.data.length === 0
     },
-    tooltipMessages(): string[] {
-      const error: {
-        instancePath: string;
-        schemaPath: string;
-        labels: (string | undefined)[];
-        message: string;
-      }[] = [];
+    // tooltipMessages(): string[] {
+    //   const error: {
+    //     instancePath: string;
+    //     schemaPath: string;
+    //     labels: (string | undefined)[];
+    //     message: string;
+    //   }[] = [];
 
-      for (const e of this.control.childErrors) {
-        const errorObject = e as ErrorObject;
-        const index = findIndex(error, { schemaPath: errorObject.schemaPath });
-        if (errorObject.message) {
-          if (index == -1) {
-            error.push({
-              schemaPath: errorObject.schemaPath,
-              instancePath: errorObject.dataPath,
-              labels: [
-                createLabelDescriptionFrom(
-                  createControlElement(errorObject.dataPath),
-                  errorObject.schema as JsonSchema
-                ).text,
-              ],
-              message: errorObject.message,
-            })
-          } else {
-            error[index].labels.push(
-              createLabelDescriptionFrom(
-                createControlElement(errorObject.dataPath),
-                errorObject.schema as JsonSchema
-              ).text
-            )
-          }
-        }
-      }
+    //   for (const e of this.control.childErrors) {
+    //     const errorObject = e as ErrorObject;
+    //     const index = findIndex(error, { schemaPath: errorObject.schemaPath });
+    //     if (errorObject.message) {
+    //       if (index == -1) {
+    //         error.push({
+    //           schemaPath: errorObject.schemaPath,
+    //           instancePath: errorObject.dataPath,
+    //           labels: [
+    //             createLabelDescriptionFrom(
+    //               createControlElement(errorObject.dataPath),
+    //               errorObject.schema as JsonSchema
+    //             ).text,
+    //           ],
+    //           message: errorObject.message,
+    //         })
+    //       } else {
+    //         error[index].labels.push(
+    //           createLabelDescriptionFrom(
+    //             createControlElement(errorObject.dataPath),
+    //             errorObject.schema as JsonSchema
+    //           ).text
+    //         )
+    //       }
+    //     }
+    //   }
 
-      return error.map((v) => v.labels.join(',') + ': ' + v.message);
-    }
+    //   return error.map((v) => v.labels.join(',') + ': ' + v.message);
+    // }
   },
   methods: {
     composePaths,

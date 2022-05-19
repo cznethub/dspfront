@@ -27,7 +27,7 @@
 
         <div class="pa-4 has-bg-white">
           <ul v-for="(error, index) of errors" :key="index" class="text-subtitle-1">
-            <li><b>{{ getTitle(error) }}</b> {{ error.message }}.</li>
+            <li><b>{{ getTitle(error) }}</b> {{ getMessage(error) }}.</li>
           </ul>
         </div>
       </v-menu>
@@ -51,8 +51,25 @@ export default class CzNewSubmissionActions extends Vue {
   @Prop() errors!: string[]
 
   protected getTitle(error: any) {
-    const propName = error.dataPath.split('.').pop()
-    return error.schema[propName]?.title || error.dataPath.split('.').pop()
+    if (error.instancePath) {
+      return error.parentSchema.title || error.params.missingProperty
+    }
+    return error.params.missingProperty || ''
+    // if (error.keyword === 'required') {
+    //   return error.params.missingProperty
+    // }
+
+    // if (error.params.missingProperty) {
+    //   return error.params.missingProperty
+    // }
+    // return ''
+  }
+
+  protected getMessage(error: any) {
+    if (error.keyword === 'required') {
+      return 'is a required property'
+    }
+    return error.message
   }
 }
 </script>
