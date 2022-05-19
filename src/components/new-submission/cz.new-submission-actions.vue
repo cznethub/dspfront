@@ -36,6 +36,7 @@
 </template>
 
 <script lang="ts">
+import { ErrorObject } from "ajv"
 import { Component, Vue, Prop } from "vue-property-decorator"
 
 @Component({
@@ -48,25 +49,17 @@ export default class CzNewSubmissionActions extends Vue {
   @Prop() hasUnsavedChanges!: boolean
   @Prop() isSaving!: boolean
   @Prop() confirmText!: string
-  @Prop() errors!: string[]
+  @Prop() errors!: ErrorObject[]
 
-  protected getTitle(error: any) {
+  protected getTitle(error: ErrorObject) {
     if (error.instancePath) {
-      return error.parentSchema.title || error.params.missingProperty
+      return error.parentSchema?.title || error.params.missingProperty
     }
     return error.params.missingProperty || ''
-    // if (error.keyword === 'required') {
-    //   return error.params.missingProperty
-    // }
-
-    // if (error.params.missingProperty) {
-    //   return error.params.missingProperty
-    // }
-    // return ''
   }
 
   protected getMessage(error: any) {
-    if (error.keyword === 'required') {
+    if (!error.instancePath && error.keyword === 'required') {
       return 'is a required property'
     }
     return error.message

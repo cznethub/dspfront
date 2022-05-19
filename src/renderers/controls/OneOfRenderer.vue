@@ -47,36 +47,62 @@
     <template v-if="isAdded || !hasToggle">
       <combinator-properties
         :schema="control.schema"
-        combinatorKeyword="oneOf"
         :path="path"
+        combinatorKeyword="oneOf"
       />
 
-      <v-tabs v-model="selectedIndex">
-        <v-tab
-          @change="handleTabChange"
-          v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
-          :key="`${control.path}-${oneOfIndex}`"
-        >
-          {{ oneOfRenderInfo.label }}
-        </v-tab>
-      </v-tabs>
+      <template v-if="!isDropDown">
+        <v-tabs v-model="selectedIndex">
+          <v-tab
+            @change="handleTabChange"
+            :key="`${control.path}-${oneOfIndex}`"
+            v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+          >
+            {{ oneOfRenderInfo.label }}
+          </v-tab>
+        </v-tabs>
 
-      <v-tabs-items v-model="selectedIndex">
-        <v-tab-item
-          v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
-          :key="`${control.path}-${oneOfIndex}`"
-        >
+        <v-tabs-items v-model="selectedIndex">
+          <v-tab-item
+            v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+            :key="`${control.path}-${oneOfIndex}`"
+            class="pt-8"
+          >
+            <dispatch-renderer
+              v-if="selectedIndex === oneOfIndex"
+              :schema="oneOfRenderInfo.schema"
+              :uischema="oneOfRenderInfo.uischema"
+              :path="control.path"
+              :renderers="control.renderers"
+              :cells="control.cells"
+              :enabled="control.enabled"
+            />
+          </v-tab-item>
+        </v-tabs-items>
+      </template>
+
+      <template v-else>
+        <div>
+          <v-select
+            :items="oneOfRenderInfos"
+            :label="control.schema.title"
+            :value="oneOfRenderInfos[selectedIndex]"
+            @change="handleSelect"
+            item-text="label"
+            :disabled="!control.enabled"
+          >{{ oneOfRenderInfos[selectedIndex].label }}</v-select>
+
           <dispatch-renderer
-            v-if="selectedIndex === oneOfIndex"
-            :schema="oneOfRenderInfo.schema"
-            :uischema="oneOfRenderInfo.uischema"
+            v-if="oneOfRenderInfos[selectedIndex]"
+            :schema="oneOfRenderInfos[selectedIndex].schema"
+            :uischema="oneOfRenderInfos[selectedIndex].uischema"
             :path="control.path"
             :renderers="control.renderers"
             :cells="control.cells"
             :enabled="control.enabled"
           />
-        </v-tab-item>
-      </v-tabs-items>
+        </div>
+      </template>
     </template>
   </fieldset>
 </template>
@@ -145,7 +171,7 @@ const controlRenderer = defineComponent({
       ...useVuetifyControl(input),
       isAdded: false,
       selectedIndex,
-      tabData
+      tabData,
     };
   },
   mounted() {
@@ -171,11 +197,15 @@ const controlRenderer = defineComponent({
     isFlat() {
       // @ts-ignore
       return this.control.schema.options?.flat
+    },
+    isDropDown(): boolean {
+      // @ts-ignore
+      return this.control.schema.options?.dropdown
     }
   },
   methods: {
     handleTabChange(): void {
-      if (!this.controlEnabled) {
+      if (!this.control.enabled) {
         return
       }
 
@@ -189,18 +219,31 @@ const controlRenderer = defineComponent({
         else {
           this.handleChange(
             this.path,
-            createDefaultValue(this.control.schema.oneOf![this.selectedIndex])
+            createDefaultValue(this.oneOfRenderInfos[this.selectedIndex].schema)
           )
         }
       })
     },
-    showForm() {
+    handleSelect(label: string) {
+      this.$set(this.tabData, this.selectedIndex, this.control.data)  // Store form state before tab change
+      this.selectedIndex = this.oneOfRenderInfos.findIndex((info: CombinatorSubSchemaRenderInfo) => info.label === label)
+      if (this.tabData[this.selectedIndex]) {
+        this.handleChange(this.control.path, this.tabData[this.selectedIndex])
+      }
+      else {
+        this.handleChange(
+          this.path,
+          createDefaultValue(this.oneOfRenderInfos[this.selectedIndex].schema)
+        )
+      }
+    },
+        showForm() {
       this.isAdded = true
     },
     removeForm() {
       this.isAdded = false
       this.handleChange(this.control.path, undefined)
-    }
+    },
   },
 });
 

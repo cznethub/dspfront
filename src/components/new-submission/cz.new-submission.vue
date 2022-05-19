@@ -445,7 +445,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
     this.hasUnsavedChanges = this.timesChanged > 2
     this.errors = event.errors || []
-    console.log(event.errors)
     this.data = event.data
   }
 
