@@ -1,6 +1,7 @@
 <template>
   <div class="my-4" :data-id="computedLabel.replaceAll(` `, ``)">
-    <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': control.childErrors.length, ...styles.arrayList.root }" elevation="0">
+    <fieldset v-if="control.visible" class="cz-fieldset"
+      :class="{'is-invalid': control.childErrors.length, ...styles.arrayList.root }" elevation="0">
       <legend v-if="computedLabel"
         @click="noData && control.enabled ? addButtonClick() : null"
         class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
@@ -285,8 +286,9 @@ import {
   rendererProps,
   useJsonFormsArrayControl,
   RendererProps,
+  useJsonFormsControl,
 } from '@jsonforms/vue2';
-import { useNested, useVuetifyArrayControl } from '@jsonforms/vue2-vuetify'
+import { useNested, useVuetifyArrayControl, useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import {
   VCard,
   VCardActions,
@@ -343,7 +345,14 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>(),
   },
   setup(props: RendererProps<ControlElement>) {
-    const control = useVuetifyArrayControl(useJsonFormsArrayControl(props));
+    const control = {
+      ...useVuetifyControl(
+        useJsonFormsControl(props),
+        (value) => value || undefined
+      ),  // Needed for handleChange function
+      ...useVuetifyArrayControl(useJsonFormsArrayControl(props)),
+    };
+
     const currentlyExpanded = ref<null | number>(
       control.appliedOptions.value.initCollapsed ? null : 0
     );
@@ -400,6 +409,10 @@ const controlRenderer = defineComponent({
     },
     removeItemsClick(toDelete: number[]): void {
       this.removeItems?.(this.control.path, toDelete)();
+      if (this.control.data.length === 0) {
+        // TODO: find how to import this
+        this.handleChange(this.control.path, undefined)
+      }
     },
     childErrors(index: number): ErrorObject[] {
       return this.control.childErrors.filter((e) => {

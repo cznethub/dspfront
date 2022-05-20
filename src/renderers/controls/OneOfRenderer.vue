@@ -82,14 +82,23 @@
       </template>
 
       <template v-else>
-        <div>
+        <div class="pt-4">
           <v-select
             :items="oneOfRenderInfos"
             :label="control.schema.title"
             :value="oneOfRenderInfos[selectedIndex]"
+            :data-id="computedLabel.replaceAll(` `, ``)"
+            :hint="control.description"
+            :required="control.required"
+            :error-messages="control.errors"
+            :placeholder="appliedOptions.placeholder"
             @change="handleSelect"
             item-text="label"
             :disabled="!control.enabled"
+            :readonly="control.schema.readOnly"
+            outlined
+            dense
+            persistent-hint
           >{{ oneOfRenderInfos[selectedIndex].label }}</v-select>
 
           <dispatch-renderer

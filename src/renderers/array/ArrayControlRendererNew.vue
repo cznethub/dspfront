@@ -263,7 +263,6 @@ const controlRenderer = defineComponent({
       this.removeItems?.(this.control.path, toDelete)();
     },
     getValidColumnProps(scopedSchema: JsonSchema) {
-      console.log(scopedSchema)
       if (
         scopedSchema.type === 'object' &&
         typeof scopedSchema.properties === 'object'
