@@ -49,17 +49,9 @@
                     }`"
                   >
                     <v-col v-if="!hideAvatar" align-self="center" px-0>
-                      <validation-badge
-                        overlap
-                        bordered
-                        :errors="childErrors(index)"
-                      >
-                        <v-avatar size="40" aria-label="Index" color="primary"
-                          ><span class="primary--text text--lighten-5">{{
-                            index + 1
-                          }}</span></v-avatar
-                        >
-                      </validation-badge>
+                      <v-chip aria-label="Index" color="primary">
+                        <span class="primary--text text--lighten-5">{{ index + 1 }}</span>
+                      </v-chip>
                     </v-col>
 
                     <v-spacer></v-spacer>

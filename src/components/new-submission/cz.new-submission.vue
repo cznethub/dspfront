@@ -156,10 +156,8 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { repoMetadata } from "../submit/constants"
 import { IFile, IFolder } from '@/components/new-submission/types'
-// import { ErrorObject } from 'ajv'
+import { ErrorObject } from 'ajv'
 import { Subscription } from "rxjs"
-import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
-import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -195,7 +193,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected usedUISchema = {}
   protected repoMetadata = repoMetadata
   protected uploads: (IFile | IFolder)[] = []
-  protected errors: any[]  = []
+  protected errors: ErrorObject[]  = []
   protected repositoryRecord: any = null
   protected authorizedSubject = new Subscription()
   protected timesChanged = 0
@@ -446,6 +444,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.hasUnsavedChanges = this.timesChanged > 2
     this.errors = event.errors || []
     this.data = event.data
+    console.log(this.errors)
   }
 
   protected async uploadFiles(files: (IFolder | IFile)[]) {

@@ -246,7 +246,7 @@ const controlRenderer = defineComponent({
         )
       }
     },
-        showForm() {
+    showForm() {
       this.isAdded = true
     },
     removeForm() {

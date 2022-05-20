@@ -47,6 +47,7 @@
 
 <script lang="ts">
 import {
+  ControlElement,
   isPrimitiveArrayControl,
   JsonFormsRendererRegistryEntry,
   rankWith,
@@ -64,7 +65,7 @@ const controlRenderer = defineComponent({
     VHover
   },
   props: {
-    ...rendererProps(),
+    ...rendererProps<ControlElement>(),
   },
   setup(props: any) {
     const tags: string[] =[]
