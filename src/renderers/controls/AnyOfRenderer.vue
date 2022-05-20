@@ -1,5 +1,5 @@
 <template>
-  <div v-if="control.visible" class="my-4" :data-id="this.control.schema.title.replaceAll(` `, ``)">
+  <div v-if="control.visible" class="py-2" :data-id="this.control.schema.title.replaceAll(` `, ``)">
     <fieldset :class="styles.control.root" class="cz-fieldset">
       <legend v-if="control.uischema.label" 
         @click="showForm()" :class="{ 'v-label--active': isAdded }"

@@ -28,6 +28,7 @@
     @input="beforeChange"
     dense
     outlined
+    class="py-2"
   />
   <v-text-field
     v-else
@@ -53,7 +54,7 @@
     v-bind="vuetifyProps('v-text-field')"
     @input="beforeChange"
     :hide-details="'auto'"
-    class="my-2"
+    class="py-2"
     dense
     outlined
   />

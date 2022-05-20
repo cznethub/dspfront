@@ -2,7 +2,7 @@
   <fieldset v-if="control.visible"
     :class="{
       ...styles.control.root, 
-      'cz-fieldset my-4': !isFlat,
+      'cz-fieldset py-2': !isFlat,
       'is-borderless': isFlat,
     }">
 

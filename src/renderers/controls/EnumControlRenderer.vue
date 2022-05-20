@@ -18,6 +18,7 @@
       :items="control.options"
       :readonly="control.schema.readOnly"
       persistent-hint
+      hide-details="auto"
       class="my-2"
       item-text="label"
       item-value="value"

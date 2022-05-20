@@ -39,7 +39,7 @@
         v-for="(element, index) in layout.uischema.elements"
         :data-id="`group-${index}`"
         :key="`${layout.path}-${index}`"
-        class="my-4"
+        class="py-2"
         :class="styles.group.item"
       >
         <dispatch-renderer

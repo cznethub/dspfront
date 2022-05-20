@@ -10,7 +10,7 @@
       :delimiters="[',']"
       :error-messages="control.errors"
       :menu-props="{ openOnClick: false }"
-      class="my-4 mb-0"
+      class="py-2 mb-0"
       small-chips
       multiple
       no-filter
