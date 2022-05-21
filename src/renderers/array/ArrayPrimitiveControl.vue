@@ -10,7 +10,7 @@
       :delimiters="[',']"
       :error-messages="control.errors"
       :menu-props="{ openOnClick: false }"
-      class="py-2 mb-0"
+      class="py-3 mb-0"
       small-chips
       multiple
       no-filter
@@ -21,7 +21,7 @@
       :disabled="!control.enabled"
       :autofocus="appliedOptions.focus"
       :placeholder="appliedOptions.placeholder"
-      :persistent-hint="true"
+      persistent-hint
       :required="control.required"
       :clearable="hover"
       :value="control.data"

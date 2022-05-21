@@ -18,13 +18,12 @@
         :hint="control.description"
         :error-messages="control.errors"
         persistent-hint
-        class="py-2"
+        class="py-3"
         prepend-icon="mdi-calendar"
         outlined
         clearable
         v-bind="attrs"
         v-on="on"
-        style="max-width: 20rem;"
         dense
       />
     </template>

@@ -24,7 +24,6 @@
   import { enumArrayRenderer } from './controls/EnumArrayRenderer.vue'
   import { oneOfRenderer } from './controls/OneOfRenderer.vue'
   import { oneOfEnumControlRenderer } from './controls/OneOfEnumControlRenderer.vue'
-  import { arrayControlRendererNew } from './array/ArrayControlRendererNew.vue'
   import { arrayLayoutRenderer } from './layouts/ArrayLayoutRenderer.vue'
 
   const controlRenderer = defineComponent({})
@@ -34,8 +33,7 @@
     enumControlRenderer,
     enumArrayRenderer,
     arrayPrimitiveRenderer,
-    // arrayControlRenderer,
-    arrayControlRendererNew,
+    arrayControlRenderer,
     groupRenderer,
     numberControlRenderer,
     stringControlRenderer,

@@ -34,12 +34,11 @@
       {{ isCollapsed ? 'Add' : 'Remove' }} {{ layout.schema.title }}
     </v-tooltip>
 
-    <template v-if="!isCollapsed || !hasToggle">
+    <div v-if="!isCollapsed || !hasToggle">
       <div
         v-for="(element, index) in layout.uischema.elements"
         :data-id="`group-${index}`"
         :key="`${layout.path}-${index}`"
-        class="py-2"
         :class="styles.group.item"
       >
         <dispatch-renderer
@@ -51,7 +50,7 @@
           :cells="layout.cells"
         />
       </div>
-    </template>
+    </div>
   </fieldset>
 </template>
 

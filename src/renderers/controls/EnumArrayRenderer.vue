@@ -21,7 +21,7 @@
       small-chips
       deletable-chips
       persistent-hint
-      class="my-2"
+      class="my-3"
       item-text="label"
       item-value="value"
       outlined

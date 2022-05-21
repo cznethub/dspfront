@@ -1,5 +1,5 @@
 <template>
-  <div class="py-2" :data-id="control.schema.title.replaceAll(` `, ``)">
+  <div class="py-3" :data-id="control.schema.title.replaceAll(` `, ``)">
     <fieldset v-if="control.visible" class="cz-fieldset">
       <legend v-if="control.schema.title" class="v-label--active">{{ control.schema.title }}</legend>
       <template v-if="delegateUISchema">
@@ -25,7 +25,7 @@
         />
       </template>
     </fieldset>
-    <div class="text--secondary text-caption mb-8 ml-4">{{ control.schema.description }}</div>
+    <div class="text--secondary text-body-1 mb-8 ml-4">{{ control.schema.description }}</div>
   </div>
 </template>
 

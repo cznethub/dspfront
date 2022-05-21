@@ -15,7 +15,7 @@
     :min="control.schema.exclusiveMinumum"
     :error-messages="control.errors"
     @change.native="beforeChange"
-    class="py-2"
+    class="py-3"
     persistent-hint
     dense
     outlined

@@ -31,7 +31,7 @@
 
       <v-container v-if="!noData" class="pt-8" justify-space-around align-content-center>
         <v-row justify="center">
-          <v-expansion-panels accordion focusable v-model="currentlyExpanded">
+          <v-expansion-panels focusable v-model="currentlyExpanded" multiple>
             <v-expansion-panel
               v-for="(element, index) in control.data"
               :key="`${control.path}-${index}`"
@@ -148,7 +148,7 @@
                   :schema="control.schema"
                   :uischema="foundUISchema"
                   :path="composePaths(control.path, `${index}`)"
-                  :enabled="control.enabled"
+                  :enabled="control.enabled && !isRequired(element)"
                   :renderers="control.renderers"
                   :cells="control.cells"
                 />
@@ -188,6 +188,10 @@
         </v-card>
       </v-dialog>
     </fieldset>
+    <div v-if="control.description" class="text--secondary text-body-1 ml-2">{{ control.description }}</div>
+    <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
+      {{ control.errors }}
+    </div>
   </div>
 </template>
 
@@ -204,6 +208,10 @@ import {
   Resolve,
   JsonSchema,
   getControlPath,
+  or,
+  isObjectArrayControl,
+  and,
+  not,
 } from '@jsonforms/core';
 import { defineComponent } from "@vue/composition-api"
 import {
@@ -239,6 +247,8 @@ import ValidationBadge from '@/renderers/controls/components/ValidationBadge.vue
 import ValidationIcon from '@/renderers/controls/components/ValidationIcon.vue';
 import { ErrorObject } from 'ajv';
 import { ref } from '@vue/composition-api';
+
+const isEqual = require('lodash.isequal')
 
 const controlRenderer = defineComponent({
   name: 'array-layout-renderer',
@@ -278,15 +288,38 @@ const controlRenderer = defineComponent({
       ...useVuetifyArrayControl(useJsonFormsArrayControl(props)),
     };
 
-    const currentlyExpanded = ref<null | number>(
-      control.appliedOptions.value.initCollapsed ? null : 0
-    );
+    const currentlyExpanded: number[] = []
     const suggestToDelete = ref<null | number>(null);
     // indicate to our child renderers that we are increasing the "nested" level
     useNested('array');
     return { ...control, currentlyExpanded, suggestToDelete };
   },
   created() {
+    // @ts-ignore
+    const requiredItems = this.control.schema.contains?.enum || []
+    
+    requiredItems.map(item => {
+      if (!this.control.data) {
+        this.control.data = []
+      }
+      // We most use isEqual to compare objects instead of Arra.includes
+      const isIncluded = this.control.data.some(existingItem => isEqual(item, existingItem))
+      if (!isIncluded) {
+        this.addItem(
+          this.control.path,
+          item
+        )()
+      }
+    })
+
+    if (this.control.schema.default && !this.control.data) {
+      this.control.schema.default.map(item => {
+        this.addItem(
+          this.control.path,
+          item
+        )()
+      })
+    }
   },
   computed: {
     noData(): boolean {
@@ -323,7 +356,7 @@ const controlRenderer = defineComponent({
         createDefaultValue(this.control.schema)
       )();
       if (!this.appliedOptions.collapseNewItems && this.control.data?.length) {
-        this.currentlyExpanded = this.control.data.length - 1;
+        this.currentlyExpanded.push(this.control.data.length - 1);
       }
     },
     moveUpClick(event: Event, toMove: number): void {
@@ -337,7 +370,6 @@ const controlRenderer = defineComponent({
     removeItemsClick(toDelete: number[]): void {
       this.removeItems?.(this.control.path, toDelete)();
       if (this.control.data.length === 0) {
-        // TODO: find how to import this
         this.handleChange(this.control.path, undefined)
       }
     },
@@ -349,14 +381,23 @@ const controlRenderer = defineComponent({
         );
       });
     },
+    // TODO: currently no way to propagate this to array elements.
+    isRequired(item) {
+      // @ts-ignore
+      return this.control.schema.contains?.enum?.some(requiredItem => isEqual(item, requiredItem))
+    },
   },
 });
 
 export default controlRenderer;
 
+const useTableLayout = (uiSchema) => {
+  return uiSchema.options?.useTableLayout
+}
+
 export const arrayLayoutRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(4, isObjectArrayWithNesting),
+  tester: rankWith(4, or(and(isObjectArrayControl, not(useTableLayout)), isObjectArrayWithNesting) ),
 };
 </script>
 

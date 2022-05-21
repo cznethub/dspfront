@@ -19,7 +19,7 @@
       :readonly="control.schema.readOnly"
       persistent-hint
       hide-details="auto"
-      class="my-2"
+      class="my-3"
       item-text="label"
       item-value="value"
       outlined

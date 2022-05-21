@@ -10,7 +10,7 @@
     :placeholder="placeholder"
     :label="computedLabel"
     :hint="control.description"
-    :persistent-hint="persistentHint()"
+    persistent-hint
     :required="control.required"
     :error-messages="control.errors"
     :maxlength="
@@ -28,7 +28,7 @@
     @input="beforeChange"
     dense
     outlined
-    class="py-2"
+    class="py-3"
   />
   <v-text-field
     v-else
@@ -39,7 +39,7 @@
     :placeholder="placeholder"
     :label="computedLabel"
     :hint="control.description"
-    :persistent-hint="persistentHint()"
+    persistent-hint
     :required="control.required"
     :error-messages="control.errors"
     :value="control.data"
@@ -54,7 +54,7 @@
     v-bind="vuetifyProps('v-text-field')"
     @input="beforeChange"
     :hide-details="'auto'"
-    class="py-2"
+    class="py-3"
     dense
     outlined
   />

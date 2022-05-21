@@ -444,7 +444,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.hasUnsavedChanges = this.timesChanged > 2
     this.errors = event.errors || []
     this.data = event.data
-    console.log(this.errors)
   }
 
   protected async uploadFiles(files: (IFolder | IFile)[]) {

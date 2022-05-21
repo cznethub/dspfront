@@ -20,6 +20,7 @@
     persistent-hint
     outlined
     dense
+    class="py-3"
   />
 </template>
 

@@ -20,8 +20,7 @@
         :error-messages="control.errors"
         prepend-icon="mdi-calendar"
         persistent-hint
-        class="py-2"
-        style="max-width: 15rem;"
+        class="py-3"
         outlined
         readonly
         clearable
