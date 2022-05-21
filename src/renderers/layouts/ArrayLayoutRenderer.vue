@@ -39,19 +39,15 @@
             >
               <v-expansion-panel-header :class="styles.arrayList.itemHeader">
                 <v-container py-0>
-                  <v-row
-                    :style="`display: grid; grid-template-columns: ${
-                      !hideAvatar ? 'min-content' : ''
-                    } auto min-content ${
-                      appliedOptions.showSortButtons
-                        ? 'min-content min-content'
-                        : ''
-                    }`"
-                  >
-                    <v-col v-if="!hideAvatar" align-self="center" px-0>
+                  <v-row>
+                    <v-col v-if="!hideAvatar" align-self="center" px-0 class="flex-grow-0">
                       <v-chip aria-label="Index" color="primary">
                         <span class="primary--text text--lighten-5">{{ index + 1 }}</span>
                       </v-chip>
+                    </v-col>
+
+                    <v-col align-self="center" justify-self="start" class="text-truncate flex-grow-1">
+                      {{ element[appliedOptions.elementLabelProp] }}
                     </v-col>
 
                     <v-spacer></v-spacer>
@@ -64,6 +60,7 @@
                     > -->
                     <v-col
                       align-self="center"
+                      class="flex-grow-0"
                       v-if="appliedOptions.showSortButtons"
                     >
                       <v-tooltip bottom>
@@ -88,6 +85,7 @@
                     </v-col>
                     <v-col
                       align-self="center"
+                      class="flex-grow-0"
                       v-if="appliedOptions.showSortButtons"
                     >
                       <v-tooltip bottom>
@@ -113,7 +111,7 @@
                         Move Down
                       </v-tooltip>
                     </v-col>
-                    <v-col align-self="center">
+                    <v-col align-self="center" class="flex-grow-0">
                       <v-tooltip bottom>
                         <template v-slot:activator="{ on: onTooltip }">
                           <v-btn

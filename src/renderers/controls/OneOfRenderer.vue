@@ -104,6 +104,7 @@
 
             <dispatch-renderer
               v-if="oneOfRenderInfos[selectedIndex]"
+              :key="selectedIndex"
               :schema="oneOfRenderInfos[selectedIndex].schema"
               :uischema="oneOfRenderInfos[selectedIndex].uischema"
               :path="control.path"
@@ -188,6 +189,9 @@ const controlRenderer = defineComponent({
       selectedIndex,
       tabData,
     };
+  },
+  created() {
+    console.log(this.control)
   },
   mounted() {
     // indexOfFittingSchema is only populated after mounted hook

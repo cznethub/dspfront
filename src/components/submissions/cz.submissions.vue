@@ -13,7 +13,7 @@
               dense
               clearable
               outlined
-              hide-details
+              hide-details="auto"
               prepend-inner-icon="mdi-magnify"
               label="Search..."
             />
@@ -121,7 +121,7 @@
                         class="mr-1 sort-control"
                         outlined
                         dense
-                        hide-details
+                        hide-details="auto"
                         label="Sort by"
                       />
                       
@@ -133,7 +133,7 @@
                         item-text="label"
                         outlined
                         dense
-                        hide-details
+                        hide-details="auto"
                         label="Order"
                       />
                     </div>

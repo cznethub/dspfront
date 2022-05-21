@@ -118,7 +118,7 @@
                     v-click-outside="onClickOutside"
                     append-icon="mdi-cancel"
                     dense
-                    hide-details
+                    hide-details="auto"
                     autofocus>
                   </v-text-field>
                   <v-row v-else @click.stop="onItemClick(item)" :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap">

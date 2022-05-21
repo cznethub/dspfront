@@ -91,11 +91,6 @@ const controlRenderer = defineComponent({
     if (this.control.data === null) {
       this.handleChange(this.control.path, undefined)
     }
-
-    if (!this.control.data && this.control.schema.default) {
-      this.control.data = this.control.schema.default
-      this.handleChange(this.control.path, this.control.data)
-    }
   },
   computed: {
     suggestions(): string[] | undefined {
@@ -114,6 +109,10 @@ const controlRenderer = defineComponent({
       // @ts-ignore
       return this.control.schema.options?.placeholder || ''
     },
+    isReadOnly() {
+      // @ts-ignore
+      return this.control.schema.options?.readonly
+    }
   },
   methods: {
     // If value changed to an empty string, we need to set the data to undefined in order to trigger validation error
