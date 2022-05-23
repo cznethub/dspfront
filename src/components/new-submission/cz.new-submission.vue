@@ -22,6 +22,17 @@
       </div>
     </v-alert>
 
+    <v-alert class="my-8" outlined
+      v-if="isReadOnly"
+      icon="mdi-lock"
+      type="warning"
+      prominent
+      border="left">
+      <div class="text-body-1">
+        This submission has been marked as 'submitted' and can no longer be modified.
+      </div>
+    </v-alert>
+
     <cz-new-submission-actions
       id="cz-new-submission-actions-top"
       v-if="!isLoading && wasLoaded"
@@ -45,6 +56,7 @@
           ref="folderStructure"
           v-model="uploads"
           @upload="uploadFiles($event)"
+          :isReadOnly="isReadOnly"
           :rootDirectory.sync="rootDirectory"
           :allowFolders="repoMetadata[repository].hasFolderStructure"
           :isEditMode="isEditMode"
@@ -57,6 +69,7 @@
           @change="onChange"
           :disabled="isSaving"
           :data="data"
+          :readonly="isReadOnly"
           :renderers="Object.freeze(renderers)"
           :schema="schema"
           :uischema="uischema"
@@ -204,6 +217,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected authorizedSubject = new Subscription()
   protected timesChanged = 0
   protected ajv = customAjv
+  protected isReadOnly = false
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined
@@ -323,10 +337,22 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       return
     }
 
+    // For earthchem, check if the submission can no longer be modified
+    if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
+      if (this.repositoryRecord.status === 'submitted') {
+        this.isReadOnly = true
+      }
+    }
+
     console.info("CzNewSubmission: reading existing files...")
     if (!this.isExternal && this.repositoryRecord) {
-      const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
-      this.rootDirectory.children = initialStructure
+      try {
+        const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
+        this.rootDirectory.children = initialStructure
+      }
+      catch(e) {
+        CzNotification.toast({ message: 'Failed to load existing files.' })
+      }
     }
     this.isLoadingInitialFiles = false
 
@@ -358,17 +384,35 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected async onSaveAndFinish() {
-    if (this.hasUnsavedChanges) {
-      const wasSaved = await this._save()
+    if (this.isReadOnly) {
+      this.$router.push({ name: "submissions" })
+      return
+    }
 
-      if (wasSaved) {
-        this.hasUnsavedChanges = false
-        this.$router.push({ name: "submissions" })
+    // In earthchem, we want to confirm if the user wants to mark the status as complete before navigating away
+    if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
+      if (this.data.status === 'incomplete') {
+        CzNotification.openDialog({
+          title: 'Are you finished with this submission?',
+          content: `Do you want to mark the submission as submitted so a curator can review it? If so, you will not be able to make further changes.`,
+          confirmText: 'Mark as submitted',
+          secondaryActionText: 'Finish later',
+          cancelText: 'Cancel',
+          onConfirm: async () => {
+            this.data.status = 'submitted'
+            this._saveAndFinish()
+          },
+          onSecondaryAction: () => {
+            this._saveAndFinish()
+          }
+        })
+      }
+      else {
+        this._saveAndFinish()
       }
     }
-    // If nothing to save, just redirect to submissions page
     else {
-      this.$router.push({ name: "submissions" })
+      this._saveAndFinish()
     }
   }
 
@@ -387,6 +431,21 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       }
     }
     this.isSaving = false
+  }
+
+  private async _saveAndFinish() {
+    if (this.hasUnsavedChanges) {
+      const wasSaved = await this._save()
+
+      if (wasSaved) {
+        this.hasUnsavedChanges = false
+        this.$router.push({ name: "submissions" })
+      }
+    }
+    // If nothing to save, just redirect to submissions page
+    else {
+      this.$router.push({ name: "submissions" })
+    }
   }
 
   private async _save() {

@@ -80,6 +80,10 @@ const controlRenderer = defineComponent({
   },
   created() {
     // If no initial value, load default
+    if (!this.control.data) {
+      this.onChange(undefined)
+    }
+
     if (!this.control.data && this.control.schema.default) {
       this.tags = this.control.schema.default
       this.onChange(this.tags)

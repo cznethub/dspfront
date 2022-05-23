@@ -113,6 +113,18 @@
           </v-btn>
 
           <v-btn
+            v-if="dialog.onSecondaryAction"
+            @click="
+              dialog.isActive = false;
+              dialog.onSecondaryAction();
+            "
+            color="green darken-1"
+            text
+          >
+            {{ dialog.secondaryActionText }}
+          </v-btn>
+
+          <v-btn
             class="dialog-confirm"
             @click="
               dialog.isActive = false;

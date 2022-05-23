@@ -8,21 +8,22 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
-        @click:clear="selectedDate = null"
+        @click:clear="onClear"
         @change="onInput($event)"
         :disabled="!control.enabled"
         :hidden="control.hidden"
         :value="dataDate"
         :id="control.id + '-input'"
         :data-id="computedLabel.replaceAll(` `, ``)"
-        :label="control.label"
+        :label="computedLabel"
         :hint="control.description"
         :error-messages="control.errors"
+        :required="control.required"
+        :placeholder="placeholder"
         prepend-icon="mdi-calendar"
         persistent-hint
         class="py-3"
         outlined
-        readonly
         clearable
         v-bind="attrs"
         dense
@@ -130,11 +131,38 @@ const controlRenderer = defineComponent({
     defaultDate() {
       // @ts-ignore
       return this.getDateFromOption(this.control.schema.options?.default)
+    },
+    placeholder() {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder
     }
   },
   methods: {
-    onInput() {
-      this.handleChange(this.control.path, this.formattedDate)
+    onInput(newDate) {
+      if (!this.formattedDate) {
+        this.selectedDate = null
+        this.handleChange(this.control.path, undefined)
+      }
+      else {
+        // TODO: validate that newDate is between minDate and maxDate if defined
+        this.selectedDate = newDate
+        
+        if (this.minDate) {
+          const minDate = parse(this.minDate, this.defaultDateFormat, new Date())
+          if (this.parsedDate.getTime() < minDate.getTime()) {
+            this.selectedDate = this.minDate
+          }
+        }
+        
+        if (this.maxDate) {
+          const maxDate = parse(this.minDate, this.defaultDateFormat, new Date())
+          if (this.parsedDate.getTime() > maxDate.getTime()) {
+            this.selectedDate = this.maxDate
+          }
+        }
+        
+        this.handleChange(this.control.path, this.formattedDate)
+      }
     },
     getDateFromOption(option: string | { amount: number, unit: string }) {
       if (option) {
@@ -164,6 +192,10 @@ const controlRenderer = defineComponent({
           }
         }
       }
+    },
+    onClear() {
+      this.selectedDate = null
+      this.handleChange(this.control.path, undefined)
     }
   },
 })

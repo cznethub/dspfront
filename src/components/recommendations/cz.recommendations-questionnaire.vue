@@ -39,9 +39,9 @@
 
           <template v-if="step.finish">
             <v-alert class="my-8" outlined
-      type="warning"
-      prominent
-      border="left">
+              type="warning"
+              prominent
+              border="left">
               <div class="text-body-1">
                 If you are a CZ Net data manager or investigator and you choose to submit data to a repository other than HydroShare, EarthChem, or Zenodo, please use the <a @click="submitTo(externalRepoMetadata)">Register Dataset</a> form to provide metadata about those datasets. If you submit to HydroShare, EarthChem or Zenodo through the Data Submission Portal, we will automatically harvest your metadata for you to support CZ Net data discovery services.
               </div>

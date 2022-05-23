@@ -295,10 +295,10 @@ const controlRenderer = defineComponent({
   created() {
     // @ts-ignore
     const requiredItems = this.control.schema.contains?.enum || []
-    
+
     requiredItems.map(item => {
       if (!this.control.data) {
-        this.control.data = []
+        this.handleChange(this.control.path, undefined)
       }
       // We most use isEqual to compare objects instead of Arra.includes
       const isIncluded = this.control.data.some(existingItem => isEqual(item, existingItem))
@@ -317,6 +317,11 @@ const controlRenderer = defineComponent({
           item
         )()
       })
+    }
+
+    // Expand existing items
+    if (this.control.data) {
+      this.currentlyExpanded = this.control.data.map((item, index) => index)
     }
   },
   computed: {

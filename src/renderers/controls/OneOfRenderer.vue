@@ -193,6 +193,9 @@ const controlRenderer = defineComponent({
     };
   },
   created() {
+    if (this.control.data) {
+      this.isAdded = true
+    }
   },
   mounted() {
     // indexOfFittingSchema is only populated after mounted hook

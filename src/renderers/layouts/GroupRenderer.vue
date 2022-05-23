@@ -1,7 +1,7 @@
 <template>
   <fieldset v-if="layout.visible" :class="`cz-fieldset my-4 ${styles.group.root}` " :data-id="generateId">
     <legend v-if="layout.uischema.label"
-      @click="isCollapsed = false"
+      @click="control.enabled ? isCollapsed = false : null"
       class="v-label"
       :class="styles.group.label + (!isCollapsed || !hasToggle ? ' v-label--active' : '')">{{ layout.uischema.label }}</legend>
 
