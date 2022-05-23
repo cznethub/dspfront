@@ -23,6 +23,7 @@
     "
     :value="control.data"
     :items="suggestions"
+    hide-details="auto"
     hide-no-data
     v-bind="vuetifyProps('v-combobox')"
     @input="beforeChange"
@@ -53,7 +54,7 @@
     "
     v-bind="vuetifyProps('v-text-field')"
     @input="beforeChange"
-    :hide-details="'auto'"
+    hide-details="auto"
     class="py-3"
     dense
     outlined
@@ -90,6 +91,10 @@ const controlRenderer = defineComponent({
     // If the value that was loaded is null, turn it into undefined
     if (this.control.data === null) {
       this.handleChange(this.control.path, undefined)
+    }
+    
+    if (!this.control.data && this.control.schema.default) {
+      this.handleChange(this.control.path, this.control.schema.default)
     }
   },
   computed: {

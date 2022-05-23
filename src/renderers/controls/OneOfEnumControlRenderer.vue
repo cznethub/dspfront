@@ -17,6 +17,7 @@
       item-text="label"
       item-value="value"
       @change="onChange"
+      hide-details="auto"
       outlined
       dense
     />

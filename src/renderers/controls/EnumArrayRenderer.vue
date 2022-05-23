@@ -16,6 +16,7 @@
       :value="control.data"
       :items="control.options"
       :readonly="control.schema.readOnly"
+      hide-details="auto"
       dense
       chips
       small-chips

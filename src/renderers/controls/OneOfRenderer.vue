@@ -83,7 +83,7 @@
         </template>
 
         <template v-else>
-          <div class="pt-4">
+          <div>
             <v-select
               :items="oneOfRenderInfos"
               :label="control.schema.title"
@@ -94,6 +94,8 @@
               :error-messages="control.errors"
               :placeholder="appliedOptions.placeholder"
               @change="handleSelect"
+              class="py-4"
+              hide-details="auto"
               item-text="label"
               :disabled="!control.enabled"
               :readonly="control.schema.readOnly"
@@ -245,12 +247,13 @@ const controlRenderer = defineComponent({
     handleSelect(label: string) {
       this.$set(this.tabData, this.selectedIndex, this.control.data)  // Store form state before tab change
       this.selectedIndex = this.oneOfRenderInfos.findIndex((info: CombinatorSubSchemaRenderInfo) => info.label === label)
+
       if (this.tabData[this.selectedIndex]) {
         this.handleChange(this.control.path, this.tabData[this.selectedIndex])
       }
       else {
         this.handleChange(
-          this.path,
+          this.control.path,
           createDefaultValue(this.oneOfRenderInfos[this.selectedIndex].schema)
         )
       }
