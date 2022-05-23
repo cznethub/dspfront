@@ -167,6 +167,30 @@
                           <th class="pr-4">Identifier:</th>
                           <td>{{ item.identifier }}</td>
                         </tr>
+                        <tr v-if="item.metadata.status">
+                          <th class="pr-4">Status:</th>
+                          
+                          <td>
+                            <v-chip
+                              v-if="item.metadata.status === 'submitted'"
+                              color="orange"
+                              small
+                              outlined
+                            >
+                              <v-icon left small>mdi-lock</v-icon>
+                              {{ item.metadata.status }}
+                            </v-chip>
+
+                            <v-chip
+                              v-if="item.metadata.status === 'incomplete'"
+                              small
+                              outlined
+                            >
+                              <v-icon left small>mdi-pencil</v-icon>
+                              {{ item.metadata.status }}
+                            </v-chip>
+                          </td>
+                        </tr>
                       </table>
                     </div>
 
@@ -376,6 +400,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected get submissions(): ISubmission[] {
+    console.log(Submission.all())
     return Submission.all()
   }
 

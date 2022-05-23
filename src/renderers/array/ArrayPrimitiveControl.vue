@@ -34,6 +34,7 @@
       <template v-slot:selection="{ attrs, item }">
         <v-chip
           v-bind="attrs"
+          :disabled="!control.enabled"
           :close="!isRequired(item)"
           small
           @click:close="remove(item)"

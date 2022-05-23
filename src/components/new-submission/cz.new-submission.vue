@@ -29,7 +29,7 @@
       prominent
       border="left">
       <div class="text-body-1">
-        This submission has been marked as 'submitted' and can no longer be modified.
+        This submission has been submitted for review and can no longer be modified.
       </div>
     </v-alert>
 
@@ -37,6 +37,7 @@
       id="cz-new-submission-actions-top"
       v-if="!isLoading && wasLoaded"
       :isEditMode="isEditMode"
+      :isReadOnly="isReadOnly"
       :isDevMode="isDevMode"
       :isSaving="isSaving"
       :confirmText="submitText"
@@ -339,7 +340,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
     // For earthchem, check if the submission can no longer be modified
     if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
-      if (this.repositoryRecord.status === 'submitted') {
+      if (this.repositoryRecord.status && this.repositoryRecord.status !== 'incomplete') {
         this.isReadOnly = true
       }
     }
@@ -394,8 +395,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       if (this.data.status === 'incomplete') {
         CzNotification.openDialog({
           title: 'Are you finished with this submission?',
-          content: `Do you want to mark the submission as submitted so a curator can review it? If so, you will not be able to make further changes.`,
-          confirmText: 'Mark as submitted',
+          content: `Do you want to submit this resource for review? If so, you will not be able to make further changes.`,
+          confirmText: 'Submit for review',
           secondaryActionText: 'Finish later',
           cancelText: 'Cancel',
           onConfirm: async () => {
