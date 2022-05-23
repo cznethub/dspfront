@@ -22,7 +22,7 @@
       small-chips
       deletable-chips
       persistent-hint
-      class="my-3"
+      class="py-3"
       item-text="label"
       item-value="value"
       outlined
