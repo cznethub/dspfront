@@ -53,6 +53,7 @@
 
         <json-forms
           v-if="wasLoaded"
+          :ajv="ajv"
           @change="onChange"
           :disabled="isSaving"
           :data="data"
@@ -164,6 +165,8 @@ import CzNotification from "@/models/notifications.model"
 import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
 import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
 import User from "@/models/user.model"
+import { createAjv } from "@jsonforms/core";
+import ajvErrors from "ajv-errors";
 
 const sprintf = require("sprintf-js").sprintf
 
@@ -172,6 +175,9 @@ const renderers = [
   ...CzRenderers,
   // ...vuetifyRenderers
 ]
+
+const customAjv = createAjv({ allErrors: true });
+ajvErrors(customAjv);
 
 @Component({
   name: "cz-new-submission",
@@ -197,6 +203,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected repositoryRecord: any = null
   protected authorizedSubject = new Subscription()
   protected timesChanged = 0
+  protected ajv = customAjv
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined
