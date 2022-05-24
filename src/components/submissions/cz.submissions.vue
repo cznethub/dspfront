@@ -400,7 +400,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected get submissions(): ISubmission[] {
-    console.log(Submission.all())
     return Submission.all()
   }
 
@@ -466,9 +465,9 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     const parsedSubmissions = this.filteredSubmissions.map((s) => {
       return {
         authors: s.authors.join('; '),
-        date: s.date,
+        date: (new Date(s.date)).toISOString(),
         title: s.title,
-        repository: s.repository,
+        repository: repoMetadata[s.repository].name,
         url: s.url,
         // metadata: s.metadata
       }
