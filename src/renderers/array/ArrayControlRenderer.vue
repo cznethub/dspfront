@@ -1,6 +1,9 @@
 <template>
-  <div class="py-4" :data-id="computedLabel.replaceAll(` `, ``)">
-    <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': control.childErrors.length }">
+  <div class="py-4">
+    <fieldset v-if="control.visible" class="cz-fieldset" 
+      :class="{'is-invalid': control.childErrors.length }" 
+      :data-id="computedLabel.replaceAll(` `, ``)"
+    >
       <legend v-if="computedLabel"
         @click="noData && control.enabled ? addButtonClick() : null"
         class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">

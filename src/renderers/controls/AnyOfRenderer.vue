@@ -1,6 +1,7 @@
 <template>
   <div class="my-4">
     <fieldset v-if="control.visible"
+      :data-id="control.schema.title.replaceAll(` `, ``)"
       :class="{
         ...styles.control.root, 
         'cz-fieldset': !isFlat,
