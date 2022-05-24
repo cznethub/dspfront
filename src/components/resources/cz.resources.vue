@@ -10,7 +10,6 @@
       <div class="d-flex flex-column align-center pt-8">
         <div class="mb-2 text-h4">Best Practices and Data Templates</div>
         <p class="text--secondary text-subtitle-1 text-center">Access best practices, recommendations, suggested formats and rep﻿ository recommendations for the data types listed below.</p>
-        <p class="text--secondary text-subtitle-1 text-center">Coming soon: In this section, we will be posting recommendations for best practices and data templates you should consider using for your data submissions.</p>
       </div>
 
       <div class="mb-2 d-flex justify-center">
