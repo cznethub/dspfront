@@ -1,36 +1,39 @@
 <template>
-  <control-wrapper
-    v-bind="controlWrapper"
-    :styles="styles"
-    :isFocused="isFocused"
-    :appliedOptions="appliedOptions"
-  >
-    <v-label :for="control.id + '-input'">{{ computedLabel }}</v-label>
-    <v-radio-group
-      :id="control.id + '-input'"
-      :data-id="computedLabel.replaceAll(` `, ``)"
-      :class="styles.control.input"
-      :disabled="!control.enabled"
-      :autofocus="appliedOptions.focus"
-      :placeholder="appliedOptions.placeholder"
-      :hint="control.description"
-      :required="control.required"
-      :error-messages="control.errors"
-      :value="control.data"
-      persistent-hint
-      row
-      @change="onChange"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
-    >
-      <v-radio
-        v-for="o in control.options"
-        :key="o.value"
-        :label="o.label"
-        :value="o.value"
-      ></v-radio>
-    </v-radio-group>
-  </control-wrapper>
+  <div class="py-3">
+    <fieldset class="cz-fieldset">
+      <legend v-if="computedLabel"
+        class="v-label v-label--active">{{ computedLabel }}</legend>
+
+      <v-radio-group
+        class="mt-0"
+        :id="control.id + '-input'"
+        :data-id="computedLabel.replaceAll(` `, ``)"
+        :class="styles.control.input"
+        :disabled="!control.enabled"
+        :autofocus="appliedOptions.focus"
+        :placeholder="appliedOptions.placeholder"
+        :required="control.required"
+        :value="control.data"
+        hide-details="auto"
+        persistent-hint
+        row
+        @change="onChange"
+        @focus="isFocused = true"
+        @blur="isFocused = false"
+      >
+        <v-radio
+          v-for="o in control.options"
+          :key="o.value"
+          :label="o.label"
+          :value="o.value"
+        ></v-radio>
+      </v-radio-group>
+    </fieldset>
+    <div v-if="control.description" class="text--secondary text-body-1 ml-2">{{ control.description }}</div>
+    <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
+      {{ control.errors }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
