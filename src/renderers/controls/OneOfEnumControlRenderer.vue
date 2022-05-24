@@ -8,7 +8,7 @@
       :placeholder="appliedOptions.placeholder"
       :label="computedLabel"
       :hint="control.description"
-      :persistent-hint="persistentHint()"
+      persistent-hint
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover"
@@ -17,6 +17,8 @@
       item-text="label"
       item-value="value"
       @change="onChange"
+      class="py-3"
+      hide-details="auto"
       outlined
       dense
     />

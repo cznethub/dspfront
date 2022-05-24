@@ -2,12 +2,14 @@
   <v-container
     v-if="layout.visible"
     :class="`pa-0 ${styles.verticalLayout.root}`"
+    v-bind="vuetifyProps('v-container')"
   >
     <v-row
       v-for="(element, index) in layout.uischema.elements"
       :data-id="`vertical-${index}`"
       :key="`${layout.path}-${index}`"
       no-gutters
+      v-bind="vuetifyProps(`v-row[${index}]`)"
     >
       <v-col cols="12" :class="styles.verticalLayout.item">
         <dispatch-renderer

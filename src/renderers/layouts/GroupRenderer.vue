@@ -1,7 +1,7 @@
 <template>
-  <fieldset v-if="layout.visible" :class="`cz-fieldset mb-8 ${styles.group.root}` " :data-id="generateId">
+  <fieldset v-if="layout.visible" :class="`cz-fieldset my-4 ${styles.group.root}` " :data-id="generateId">
     <legend v-if="layout.uischema.label"
-      @click="isCollapsed = false"
+      @click="control.enabled ? isCollapsed = false : null"
       class="v-label"
       :class="styles.group.label + (!isCollapsed || !hasToggle ? ' v-label--active' : '')">{{ layout.uischema.label }}</legend>
 
@@ -34,12 +34,11 @@
       {{ isCollapsed ? 'Add' : 'Remove' }} {{ layout.schema.title }}
     </v-tooltip>
 
-    <template v-if="!isCollapsed || !hasToggle">
+    <div v-if="!isCollapsed || !hasToggle">
       <div
         v-for="(element, index) in layout.uischema.elements"
         :data-id="`group-${index}`"
         :key="`${layout.path}-${index}`"
-        class="my-4"
         :class="styles.group.item"
       >
         <dispatch-renderer
@@ -51,7 +50,7 @@
           :cells="layout.cells"
         />
       </div>
-    </template>
+    </div>
   </fieldset>
 </template>
 

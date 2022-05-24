@@ -1,84 +1,130 @@
 <template>
-  <fieldset v-if="control.visible"
-    :class="{
-      ...styles.control.root, 
-      'cz-fieldset my-4': !isFlat,
-      'is-borderless': isFlat,
-    }">
+  <div class="my-4">
+    <fieldset v-if="control.visible"
+      :class="{
+        ...styles.control.root, 
+        'cz-fieldset': !isFlat,
+        'is-borderless': isFlat,
+      }">
 
-    <template v-if="!isFlat">
-      <legend v-if="control.schema.title" 
-        @click="showForm()" :class="{ 'v-label--active': isAdded || !hasToggle }"
-        class="v-label">{{ control.schema.title }}</legend>
+      <template v-if="!isFlat">
+        <legend v-if="control.schema.title" 
+          @click="showForm()" :class="{ 'v-label--active': isAdded || !hasToggle }"
+          class="v-label">{{ computedLabel }}</legend>
 
-      <div v-if="hasToggle">
-        <v-tooltip v-if="!isAdded" bottom transition="fade">
-          <template v-slot:activator="{ on: onTooltip }">
-            <v-btn icon color="primary"
-              @click="showForm()" 
-              :class="styles.arrayList.addButton"
-              class="btn-add" 
-              :aria-label="`Add to ${control.schema.title}`"
-              v-on="onTooltip"
+        <div v-if="hasToggle">
+          <v-tooltip v-if="!isAdded" bottom transition="fade">
+            <template v-slot:activator="{ on: onTooltip }">
+              <v-btn icon color="primary"
+                @click="showForm()"
+                :disabled="!control.enabled"
+                :class="styles.arrayList.addButton"
+                class="btn-add" 
+                :aria-label="`Add to ${control.schema.title}`"
+                v-on="onTooltip"
+              >
+                <v-icon>mdi-plus</v-icon>
+              </v-btn>
+            </template>
+            {{ `Add ${control.schema.title}` }}
+          </v-tooltip>
+
+          <v-tooltip v-else bottom transition="fade">
+            <template v-slot:activator="{ on: onTooltip }">
+              <v-btn icon color="error"
+                @click="removeForm()" 
+                :disabled="!control.enabled"
+                :class="styles.arrayList.addButton"
+                class="btn-add" 
+                aria-label="Remove"
+                v-on="onTooltip"
+              >
+                <v-icon>mdi-minus</v-icon>
+              </v-btn>
+            </template>
+            Remove
+          </v-tooltip>
+        </div>
+      </template>
+
+      <template v-if="isAdded || !hasToggle">
+        <combinator-properties
+          :schema="control.schema"
+          :path="path"
+          combinatorKeyword="oneOf"
+        />
+
+        <template v-if="!isDropDown">
+          <v-tabs v-model="selectedIndex">
+            <v-tab
+              @change="handleTabChange"
+              :key="`${control.path}-${oneOfIndex}`"
+              v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
             >
-              <v-icon>mdi-plus</v-icon>
-            </v-btn>
-          </template>
-          {{ `Add ${control.schema.title}` }}
-        </v-tooltip>
+              {{ oneOfRenderInfo.label }}
+            </v-tab>
+          </v-tabs>
 
-        <v-tooltip v-else bottom transition="fade">
-          <template v-slot:activator="{ on: onTooltip }">
-            <v-btn icon color="error"
-              @click="removeForm()" 
-              :class="styles.arrayList.addButton"
-              class="btn-add" 
-              aria-label="Remove"
-              v-on="onTooltip"
+          <v-tabs-items v-model="selectedIndex">
+            <v-tab-item
+              v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+              :key="`${control.path}-${oneOfIndex}`"
+              class="pt-8"
             >
-              <v-icon>mdi-minus</v-icon>
-            </v-btn>
-          </template>
-          Remove
-        </v-tooltip>
-      </div>
-    </template>
+              <dispatch-renderer
+                v-if="selectedIndex === oneOfIndex"
+                :schema="oneOfRenderInfo.schema"
+                :uischema="oneOfRenderInfo.uischema"
+                :path="control.path"
+                :renderers="control.renderers"
+                :cells="control.cells"
+                :enabled="control.enabled"
+              />
+            </v-tab-item>
+          </v-tabs-items>
+        </template>
 
-    <template v-if="isAdded || !hasToggle">
-      <combinator-properties
-        :schema="subSchema"
-        :path="path"
-        combinatorKeyword="oneOf"
-      />
+        <template v-else>
+          <div>
+            <v-select
+              :items="oneOfRenderInfos"
+              :label="control.schema.title"
+              :value="oneOfRenderInfos[selectedIndex]"
+              :data-id="computedLabel.replaceAll(` `, ``)"
+              :hint="control.description"
+              :required="control.required"
+              :error-messages="control.errors"
+              :placeholder="appliedOptions.placeholder"
+              @change="handleSelect"
+              class="py-4"
+              hide-details="auto"
+              item-text="label"
+              :disabled="!control.enabled"
+              :readonly="control.schema.readOnly"
+              outlined
+              dense
+              persistent-hint
+            >{{ oneOfRenderInfos[selectedIndex].label }}</v-select>
 
-      <v-tabs v-model="selectedIndex">
-        <v-tab
-          @change="handleTabChange"
-          v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
-          :key="`${control.path}-${oneOfIndex}`"
-        >
-          {{ oneOfRenderInfo.label }}
-        </v-tab>
-      </v-tabs>
-
-      <v-tabs-items v-model="selectedIndex">
-        <v-tab-item
-          v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
-          :key="`${control.path}-${oneOfIndex}`"
-          class="pt-4"
-        >
-          <dispatch-renderer
-            v-if="selectedIndex === oneOfIndex"
-            :schema="oneOfRenderInfo.schema"
-            :uischema="oneOfRenderInfo.uischema"
-            :path="control.path"
-            :renderers="control.renderers"
-            :cells="control.cells"
-          />
-        </v-tab-item>
-      </v-tabs-items>
-    </template>
-  </fieldset>
+            <dispatch-renderer
+              v-if="oneOfRenderInfos[selectedIndex]"
+              :key="selectedIndex"
+              :schema="oneOfRenderInfos[selectedIndex].schema"
+              :uischema="oneOfRenderInfos[selectedIndex].uischema"
+              :path="control.path"
+              :renderers="control.renderers"
+              :cells="control.cells"
+              :enabled="control.enabled"
+            />
+          </div>
+        </template>
+      </template>
+    </fieldset>
+    <div v-if="control.schema.description" class="text--secondary text-body-1 ml-2">{{ control.schema.description }}</div>
+    <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
+      {{ control.errors }}
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -90,19 +136,7 @@ import {
   JsonFormsRendererRegistryEntry,
   rankWith,
   createDefaultValue,
-  resolveSubSchemas,
-  JsonFormsSubStates,
-  getConfig,
-  getSchema,
-  getData,
-  ControlProps,
-  JsonSchema,
   CombinatorSubSchemaRenderInfo,
-  JsonFormsState,
-  UISchemaElement,
-  hasEnableRule,
-  isEnabled,
-  getAjv,
 } from '@jsonforms/core';
 import {
   DispatchRenderer,
@@ -110,6 +144,8 @@ import {
   RendererProps,
   useJsonFormsOneOfControl,
 } from '@jsonforms/vue2';
+import { defineComponent, ref } from "@vue/composition-api"
+import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import {
   VDialog,
   VCard,
@@ -123,69 +159,7 @@ import {
   VTabsItems,
   VTabItem,
 } from 'vuetify/lib';
-import { computed, defineComponent, inject, ref } from "@vue/composition-api"
 import CombinatorProperties from '@/renderers/components/CombinatorProperties.vue'
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
-
-const isInherentlyEnabled = (
-  state: JsonFormsState,
-  ownProps: any,
-  uischema: UISchemaElement,
-  schema: JsonSchema & { readOnly?: boolean } | undefined,
-  rootData: any,
-  config: any
-) => {
-  if (state?.jsonforms?.readonly) {
-    return false;
-  }
-  if (uischema && hasEnableRule(uischema)) {
-    return isEnabled(uischema, rootData, ownProps?.path, getAjv(state));
-  }
-  if (typeof uischema?.options?.readonly === 'boolean') {
-    return !uischema.options.readonly;
-  }
-  if (typeof uischema?.options?.readOnly === 'boolean') {
-    return !uischema.options.readOnly;
-  }
-  if (typeof config?.readonly === 'boolean') {
-    return !config.readonly;
-  }
-  if (typeof config?.readOnly === 'boolean') {
-    return !config.readOnly;
-  }
-  if (schema?.readOnly === true) {
-    return false;
-  }
-  if (typeof ownProps?.enabled === 'boolean') {
-    return ownProps.enabled;
-  }
-  return true;
-};
-
-
-// TODO: currently mapStateToOneOfProps in core does not provide control enabled property
-// currently used in handleTabChange when switching to the next tab and data needs to be cleared but no data changed should happen
-// for example when the JsonForm is in read only state no data should be modified
-const isControlEnabled = (
-  ownProps: ControlProps,
-  jsonforms: JsonFormsSubStates
-): boolean => {
-  const state = { jsonforms };
-  const config = getConfig(state);
-  const rootData = getData(state);
-  const { uischema } = ownProps;
-
-  const rootSchema = getSchema(state);
-
-  return isInherentlyEnabled(
-    state,
-    ownProps,
-    uischema,
-    ownProps.schema || rootSchema,
-    rootData,
-    config
-  );
-};
 
 const controlRenderer = defineComponent({
   name: 'one-of-renderer',
@@ -213,42 +187,27 @@ const controlRenderer = defineComponent({
     const tabData: {[key: number]: any } = {} // Dictionary to store form state between tab changes
     const selectedIndex = ref(control.indexOfFittingSchema || 0);
 
-    // TODO: once the enabled property is mapped by JsonForms core we can remove this jsonforms and controlEnabled variables
-    const jsonforms = inject<JsonFormsSubStates>('jsonforms');
-    if (!jsonforms) {
-      throw new Error(
-        "'jsonforms' couldn't be injected. Are you within JSON Forms?"
-      );
-    }
-    const controlEnabled = computed(() =>
-      isControlEnabled(props as ControlProps, jsonforms)
-    );
-
     return {
       ...useVuetifyControl(input),
       isAdded: false,
       selectedIndex,
       tabData,
-      controlEnabled,
     };
+  },
+  created() {
+    if (this.control.data) {
+      this.isAdded = true
+    }
   },
   mounted() {
     // indexOfFittingSchema is only populated after mounted hook
     this.selectedIndex = this.control.indexOfFittingSchema || 0
   },
-  created() {
-  },
   computed: {
-    subSchema(): JsonSchema {
-      return resolveSubSchemas(
-        this.control.schema,
-        this.control.rootSchema,
-        'oneOf'
-      );
-    },
     oneOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
       return createCombinatorRenderInfos(
-        this.subSchema.oneOf!,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.control.schema.oneOf!,
         this.control.rootSchema,
         'oneOf',
         this.control.uischema,
@@ -263,11 +222,15 @@ const controlRenderer = defineComponent({
     isFlat() {
       // @ts-ignore
       return this.control.schema.options?.flat
+    },
+    isDropDown(): boolean {
+      // @ts-ignore
+      return this.control.schema.options?.dropdown
     }
   },
   methods: {
     handleTabChange(): void {
-      if (!this.controlEnabled) {
+      if (!this.control.enabled) {
         return
       }
 
@@ -281,10 +244,24 @@ const controlRenderer = defineComponent({
         else {
           this.handleChange(
             this.path,
-            createDefaultValue(this.control.schema.oneOf![this.selectedIndex])
+            createDefaultValue(this.oneOfRenderInfos[this.selectedIndex].schema)
           )
         }
       })
+    },
+    handleSelect(label: string) {
+      this.$set(this.tabData, this.selectedIndex, this.control.data)  // Store form state before tab change
+      this.selectedIndex = this.oneOfRenderInfos.findIndex((info: CombinatorSubSchemaRenderInfo) => info.label === label)
+
+      if (this.tabData[this.selectedIndex]) {
+        this.handleChange(this.control.path, this.tabData[this.selectedIndex])
+      }
+      else {
+        this.handleChange(
+          this.control.path,
+          createDefaultValue(this.oneOfRenderInfos[this.selectedIndex].schema)
+        )
+      }
     },
     showForm() {
       this.isAdded = true
@@ -292,7 +269,7 @@ const controlRenderer = defineComponent({
     removeForm() {
       this.isAdded = false
       this.handleChange(this.control.path, undefined)
-    }
+    },
   },
 });
 

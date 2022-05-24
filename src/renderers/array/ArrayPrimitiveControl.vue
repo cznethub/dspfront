@@ -10,7 +10,7 @@
       :delimiters="[',']"
       :error-messages="control.errors"
       :menu-props="{ openOnClick: false }"
-      class="my-4 mb-0"
+      class="py-3 mb-0"
       small-chips
       multiple
       no-filter
@@ -21,7 +21,7 @@
       :disabled="!control.enabled"
       :autofocus="appliedOptions.focus"
       :placeholder="appliedOptions.placeholder"
-      :persistent-hint="true"
+      persistent-hint
       :required="control.required"
       :clearable="hover"
       :value="control.data"
@@ -34,6 +34,7 @@
       <template v-slot:selection="{ attrs, item }">
         <v-chip
           v-bind="attrs"
+          :disabled="!control.enabled"
           :close="!isRequired(item)"
           small
           @click:close="remove(item)"
@@ -47,6 +48,7 @@
 
 <script lang="ts">
 import {
+  ControlElement,
   isPrimitiveArrayControl,
   JsonFormsRendererRegistryEntry,
   rankWith,
@@ -64,7 +66,7 @@ const controlRenderer = defineComponent({
     VHover
   },
   props: {
-    ...rendererProps(),
+    ...rendererProps<ControlElement>(),
   },
   setup(props: any) {
     const tags: string[] =[]
@@ -79,6 +81,10 @@ const controlRenderer = defineComponent({
   },
   created() {
     // If no initial value, load default
+    if (!this.control.data) {
+      this.onChange(undefined)
+    }
+
     if (!this.control.data && this.control.schema.default) {
       this.tags = this.control.schema.default
       this.onChange(this.tags)

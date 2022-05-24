@@ -24,6 +24,7 @@
   import { enumArrayRenderer } from './controls/EnumArrayRenderer.vue'
   import { oneOfRenderer } from './controls/OneOfRenderer.vue'
   import { oneOfEnumControlRenderer } from './controls/OneOfEnumControlRenderer.vue'
+  import { arrayLayoutRenderer } from './layouts/ArrayLayoutRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -31,6 +32,7 @@
   export const CzRenderers: JsonFormsRendererRegistryEntry[] = [
     enumControlRenderer,
     enumArrayRenderer,
+    arrayPrimitiveRenderer,
     arrayControlRenderer,
     groupRenderer,
     numberControlRenderer,
@@ -39,7 +41,6 @@
     dateControlRenderer,
     dateTimeControlRenderer,
     objectControlRenderer,
-    arrayPrimitiveRenderer,
     anyOfRenderer,
     oneOfRenderer,
     oneOfEnumControlRenderer,
@@ -47,7 +48,8 @@
     radioGroupControlRenderer,
     verticalLayoutRenderer,
     horizontalLayoutRenderer,
+    arrayLayoutRenderer,
     integerControlRenderer,
-    anyOfStringOrControlRenderer
+    anyOfStringOrControlRenderer,
   ]
 </script>

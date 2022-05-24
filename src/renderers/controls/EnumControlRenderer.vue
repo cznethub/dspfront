@@ -18,7 +18,8 @@
       :items="control.options"
       :readonly="control.schema.readOnly"
       persistent-hint
-      class="my-2"
+      hide-details="auto"
+      class="py-3"
       item-text="label"
       item-value="value"
       outlined

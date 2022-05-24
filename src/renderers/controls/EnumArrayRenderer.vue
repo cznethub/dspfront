@@ -16,12 +16,13 @@
       :value="control.data"
       :items="control.options"
       :readonly="control.schema.readOnly"
+      hide-details="auto"
       dense
       chips
       small-chips
       deletable-chips
       persistent-hint
-      class="my-2"
+      class="py-3"
       item-text="label"
       item-value="value"
       outlined

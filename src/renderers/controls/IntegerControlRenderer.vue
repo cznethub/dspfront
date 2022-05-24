@@ -10,7 +10,7 @@
     :placeholder="appliedOptions.placeholder"
     :label="computedLabel"
     :hint="control.description"
-    :persistent-hint="persistentHint()"
+    persistent-hint
     :required="control.required"
     :error-messages="control.errors"
     :value="control.data"

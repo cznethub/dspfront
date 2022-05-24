@@ -1,12 +1,13 @@
 <template>
   <v-card class="mb-8">
     <v-sheet class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4">
-      <v-tooltip v-if="allowFolders" bottom transition="fade">
+      <v-tooltip v-if="allowFolders && !isReadOnly" bottom transition="fade">
         <template v-slot:activator="{ on, attrs}">
           <v-btn @click="newFolder" class="mr-4" small icon v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
         </template>
         New Folder
       </v-tooltip>
+
       <div v-else class="text-subtitle-1 mr-4">
         Files
       </div>
@@ -34,7 +35,7 @@
         <v-divider class="mx-4" vertical></v-divider>
       </template>
 
-      <template v-if="allowFolders && (selected.length || itemsToCut.length)">
+      <template v-if="allowFolders && (selected.length || itemsToCut.length) && !isReadOnly">
         <v-tooltip v-if="selected.length" bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
             <v-btn @click="cut" class="mr-1" icon small v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
@@ -42,7 +43,7 @@
           Cut
         </v-tooltip>
 
-        <v-tooltip v-if="(itemsToCut.length || selected.length)" bottom transition="fade">
+        <v-tooltip v-if="(itemsToCut.length || selected.length) && !isReadOnly" bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
             <v-btn @click="paste" icon small v-on="on" v-bind="attrs" :disabled="!itemsToCut.length || itemsToCut.includes(activeDirectoryItem)">
               <v-icon>mdi-content-paste</v-icon>
@@ -53,7 +54,7 @@
         <v-divider v-if="selected.length" class="mx-4" vertical></v-divider>
       </template>
 
-      <template v-if="selected.length">
+      <template v-if="selected.length && !isReadOnly">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
             <v-btn @click="deleteSelected" icon small :disabled="isDeleting" v-on="on" v-bind="attrs">
@@ -68,7 +69,7 @@
 
       <v-spacer></v-spacer>
 
-      <template v-if="rootDirectory.children.length">
+      <template v-if="rootDirectory.children.length && !isEditMode">
         <v-btn @click="empty" small depressed class="primary lighten-2">
           Discard All
         </v-btn>
@@ -76,7 +77,7 @@
     </v-sheet>
 
     <v-card-text style="min-height: 10rem;">
-      <v-alert v-if="isEditMode" class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
+      <v-alert v-if="isEditMode && !isReadOnly" class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
         These are your files as they appear in the repository. Any changes you make here will be immediately applied to your files.
       </v-alert>
 
@@ -118,7 +119,7 @@
                     v-click-outside="onClickOutside"
                     append-icon="mdi-cancel"
                     dense
-                    hide-details
+                    hide-details="auto"
                     autofocus>
                   </v-text-field>
                   <v-row v-else @click.stop="onItemClick(item)" :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap">
@@ -127,7 +128,7 @@
                   </v-row>
                 </template>
                 <template v-slot:append="{ item, active }">
-                  <template v-if="active && !item.isDisabled">
+                  <template v-if="active && !item.isDisabled && !isReadOnly">
                     <v-btn v-if="!item.isRenaming"
                       @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
                   </template>
@@ -139,8 +140,11 @@
           </v-row>
         </v-card-text>
       </v-card>
+      <div v-else-if="isReadOnly" class="pa-2 text-body-1 text--secondary">
+        No files have been included in this submission
+      </div>
 
-      <div class="upload-drop-area files-container--included">
+      <div v-if="!isReadOnly" class="upload-drop-area files-container--included">
         <b-upload type="file" multiple drag-drop expanded v-model="dropFiles" class="has-bg-light-gray">
           <v-alert class="ma-4 has-cursor-pointer transparent" type="info" prominent colored-border icon="mdi-paperclip">
             <span class="text-subtitle-1">Drop your files here or click to upload</span>
@@ -167,6 +171,7 @@ import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Prop({ default: false }) allowFolders!: boolean
   @Prop({ default: false }) isEditMode!: boolean
+  @Prop({ default: false }) isReadOnly!: boolean
   @Prop() identifier!: string  // Use if isEditMode is true
   @Prop({ required: true }) rootDirectory!: IFolder
 
