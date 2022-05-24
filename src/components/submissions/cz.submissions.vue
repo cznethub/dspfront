@@ -533,9 +533,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   margin: 0;
 }
 
-// #filters {
-// }
-
 .footer {
   padding: 1rem;
 }
@@ -545,6 +542,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   table th {
     text-align: right;
+    width: 15rem;
   }
 }
 
@@ -556,9 +554,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   margin: 0.5rem 0;
   max-width: 30rem;
 }
-
-// .cz-submissions--header .v-card {
-// }
 
 .sort-controls {
   max-width: 30rem;
