@@ -1,5 +1,5 @@
 <template>
-  <div class="my-4" :data-id="control.schema.title.replaceAll(` `, ``)">
+  <div class="py-3" :data-id="control.schema.title.replaceAll(` `, ``)">
     <fieldset v-if="control.visible" class="cz-fieldset">
       <legend v-if="control.schema.title" class="v-label--active">{{ control.schema.title }}</legend>
       <template v-if="delegateUISchema">
@@ -25,7 +25,7 @@
         />
       </template>
     </fieldset>
-    <div class="text--secondary text-caption mb-8 ml-4">{{ control.schema.description }}</div>
+    <div class="text--secondary text-body-1 mb-8 ml-4">{{ control.schema.description }}</div>
   </div>
 </template>
 
@@ -37,9 +37,7 @@ import {
   findMatchingUISchema,
   isAllOfControl,
   JsonFormsRendererRegistryEntry,
-  JsonSchema,
   rankWith,
-  resolveSubSchemas,
   UISchemaElement,
 } from '@jsonforms/core'
 import {
@@ -66,23 +64,16 @@ const controlRenderer = defineComponent({
     // console.log(this.control)
   },
   computed: {
-    subSchema(): JsonSchema {
-      return resolveSubSchemas(
-        this.control.schema,
-        this.control.rootSchema,
-        'allOf'
-      );
-    },
     delegateUISchema(): UISchemaElement {
       return findMatchingUISchema(this.control.uischemas)(
-        this.subSchema,
+        this.control.schema,
         this.control.uischema.scope,
         this.control.path
       );
     },
     allOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
       return createCombinatorRenderInfos(
-        this.subSchema.allOf!,
+        this.control.schema.allOf!,
         this.control.rootSchema,
         'allOf',
         this.control.uischema,

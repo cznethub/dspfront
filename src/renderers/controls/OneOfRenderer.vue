@@ -16,7 +16,7 @@
           <v-tooltip v-if="!isAdded" bottom transition="fade">
             <template v-slot:activator="{ on: onTooltip }">
               <v-btn icon color="primary"
-                @click="showForm()" 
+                @click="showForm()"
                 :disabled="!control.enabled"
                 :class="styles.arrayList.addButton"
                 class="btn-add" 
@@ -33,8 +33,8 @@
             <template v-slot:activator="{ on: onTooltip }">
               <v-btn icon color="error"
                 @click="removeForm()" 
-                :class="styles.arrayList.addButton"
                 :disabled="!control.enabled"
+                :class="styles.arrayList.addButton"
                 class="btn-add" 
                 aria-label="Remove"
                 v-on="onTooltip"
@@ -51,30 +51,30 @@
         <combinator-properties
           :schema="control.schema"
           :path="path"
-          combinatorKeyword="anyOf"
+          combinatorKeyword="oneOf"
         />
 
         <template v-if="!isDropDown">
           <v-tabs v-model="selectedIndex">
             <v-tab
               @change="handleTabChange"
-              :key="`${control.path}-${anyOfIndex}`"
-              v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
+              :key="`${control.path}-${oneOfIndex}`"
+              v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
             >
-              {{ anyOfRenderInfo.label }}
+              {{ oneOfRenderInfo.label }}
             </v-tab>
           </v-tabs>
 
           <v-tabs-items v-model="selectedIndex">
             <v-tab-item
-              v-for="(anyOfRenderInfo, anyOfIndex) in anyOfRenderInfos"
-              :key="`${control.path}-${anyOfIndex}`"
+              v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+              :key="`${control.path}-${oneOfIndex}`"
               class="pt-8"
             >
               <dispatch-renderer
-                v-if="selectedIndex === anyOfIndex"
-                :schema="anyOfRenderInfo.schema"
-                :uischema="anyOfRenderInfo.uischema"
+                v-if="selectedIndex === oneOfIndex"
+                :schema="oneOfRenderInfo.schema"
+                :uischema="oneOfRenderInfo.uischema"
                 :path="control.path"
                 :renderers="control.renderers"
                 :cells="control.cells"
@@ -87,9 +87,9 @@
         <template v-else>
           <div>
             <v-select
-              :items="anyOfRenderInfos"
+              :items="oneOfRenderInfos"
               :label="control.schema.title"
-              :value="anyOfRenderInfos[selectedIndex]"
+              :value="oneOfRenderInfos[selectedIndex]"
               :data-id="computedLabel.replaceAll(` `, ``)"
               :hint="control.description"
               :required="control.required"
@@ -104,13 +104,13 @@
               outlined
               dense
               persistent-hint
-            >{{ anyOfRenderInfos[selectedIndex].label }}</v-select>
+            >{{ oneOfRenderInfos[selectedIndex].label }}</v-select>
 
             <dispatch-renderer
-              v-if="anyOfRenderInfos[selectedIndex]"
+              v-if="oneOfRenderInfos[selectedIndex]"
               :key="selectedIndex"
-              :schema="anyOfRenderInfos[selectedIndex].schema"
-              :uischema="anyOfRenderInfos[selectedIndex].uischema"
+              :schema="oneOfRenderInfos[selectedIndex].schema"
+              :uischema="oneOfRenderInfos[selectedIndex].uischema"
               :path="control.path"
               :renderers="control.renderers"
               :cells="control.cells"
@@ -132,17 +132,17 @@
 import {
   ControlElement,
   createCombinatorRenderInfos,
+  isOneOfControl,
   JsonFormsRendererRegistryEntry,
   rankWith,
   createDefaultValue,
   CombinatorSubSchemaRenderInfo,
-  isAnyOfControl,
 } from '@jsonforms/core';
 import {
   DispatchRenderer,
   rendererProps,
   RendererProps,
-  useJsonFormsAnyOfControl,
+  useJsonFormsOneOfControl,
 } from '@jsonforms/vue2';
 import { defineComponent, ref } from "@vue/composition-api"
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
@@ -182,7 +182,7 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>(),
   },
   setup(props: RendererProps<ControlElement>) {
-    const input = useJsonFormsAnyOfControl(props);
+    const input = useJsonFormsOneOfControl(props);
     const control = (input.control as any).value as typeof input.control;
     const tabData: {[key: number]: any } = {} // Dictionary to store form state between tab changes
     const selectedIndex = ref(control.indexOfFittingSchema || 0);
@@ -204,12 +204,12 @@ const controlRenderer = defineComponent({
     this.selectedIndex = this.control.indexOfFittingSchema || 0
   },
   computed: {
-    anyOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
+    oneOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
       return createCombinatorRenderInfos(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.control.schema.anyOf!,
+        this.control.schema.oneOf!,
         this.control.rootSchema,
-        'anyOf',
+        'oneOf',
         this.control.uischema,
         this.control.path,
         this.control.uischemas
@@ -244,14 +244,14 @@ const controlRenderer = defineComponent({
         else {
           this.handleChange(
             this.path,
-            createDefaultValue(this.anyOfRenderInfos[this.selectedIndex].schema)
+            createDefaultValue(this.oneOfRenderInfos[this.selectedIndex].schema)
           )
         }
       })
     },
     handleSelect(label: string) {
       this.$set(this.tabData, this.selectedIndex, this.control.data)  // Store form state before tab change
-      this.selectedIndex = this.anyOfRenderInfos.findIndex((info: CombinatorSubSchemaRenderInfo) => info.label === label)
+      this.selectedIndex = this.oneOfRenderInfos.findIndex((info: CombinatorSubSchemaRenderInfo) => info.label === label)
 
       if (this.tabData[this.selectedIndex]) {
         this.handleChange(this.control.path, this.tabData[this.selectedIndex])
@@ -259,7 +259,7 @@ const controlRenderer = defineComponent({
       else {
         this.handleChange(
           this.control.path,
-          createDefaultValue(this.anyOfRenderInfos[this.selectedIndex].schema)
+          createDefaultValue(this.oneOfRenderInfos[this.selectedIndex].schema)
         )
       }
     },
@@ -275,8 +275,8 @@ const controlRenderer = defineComponent({
 
 export default controlRenderer;
 
-export const anyOfRenderer: JsonFormsRendererRegistryEntry = {
+export const oneOfRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(3, isAnyOfControl),
+  tester: rankWith(3, isOneOfControl),
 };
 </script>

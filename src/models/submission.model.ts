@@ -16,6 +16,9 @@ function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
   else if (repo === EnumRepositoryKeys.zenodo) {
     return  `https://sandbox.zenodo.org/deposit/${identifier}`
   }
+  else if (repo === EnumRepositoryKeys.earthchem) {
+    return  `https://ecl.earthchem.org/view.php?id=${identifier}`
+  }
   else if (repo === EnumRepositoryKeys.external) {
     return  `/api/metadata/external/${identifier}`
   }
@@ -93,7 +96,7 @@ export default class Submission extends Model implements ISubmission {
         // date: new Date(apiSubmission.created).getTime(), 
         identifier: identifier,
         metadata: {},
-        url: apiSubmission.url
+        // url: apiSubmission.url
       }
     }
     else if (repository === EnumRepositoryKeys.zenodo) {
@@ -103,6 +106,15 @@ export default class Submission extends Model implements ISubmission {
         repository: repository,
         // Zenodo returns a date, and we need a datetime, so we don't override the one we stored on creation
         // date: 
+        identifier: identifier,
+        url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
+      }
+    }
+    else if (repository === EnumRepositoryKeys.earthchem) {
+      return {
+        title: apiSubmission.title,
+        authors: apiSubmission.creators?.map(a => `${a.familyName}, ${a.givenName}`),
+        repository: repository,
         identifier: identifier,
         url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
       }

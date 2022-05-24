@@ -118,7 +118,7 @@
     protected get supportedRepositories() {
       return Object.keys(repoMetadata)
         .map(key => repoMetadata[key])
-        .filter(repo => !repo.isExternal)
+        .filter(repo => !repo.isExternal && repo.isSupported)
     }
 
     protected openLogInDialog() {

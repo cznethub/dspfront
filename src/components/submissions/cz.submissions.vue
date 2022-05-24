@@ -13,7 +13,7 @@
               dense
               clearable
               outlined
-              hide-details
+              hide-details="auto"
               prepend-inner-icon="mdi-magnify"
               label="Search..."
             />
@@ -58,16 +58,20 @@
               </v-btn>
             </template>
 
-            <template v-for="repo of repoMetadata" >
-              <v-tooltip :key="repo.name" left transition="fade">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs">
-                    {{ repo.name }}
-                  </v-btn>
+            <v-card color="blue-grey lighten-4">
+              <v-card-text>
+                <template v-for="repo of supportedRepoMetadata" >
+                  <v-tooltip :key="repo.name" left transition="fade">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs">
+                        {{ repo.name }}
+                      </v-btn>
+                    </template>
+                    <span>{{ repo.submitTooltip }}</span>
+                  </v-tooltip>
                 </template>
-                <span>{{ repo.submitTooltip }}</span>
-              </v-tooltip>
-            </template>
+              </v-card-text>
+            </v-card>
           </v-speed-dial>
         </div>
 
@@ -117,7 +121,7 @@
                         class="mr-1 sort-control"
                         outlined
                         dense
-                        hide-details
+                        hide-details="auto"
                         label="Sort by"
                       />
                       
@@ -129,7 +133,7 @@
                         item-text="label"
                         outlined
                         dense
-                        hide-details
+                        hide-details="auto"
                         label="Order"
                       />
                     </div>
@@ -153,7 +157,7 @@
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Repository:</th>
-                          <td>{{ repoMetadata[item.repository] ? repoMetadata[item.repository].name : '' }}</td>
+                          <td>{{ getRepositoryName(item) }}</td>
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Date:</th>
@@ -162,6 +166,30 @@
                         <tr>
                           <th class="pr-4">Identifier:</th>
                           <td>{{ item.identifier }}</td>
+                        </tr>
+                        <tr v-if="item.metadata.status">
+                          <th class="pr-4">Status:</th>
+                          
+                          <td>
+                            <v-chip
+                              v-if="item.metadata.status === 'submitted'"
+                              color="orange"
+                              small
+                              outlined
+                            >
+                              <v-icon left small>mdi-lock</v-icon>
+                              {{ item.metadata.status }}
+                            </v-chip>
+
+                            <v-chip
+                              v-if="item.metadata.status === 'incomplete'"
+                              small
+                              outlined
+                            >
+                              <v-icon left small>mdi-pencil</v-icon>
+                              {{ item.metadata.status }}
+                            </v-chip>
+                          </td>
                         </tr>
                       </table>
                     </div>
@@ -266,16 +294,17 @@ import {
   EnumSubmissionSorts,
   EnumSortDirections,
   IRepository,
+  EnumRepositoryKeys,
 } from "@/components/submissions/types"
-import { repoMetadata } from "../submit/constants"
+import { repoMetadata } from "@/components/submit/constants"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { Subscription } from "rxjs"
+import { itemsPerPageArray } from '@/components/submissions/constants'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
-import { itemsPerPageArray } from '@/components/submissions/constants'
 
 @Component({
   name: "cz-submissions",
@@ -297,6 +326,15 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
   protected loggedInSubject = new Subscription()
+
+  protected get repoCollection(): IRepository[] {
+    return Object.keys(repoMetadata)
+      .map(r => repoMetadata[r])
+  }
+
+  protected get supportedRepoMetadata() {
+    return this.repoCollection.filter(r => r.isExternal || r.isSupported)
+  }
 
   protected get sortBy() {
     return Submission.$state.sortBy
@@ -334,6 +372,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   protected get repoOptions() {
     return Object.keys(repoMetadata)
+      .filter(key => repoMetadata[key].isSupported)
   }
 
   protected get sortOptions() {
@@ -427,9 +466,9 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     const parsedSubmissions = this.filteredSubmissions.map((s) => {
       return {
         authors: s.authors.join('; '),
-        date: s.date,
+        date: (new Date(s.date)).toISOString(),
         title: s.title,
-        repository: s.repository,
+        repository: this.getRepositoryName(s),
         url: s.url,
         // metadata: s.metadata
       }
@@ -482,6 +521,17 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       }
     })
   }
+
+  protected getRepositoryName(item: ISubmission) {
+    // For external submissions, we return the provider name instead
+    if (item.repository === EnumRepositoryKeys.external) {
+      return item.metadata.provider?.name || ''
+    }
+
+    return repoMetadata[item.repository]
+      ? repoMetadata[item.repository].name
+      : ''
+  }
 }
 </script>
 
@@ -495,9 +545,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   margin: 0;
 }
 
-// #filters {
-// }
-
 .footer {
   padding: 1rem;
 }
@@ -507,6 +554,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   table th {
     text-align: right;
+    width: 15rem;
   }
 }
 
@@ -519,9 +567,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   max-width: 30rem;
 }
 
-// .cz-submissions--header .v-card {
-// }
-
 .sort-controls {
   max-width: 30rem;
   display: flex;
@@ -533,8 +578,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
 .v-speed-dial {
   ::v-deep .v-speed-dial__list {
+    width: auto;
+
     .v-btn {
-      width: 12rem;
+      min-width: 12rem;
     }
   }
 }

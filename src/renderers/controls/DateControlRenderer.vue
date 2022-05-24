@@ -8,22 +8,22 @@
   >
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
-        @click:clear="selectedDate = null"
+        @click:clear="onClear"
         @change="onInput($event)"
         :disabled="!control.enabled"
         :hidden="control.hidden"
         :value="dataDate"
         :id="control.id + '-input'"
         :data-id="computedLabel.replaceAll(` `, ``)"
-        :label="control.label"
+        :label="computedLabel"
         :hint="control.description"
         :error-messages="control.errors"
+        :required="control.required"
+        :placeholder="placeholder"
         prepend-icon="mdi-calendar"
         persistent-hint
-        class="my-4"
-        style="max-width: 15rem;"
+        class="py-3"
         outlined
-        readonly
         clearable
         v-bind="attrs"
         dense
@@ -35,6 +35,8 @@
       v-model="selectedDate"
       @change="onInput($event)" 
       @input="menu = false"
+      :max="maxDate"
+      :min="minDate"
       :value="control.data" 
       :disabled="!control.enabled"
       scrollable 
@@ -70,7 +72,7 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>()
   },
   setup(props: RendererProps<ControlElement>) {
-    let selectedDate = null
+    let selectedDate: any = null
 
     return {
       selectedDate,
@@ -81,20 +83,22 @@ const controlRenderer = defineComponent({
   created() {
     if (this.dataDate) {
       // Format data value and populate the form
-      const selected = new Date(this.control.data)
+      const selected = new Date(this.dataDate)
       const formatted = format(selected, DATE_FORMATS[this.dateFormat])
+      this.selectedDate = formatted
       this.handleChange(this.control.path, formatted)
     }
   },
   computed: {
     dataDate(): string {
-      return (this.control.data ?? '')
+      return (this.control.data || this.defaultDate || '')
     },
     parsedDate() {
       if (this.selectedDate) {
         // @ts-ignore
         return parse(this.selectedDate, this.defaultDateFormat, new Date())
-      } else {
+      }
+      else {
         return null
       }
     },
@@ -105,7 +109,7 @@ const controlRenderer = defineComponent({
       // @ts-ignore
       return this.parsedDate ? format(this.parsedDate, DATE_FORMATS[this.dateFormat]) : ''
     },
-    dateFormat() {
+    dateFormat(): string {
       // @ts-ignore
       return this.control.schema.format || "date"
     },
@@ -115,12 +119,84 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       );
+    },
+    maxDate() {
+      // @ts-ignore
+      return this.getDateFromOption(this.control.schema.options?.max)
+    },
+    minDate() {
+      // @ts-ignore
+      return this.getDateFromOption(this.control.schema.options?.min)
+    },
+    defaultDate() {
+      // @ts-ignore
+      return this.getDateFromOption(this.control.schema.options?.default)
+    },
+    placeholder() {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder
     }
   },
   methods: {
-    onInput() {
-      this.handleChange(this.control.path, this.formattedDate)
+    onInput(newDate) {
+      if (!this.formattedDate) {
+        this.selectedDate = null
+        this.handleChange(this.control.path, undefined)
+      }
+      else {
+        // TODO: validate that newDate is between minDate and maxDate if defined
+        this.selectedDate = newDate
+        
+        if (this.minDate) {
+          const minDate = parse(this.minDate, this.defaultDateFormat, new Date())
+          if (this.parsedDate.getTime() < minDate.getTime()) {
+            this.selectedDate = this.minDate
+          }
+        }
+        
+        if (this.maxDate) {
+          const maxDate = parse(this.minDate, this.defaultDateFormat, new Date())
+          if (this.parsedDate.getTime() > maxDate.getTime()) {
+            this.selectedDate = this.maxDate
+          }
+        }
+        
+        this.handleChange(this.control.path, this.formattedDate)
+      }
     },
+    getDateFromOption(option: string | { amount: number, unit: string }) {
+      if (option) {
+        if (typeof option === 'string' || option instanceof String) {
+          if (option === "today") {
+            const targetDate = new Date(Date.now())
+            return format(targetDate, DATE_FORMATS[this.dateFormat])
+          }
+        }
+        else if (option.unit && option.amount) {
+          const now = new Date(Date.now())
+
+          if (option.unit === 'day') {
+            const targetDate = new Date(now.setDate(now.getDate() + option.amount))
+            // @ts-ignore
+            return format(targetDate, DATE_FORMATS[this.dateFormat])
+          }
+          else if (option.unit === 'month') {
+            const targetDate = new Date(now.setMonth(now.getMonth() + option.amount))
+            // @ts-ignore
+            return format(targetDate, DATE_FORMATS[this.dateFormat])
+          }
+          else if (option.unit === 'year') {
+            const targetDate = new Date(now.setFullYear(now.getFullYear() + option.amount))
+            // @ts-ignore
+            return format(targetDate, DATE_FORMATS[this.dateFormat])
+          }
+        }
+      }
+    },
+    onClear() {
+      this.selectedDate = null
+      this.handleChange(this.control.path, undefined)
+    }
   },
 })
 

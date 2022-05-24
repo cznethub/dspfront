@@ -10,16 +10,17 @@ export const repoMetadata: { [key: string]: IRepository } = {
     isSupported: true,
     hasFolderStructure: true,
     url: 'https://www.hydroshare.org',
+    supportUrl: 'https://help.hydroshare.org/'
   },
-  [EnumRepositoryKeys.earthChemLibrary]: {
-    key: EnumRepositoryKeys.earthChemLibrary,
+  [EnumRepositoryKeys.earthchem]: {
+    key: EnumRepositoryKeys.earthchem,
     name: 'EarthChem Library',
     logoSrc: require('@/assets/img/earthchem.png'),
     description: 'EarthChem provides open data services to the geochemical, petrological, mineralogical, and related communities. Services include data preservation, discovery, access, and visualization.',
     submitTooltip: 'Submit a dataset to the EarthChem repository.',
     isSupported: true,
-    isComingSoon: true,
     url: 'https://www.earthchem.org',
+    supportUrl: 'https://www.earthchem.org/resources/support/'
   },
   [EnumRepositoryKeys.zenodo]: {
     key: EnumRepositoryKeys.zenodo,
@@ -29,6 +30,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     submitTooltip: 'Submit a dataset to the Zenodo repository.',
     isSupported: true,
     url: 'https://www.zenodo.org',
+    supportUrl: 'https://help.zenodo.org/'
   },
   [EnumRepositoryKeys.external]: {
     key: EnumRepositoryKeys.external,

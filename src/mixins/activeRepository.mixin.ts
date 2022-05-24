@@ -5,6 +5,7 @@ import HydroShare from '@/models/hydroshare.model'
 import Zenodo from '@/models/zenodo.model'
 import Repository from '@/models/repository.model'
 import External from '@/models/external.model'
+import EarthChem from '@/models/earthchem.model'
 
 @Component
 export class ActiveRepositoryMixin extends Vue {
@@ -17,8 +18,9 @@ export class ActiveRepositoryMixin extends Vue {
     switch (key) {
       case EnumRepositoryKeys.hydroshare: return HydroShare
       case EnumRepositoryKeys.zenodo: return Zenodo
+      case EnumRepositoryKeys.earthchem: return EarthChem
       case EnumRepositoryKeys.external: return External
-      default: return Zenodo
+      default: return HydroShare
     }
   }
 

@@ -12,13 +12,13 @@
         <template v-slot:activator="{ on, attrs}">
           <div v-bind="attrs" v-on="on">
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn @click="$emit('save')" color="primary" class="submission-save" :disabled="isSaving || !!errors.length || !hasUnsavedChanges" rounded>
+              <v-btn @click="$emit('save')" color="primary" class="submission-save" :disabled="isSaving || !!errors.length || !hasUnsavedChanges || isReadOnly" rounded>
                 {{ isSaving ? "Saving..." : confirmText }}
               </v-btn>
             </v-badge>
 
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn @click="$emit('save-and-finish')" class="ml-2 submission-finish" color="primary" :disabled="isSaving || !!errors.length" rounded>
+              <v-btn @click="$emit('save-and-finish')" class="ml-2 submission-finish" color="primary" :disabled="isSaving || !!errors.length || isReadOnly" rounded>
                 Finish
               </v-btn>
             </v-badge>
@@ -27,7 +27,7 @@
 
         <div class="pa-4 has-bg-white">
           <ul v-for="(error, index) of errors" :key="index" class="text-subtitle-1">
-            <li><b>{{ getTitle(error) }}</b> {{ error.message }}.</li>
+            <li><b>{{ getTitle(error) }}</b> {{ getMessage(error) }}.</li>
           </ul>
         </div>
       </v-menu>
@@ -36,6 +36,7 @@
 </template>
 
 <script lang="ts">
+import { ErrorObject } from "ajv"
 import { Component, Vue, Prop } from "vue-property-decorator"
 
 @Component({
@@ -44,15 +45,25 @@ import { Component, Vue, Prop } from "vue-property-decorator"
 })
 export default class CzNewSubmissionActions extends Vue {
   @Prop() isEditMode!: boolean
+  @Prop() isReadOnly!: boolean
   @Prop() isDevMode!: boolean
   @Prop() hasUnsavedChanges!: boolean
   @Prop() isSaving!: boolean
   @Prop() confirmText!: string
-  @Prop() errors!: string[]
+  @Prop() errors!: ErrorObject[]
 
-  protected getTitle(error: any) {
-    const propName = error.dataPath.split('.').pop()
-    return error.schema[propName]?.title || error.dataPath
+  protected getTitle(error: ErrorObject) {
+    if (error.instancePath) {
+      return error.parentSchema?.title || error.params.missingProperty
+    }
+    return error.params.missingProperty || ''
+  }
+
+  protected getMessage(error: any) {
+    if (!error.instancePath && error.keyword === 'required') {
+      return 'is a required property'
+    }
+    return error.message
   }
 }
 </script>

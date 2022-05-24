@@ -7,6 +7,7 @@ import Repository from './models/repository.model'
 import Zenodo from './models/zenodo.model'
 import External from './models/external.model'
 import CzNotification from './models/notifications.model'
+import EarthChem from './models/earthchem.model'
 
 export const router = new VueRouter({
   mode: 'history',
@@ -51,6 +52,7 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
       switch (repo) {
         case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;
         case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
+        case EnumRepositoryKeys.earthchem: activeRepository = EarthChem; break;
         case EnumRepositoryKeys.external: activeRepository = External; break;
         default: activeRepository = HydroShare
       }

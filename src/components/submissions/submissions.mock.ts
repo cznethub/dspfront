@@ -11,7 +11,7 @@ const titles = [
 const repos = [
   repoMetadata.hydroshare.name,
   repoMetadata.zenodo.name,
-  // repoMetadata.earthChemLibrary.name,
+  repoMetadata.earthchem.name,
   // repoMetadata.openTopography.name,
   // repoMetadata.other.name,
 ]

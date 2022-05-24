@@ -2,24 +2,42 @@
   <v-container id="cz-new-submission" class="cz-new-submission px-4">
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
-    <v-alert id="instructions" v-if="!isLoading && wasLoaded" class="text-subtitle-1 my-8" border="left" colored-border type="info" elevation="2">
-      <b>Instructions</b>: Fill in the required fields (marked with * and highlighted in red).
-      Press the "Save" button to upload your
-      submission.
+    <v-alert id="instructions" v-if="!isLoading && wasLoaded"
+      class="text-subtitle-1 my-8 " border="left" colored-border type="info" elevation="2">
+      <div class="d-flex flex-wrap-wrap justify-space-between">
+        <div>
+          <div><b>Instructions</b></div>
+          <p>Fill in the required fields (marked with * and highlighted in red).
+                Press the "Save" button to upload your
+                submission.</p>
+        </div>
 
-      <v-img
-        class="my-4"
-        :src="activeRepository.get().logoSrc"
-        :alt="activeRepository.get().name"
-        width="200px"
-        contain
-      />
+        <v-img
+          class="my-4 flex-grow-0"
+          :src="activeRepository.get().logoSrc"
+          :alt="activeRepository.get().name"
+          width="350px"
+          contain
+        />
+      </div>
+    </v-alert>
+
+    <v-alert class="my-8" outlined
+      v-if="isReadOnly"
+      icon="mdi-lock"
+      type="warning"
+      prominent
+      border="left">
+      <div class="text-body-1">
+        This submission has been submitted for review and can no longer be modified.
+      </div>
     </v-alert>
 
     <cz-new-submission-actions
       id="cz-new-submission-actions-top"
       v-if="!isLoading && wasLoaded"
       :isEditMode="isEditMode"
+      :isReadOnly="isReadOnly"
       :isDevMode="isDevMode"
       :isSaving="isSaving"
       :confirmText="submitText"
@@ -39,6 +57,7 @@
           ref="folderStructure"
           v-model="uploads"
           @upload="uploadFiles($event)"
+          :isReadOnly="isReadOnly"
           :rootDirectory.sync="rootDirectory"
           :allowFolders="repoMetadata[repository].hasFolderStructure"
           :isEditMode="isEditMode"
@@ -47,9 +66,11 @@
 
         <json-forms
           v-if="wasLoaded"
+          :ajv="ajv"
           @change="onChange"
           :disabled="isSaving"
           :data="data"
+          :readonly="isReadOnly"
           :renderers="Object.freeze(renderers)"
           :schema="schema"
           :uischema="uischema"
@@ -77,9 +98,19 @@
       />
     </div>
 
-    <v-container v-if="!isLoading && !wasLoaded">
+    <v-container v-if="isLoading">
       <v-skeleton-loader type="actions, article, actions"></v-skeleton-loader>
     </v-container>
+
+    <template v-if="!isLoading && !wasLoaded">
+      <v-alert class="text-subtitle-1" border="left" colored-border type="error" elevation="2">
+        We could not load this submission. The service might be unavailable or  the submission might have been deleted.
+      </v-alert>
+
+      <div class="d-flex justify-center mt-8">
+        <v-icon style="font-size: 8rem;" class="text--disabled">mdi-database-off-outline</v-icon>
+      </div>
+    </template>
 
     <v-dialog id="show-ui-schema" v-if="isDevMode" v-model="showUISchema">
       <v-card>
@@ -133,7 +164,6 @@
 <script lang="ts">
 import { Component, Ref } from "vue-property-decorator"
 import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
-import { vanillaRenderers } from "@jsonforms/vue2-vanilla"
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
 import { CzRenderers } from "@/renderers/renderer.vue"
 import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types"
@@ -149,15 +179,19 @@ import CzNotification from "@/models/notifications.model"
 import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
 import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
 import User from "@/models/user.model"
-// import { vuetifyRenderers } from '@jsonforms/vue2-vuetify'
+import { createAjv } from "@jsonforms/core";
+import ajvErrors from "ajv-errors";
 
 const sprintf = require("sprintf-js").sprintf
 
 const renderers = [
-  ...vanillaRenderers, 
+  // ...vanillaRenderers, 
   ...CzRenderers,
   // ...vuetifyRenderers
 ]
+
+const customAjv = createAjv({ allErrors: true });
+ajvErrors(customAjv);
 
 @Component({
   name: "cz-new-submission",
@@ -183,6 +217,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected repositoryRecord: any = null
   protected authorizedSubject = new Subscription()
   protected timesChanged = 0
+  protected ajv = customAjv
+  protected isReadOnly = false
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined
@@ -297,11 +333,27 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         }
       })
     }
+    else {
+      this.isLoading = false
+      return
+    }
+
+    // For earthchem, check if the submission can no longer be modified
+    if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
+      if (this.repositoryRecord.status && this.repositoryRecord.status !== 'incomplete') {
+        this.isReadOnly = true
+      }
+    }
 
     console.info("CzNewSubmission: reading existing files...")
     if (!this.isExternal && this.repositoryRecord) {
-      const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
-      this.rootDirectory.children = initialStructure
+      try {
+        const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
+        this.rootDirectory.children = initialStructure
+      }
+      catch(e) {
+        CzNotification.toast({ message: 'Failed to load existing files.' })
+      }
     }
     this.isLoadingInitialFiles = false
 
@@ -333,17 +385,35 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected async onSaveAndFinish() {
-    if (this.hasUnsavedChanges) {
-      const wasSaved = await this._save()
+    if (this.isReadOnly) {
+      this.$router.push({ name: "submissions" })
+      return
+    }
 
-      if (wasSaved) {
-        this.hasUnsavedChanges = false
-        this.$router.push({ name: "submissions" })
+    // In earthchem, we want to confirm if the user wants to mark the status as complete before navigating away
+    if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
+      if (this.data.status === 'incomplete') {
+        CzNotification.openDialog({
+          title: 'Are you finished with this submission?',
+          content: `Do you want to submit this resource for review? If so, you will not be able to make further changes.`,
+          confirmText: 'Submit for review',
+          secondaryActionText: 'Finish later',
+          cancelText: 'Cancel',
+          onConfirm: async () => {
+            this.data.status = 'submitted'
+            this._saveAndFinish()
+          },
+          onSecondaryAction: () => {
+            this._saveAndFinish()
+          }
+        })
+      }
+      else {
+        this._saveAndFinish()
       }
     }
-    // If nothing to save, just redirect to submissions page
     else {
-      this.$router.push({ name: "submissions" })
+      this._saveAndFinish()
     }
   }
 
@@ -362,6 +432,21 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       }
     }
     this.isSaving = false
+  }
+
+  private async _saveAndFinish() {
+    if (this.hasUnsavedChanges) {
+      const wasSaved = await this._save()
+
+      if (wasSaved) {
+        this.hasUnsavedChanges = false
+        this.$router.push({ name: "submissions" })
+      }
+    }
+    // If nothing to save, just redirect to submissions page
+    else {
+      this.$router.push({ name: "submissions" })
+    }
   }
 
   private async _save() {
@@ -465,6 +550,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   button + button {
     margin-left: 1rem;
   }
+}
+
+#instructions .d-flex {
+  gap: 4rem;
+  align-items: center;
 }
 
 ::v-deep .v-overlay.backdrop {

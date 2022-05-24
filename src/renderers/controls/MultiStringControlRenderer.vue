@@ -17,10 +17,10 @@
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
     :label="computedLabel"
-    class="my-8"
     persistent-hint
     outlined
     dense
+    class="py-3"
   />
 </template>
 

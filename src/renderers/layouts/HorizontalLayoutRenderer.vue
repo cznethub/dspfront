@@ -3,7 +3,7 @@
     v-if="layout.visible"
     :class="`pa-0 ${styles.horizontalLayout.root}`"
   >
-    <v-row>
+    <v-row class="flex-sm-column flex-md-row">
       <v-col
         v-for="(element, index) in layout.uischema.elements"
         :data-id="`horizontal-${index}`"
@@ -36,9 +36,9 @@ import {
   rendererProps,
   useJsonFormsLayout,
   RendererProps,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue2'
 import { useVuetifyLayout } from '@jsonforms/vue2-vuetify'
-import { VContainer, VRow, VCol } from 'vuetify/lib';
+import { VContainer, VRow, VCol } from 'vuetify/lib'
 const layoutRenderer = defineComponent({
   name: 'horizontal-layout-renderer',
   components: {
@@ -53,10 +53,11 @@ const layoutRenderer = defineComponent({
   setup(props: RendererProps<Layout>) {
     return useVuetifyLayout(useJsonFormsLayout(props));
   },
-});
+})
+
 export default layoutRenderer;
 export const horizontalLayoutRenderer: JsonFormsRendererRegistryEntry = {
   renderer: layoutRenderer,
   tester: rankWith(2, uiTypeIs('HorizontalLayout')),
-};
+}
 </script>
