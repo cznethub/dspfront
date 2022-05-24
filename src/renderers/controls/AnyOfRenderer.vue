@@ -17,6 +17,7 @@
             <template v-slot:activator="{ on: onTooltip }">
               <v-btn icon color="primary"
                 @click="showForm()" 
+                :disabled="!control.enabled"
                 :class="styles.arrayList.addButton"
                 class="btn-add" 
                 :aria-label="`Add to ${control.schema.title}`"
@@ -33,6 +34,7 @@
               <v-btn icon color="error"
                 @click="removeForm()" 
                 :class="styles.arrayList.addButton"
+                :disabled="!control.enabled"
                 class="btn-add" 
                 aria-label="Remove"
                 v-on="onTooltip"
