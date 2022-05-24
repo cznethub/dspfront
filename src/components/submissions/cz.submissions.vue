@@ -157,7 +157,7 @@
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Repository:</th>
-                          <td>{{ repoMetadata[item.repository] ? repoMetadata[item.repository].name : '' }}</td>
+                          <td>{{ getRepositoryName(item) }}</td>
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Date:</th>
@@ -294,6 +294,7 @@ import {
   EnumSubmissionSorts,
   EnumSortDirections,
   IRepository,
+  EnumRepositoryKeys,
 } from "@/components/submissions/types"
 import { repoMetadata } from "@/components/submit/constants"
 import { mixins } from 'vue-class-component'
@@ -467,7 +468,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
         authors: s.authors.join('; '),
         date: (new Date(s.date)).toISOString(),
         title: s.title,
-        repository: repoMetadata[s.repository].name,
+        repository: this.getRepositoryName(s),
         url: s.url,
         // metadata: s.metadata
       }
@@ -519,6 +520,17 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
         )
       }
     })
+  }
+
+  protected getRepositoryName(item: ISubmission) {
+    // For external submissions, we return the provider name instead
+    if (item.repository === EnumRepositoryKeys.external) {
+      return item.metadata.provider?.name || ''
+    }
+
+    return repoMetadata[item.repository]
+      ? repoMetadata[item.repository].name
+      : ''
   }
 }
 </script>
