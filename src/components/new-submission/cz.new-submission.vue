@@ -207,25 +207,23 @@ import { repoMetadata } from "../submit/constants"
 import { IFile, IFolder } from '@/components/new-submission/types'
 import { ErrorObject } from 'ajv'
 import { Subscription } from "rxjs"
+import { createAjv } from "@jsonforms/core"
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue"
 import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
 import User from "@/models/user.model"
-import { createAjv } from "@jsonforms/core";
-import ajvErrors from "ajv-errors";
-
-const sprintf = require("sprintf-js").sprintf
+import ajvErrors from "ajv-errors"
 
 const renderers = [
   // ...vanillaRenderers, 
   ...CzRenderers,
   // ...vuetifyRenderers
 ]
-
-const customAjv = createAjv({ allErrors: true });
-ajvErrors(customAjv);
+const sprintf = require("sprintf-js").sprintf
+const customAjv = createAjv({ allErrors: true })
+ajvErrors(customAjv)
 
 @Component({
   name: "cz-new-submission",
@@ -314,7 +312,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected get isLoggedIn() {
-    return User.$state.isLoggedIn;
+    return User.$state.isLoggedIn
   }
 
   created() {
@@ -439,7 +437,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected onShowUISchema() {
     if (this.jsonForm) {
-      this.usedUISchema = this.jsonForm.uischemaToUse;
+      this.usedUISchema = this.jsonForm.uischemaToUse
     } else {
       this.usedUISchema = {} // default
     }
@@ -482,6 +480,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected async onSave() {
     const wasSaved = await this._save()
+    
     if (wasSaved) {
       this.hasUnsavedChanges = false
 
