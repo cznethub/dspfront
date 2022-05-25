@@ -362,14 +362,12 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected goToSubmissions() {
-    // TODO: add discard confirm dialog if the form was changed
     this.$router.push({
       name: "submissions",
     })
   }
 
   protected async loadExistingSubmission() {
-    // TODO: these 2 calls can be performed in parallel
     console.info("CzNewSubmission: reading existing record...")
     const response = await Repository.readSubmission(this.identifier, this.repositoryKey)
 
@@ -399,7 +397,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       this.wasUnauthorized = false
     }
 
-    // TODO: all of this should be cleaned in the backend. Make fields with null values undefined
     if (this.repositoryRecord) {
       Object.keys(this.repositoryRecord).map((key) => {
         if (this.repositoryRecord[key] === null) {
@@ -531,14 +528,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       }
 
       if (submission?.identifier) {
-        // this.data = {
-        //   ...this.data,
-        //   ...submission?.formMetadata.metadata,
-        // };
-        // this.links = submission?.formMetadata.links; // Has useful links, i.e: bucket for upload
-        // TODO: getting a full url as identifier instead of just the identifier
-        // I.e: http://beta.hydroshare.org/resource/99b2bc413274446185eb489ed312de45
-        // Parsing it for now...
         // HydroShare
         this.identifier = submission.identifier
       }
