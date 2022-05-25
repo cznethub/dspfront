@@ -14,7 +14,7 @@ export default class Repository extends Model implements IRepository {
   static primaryKey = 'key'
   static isAuthorizeListenerSet = false
   static authorizeDialog$ = new Subject<{ repository: string, redirectTo?: RawLocation | undefined }>()
-  static authorized$ = new Subject<string>()
+  static authorized$ = new Subject<EnumRepositoryKeys>()
   public readonly key!: EnumRepositoryKeys
   public readonly name!: string
   public readonly logoSrc!: string
@@ -108,7 +108,7 @@ export default class Repository extends Model implements IRepository {
       data: { urls, schema, uischema, schemaDefaults }
     })
 
-    await this.fetchAccessToken()
+    // await this.fetchAccessToken()
   }
 
   static openAuthorizeDialog(repository: string, redirectTo?: RawLocation) {
@@ -131,7 +131,7 @@ export default class Repository extends Model implements IRepository {
 
     if (!this.isAuthorizeListenerSet) {
       window.addEventListener("message", async (message) => {
-        this.isAuthorizeListenerSet = true; // Prevents registering the listener more than once
+        this.isAuthorizeListenerSet = true // Prevents registering the listener more than once
         console.info(`Repository: listening to authorization window...`)
 
         if (message.data.token) {
@@ -142,7 +142,7 @@ export default class Repository extends Model implements IRepository {
           if (callback) {
             callback()
           }
-          this.authorized$.next(this.entity)
+          this.authorized$.next(this.entity as EnumRepositoryKeys)
         }
         else {
           CzNotification.toast({ message: 'Failed to authorize repository' })
@@ -272,11 +272,12 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch(e: any) {
-      if (e.response?.status === 401) {
+      if (e.response?.status === 401 || e.response?.status === 403) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''
         })
+
         CzNotification.toast({
           message: 'Authorization token is invalid or has expired.'
         })
@@ -284,6 +285,7 @@ export default class Repository extends Model implements IRepository {
         Repository.openAuthorizeDialog(this.entity)
       }
       else {
+        CzNotification.toast({ message: 'Failed to create submission' })
         console.error(`${repository}: failed to create submission.`, e.response)
       }
       throw(e)
@@ -402,19 +404,28 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch(e: any) {
+      console.log(e.response.status)
       if (e.response.status === 401) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''
         })
+        
         CzNotification.toast({
           message: 'Authorization token is invalid or has expired.'
         })
 
         Repository.openAuthorizeDialog(repository)
+        return e.response.status
+      }
+      else if (e.response.status === 403) {
+        // Submission might have been deleted or service unavailable
+        CzNotification.toast({ message: 'Failed to load submission' })
+        return e.response.status
       }
       else {
         console.error(`${repository}: failed to read submission.`, e.response)
+        return null
       }
     }
   }
