@@ -244,7 +244,7 @@ const controlRenderer = defineComponent({
         }
         else {
           this.handleChange(
-            this.path,
+            this.control.path,
             createDefaultValue(this.anyOfRenderInfos[this.selectedIndex].schema)
           )
         }
