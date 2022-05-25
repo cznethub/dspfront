@@ -86,6 +86,7 @@
         id="cz-new-submission-actions-bottom"
         v-if="!isLoading && wasLoaded"
         :isEditMode="isEditMode"
+        :isReadOnly="isReadOnly"
         :isDevMode="isDevMode"
         :isSaving="isSaving"
         :confirmText="submitText"
