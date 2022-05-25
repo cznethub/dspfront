@@ -59,7 +59,7 @@
           @upload="uploadFiles($event)"
           :isReadOnly="isReadOnly"
           :rootDirectory.sync="rootDirectory"
-          :allowFolders="repoMetadata[repository].hasFolderStructure"
+          :allowFolders="repoMetadata[repositoryKey].hasFolderStructure"
           :isEditMode="isEditMode"
           :identifier="identifier"
         />
@@ -103,13 +103,28 @@
     </v-container>
 
     <template v-if="!isLoading && !wasLoaded">
-      <v-alert class="text-subtitle-1" border="left" colored-border type="error" elevation="2">
-        We could not load this submission. The service might be unavailable or  the submission might have been deleted.
-      </v-alert>
+      <template v-if="wasUnauthorized">
+        <v-alert class="text-subtitle-1" border="left" colored-border type="error" elevation="2">
+          <v-row>
+            <v-col class="flex-grow-1">We need your authorization to load this submission from the repository.</v-col>
+            <v-col class="flex-grow-0">
+              <v-btn @click="openAuthorizePopup" color="primary" class="mb-4">
+                <i class="fas fa-key mr-2" />Authorize
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+      </template>
 
-      <div class="d-flex justify-center mt-8">
-        <v-icon style="font-size: 8rem;" class="text--disabled">mdi-database-off-outline</v-icon>
-      </div>
+      <template v-else>
+        <v-alert class="text-subtitle-1" border="left" colored-border type="error" elevation="2">
+          We could not load this submission. The service might be unavailable or  the submission might have been deleted.
+        </v-alert>
+
+        <div class="d-flex justify-center mt-8">
+          <v-icon style="font-size: 8rem;" class="text--disabled">mdi-database-off-outline</v-icon>
+        </div>
+      </template>
     </template>
 
     <v-dialog id="show-ui-schema" v-if="isDevMode" v-model="showUISchema">
@@ -219,13 +234,14 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected timesChanged = 0
   protected ajv = customAjv
   protected isReadOnly = false
+  protected wasUnauthorized = false
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined
   }
 
-  protected get repository() {
-    return this.$route.params.repository
+  protected get repositoryKey(): EnumRepositoryKeys {
+    return this.$route.params.repository as EnumRepositoryKeys
   }
 
   protected get schema() {
@@ -247,7 +263,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected get isExternal() {
-    return this.repoMetadata[this.repository].isExternal
+    return this.repoMetadata[this.repositoryKey].isExternal
   }
 
   protected get formTitle() {
@@ -290,17 +306,15 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.data = this.schemaDefaults
     this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
     this.hasUnsavedChanges = false
-
-    const routeRepositoryKey = this.$route.params
-      .repository as EnumRepositoryKeys
+    this.wasUnauthorized = false
 
     if (
       !this.activeRepository ||
-      this.activeRepository.get()?.key !== routeRepositoryKey
+      this.activeRepository.get()?.key !== this.repositoryKey
     ) {
       // Check that the key from the url is actually a EnumRepositoryKeys
-      if (EnumRepositoryKeys[routeRepositoryKey]) {
-        this.setActiveRepository(routeRepositoryKey)
+      if (EnumRepositoryKeys[this.repositoryKey]) {
+        this.setActiveRepository(this.repositoryKey)
       }
     }
 
@@ -313,6 +327,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     }
   }
 
+  protected async openAuthorizePopup() {
+    const repository = this.getRepositoryFromKey(this.repositoryKey)
+    Repository.authorize(repository)  // We don't need to provide a callback because we already have a subject set
+  }
+
   protected goToSubmissions() {
     // TODO: add discard confirm dialog if the form was changed
     this.$router.push({
@@ -323,7 +342,20 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected async loadExistingSubmission() {
     // TODO: these 2 calls can be performed in parallel
     console.info("CzNewSubmission: reading existing record...")
-    this.repositoryRecord = await Repository.readSubmission(this.identifier, this.repository)
+    const response = await Repository.readSubmission(this.identifier, this.repositoryKey)
+
+    if (response === 401) {
+      // Repository was unauthorized
+      this.wasUnauthorized = true
+    }
+    else if (response === 403) {
+      // Submission not found or service unavailable
+      this.repositoryRecord = null
+    }
+    else {
+      this.repositoryRecord = response
+      this.wasUnauthorized = false
+    }
 
     // TODO: all of this should be cleaned in the backend. Make fields with null values undefined
     if (this.repositoryRecord) {
@@ -332,41 +364,34 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
           this.repositoryRecord[key] = undefined
         }
       })
-    }
-    else {
-      this.isLoading = false
-      return
-    }
 
-    // For earthchem, check if the submission can no longer be modified
-    if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
-      if (this.repositoryRecord.status && this.repositoryRecord.status !== 'incomplete') {
-        this.isReadOnly = true
+        // For earthchem, check if the submission can no longer be modified
+      if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
+        if (this.repositoryRecord.status && this.repositoryRecord.status !== 'incomplete') {
+          this.isReadOnly = true
+        }
       }
-    }
 
-    console.info("CzNewSubmission: reading existing files...")
-    if (!this.isExternal && this.repositoryRecord) {
-      try {
-        const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
-        this.rootDirectory.children = initialStructure
+      console.info("CzNewSubmission: reading existing files...")
+      if (!this.isExternal && this.repositoryRecord) {
+        try {
+          const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
+          this.rootDirectory.children = initialStructure
+        }
+        catch(e) {
+          CzNotification.toast({ message: 'Failed to load existing files.' })
+        }
       }
-      catch(e) {
-        CzNotification.toast({ message: 'Failed to load existing files.' })
-      }
-    }
-    this.isLoadingInitialFiles = false
+      this.isLoadingInitialFiles = false
 
-    if (this.repositoryRecord) {
       this.data = {
         ...this.data,
         ...this.repositoryRecord,
       }
-      // this.links = repositoryRecord?.formMetadata.links // Has useful links, i.e: bucket for upload
     }
-    else {
+    else if (this.wasUnauthorized) {
       // Try again when user has authorized the repository
-      this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
+      this.authorizedSubject = Repository.authorized$.subscribe(async (repositoryKey: EnumRepositoryKeys) => {
         this.isLoading = true
         await this.loadExistingSubmission()
       })
@@ -401,6 +426,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
           cancelText: 'Cancel',
           onConfirm: async () => {
             this.data.status = 'submitted'
+            this.hasUnsavedChanges = true
             this._saveAndFinish()
           },
           onSecondaryAction: () => {
@@ -457,10 +483,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     if (!this.identifier) {
       console.info("CzNewSubmission: creating new record...")
       try {
-        submission = await this.activeRepository?.createSubmission(this.data, this.repository)
-      } catch (e) {
-        console.log(e)
-        CzNotification.toast({ message: 'Failed to create submission' })
+        submission = await this.activeRepository?.createSubmission(this.data, this.repositoryKey)
+      }
+      catch (e) {
         this.isSaving = false
         return false
       }
