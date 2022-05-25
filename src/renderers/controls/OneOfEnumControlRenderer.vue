@@ -14,7 +14,7 @@
       :error-messages="control.errors"
       :clearable="hover"
       :value="control.data"
-      :items="control.options"
+      :items="sortedOptions"
       item-text="label"
       item-value="value"
       persistent-hint
@@ -38,7 +38,7 @@
       :error-messages="control.errors"
       :clearable="hover"
       :value="control.data"
-      :items="sortedOptions"
+      :items="control.options"
       item-text="label"
       item-value="value"
       persistent-hint
