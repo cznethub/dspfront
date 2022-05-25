@@ -74,9 +74,6 @@
             </v-card>
           </v-speed-dial>
         </div>
-
-        <!-- TODO: replace for menu -->
-        <!-- @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }} -->
       </div>
     </div>
 
@@ -288,7 +285,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
+import { Component } from "vue-property-decorator"
 import {
   ISubmission,
   EnumSubmissionSorts,
@@ -308,7 +305,7 @@ import User from "@/models/user.model"
 
 @Component({
   name: "cz-submissions",
-  components: {  },
+  components: { },
 })
 export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   protected isUpdating: { [key: string]: boolean } = {}
@@ -469,8 +466,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
         date: (new Date(s.date)).toISOString(),
         title: s.title,
         repository: this.getRepositoryName(s),
-        url: s.url,
-        // metadata: s.metadata
+        url: s.url
       }
     })
 

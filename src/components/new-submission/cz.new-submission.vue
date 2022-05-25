@@ -558,7 +558,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     // We use onChange event for now by ignoring the two times it is called when the form is rendered.
     // https://spectrum.chat/jsonforms/general/pristine-and-dirty-checking~2ece93ab-7783-41cb-8ba1-804414eb1da4?m=MTU2MzM0OTY0NDQxNg==
 
-    // json-forms emits 'onChange' event twice during instantioation.
+    // json-forms emits 'change' event twice during instantioation.
     const changesDuringInstantiation = 2
 
     if (this.timesChanged <= 2) {
