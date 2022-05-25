@@ -1,14 +1,15 @@
 <template>
   <v-hover v-slot="{ hover }">
-    <v-select
+    <v-autocomplete
+      v-if="hasAutoComplete"
+      @change="onChange"
       :id="control.id + '-input'"
       :class="styles.control.input"
       :disabled="!control.enabled"
       :autofocus="appliedOptions.focus"
-      :placeholder="appliedOptions.placeholder"
+      :placeholder="placeholder"
       :label="computedLabel"
       :hint="control.description"
-      persistent-hint
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover"
@@ -16,7 +17,31 @@
       :items="control.options"
       item-text="label"
       item-value="value"
+      persistent-hint
+      class="py-3"
+      hide-details="auto"
+      outlined
+      dense
+    />
+
+    <v-select
+      v-else
       @change="onChange"
+      :id="control.id + '-input'"
+      :class="styles.control.input"
+      :disabled="!control.enabled"
+      :autofocus="appliedOptions.focus"
+      :placeholder="placeholder"
+      :label="computedLabel"
+      :hint="control.description"
+      :required="control.required"
+      :error-messages="control.errors"
+      :clearable="hover"
+      :value="control.data"
+      :items="sortedOptions"
+      item-text="label"
+      item-value="value"
+      persistent-hint
       class="py-3"
       hide-details="auto"
       outlined
@@ -31,6 +56,7 @@ import {
   JsonFormsRendererRegistryEntry,
   rankWith,
   isOneOfEnumControl,
+  EnumOption,
 } from '@jsonforms/core';
 import { defineComponent } from "@vue/composition-api"
 import {
@@ -58,11 +84,27 @@ const controlRenderer = defineComponent({
     return useVuetifyControl(
       useJsonFormsOneOfEnumControl(props),
       (value) => value || undefined
-    );
+    )
   },
   created() {
     if (!this.control.data && this.control.schema.default) {
       this.handleChange(this.control.path, this.control.schema.default)
+    }
+  },
+  computed: {
+    hasAutoComplete() {
+      // @ts-ignore
+      return this.control.schema.options?.hasAutoComplete
+    },
+    placeholder(): string {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    sortedOptions() {
+       // @ts-ignore
+      return this.control.options.sort((a: EnumOption, b: EnumOption) => {
+        return a.label < b.label ? -1 : 1
+      })
     }
   }
 });
