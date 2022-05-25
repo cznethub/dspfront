@@ -404,7 +404,6 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch(e: any) {
-      console.log(e.response.status)
       if (e.response.status === 401) {
         // Token has expired
         this.commit((state) => {

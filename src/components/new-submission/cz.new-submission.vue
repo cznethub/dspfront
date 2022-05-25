@@ -104,7 +104,7 @@
 
     <template v-if="!isLoading && !wasLoaded">
       <template v-if="wasUnauthorized">
-        <v-alert class="text-subtitle-1" border="left" colored-border type="error" elevation="2">
+        <v-alert class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
           <v-row>
             <v-col class="flex-grow-1">We need your authorization to load this submission from the repository.</v-col>
             <v-col class="flex-grow-0">
@@ -114,6 +114,24 @@
             </v-col>
           </v-row>
         </v-alert>
+      </template>
+
+      <template v-else-if="!isLoggedIn">
+        <v-alert class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
+          <v-row>
+            <v-col class="flex-grow-1">You need to log in to access this submission.</v-col>
+            <v-col class="flex-grow-0">
+              <v-btn id="orcid_login_continue" @click="onLogIn" color="primary">
+                <v-icon class="mr-2">fab fa-orcid</v-icon>
+                <span>Log In Using ORCID</span>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+
+        <div class="d-flex justify-center mt-8">
+          <v-icon style="font-size: 8rem;" class="text--disabled">mdi-login</v-icon>
+        </div>
       </template>
 
       <template v-else>
@@ -231,6 +249,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected errors: ErrorObject[]  = []
   protected repositoryRecord: any = null
   protected authorizedSubject = new Subscription()
+  protected loggedInSubject = new Subscription()
   protected timesChanged = 0
   protected ajv = customAjv
   protected isReadOnly = false
@@ -293,12 +312,17 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     })
   }
 
+  protected get isLoggedIn() {
+    return User.$state.isLoggedIn;
+  }
+
   created() {
     this.init()
   }
 
   beforeDestroy() {
     this.authorizedSubject.unsubscribe()
+    this.loggedInSubject.unsubscribe()
   }
 
   init() {
@@ -332,6 +356,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     Repository.authorize(repository)  // We don't need to provide a callback because we already have a subject set
   }
 
+  protected onLogIn() {
+    User.logIn()
+  }
+
   protected goToSubmissions() {
     // TODO: add discard confirm dialog if the form was changed
     this.$router.push({
@@ -347,10 +375,23 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     if (response === 401) {
       // Repository was unauthorized
       this.wasUnauthorized = true
+      
+      // Try again when user has authorized the repository
+      this.authorizedSubject = Repository.authorized$.subscribe(async (repositoryKey: EnumRepositoryKeys) => {
+        this.isLoading = true
+        await this.loadExistingSubmission()
+      })
     }
     else if (response === 403) {
       // Submission not found or service unavailable
       this.repositoryRecord = null
+
+      if (!this.isLoggedIn) {
+        this.loggedInSubject = User.loggedIn$.subscribe(async () => {
+          this.isLoading = true
+          await this.loadExistingSubmission()
+        })
+      }
     }
     else {
       this.repositoryRecord = response
@@ -388,12 +429,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         ...this.data,
         ...this.repositoryRecord,
       }
-    }
-    else if (this.wasUnauthorized) {
-      // Try again when user has authorized the repository
-      this.authorizedSubject = Repository.authorized$.subscribe(async (repositoryKey: EnumRepositoryKeys) => {
-        this.isLoading = true
-        await this.loadExistingSubmission()
+
+      // Nexttick doesn't work. We use setTimeout instead.
+      setTimeout(() => {
+        this.hasUnsavedChanges = false
       })
     }
 
@@ -529,11 +568,15 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     // Pristine/dirty checks are currently not supported in jsonforms.
     // We use onChange event for now by ignoring the two times it is called when the form is rendered.
     // https://spectrum.chat/jsonforms/general/pristine-and-dirty-checking~2ece93ab-7783-41cb-8ba1-804414eb1da4?m=MTU2MzM0OTY0NDQxNg==
+
+    // json-forms emits 'onChange' event twice during instantioation.
+    const changesDuringInstantiation = 2
+
     if (this.timesChanged <= 2) {
       this.timesChanged = this.timesChanged + 1
     }
 
-    this.hasUnsavedChanges = this.timesChanged > 2
+    this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation
     this.errors = event.errors || []
     this.data = event.data
   }
