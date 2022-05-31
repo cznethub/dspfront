@@ -8,7 +8,7 @@
         <div>
           <div><b>Instructions</b></div>
           <p>Fill in the required fields (marked with * and highlighted in red).
-                Press the "Save" button to upload your
+                Press the "Save / Finish" button to upload your
                 submission.</p>
         </div>
 
@@ -567,6 +567,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
     this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation
     this.errors = event.errors || []
+    console.log(this.errors)
     this.data = event.data
   }
 

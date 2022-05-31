@@ -2,9 +2,9 @@
   <div class="cz-recommendations-questionnaire pa-4">
     <div class="text-h4">Repository Recommendations</div>
     <v-divider class="has-space-bottom" />
-    <p class="text-body-1 mb-8">Use the questionnaire below to identify repository options for different types of data. If you cannot find guidance for your particular data or still have questions, please contact us (link to DSP contact page).</p>
+    <p class="text-body-1 mb-8">Use the questionnaire below to identify repository options for different types of data. If you cannot find guidance for your particular data or still have questions, please <router-link to="/contact">contact us</router-link>.</p>
 
-    <p class="text-body-1 mb-8"><b>Important</b>: Some partnership agreements for data collection or journals to which you submit papers may require that associated data be deposited in a specific repository. We hope the repository recommendations provided here are helpful, but realize that they may be superseded by other requirements. we recommend that you adress any of these issues before using this guide.</p>
+    <p class="text-body-1 mb-8"><b>Important</b>: Some partnership agreements for data collection or journals to which you submit papers may require that associated data be deposited in a specific repository. We hope the repository recommendations provided here are helpful, but realize that they may be superseded by other requirements. We recommend that you adress any of these issues before using this guide.</p>
 
     <v-stepper v-model="currentStepIndex" flat outlined>
       <v-stepper-header>

@@ -85,8 +85,9 @@
         </template>
 
         <template v-else>
-          <div>
+          <v-hover v-slot="{ hover }">
             <v-select
+              @change="handleSelect"
               :items="oneOfRenderInfos"
               :label="control.schema.title"
               :value="oneOfRenderInfos[selectedIndex]"
@@ -95,28 +96,29 @@
               :required="control.required"
               :error-messages="control.errors"
               :placeholder="appliedOptions.placeholder"
-              @change="handleSelect"
+              :clearable="hover"
+              :disabled="!control.enabled"
+              :readonly="control.schema.readOnly"
               class="py-4"
               hide-details="auto"
               item-text="label"
-              :disabled="!control.enabled"
-              :readonly="control.schema.readOnly"
               outlined
               dense
               persistent-hint
-            >{{ oneOfRenderInfos[selectedIndex].label }}</v-select>
+            >{{ currentLabel }}</v-select>
+          </v-hover>
 
-            <dispatch-renderer
-              v-if="oneOfRenderInfos[selectedIndex]"
-              :key="selectedIndex"
-              :schema="oneOfRenderInfos[selectedIndex].schema"
-              :uischema="oneOfRenderInfos[selectedIndex].uischema"
-              :path="control.path"
-              :renderers="control.renderers"
-              :cells="control.cells"
-              :enabled="control.enabled"
-            />
-          </div>
+          <dispatch-renderer
+            v-if="selectedIndex >= 0 && oneOfRenderInfos[selectedIndex]"
+            :key="selectedIndex"
+            :schema="oneOfRenderInfos[selectedIndex].schema"
+            :uischema="oneOfRenderInfos[selectedIndex].uischema"
+            :path="control.path"
+            :renderers="control.renderers"
+            :cells="control.cells"
+            :enabled="control.enabled"
+          />
+          
         </template>
       </template>
     </fieldset>
@@ -226,7 +228,12 @@ const controlRenderer = defineComponent({
     isDropDown(): boolean {
       // @ts-ignore
       return this.control.schema.options?.dropdown
-    }
+    },
+    currentLabel(): string {
+      return this.selectedIndex >= 0 
+        ? this.oneOfRenderInfos[this.selectedIndex].label
+        : ''
+    },
   },
   methods: {
     handleTabChange(): void {
@@ -252,6 +259,15 @@ const controlRenderer = defineComponent({
     handleSelect(label: string) {
       this.$set(this.tabData, this.selectedIndex, this.control.data)  // Store form state before tab change
       this.selectedIndex = this.oneOfRenderInfos.findIndex((info: CombinatorSubSchemaRenderInfo) => info.label === label)
+
+      if (this.selectedIndex === -1) {
+        this.handleChange(
+          this.control.path,
+          undefined
+        )
+
+        return
+      }
 
       if (this.tabData[this.selectedIndex]) {
         this.handleChange(this.control.path, this.tabData[this.selectedIndex])
