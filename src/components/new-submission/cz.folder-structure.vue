@@ -1,6 +1,6 @@
 <template>
   <v-card class="mb-8">
-    <v-sheet class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4">
+    <v-sheet class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included">
       <v-tooltip v-if="allowFolders && !isReadOnly" bottom transition="fade">
         <template v-slot:activator="{ on, attrs}">
           <v-btn @click="newFolder" class="mr-4" small icon v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
@@ -12,10 +12,10 @@
         Files
       </div>
 
-      <template v-if="rootDirectory.children.length">
+      <template>
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="selectAll" class="mr-1" icon small v-on="on" v-bind="attrs">
+            <v-btn @click="selectAll" :disabled="!rootDirectory.children.length" class="mr-1" icon small v-on="on" v-bind="attrs">
               <v-icon>mdi-checkbox-marked-outline</v-icon>
             </v-btn>
           </template>
@@ -23,10 +23,10 @@
         </v-tooltip>
       </template>
 
-      <template v-if="selected.length">
+      <template>
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="selected = []" icon small :disabled="!selected.length" v-on="on" v-bind="attrs">
+            <v-btn @click="unselectAll" icon small :disabled="!selected.length" v-on="on" v-bind="attrs">
               <v-icon>mdi-checkbox-blank-off-outline</v-icon>
             </v-btn>
           </template>
@@ -35,34 +35,37 @@
         <v-divider class="mx-4" vertical></v-divider>
       </template>
 
-      <template v-if="allowFolders && (selected.length || itemsToCut.length) && !isReadOnly">
-        <v-tooltip v-if="selected.length" bottom transition="fade">
+      <template v-if="allowFolders">
+        <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
-            <v-btn @click="cut" class="mr-1" icon small v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
+            <v-btn @click="cut" :disabled="!canCut" class="mr-1" icon small v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
           </template>
           Cut
         </v-tooltip>
 
-        <v-tooltip v-if="(itemsToCut.length || selected.length) && !isReadOnly" bottom transition="fade">
+        <v-tooltip v-if="!isReadOnly" bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
-            <v-btn @click="paste" icon small v-on="on" v-bind="attrs" :disabled="!itemsToCut.length || itemsToCut.includes(activeDirectoryItem)">
+            <v-btn @click="paste" :disabled="!canPaste" icon small v-on="on" v-bind="attrs">
               <v-icon>mdi-content-paste</v-icon>
             </v-btn>
           </template>
           Paste
         </v-tooltip>
-        <v-divider v-if="selected.length" class="mx-4" vertical></v-divider>
+        <v-divider class="mx-4" vertical></v-divider>
       </template>
 
-      <template v-if="selected.length && !isReadOnly">
+      <template v-if="!isReadOnly">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn @click="deleteSelected" icon small :disabled="isDeleting" v-on="on" v-bind="attrs">
+            <v-btn @click="deleteSelected" icon small :disabled="isDeleting || !selected.length" v-on="on" v-bind="attrs">
               <v-icon>mdi-delete</v-icon>
             </v-btn>
           </template>
           <span>Discard</span>
         </v-tooltip>
+      </template>
+
+      <template v-if="selected.length">
         <v-divider class="mx-4" vertical></v-divider>
         <span class="text-subtitle-2">{{ selected.length }} item{{ selected.length !== 1 ? 's': '' }} selected</span>
       </template>
@@ -84,28 +87,31 @@
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem;">
           <v-row>
-            <v-col cols="9" v-click-outside="{ handler: onSetActiveRootDirectory, include: include}">
+            <v-col cols="9" v-click-outside="{ handler: onClickOutside, include }">
               <v-treeview
                 v-model="selected"
-                @update:active="onUpdateActive"
                 item-disabled="isDisabled"
                 :items="rootDirectory.children"
                 :open.sync="open"
-                :active.sync="active"
                 :value.sync="selected"
                 selection-type="independent"
                 selectable
                 transition
-                activatable
                 item-key="key"
                 dense
                 open-on-click
               >
                 <template v-slot:prepend="{ item, open }">
-                  <v-icon v-if="item.children" @click.stop="onItemClick(item)" :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
+                  <v-icon v-if="item.children"
+                    @click.exact.stop="onItemClick(item)"
+                    @click.ctrl.exact.stop="onItemCtrlClick(item)"
+                    :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
                     {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                   </v-icon>
-                  <v-icon v-else @click.stop="onItemClick(item)" :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
+                  <v-icon v-else
+                    @click.exact.stop="onItemClick(item)"
+                    @click.ctrl.exact.stop="onItemCtrlClick(item)"
+                    :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
                     {{ files[item.name.split('.').pop()] || files['default'] }}
                   </v-icon>
                 </template>
@@ -113,7 +119,8 @@
                   <v-text-field v-if="item.isRenaming"
                     @change="onRenamed(item, $event)"
                     @keydown.enter="item.isRenaming = false"
-                    @click.stop="onItemClick(item)"
+                    @click.exact.stop="onItemClick(item)"
+                    @click.ctrl.exact.stop="onItemCtrlClick(item)"
                     @click:append="item.isRenaming = false"
                     :value="item.name"
                     v-click-outside="onClickOutside"
@@ -122,13 +129,16 @@
                     hide-details="auto"
                     autofocus>
                   </v-text-field>
-                  <v-row v-else @click.stop="onItemClick(item)" :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap">
+                  <v-row v-else
+                    @click.exact.stop="onItemClick(item)"
+                    @click.ctrl.exact.stop="onItemCtrlClick(item)"
+                    :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap">
                     <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
                     <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ml-2 text-caption text--secondary">{{ item.file.size | prettyBytes }}</v-col>
                   </v-row>
                 </template>
-                <template v-slot:append="{ item, active }">
-                  <template v-if="active && !item.isDisabled && !isReadOnly">
+                <template v-slot:append="{ item, selected }">
+                  <template v-if="selected && !item.isDisabled && !isReadOnly">
                     <v-btn v-if="!item.isRenaming"
                       @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
                   </template>
@@ -212,19 +222,38 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     default: 'mdi-file-outline',
   }
   protected open: string[] = []
-  protected active: string[] = []
+  // protected active: string[] = []
   protected selected: string[] = []
-  protected activeDirectoryItem!: IFolder | IFile
+  // protected activeDirectoryItem!: IFolder | IFile
   protected dropFiles: File[] = []
   protected isDeleting = false
   protected fileReleaseDate = null
 
-  protected get itemsToCut() {
+  protected get itemsToCut(): (IFile | IFolder)[] {
     return this._itemsToCutRecursive(this.rootDirectory)
   }
 
+  protected get activeDirectoryItem(): IFolder | IFile {
+    if (this.selected.length !== 1) {
+      return this.rootDirectory
+    }
+    else {
+      return this._getItemByKey(this.selected[0]) as IFolder | IFile
+    }
+  }
+
+  protected get canPaste() {
+    const isValidTarget = this.selected.length <= 1
+    const areItemsValid = this.itemsToCut.length && !this.itemsToCut.includes(this.activeDirectoryItem)
+    return isValidTarget && areItemsValid
+  }
+
+  protected get canCut() {
+    return this.selected.length && !this.isReadOnly
+  }
+
   created() {
-    this.activeDirectoryItem = this.rootDirectory
+    // this.activeDirectoryItem = this.rootDirectory
   }
 
   @Watch('rootDirectory.children', { deep: true })
@@ -240,7 +269,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     if (!newFiles.length) {
       return
     }
-    const targetFolder = this.activeDirectoryItem.hasOwnProperty('children')
+    const targetFolder: IFolder = this.activeDirectoryItem.hasOwnProperty('children')
       ? this.activeDirectoryItem as IFolder
       : this.activeDirectoryItem.parent as IFolder
 
@@ -269,33 +298,9 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     this.dropFiles = []
   }
 
-  @Watch('selected')
-  protected onSelectedChanged(newSelected: string[], oldSelected: string[]) {
-    const isSelecting = newSelected.length > oldSelected.length
-    const selectedItems = newSelected.map((key: string) => this._getItemByKey(key))
-
-    if (isSelecting) {
-      // When a folder is selected, select all its child items as well
-      selectedItems.map((item: IFolder | IFile | undefined) => {
-        if (item && this.isFolder(item)) {
-          if (this._hasSomeChildUnselected(item as IFolder)) {
-            this.select((item as IFolder).children.map(i => i.key))
-          }
-        }
-      })
-    }
-    else {
-      // If a selected item is a folder and has some child unselected, unselect it
-      selectedItems.map((item: IFolder | IFile | undefined) => {
-        if (item && this.isFolder(item) && this._hasSomeChildUnselected(item as IFolder)) {
-          this.unselect(item.key)
-        }
-      })
-    }
-  }
-
   protected selectAll() {
-    this.select(this.rootDirectory.children.map(item => item.key))
+    const allItems = this._getDirectoryItems(this.rootDirectory)
+    this.select(allItems.map(item => item.key))
   }
 
   protected getPathString(item: IFolder | IFile) {
@@ -325,7 +330,13 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     }
   }
 
+  protected unselectAll() {
+    this.selected = []
+  }
+
   protected cut() {
+    this.uncutAll()
+
     this.selected.map((key) => {
       const item = this._getItemByKey(key)
       if (item) {
@@ -334,16 +345,23 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     })
   }
 
+  protected uncutAll() {
+    this.itemsToCut.map((item) => {
+      item.isCutting = false
+    })
+  }
+
   protected async paste() {
     const pastePromises: Promise<boolean>[] = []
-    for (let i = 0; i < this.itemsToCut.length; i++) {
-      const item = this.itemsToCut[i]
+    const itemsToCut = [ ...this.itemsToCut ] // We make a copy because the original can change during iteration below
+
+    for (let i = 0; i < itemsToCut.length; i++) {
+      const item = itemsToCut[i]
       const targetFolder: IFolder = this.isFolder(this.activeDirectoryItem)
         ? this.activeDirectoryItem as IFolder
         : this.activeDirectoryItem.parent as IFolder
 
-      // TODO: move these into a promise array and perform them at the same time
-      if (item && !this.isSelected(item.parent as IFolder)) {
+      if (item && item.parent !== targetFolder) {
         if (this.isEditMode) {
           pastePromises.push(this._paste(item, targetFolder))
         }
@@ -392,7 +410,12 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected onItemClick(item: IFolder | IFile) {
-    this.active = [item.key]
+    this.unselectAll()
+    this.select([item.key])
+  }
+
+  protected onItemCtrlClick(item: IFolder | IFile) {
+    this.select([item.key])
   }
 
   protected renameItem(item: IFile | IFolder) {
@@ -473,32 +496,34 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected onClickOutside() {
-    this.activeDirectoryItem = this.rootDirectory
-    this.active = [this.rootDirectory.key]
+    // this.activeDirectoryItem = this.rootDirectory
+    this.unselectAll()
+    // this.active = [this.rootDirectory.key]
   }
 
-  protected onSetActiveRootDirectory() {
-    this.activeDirectoryItem = this.rootDirectory
-    this.active = []
-  }
+  // protected onSetActiveRootDirectory() {
+  //   this.activeDirectoryItem = this.rootDirectory
+  //   this.unselectAll()
+  //   // this.active = []
+  // }
 
   protected include() {
     return [document.querySelector('.files-container--included')]
   }
 
-  protected onUpdateActive(keys: string[]) {
-    const target = this._getItemByKey(keys[0])
+  // protected onUpdateActive(keys: string[]) {
+  //   const target = this._getItemByKey(keys[0])
 
-    if (this.activeDirectoryItem !== target && !target?.isRenaming) {
-      this.clearRenaming()
-    }
-    if (keys.length && target) {
-      this.activeDirectoryItem = target
-    }
-    else {
-      this.activeDirectoryItem = this.rootDirectory
-    }
-  }
+  //   if (this.activeDirectoryItem !== target && !target?.isRenaming) {
+  //     this.clearRenaming()
+  //   }
+  //   if (keys.length && target) {
+  //     this.activeDirectoryItem = target
+  //   }
+  //   else {
+  //     this.activeDirectoryItem = this.rootDirectory
+  //   }
+  // }
 
   protected clearRenaming() {
     this._clearRenamingRecursive(this.rootDirectory)
@@ -512,10 +537,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       cancelText: 'Cancel',
       onConfirm: async () => {
         this.rootDirectory.children = []
-        this.activeDirectoryItem = this.rootDirectory
         this.selected = []
         this.open = []
-        this.active = []
       }
     })
   }
@@ -588,10 +611,10 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     const parent = item.parent as IFolder
 
     // If it was the active directory, make its parent active
-    if (item === this.activeDirectoryItem) {
-      this.activeDirectoryItem = parent
-      this.active = [parent.key]
-    }
+    // if (item === this.activeDirectoryItem) {
+      // this.activeDirectoryItem = parent
+      // this.active = [parent.key]
+    // }
 
     const index = parent.children.indexOf(item)
     if (index >= 0) {
@@ -678,7 +701,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     })
   }
 
-  private _itemsToCutRecursive(item: IFolder) {
+  private _itemsToCutRecursive(item: IFolder): (IFile | IFolder)[] {
     const childFolders = item.children.filter(i => this.isFolder(i)) as IFolder[]
 
     return [
