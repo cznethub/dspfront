@@ -428,7 +428,6 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
     const first = Math.min(itemIndex, anchorIndex)
     const last = Math.max(itemIndex, anchorIndex)
-
     const itemsToSelect: (IFolder | IFile)[] = []
 
     for (let i = first; i <= last; i++) {
@@ -528,34 +527,12 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected onClickOutside() {
-    // this.activeDirectoryItem = this.rootDirectory
     this.unselectAll()
-    // this.active = [this.rootDirectory.key]
   }
-
-  // protected onSetActiveRootDirectory() {
-  //   this.activeDirectoryItem = this.rootDirectory
-  //   this.unselectAll()
-  //   // this.active = []
-  // }
 
   protected include() {
     return [...(document.getElementsByClassName('files-container--included'))]
   }
-
-  // protected onUpdateActive(keys: string[]) {
-  //   const target = this._getItemByKey(keys[0])
-
-  //   if (this.activeDirectoryItem !== target && !target?.isRenaming) {
-  //     this.clearRenaming()
-  //   }
-  //   if (keys.length && target) {
-  //     this.activeDirectoryItem = target
-  //   }
-  //   else {
-  //     this.activeDirectoryItem = this.rootDirectory
-  //   }
-  // }
 
   protected clearRenaming() {
     this._clearRenamingRecursive(this.rootDirectory)
@@ -640,15 +617,10 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     if  (item === this.rootDirectory) {
       return
     }
+
     const parent = item.parent as IFolder
-
-    // If it was the active directory, make its parent active
-    // if (item === this.activeDirectoryItem) {
-      // this.activeDirectoryItem = parent
-      // this.active = [parent.key]
-    // }
-
     const index = parent.children.indexOf(item)
+
     if (index >= 0) {
       parent.children.splice(index, 1)
       // If the folder is now empty, mark it as closed
@@ -686,28 +658,6 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     }
   }
 
-  // private _getItemByKey(key: string): IFolder | IFile | undefined {
-  //   return this._getItemByKeyRecursive(key, this.rootDirectory)
-  // }
-
-  // private _getItemByKeyRecursive(key: string, folder: IFolder): IFolder | IFile | undefined {
-  //   const found = folder.children.find((item) => {
-  //     return item.key === key
-  //   })
-  //   if (found) {
-  //     return found
-  //   }
-  //   else {
-  //     const childFolders = folder.children.filter(item => item.hasOwnProperty('children'))
-  //     for (let i = 0; i < childFolders.length; i++) {
-  //       const found = this._getItemByKeyRecursive(key, childFolders[i] as IFolder)
-  //       if (found) {
-  //         return found
-  //       }
-  //     }
-  //   }
-  // }
-
   /** Returns all files inside the given folder */
   private _getDirectoryItems(item: IFolder): (IFile | IFolder)[] {
     const childFolders = item.children.filter(i => this.isFolder(i)) as IFolder[]
@@ -720,18 +670,6 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
     return [...item.children, ...nestedItems]
   }
-
-  // private _hasSomeChildSelected(item: IFolder) {
-  //   return item.children.some((c) => {
-  //     return this.isSelected(c)
-  //   })
-  // }
-
-  // private _hasSomeChildUnselected(item: IFolder) {
-  //   return item.children.some((c) => {
-  //     return !this.isSelected(c)
-  //   })
-  // }
 
   private _itemsToCutRecursive(item: IFolder): (IFile | IFolder)[] {
     const childFolders = item.children.filter(i => this.isFolder(i)) as IFolder[]
@@ -776,19 +714,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 }
 
-// ::v-deep  .v-treeview-node--selected > .v-treeview-node__root {
-//   // background: rgb(25, 118, 210);
-//   color: #1976d2 !important;
-//   // caret-color: #1976d2 !important;
-
-//   &::before {
-//     opacity: 0.12
-//   }
-// }
-
 .files-container {
   overflow: auto;
   resize: vertical;
 }
-
 </style>
