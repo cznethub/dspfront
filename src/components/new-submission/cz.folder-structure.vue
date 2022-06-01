@@ -106,6 +106,7 @@
                   <v-icon v-if="item.children"
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
                     :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
                     {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
@@ -122,6 +123,7 @@
                     @keydown.enter="item.isRenaming = false"
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
                     @click:append="item.isRenaming = false"
                     :value="item.name"
@@ -134,6 +136,7 @@
                   <v-row v-else
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
                     :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap ma-0">
                     <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
@@ -415,16 +418,13 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected onItemShiftClick(item: IFolder | IFile) {
-    if (!this.shiftAnchor || item.parent !== this.shiftAnchor.parent) {
-      this.shiftAnchor = item
-    }
+    const parent: IFolder = item.parent as IFolder
+    const itemIndex = parent.children.indexOf(item)
+    const anchorIndex = this.shiftAnchor 
+      ? Math.max(0, parent.children.indexOf(this.shiftAnchor))
+      : 0
 
     this.unselectAll()
-
-    const parent: IFolder = this.shiftAnchor.parent as IFolder
-
-    const itemIndex = parent.children.indexOf(item)
-    const anchorIndex = parent.children.indexOf(this.shiftAnchor)
 
     const first = Math.min(itemIndex, anchorIndex)
     const last = Math.max(itemIndex, anchorIndex)
@@ -481,10 +481,15 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       const item = reversedSelected[i]
 
       if (item) {
+        if (item === this.shiftAnchor) {
+          this.shiftAnchor = null
+        }
+
         if (this.isEditMode) {
           const isParentSelected = this.isSelected(item.parent as IFolder)
           if (!isParentSelected) {
             const p = this.deleteFileOrFolder(item)
+
             deletePromises.push(p)
           }
         }
