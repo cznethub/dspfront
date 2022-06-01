@@ -115,8 +115,6 @@ export default class Zenodo extends Repository {
           params: { "access_token": this.accessToken }
         }
       )
-
-      console.log(response)
   
       if (response.status === 200) {
         return true
