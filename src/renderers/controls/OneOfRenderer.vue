@@ -85,28 +85,25 @@
         </template>
 
         <template v-else>
-          <v-hover v-slot="{ hover }">
-            <v-select
-              @change="handleSelect"
-              :items="oneOfRenderInfos"
-              :label="control.schema.title"
-              :value="oneOfRenderInfos[selectedIndex]"
-              :data-id="computedLabel.replaceAll(` `, ``)"
-              :hint="control.description"
-              :required="control.required"
-              :error-messages="control.errors"
-              :placeholder="appliedOptions.placeholder"
-              :clearable="hover"
-              :disabled="!control.enabled"
-              :readonly="control.schema.readOnly"
-              class="py-4"
-              hide-details="auto"
-              item-text="label"
-              outlined
-              dense
-              persistent-hint
-            >{{ currentLabel }}</v-select>
-          </v-hover>
+          <v-select
+            @change="handleSelect"
+            :items="oneOfRenderInfos"
+            :label="control.schema.title"
+            :value="oneOfRenderInfos[selectedIndex]"
+            :data-id="computedLabel.replaceAll(` `, ``)"
+            :hint="control.description"
+            :required="control.required"
+            :error-messages="control.errors"
+            :placeholder="appliedOptions.placeholder"
+            :disabled="!control.enabled"
+            :readonly="control.schema.readOnly"
+            class="py-4"
+            hide-details="auto"
+            item-text="label"
+            outlined
+            dense
+            persistent-hint
+          >{{ currentLabel }}</v-select>
 
           <dispatch-renderer
             v-if="selectedIndex >= 0 && oneOfRenderInfos[selectedIndex]"

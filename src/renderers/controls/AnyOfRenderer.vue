@@ -86,28 +86,25 @@
         </template>
 
         <template v-else>
-          <v-hover v-slot="{ hover }">
-            <v-select
-              @change="handleSelect"
-              :items="anyOfRenderInfos"
-              :label="control.schema.title"
-              :value="anyOfRenderInfos[selectedIndex]"
-              :data-id="computedLabel.replaceAll(` `, ``)"
-              :hint="control.description"
-              :required="control.required"
-              :error-messages="control.errors"
-              :placeholder="appliedOptions.placeholder"
-              :clearable="hover"
-              :disabled="!control.enabled"
-              :readonly="control.schema.readOnly"
-              class="py-4"
-              hide-details="auto"
-              item-text="label"
-              outlined
-              dense
-              persistent-hint
-            >{{ currentLabel }}</v-select>
-          </v-hover>
+          <v-select
+            @change="handleSelect"
+            :items="anyOfRenderInfos"
+            :label="control.schema.title"
+            :value="anyOfRenderInfos[selectedIndex]"
+            :data-id="computedLabel.replaceAll(` `, ``)"
+            :hint="control.description"
+            :required="control.required"
+            :error-messages="control.errors"
+            :placeholder="appliedOptions.placeholder"
+            :disabled="!control.enabled"
+            :readonly="control.schema.readOnly"
+            class="py-4"
+            hide-details="auto"
+            item-text="label"
+            outlined
+            dense
+            persistent-hint
+          >{{ currentLabel }}</v-select>
           
           <dispatch-renderer
             v-if="selectedIndex >= 0 && anyOfRenderInfos[selectedIndex]"
@@ -265,11 +262,8 @@ const controlRenderer = defineComponent({
           this.control.path,
           undefined
         )
-
-        return
       }
-
-      if (this.tabData[this.selectedIndex]) {
+      else if (this.tabData[this.selectedIndex]) {
         this.handleChange(this.control.path, this.tabData[this.selectedIndex])
       }
       else {
