@@ -133,12 +133,12 @@
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact.stop="onItemCtrlClick(item)"
                     :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap ma-0">
-                    <v-col class="flex-grow-1 flex-shrink-1 ma-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
+                    <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
                     <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes }}</v-col>
                   </v-row>
                 </template>
-                <template v-slot:append="{ item, selected }">
-                  <template v-if="selected && !item.isDisabled && !isReadOnly">
+                <template v-slot:append="{ item, active }">
+                  <template v-if="active && !item.isDisabled && !isReadOnly">
                     <v-btn v-if="!item.isRenaming"
                       @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
                   </template>
