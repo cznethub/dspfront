@@ -105,7 +105,8 @@
                 <template v-slot:prepend="{ item, open }">
                   <v-icon v-if="item.children"
                     @click.exact="onItemClick(item)"
-                    @click.ctrl.exact.stop="onItemCtrlClick(item)"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.shift.exact="onItemShiftClick(item)"
                     :disabled="item.isDisabled" :color="item.isCutting ? 'grey': ''">
                     {{ open ? 'mdi-folder-open' : 'mdi-folder' }}
                   </v-icon>
@@ -120,7 +121,8 @@
                     @change="onRenamed(item, $event)"
                     @keydown.enter="item.isRenaming = false"
                     @click.exact="onItemClick(item)"
-                    @click.ctrl.exact.stop="onItemCtrlClick(item)"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.shift.exact="onItemShiftClick(item)"
                     @click:append="item.isRenaming = false"
                     :value="item.name"
                     v-click-outside="onClickOutside"
@@ -131,7 +133,8 @@
                   </v-text-field>
                   <v-row v-else
                     @click.exact="onItemClick(item)"
-                    @click.ctrl.exact.stop="onItemCtrlClick(item)"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.shift.exact="onItemShiftClick(item)"
                     :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap ma-0">
                     <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
                     <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes }}</v-col>
@@ -227,6 +230,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   protected dropFiles: File[] = []
   protected isDeleting = false
   protected fileReleaseDate = null
+  protected shiftAnchor: IFolder | IFile | null = null
 
   protected get itemsToCut(): (IFile | IFolder)[] {
     return this._itemsToCutRecursive(this.rootDirectory)
@@ -402,10 +406,44 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   protected onItemClick(item: IFolder | IFile) {
     this.unselectAll()
     this.select([item])
+    this.shiftAnchor = item
   }
 
   protected onItemCtrlClick(item: IFolder | IFile) {
-    this.select([item])
+    this.toggleSelect(item)
+    this.shiftAnchor = item
+  }
+
+  protected onItemShiftClick(item: IFolder | IFile) {
+    if (!this.shiftAnchor || item.parent !== this.shiftAnchor.parent) {
+      this.shiftAnchor = item
+    }
+
+    this.unselectAll()
+
+    const parent: IFolder = this.shiftAnchor.parent as IFolder
+
+    const itemIndex = parent.children.indexOf(item)
+    const anchorIndex = parent.children.indexOf(this.shiftAnchor)
+
+    const first = Math.min(itemIndex, anchorIndex)
+    const last = Math.max(itemIndex, anchorIndex)
+
+    const itemsToSelect: (IFolder | IFile)[] = []
+
+    for (let i = first; i <= last; i++) {
+      itemsToSelect.push(parent.children[i])
+    }
+    this.select(itemsToSelect)
+  }
+
+  protected toggleSelect(item: IFolder | IFile) {
+    if (this.isSelected(item)) {
+      this.unselect(item)
+    }
+    else {
+      this.select([item])
+    }
   }
 
   protected renameItem(item: IFile | IFolder) {
