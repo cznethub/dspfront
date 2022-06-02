@@ -2,39 +2,53 @@
   "next": "What category of data do you want to submit?",
   "options": [
     {
+      "label": "Metadata About Physical Samples",
+      "finish": {
+        "prefer": ["sesar"],
+        "consider": []
+      }
+    },
+    {
       "label": "Geochemistry",
       "next": "What type of data will you be submitting?",
       "options": [
         {
+          "label": "Metadata about physical samples",
+          "finish": {
+            "prefer": ["sesar"],
+            "consider": [],
+            "linkToGuide": "sampleRegistration"
+          }
+        },
+        {
           "label": "Field measurements / experiments / samples",
           "finish": {
             "prefer": ["earthchem"],
-            "consider": ["edi"]
+            "consider": ["edi"],
+            "linkToGuide": "sampleData"
           }
         },
         {
           "label": "Time series data / sensor data",
           "finish": {
             "prefer": ["hydroshare"],
+            "consider": ["zenodo"],
             "linkToGuide": "timeSeriesData"
           }
         },
         {
-          "label": "Laboratory Data",
+          "label": "Laboratory analyses of samples",
           "finish": {
-            "prefer": []
+            "prefer": ["earthchem"],
+            "consider": [],
+            "linkToGuide": "sampleData"
           }
         },
         {
-          "label": "Model Instances",
+          "label": "Model programs or instances",
           "finish": {
-            "prefer": ["hydroshare"]
-          }
-        },
-        {
-          "label": "Physical samples",
-          "finish": {
-            "prefer": ["earthchem", "sesar"]
+            "prefer": ["hydroshare"],
+            "consider": ["github"]
           }
         }
       ]
@@ -47,6 +61,14 @@
           "label": "Topographic data",
           "finish": {
             "prefer": ["hydroshare"],
+            "consider": ["zenodo", "pangaea"],
+            "linkToGuide": "geospatialData"
+          }
+        },
+        {
+          "label": "High-resolution (meter to sub-meter scale) topographic data",
+          "finish": {
+            "prefer": ["openTopography"],
             "consider": ["zenodo", "pangaea"]
           }
         },
@@ -54,13 +76,6 @@
           "label": "Soil erosion",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["zenodo", "pangaea"]
-          }
-        },
-        {
-          "label": "High-resolution (meter to sub-meter scale) topographic data",
-          "finish": {
-            "prefer": ["openTopography"],
             "consider": ["zenodo", "pangaea"]
           }
         }
@@ -76,6 +91,50 @@
             "prefer": ["hydroshare"],
             "consider": ["zenodo"]
           }
+        },
+        {
+          "label": "Seismic surveys",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"]
+          }
+        },
+        {
+          "label": "Ground penetrating radar",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"]
+          }
+        },
+        {
+          "label": "Electrical resistivity",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"]
+          }
+        },
+        {
+          "label": "Well logs / borehole geology / geophysical logs",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"]
+          }
+        },
+        {
+          "label": "Metadata about physical samples",
+          "finish": {
+            "prefer": ["sesar"],
+            "consider": [],
+            "linkToGuide": "sampleRegistration"
+          }
+        },
+        {
+          "label": "Laboratory analyses of samples",
+          "finish": {
+            "prefer": ["earthchem"],
+            "consider": ["zenodo"],
+            "linkToGuide": "sampleData"
+          }
         }
       ]
     },
@@ -84,7 +143,7 @@
       "next": "What type of data will you be submitting?",
       "options": [
         {
-          "label": "Time series data / sensor data",
+          "label": "Time series data / sensor data / sap flux",
           "finish": {
             "prefer": ["hydroshare"],
             "consider": ["edi", "dryad"],
@@ -99,10 +158,18 @@
           }
         },
         {
-          "label": "Land cover/land use/vegetation",
+          "label": "Land cover/ land use / vegetation / NDVI",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": []
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
+          }
+        },
+        {
+          "label": "Vegetation / height / diameter / identity / condition",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["edi", "dryad"]
           }
         },
         {
@@ -113,10 +180,11 @@
           }
         },
         {
-          "label": "Physical samples",
+          "label": "Metadata about physical samples",
           "finish": {
-            "prefer": [],
-            "consider": []
+            "prefer": ["sesar"],
+            "consider": [],
+            "linkToGuide": "sampleRegistration"
           }
         }
       ]
@@ -126,14 +194,6 @@
       "next": "What type of data will you be submitting?",
       "options": [
         {
-          "label": "Time series data / sensor data",
-          "finish": {
-            "prefer": [],
-            "consider": [],
-            "linkToGuide": "timeSeriesData"
-          }
-        },
-        {
           "label": "Genomics",
           "finish": {
             "prefer": [],
@@ -141,16 +201,31 @@
           }
         },
         {
-          "label": "Field measurements / experiments",
+          "label": "Microbial community data",
           "finish": {
             "prefer": [],
             "consider": []
+          }
+        },
+        {
+          "label": "Time series data / sensor data",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": [],
+            "linkToGuide": "timeSeriesData"
+          }
+        },
+        {
+          "label": "Field measurements / experiments",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"]
           }
         }
       ]
     },
     {
-      "label": "Hydrology/Water Quality",
+      "label": "Hydrology / Water Quality",
       "next": "What type of data will you be submitting?",
       "options": [
         {
@@ -165,21 +240,23 @@
           "label": "Field measurements / experiments",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": []
+            "consider": ["zenodo"]
           }
         },
         {
-          "label": "Water quality samples",
+          "label": "Metadata about water quality samples",
           "finish": {
             "prefer": ["sesar"],
-            "consider": []
+            "consider": [],
+            "linkToGuide": "sampleRegistration"
           }
         },
         {
           "label": "Water quality sample analytical results",
           "finish": {
             "prefer": ["earthChem"],
-            "consider": ["hydroshare"]
+            "consider": ["hydroshare"],
+            "linkToGuide": "sampleData"
           }
         }
       ]
@@ -197,6 +274,14 @@
           }
         },
         {
+          "label": "Distributed soil type / soil properties",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
+          }
+        },
+        {
           "label": "Field measurements / experiments",
           "finish": {
             "prefer": ["hydroshare"],
@@ -204,7 +289,7 @@
           }
         },
         {
-          "label": "Models (instances / implementations / workflow / results)",
+          "label": "Models instances / results",
           "finish": {
             "prefer": ["hydroshare"],
             "consider": ["zenodo"]
@@ -218,10 +303,19 @@
           }
         },
         {
-          "label": "Physical samples",
+          "label": "Metadata about physical samples",
           "finish": {
-            "prefer": ["hydroshare", "sesar"],
-            "consider": []
+            "prefer": ["sesar"],
+            "consider": [],
+            "linkToGuide": "sampleRegistration"
+          }
+        },
+        {
+          "label": "Soil chemistry / sample analytical results",
+          "finish": {
+            "prefer": ["earthChem"],
+            "consider": ["hydroshare"],
+            "linkToGuide": "sampleData"
           }
         }
       ]
@@ -231,17 +325,33 @@
       "next": "What type of data will you be submitting?",
       "options": [
         {
-          "label": "Time series data",
+          "label": "Time series data / sensor data",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": []
+            "consider": ["zenodo"],
+            "linkToGuide": "timeSeriesData"
           }
         },
         {
-          "label": "Imagery",
+          "label": "Flux tower data",
+          "finish": {
+            "prefer": ["ameriflux"],
+            "consider": ["hydroshare", "zenodo"]
+          }
+        },
+        {
+          "label": "Distributed weather / climate observations",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": []
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
+          }
+        },
+        {
+          "label": "Model programs / model instances",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"]
           }
         }
       ]
@@ -251,17 +361,33 @@
       "next": "What type of data will you be submitting?",
       "options": [
         {
-          "label": "Model development",
+          "label": "Georeferenced images",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
+          }
+        },
+        {
+          "label": "Model output / results",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
+          }
+        },
+        {
+          "label": "Web cam images / field cameras",
           "finish": {
             "prefer": ["zenodo"],
-            "consider": []
+            "consider": ["hydroshare"]
           }
         },
         {
           "label": "Data analysis code / workflows",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["zenodo"]
+            "consider": ["github", "zenodo"]
           }
         }
       ]
@@ -294,19 +420,6 @@
       ]
     },
     {
-      "label": "Other",
-      "next": "What type of data will you be submitting?",
-      "options": [
-        {
-          "label": "Video/audio recordings of workshops",
-          "finish": {
-            "prefer": [],
-            "consider": []
-          }
-        }
-      ]
-    },
-    {
       "label": "Geospatial Data",
       "next": "What type of data will you be submitting?",
       "options": [
@@ -314,25 +427,49 @@
           "label": "Geospatial feature data",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["zenodo"]
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
           }
         },
         {
-          "label": "Raster data",
+          "label": "Geospatial raster data",
           "finish": {
             "prefer": ["hydroshare"],
-            "consider": ["zenodo"]
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
           }
         },
         {
-          "label": "Imagery",
+          "label": "Geospatial imagery / georeferenced images",
           "finish": {
             "prefer": ["hydroshare"],
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
+          }
+        },
+        {
+          "label": "Infrastructure locations",
+          "finish": {
+            "prefer": ["hydroshare"],
+            "consider": ["zenodo"],
+            "linkToGuide": "geospatialData"
+          }
+        }
+      ]
+    },
+    {
+      "label": "Models or model instances",
+      "next": "What type of data will you be submitting?",
+      "options": [
+        {
+          "label": "Model program / model code",
+          "finish": {
+            "prefer": ["github"],
             "consider": ["zenodo"]
           }
         },
         {
-          "label": "Infrastructure locations ",
+          "label": "Model inputs / outputs",
           "finish": {
             "prefer": ["hydroshare"],
             "consider": ["zenodo"]
@@ -341,18 +478,25 @@
       ]
     },
     {
-      "label": "Models or code",
+      "label": "Multiple data types together",
       "finish": {
         "prefer": ["hydroshare"],
-        "consider": ["zenodo"]
+        "consider": ["zenodo"],
+        "linkToGuide": "multipleDataTypes"
       }
     },
     {
-      "label": "Multiple types together",
-      "finish": {
-        "prefer": ["hydroshare"],
-        "consider": ["zenodo"]
-      }
+      "label": "Other",
+      "next": "What type of data will you be submitting?",
+      "options": [
+        {
+          "label": "Video / audio recordings of workshops",
+          "finish": {
+            "prefer": ["zenodo"],
+            "consider": []
+          }
+        }
+      ]
     }
   ]
 }
