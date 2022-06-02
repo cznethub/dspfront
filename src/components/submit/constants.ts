@@ -158,4 +158,13 @@ export const repoMetadata: { [key: string]: IRepository } = {
     isSupported: false,
     url: 'https://ameriflux.lbl.gov/',
   },
+  [EnumRepositoryKeys.hydrolearn]: {
+    key: EnumRepositoryKeys.hydrolearn,
+    name: 'HydroLearn',
+    logoSrc: require('@/assets/img/hydrolearn.png'),
+    description: `HydroLearn is an education project funded by the National Science Foundation to promote the collaborative development and adoption of active-learning resources in hydrology and water resources engineering.`,
+    submitTooltip: 'Submit data to HydroLearn.',
+    isSupported: false,
+    url: 'https://www.hydrolearn.org/',
+  },
 }

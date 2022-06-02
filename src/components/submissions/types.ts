@@ -42,6 +42,7 @@ export enum EnumRepositoryKeys {
   dataOne = 'dataOne',
   gitHub = 'github',
   ameriFlux = 'ameriflux',
+  hydrolearn = 'hydrolearn',
   // other = 'other'
 }
 
