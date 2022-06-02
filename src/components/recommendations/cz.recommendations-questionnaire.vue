@@ -101,6 +101,8 @@
     geospatialData = 'Geospatial Data',
     dataDerivedFromSamples = 'Data Derived From Samples',
     multipleDataTypes = 'Multiple Data Types',
+    sampleRegistration = 'Sample Registration',
+    sampleData = 'Sample Data',
   }
 
   interface CzStep {

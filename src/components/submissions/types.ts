@@ -40,6 +40,8 @@ export enum EnumRepositoryKeys {
   scienceDataBank = 'scienceDataBank',
   tpdc = 'tpdc',
   dataOne = 'dataOne',
+  gitHub = 'github',
+  ameriFlux = 'ameriflux',
   // other = 'other'
 }
 
