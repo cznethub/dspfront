@@ -20,7 +20,7 @@
               <v-icon :class="tmp.iconClass" :style="{ 'color': tmp.iconColor }">{{ tmp.icon }}</v-icon>
             </div>
             <div class="text-center text-md-left">
-              <div class="text-h6">{{ tmp.title }}</div>
+              <div class="text-h6"><a :href="tmp.url" target="_blank">{{ tmp.title }}</a></div>
               <p class="text--secondary text-subtitle-1">{{ tmp.description }}</p>
             </div>
           </div>
@@ -36,7 +36,6 @@
       <ul class="text-left">
         <li class="text--secondary text-subtitle-1">HydroShare API: <a href="https://help.hydroshare.org/introduction-to-hydroshare/getting-started/use-the-api/" target="_blank">https://help.hydroshare.org/introduction-to-hydroshare/getting-started/use-the-api/</a></li>
         <li class="text--secondary text-subtitle-1">Zenodo API: <a href="https://developers.zenodo.org/" target="_blank">https://developers.zenodo.org/</a></li>
-        <li class="text--secondary text-subtitle-1">EarthChem API: Coming soon...</li>
       </ul>
     </v-container>
   </div>
@@ -44,13 +43,15 @@
 
 <script lang="ts">
   import { Component, Vue } from 'vue-property-decorator'
+  import { guideUrls } from '@/components/recommendations/constants'
 
   interface IDataTemplate {
     title: string
     description: string
     icon: string
     iconColor: string
-    iconClass?: string
+    iconClass?: string,
+    url: string
   }
 
   const dataTemplates: IDataTemplate[]  = [
@@ -59,18 +60,21 @@
       description: 'Learn more about formats, best practices, and repositories for sensor time series data data.',
       icon: 'mdi-chart-timeline-variant',
       iconColor: '#BCCC9A',
+      url: guideUrls['timeSeriesData']
     },
     {
       title: 'Geospatial Data',
       description: 'Geospatial data include geographic feature and raster datasets.',
       icon: 'mdi-layers',
       iconColor: '#87AAAA',
+      url: guideUrls['geospatialData']
     },
     {
       title: 'Data Derived from Samples',
       description: 'Learn more about registering physical samples and submitting data derived from samples.',
       icon: 'mdi-file-tree',
       iconColor: '#C37B89',
+      url: guideUrls['sampleRegistration']
     },
     {
       title: 'Sharing Multiple Data Types Together',
@@ -78,6 +82,7 @@
       icon: 'mdi-chart-multiple',
       iconColor: '#5784BA',
       iconClass: 'is-smaller',
+      url: guideUrls['multipleDataTypes']
     }
   ]
 

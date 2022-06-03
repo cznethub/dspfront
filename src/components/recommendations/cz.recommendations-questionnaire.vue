@@ -48,7 +48,7 @@
             </v-alert>
 
             <v-alert v-if="step.finish.linkToGuide" class="my-8" border="left" colored-border type="info" elevation="2">
-              <div class="text-body-1">View guidance and best practices for "{{ enumDataTemplateType[step.finish.linkToGuide] }}" data <router-link to="/resources">here</router-link>.</div>
+              <div class="text-body-1">View guidance and best practices for "{{ enumDataTemplateType[step.finish.linkToGuide] }}" data <a :href="guideUrls[step.finish.linkToGuide]" target="_blank">here</a>.</div>
             </v-alert>
 
             <div class="text-heading-5 mb-8">Recommended Repositories:</div>
@@ -92,18 +92,11 @@
   import { repoMetadata } from '@/components/submit/constants'
   import { mixins } from 'vue-class-component'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+  import { EnumDataTemplateType } from '@/components/recommendations/types'
+  import { guideUrls } from '@/components/recommendations/constants'
   import CzRecommendationCard from '@/components/recommendations/cz.recommendation-card.vue'
 
   const mappings: CzStep = require('@/components/recommendations/mapping.json')
-
-  enum EnumDataTemplateType {
-    timeSeriesData = 'Time Series Data / Sensor Data',
-    geospatialData = 'Geospatial Data',
-    dataDerivedFromSamples = 'Data Derived From Samples',
-    multipleDataTypes = 'Multiple Data Types',
-    sampleRegistration = 'Sample Registration',
-    sampleData = 'Sample Data',
-  }
 
   interface CzStep {
     next?: string,  // The question that must be answered to continue
@@ -126,6 +119,7 @@
     protected selectedOption = null
     protected repoMetadata = repoMetadata
     protected enumDataTemplateType = EnumDataTemplateType
+    protected guideUrls = guideUrls
     protected externalRepoMetadata = repoMetadata[EnumRepositoryKeys.external]
 
     protected get currentStep() {
@@ -165,7 +159,7 @@
     }
 
     created() {
-      // console.log(mappings)
+      console.log(this.guideUrls)
     }
   }
 </script>
