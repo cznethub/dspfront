@@ -1,15 +1,19 @@
 <template>
   <div class="cz-resources">
-    <v-container class="has-bg-light-gray text-center mb-2 banner d-flex flex-column align-center py-8">
+    <v-container class="has-bg-light-gray text-center mb-2 banner d-flex flex-column align-center py-12">
       <div class="text-h4 mb-2">Repository Recommendations</div>
       <p class="text-body-1 mb-4">If you aren't sure which repository to use, visit our repository recommendation system to get help.</p>
       <v-btn color="primary" to="/resources/recommendations">Help Me Decide</v-btn>
     </v-container>
 
-    <v-container>
-      <div class="d-flex flex-column align-center pt-8">
+    <v-container class="mb-4">
+      <div class="text-center pt-8">
         <div class="mb-2 text-h4">Best Practices and Data Templates</div>
-        <p class="text--secondary text-subtitle-1 text-center">Access best practices, recommendations, suggested formats and rep﻿ository recommendations for the data types listed below.</p>
+      </div>
+
+      <div class="d-flex flex-column align-center pt-8">
+        <div class="mb-2 text-h6"><a :href="guideUrls['main']" target="_blank">Best Practices for All CZ Net Data</a></div>
+        <p class="text--secondary text-subtitle-1 text-center">Access best practices, recommendations, suggested formats and repository recommendations for the data types listed below.</p>
       </div>
 
       <div class="mb-2 d-flex justify-center">
@@ -56,8 +60,8 @@
 
   const dataTemplates: IDataTemplate[]  = [
     {
-      title: 'Sensor Time Series Data',
-      description: 'Learn more about formats, best practices, and repositories for sensor time series data data.',
+      title: 'Time Series Data',
+      description: 'Learn more about formats, best practices, and repositories for sensor time series data.',
       icon: 'mdi-chart-timeline-variant',
       iconColor: '#BCCC9A',
       url: guideUrls['timeSeriesData']
@@ -70,11 +74,18 @@
       url: guideUrls['geospatialData']
     },
     {
+      title: 'Registering Samples',
+      description: 'Learn more about registering samples with SESAR.',
+      icon: 'mdi-shape-rectangle-plus',
+      iconColor: '#A4C9D7',
+      url: guideUrls['sampleRegistration']
+    },
+        {
       title: 'Data Derived from Samples',
-      description: 'Learn more about registering physical samples and submitting data derived from samples.',
+      description: 'Learn more about submitting data derived from samples.',
       icon: 'mdi-file-tree',
       iconColor: '#C37B89',
-      url: guideUrls['sampleRegistration']
+      url: guideUrls['sampleData']
     },
     {
       title: 'Sharing Multiple Data Types Together',
@@ -91,7 +102,8 @@
     components: { },
   })
   export default class CzResources extends Vue {
-    protected dataTemplates!: IDataTemplate[] 
+    protected dataTemplates!: IDataTemplate[]
+    protected guideUrls = guideUrls
 
     beforeCreate() {
       this.dataTemplates = dataTemplates
