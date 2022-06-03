@@ -1,4 +1,5 @@
 <template>
+  <!-- TODO: split these renderers -->
   <v-hover v-slot="{ hover }">
     <v-autocomplete
       v-if="hasAutoComplete"
@@ -38,7 +39,7 @@
       :error-messages="control.errors"
       :clearable="hover"
       :value="control.data"
-      :items="control.options"
+      :items="customOptions"
       item-text="label"
       item-value="value"
       persistent-hint
@@ -104,6 +105,19 @@ const controlRenderer = defineComponent({
        // @ts-ignore
       return this.control.options.sort((a: EnumOption, b: EnumOption) => {
         return a.label < b.label ? -1 : 1
+      })
+    },
+    customOptions() {
+      const schemaOptions = this.control.schema.oneOf
+      // @ts-ignore
+      return this.control.options.map((option, index) => {
+        return {
+          ...option,
+          // @ts-ignore
+          header: schemaOptions[index].header,
+          // @ts-ignore
+          divider: schemaOptions[index].divider,
+        }
       })
     }
   }
