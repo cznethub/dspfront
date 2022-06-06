@@ -62,24 +62,24 @@ export const routes: RouteConfig[] = [
     },
     meta: { hasLoggedInGuard: true },
   },
-  // {
-  //   name: 'submit',
-  //   path: '/submit',
-  //   components: {
-  //     content: CzSubmit,
-  //     footer: CzFooter
-  //   },
-  //   children: [
-  //     {
-  //       name: 'submit.repository',
-  //       path: ':repository/:id?',
-  //       components: {
-  //         default: CzNewSubmission,
-  //       },
-  //       meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true, hasUnsavedChangesGuard: true }
-  //     },
-  //   ]
-  // },
+  {
+    name: 'submit',
+    path: '/submit',
+    components: {
+      content: CzSubmit,
+      footer: CzFooter
+    },
+    children: [
+      {
+        name: 'submit.repository',
+        path: ':repository/:id?',
+        components: {
+          default: CzNewSubmission,
+        },
+        meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true, hasUnsavedChangesGuard: true }
+      },
+    ]
+  },
   // {
   //   name: 'contact',
   //   path: '/contact',
