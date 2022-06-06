@@ -2,32 +2,28 @@
   <v-container flat class="cz-footer text--secondary d-flex flex-column align-center full-width body-2">
     <div class="d-lg-flex justify-space-between full-width">
       <div class="has-space-bottom-2x">
-        <div class="has-space-bottom text-h6">Contact Us</div>
-        <router-link to="/contact">Contact</router-link>
-        <p>Learn more about the <a href="https://www.criticalzone.org/"
-          target="_blank">CzNet</a> and <a href="https://criticalzone.org/hub" target="_blank">CZ Hub</a></p>
-        <p>Visit <a href="https://www.cuahsi.org/" target="_blank">cuahsi.org</a></p>
+        <div class="has-space-bottom text-h6">Help</div>
+        <a href="https://help.hydroshare.org/" target="_blank">HydroShare Help Pages</a>
       </div>
 
       <div class="has-space-bottom-2x">
         <div class="has-space-bottom text-h6">Get Started</div>
         <a v-if="!isLoggedIn" @click="openLogInDialog()">Log In</a>
-        <router-link v-else to="/submit">Submit Data</router-link>
+        <a v-else href="https://help.hydroshare.org/creating-and-managing-resources/" target="_blank">Uploading and Publishing Data and Models</a>
+        <!-- <router-link v-else to="/submit">Submit Data</router-link> -->
       </div>
 
       <div>
         <div class="has-space-bottom text-h6">Open Source</div>
-        <p>The Data Submission Portal is Open Source. Find us on <a href="https://github.com/cznethub/dsp" target="_blank">GitHub</a>.</p>
-        <p>Report a bug <a href="https://github.com/cznethub/dsp/issues" target="_blank">here</a></p>
-        <p>This is Version X.X.X of the Data Submission Portal</p>
+        <p>Report a bug <a href="https://github.com/hydroshare/hydroshare/issues" target="_blank">here</a></p>
+        <p>This is Version X.X.X of HydroShare</p>
       </div>
     </div>
 
     <v-divider></v-divider>
 
     <div class="text-center d-flex flex-column align-center has-space-top-2x">
-      <p>(c) 2021 CUAHSI. ﻿This material is based upon work supported by the National Science Foundation (NSF) under awards 2012893, 2012593, and 2012748.<br>
-      Any opinions, findings, conclusions, or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the NSF.</p>
+      <p>© 2016 CUAHSI. This material is based upon work supported by the National Science Foundation (NSF) under awards 1148453, 1148090, 1664018, 1664061, 1338606, and 1664119. Any opinions, findings, conclusions, or recommendations expressed in this material are those of the authors and do not necessarily reflect the views of the NSF.</p>
     </div>
   </v-container>
 </template>

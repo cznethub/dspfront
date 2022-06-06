@@ -28,14 +28,14 @@ export const routes: RouteConfig[] = [
       footer: CzFooter
     },
   },
-  {
-    name: 'resources',
-    path: '/resources',
-    components: {
-      content: CzResources,
-      footer: CzFooter
-    },
-  },
+  // {
+  //   name: 'resources',
+  //   path: '/resources',
+  //   components: {
+  //     content: CzResources,
+  //     footer: CzFooter
+  //   },
+  // },
   // {
   //   name: 'recommendations',
   //   path: '/resources/recommendations',
@@ -44,15 +44,15 @@ export const routes: RouteConfig[] = [
   //     footer: CzFooter
   //   },
   // },
-  {
-    name: 'recommendations',
-    path: '/resources/recommendations',
-    components: {
-      content: CzRecomendationsQuestionnaire,
-      footer: CzFooter
-    },
+  // {
+  //   name: 'recommendations',
+  //   path: '/resources/recommendations',
+  //   components: {
+  //     content: CzRecomendationsQuestionnaire,
+  //     footer: CzFooter
+  //   },
     
-  },
+  // },
   {
     name: 'submissions',
     path: '/submissions',
@@ -62,32 +62,32 @@ export const routes: RouteConfig[] = [
     },
     meta: { hasLoggedInGuard: true },
   },
-  {
-    name: 'submit',
-    path: '/submit',
-    components: {
-      content: CzSubmit,
-      footer: CzFooter
-    },
-    children: [
-      {
-        name: 'submit.repository',
-        path: ':repository/:id?',
-        components: {
-          default: CzNewSubmission,
-        },
-        meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true, hasUnsavedChangesGuard: true }
-      },
-    ]
-  },
-  {
-    name: 'contact',
-    path: '/contact',
-    components: {
-      content: CzContact,
-      footer: CzFooter
-    },
-  },
+  // {
+  //   name: 'submit',
+  //   path: '/submit',
+  //   components: {
+  //     content: CzSubmit,
+  //     footer: CzFooter
+  //   },
+  //   children: [
+  //     {
+  //       name: 'submit.repository',
+  //       path: ':repository/:id?',
+  //       components: {
+  //         default: CzNewSubmission,
+  //       },
+  //       meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true, hasUnsavedChangesGuard: true }
+  //     },
+  //   ]
+  // },
+  // {
+  //   name: 'contact',
+  //   path: '/contact',
+  //   components: {
+  //     content: CzContact,
+  //     footer: CzFooter
+  //   },
+  // },
   {
     path: '*',
     redirect: '/',

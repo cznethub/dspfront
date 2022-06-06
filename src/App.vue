@@ -245,7 +245,7 @@ export default class App extends Vue {
   }
 
   async created() {
-    document.title = "CZ Hub"
+    document.title = "HydroShare"
 
     if (this.$route.name !== "submissions") {
       // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
