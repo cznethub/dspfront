@@ -46,8 +46,8 @@
           :data="data"
           :readonly="isReadOnly"
           :renderers="Object.freeze(renderers)"
-          :schema="schema"
-          :uischema="uischema"
+          :schema="isAggregation ? undefined: schema"
+          :uischema="isAggregation ? undefined: uischema"
           ref="form"
         />
       </div>

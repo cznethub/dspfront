@@ -162,9 +162,9 @@
         @click:outside="suggestToDelete = null"
       >
         <v-card>
-          <v-card-title class="text-h5">
+          <!-- <v-card-title class="text-h5">
             Delete {{ childLabelForIndex(suggestToDelete) || 'element' }}?
-          </v-card-title>
+          </v-card-title> -->
 
           <v-card-text> The element will be deleted. </v-card-text>
 
@@ -294,7 +294,7 @@ const controlRenderer = defineComponent({
   },
   created() {
     // @ts-ignore
-    const requiredItems = this.control.schema.contains?.enum || []
+    const requiredItems = this.control.schema?.contains?.enum || []
 
     requiredItems.map(item => {
       if (!this.control.data) {
@@ -310,8 +310,8 @@ const controlRenderer = defineComponent({
       }
     })
 
-    if (this.control.schema.default && !this.control.data) {
-      this.control.schema.default.map(item => {
+    if (this.control.schema?.default && !this.control.data) {
+      this.control.schema?.default.map(item => {
         this.addItem(
           this.control.path,
           item
