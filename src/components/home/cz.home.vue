@@ -12,7 +12,7 @@
           tile
         >
           <v-row
-            class="fill-height pa-0 ma-0"
+            class="fill-height pa-10 ma-0"
             align="center"
             justify="center"
           >

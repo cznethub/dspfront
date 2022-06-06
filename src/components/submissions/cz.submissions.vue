@@ -201,7 +201,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected get filteredSubmissions() {
-    console.log(Submission.all())
     if (this.filters.repoOptions.length) {
       return Submission.all().filter(s => this.filters.repoOptions.includes(s.repository))
     }
