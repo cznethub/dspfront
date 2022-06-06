@@ -416,6 +416,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       this.data = {
         ...this.data,
         ...this.repositoryRecord,
+        files: undefined
       }
 
       // Nexttick doesn't work. We use setTimeout instead.
