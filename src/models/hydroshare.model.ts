@@ -174,6 +174,51 @@ export default class HydroShare extends Repository {
     return false
   }
 
+  private static async readAggregationFolderStructure(filesAndFolders: [{ id: string, path: string }], folder): Promise<(IFile | IFolder)[]> {
+    const aggregationFolders = filesAndFolders.filter(f => !(f.path.split("/")?.pop()?.includes(".")))
+    const aggregationFiles = filesAndFolders.filter(f => f.path.split("/")?.pop()?.includes("."))
+
+    // TODO: implement algorithm to build folder structure from array of paths
+    // let uniquePaths = filesAndFolders
+    //   .map(fileOrFolder => fileOrFolder.path)
+    //   .filter(path => path.includes("/"))
+    //   .sort((a, b) => {
+    //     const levelA = a.split("/").length
+    //     const levelB = b.split("/").length
+    //     return levelA < levelB ? -1 : 1
+    //   })
+    // uniquePaths = [...new Set(uniquePaths)]
+    // console.log(uniquePaths)
+
+    const files: IFile[] = aggregationFiles.map((newFile: { id: string, path: string }, index: number): IFile => {
+      return {
+        name: newFile.path,
+        parent: folder,
+        isRenaming: false,
+        isCutting: false,
+        isDisabled: false,
+        key: `${Date.now().toString()}-a-${index}`,
+        path: newFile.path,
+        file: null,
+      }
+    })
+
+    const folders: IFolder[] = aggregationFolders.map((newFolder: { id: string, path: string }, index: number): IFolder => {
+      return {
+        name: newFolder.path,
+        parent: folder,
+        isRenaming: false,
+        isCutting: false,
+        isDisabled: false,
+        key: `${Date.now().toString()}-b-${index}`,
+        path: newFolder.path,
+        children: [],
+      }
+    })
+
+    return [...folders, ...files]
+  }
+
   private static async _readFolderRecursive(identifier: string, path: string, folder: IFolder): Promise<(IFile | IFolder)[]> {
     const url = this.get()?.urls?.folderReadUrl
     const folderReadUrl = sprintf(

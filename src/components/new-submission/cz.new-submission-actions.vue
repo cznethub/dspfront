@@ -6,9 +6,9 @@
         >UI Schema</v-btn
       >
       <v-btn v-if="isEditMode" @click="$emit('cancel')" rounded class="submission-cancel"
-        >Cancel</v-btn
+        >Back</v-btn
       >
-      <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
+      <!-- <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
         <template v-slot:activator="{ on, attrs}">
           <div v-bind="attrs" v-on="on">
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
@@ -30,7 +30,7 @@
             <li><b>{{ getTitle(error) }}</b> {{ getMessage(error) }}.</li>
           </ul>
         </div>
-      </v-menu>
+      </v-menu> -->
     </div>
   </div>
 </template>

@@ -55,7 +55,7 @@
         />
 
         <template v-if="!isDropDown">
-          <v-tabs v-model="selectedIndex">
+          <v-tabs v-model="selectedIndex" :disabled="!control.enabled">
             <v-tab
               @change="handleTabChange"
               :key="`${control.path}-${oneOfIndex}`"
@@ -277,7 +277,9 @@ const controlRenderer = defineComponent({
       }
     },
     showForm() {
-      this.isAdded = true
+      if (this.control.enabled) {
+        this.isAdded = true
+      }
     },
     removeForm() {
       this.isAdded = false

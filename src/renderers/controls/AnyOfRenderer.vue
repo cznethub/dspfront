@@ -274,7 +274,9 @@ const controlRenderer = defineComponent({
       }
     },
     showForm() {
-      this.isAdded = true
+      if (this.control.enabled) {
+        this.isAdded = true
+      }
     },
     removeForm() {
       this.isAdded = false

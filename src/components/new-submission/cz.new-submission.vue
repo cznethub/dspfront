@@ -1,7 +1,7 @@
 <template>
   <v-container id="cz-new-submission" class="cz-new-submission px-4">
-    <h1 class="text-h4">{{ formTitle }}</h1>
-    <v-divider class="mb-4"></v-divider>
+    <h1 class="text-h4">{{ data.title }}</h1>
+    <!-- <v-divider class="mb-4"></v-divider>
     <v-alert id="instructions" v-if="!isLoading && wasLoaded"
       class="text-subtitle-1 my-8 " border="left" colored-border type="info" elevation="2">
       <div class="d-flex flex-wrap-wrap justify-space-between">
@@ -20,9 +20,9 @@
           contain
         />
       </div>
-    </v-alert>
+    </v-alert> -->
 
-    <v-alert class="my-8" outlined
+    <!-- <v-alert class="my-8" outlined
       v-if="isReadOnly"
       icon="mdi-lock"
       type="warning"
@@ -31,7 +31,7 @@
       <div class="text-body-1">
         This submission has been submitted for review and can no longer be modified.
       </div>
-    </v-alert>
+    </v-alert> -->
 
     <cz-new-submission-actions
       id="cz-new-submission-actions-top"
@@ -63,6 +63,11 @@
           :isEditMode="isEditMode"
           :identifier="identifier"
         />
+
+        <div v-if="wasLoaded && repositoryRecord.aggregations.length" class="mb-6">
+          <cz-aggregations-table :aggregations="repositoryRecord.aggregations" />
+        </div>
+        
 
         <json-forms
           v-if="wasLoaded"
@@ -196,7 +201,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Ref } from "vue-property-decorator"
+import { Component, Ref, Watch } from "vue-property-decorator"
 import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2"
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core"
 import { CzRenderers } from "@/renderers/renderer.vue"
@@ -208,6 +213,7 @@ import { IFile, IFolder } from '@/components/new-submission/types'
 import { ErrorObject } from 'ajv'
 import { Subscription } from "rxjs"
 import { createAjv } from "@jsonforms/core"
+import CzAggregationsTable from '@/components/submissions/cz.aggregations-table.vue'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -227,7 +233,7 @@ ajvErrors(customAjv)
 
 @Component({
   name: "cz-new-submission",
-  components: { JsonForms, JsonViewer, CzFolderStructure, CzNewSubmissionActions },
+  components: { JsonForms, JsonViewer, CzFolderStructure, CzNewSubmissionActions, CzAggregationsTable },
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms
@@ -251,7 +257,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected loggedInSubject = new Subscription()
   protected timesChanged = 0
   protected ajv = customAjv
-  protected isReadOnly = false
+  protected isReadOnly = true
   protected wasUnauthorized = false
 
   protected get isEditMode() {
@@ -315,6 +321,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     return User.$state.isLoggedIn
   }
 
+  protected get isAggregation() {
+    return this.identifier.includes("-")
+  }
+
   created() {
     this.init()
   }
@@ -330,6 +340,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
     this.hasUnsavedChanges = false
     this.wasUnauthorized = false
+    this.rootDirectory.children = []
 
     if (
       !this.activeRepository ||
@@ -348,6 +359,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     } else {
       this.isLoading = false
     }
+  }
+
+  @Watch('$route.params.id')
+  onIdChanged(newId, oldId) {
+    this.init()
   }
 
   protected async openAuthorizePopup() {
@@ -412,8 +428,15 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       console.info("CzNewSubmission: reading existing files...")
       if (!this.isExternal && this.repositoryRecord) {
         try {
-          const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
-          this.rootDirectory.children = initialStructure
+          if (this.isAggregation) {
+            // @ts-ignore
+            const initialStructure: any = await this.activeRepository.readAggregationFolderStructure(this.repositoryRecord.files, this.rootDirectory)
+            this.rootDirectory.children = initialStructure
+          }
+          else {
+            const initialStructure: (IFile | IFolder)[] = await this.activeRepository.readRootFolder(this.identifier, '', this.rootDirectory)
+            this.rootDirectory.children = initialStructure
+          }
         }
         catch(e) {
           CzNotification.toast({ message: 'Failed to load existing files.' })

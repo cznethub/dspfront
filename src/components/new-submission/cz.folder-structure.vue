@@ -12,7 +12,7 @@
         Files
       </div>
 
-      <template>
+      <template v-if="!isReadOnly">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
             <v-btn @click="selectAll" :disabled="!rootDirectory.children.length" class="mr-1" icon small v-on="on" v-bind="attrs">
@@ -23,7 +23,7 @@
         </v-tooltip>
       </template>
 
-      <template>
+      <template v-if="!isReadOnly">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
             <v-btn @click="unselectAll" icon small :disabled="!selected.length" v-on="on" v-bind="attrs">
@@ -32,10 +32,10 @@
           </template>
           <span>Unselect All</span>
         </v-tooltip>
-        <v-divider class="mx-4" vertical></v-divider>
       </template>
 
-      <template v-if="allowFolders">
+      <template v-if="allowFolders && !isReadOnly">
+        <v-divider class="mx-4" vertical></v-divider>
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
             <v-btn @click="cut" :disabled="!canCut" class="mr-1" icon small v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
@@ -51,10 +51,11 @@
           </template>
           Paste
         </v-tooltip>
-        <v-divider class="mx-4" vertical></v-divider>
       </template>
 
       <template v-if="!isReadOnly">
+        <v-divider class="mx-4" vertical></v-divider>
+
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs }">
             <v-btn @click="deleteSelected" icon small :disabled="isDeleting || !selected.length" v-on="on" v-bind="attrs">
@@ -65,7 +66,7 @@
         </v-tooltip>
       </template>
 
-      <template v-if="selected.length">
+      <template v-if="selected.length && !isReadOnly">
         <v-divider class="mx-4" vertical></v-divider>
         <span class="text-subtitle-2">{{ selected.length }} item{{ selected.length !== 1 ? 's': '' }} selected</span>
       </template>
@@ -157,7 +158,7 @@
         </v-card-text>
       </v-card>
       <div v-else-if="isReadOnly" class="pa-2 text-body-1 text--secondary">
-        No files have been included in this submission
+        No files have been included in this submission.
       </div>
 
       <div v-if="!isReadOnly" class="upload-drop-area files-container--included">
@@ -180,7 +181,7 @@ import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
 @Component({
   name: "cz-folder-structure",
-  components: {  },
+  components: { },
   filters: {
   }
 })

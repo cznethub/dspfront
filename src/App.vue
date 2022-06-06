@@ -1,13 +1,13 @@
 <template>
   <v-app app>
-    <v-app-bar ref="appBar" id="app-bar" color="blue-grey lighten-4" prominent elevate-on-scroll shrink-on-scroll fixed app>
+    <v-app-bar ref="appBar" id="app-bar" color="blue-grey lighten-4" dense prominent elevate-on-scroll fixed app>
       <v-container class="d-flex align-end full-height">
         <router-link
           :to="{ path: `/` }"
-          :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
+          :src="require('@/assets/img/hydroshare.png')"
           tag="img"
           class="logo"
-          alt="Critical Zone Network logo"
+          alt="HydroShare logo"
         >
         </router-link>
         <div class="spacer"></div>
@@ -183,13 +183,6 @@ export default class App extends Vue {
   protected showMobileNavigation = false
   protected loggedInSubject = new Subscription()
   protected authorizedSubject = new Subscription()
-  protected isAppBarExtended = true
-
-  mounted() {
-    this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
-      this.isAppBarExtended = newValue > oldValue
-    })
-  }
 
   protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
     message: "",
@@ -224,11 +217,11 @@ export default class App extends Vue {
   }
 
   protected paths = [
-    { to: "/submissions", label: "My Submissions", icon: "mdi-bookmark-multiple" },
-    { to: "/resources", label: "Resources", icon: "mdi-library" },
-    { to: "/submit", label: "Submit Data", icon: "mdi-book-plus" },
+    { to: "/submissions", label: "My Resources", icon: "mdi-bookmark-multiple" },
+    // { to: "/resources", label: "Resources", icon: "mdi-library" },
+    // { to: "/submit", label: "Submit Data", icon: "mdi-book-plus" },
     { to: "/about", label: "About", icon: "mdi-help" },
-    { to: "/contact", label: "Contact", icon: "mdi-book-open-blank-variant" },
+    // { to: "/contact", label: "Contact", icon: "mdi-book-open-blank-variant" },
   ]
 
   protected get isLoggedIn() {
@@ -357,7 +350,7 @@ export default class App extends Vue {
 
 <style lang="scss" scoped>
 .logo {
-  max-height: 100%;
+  max-height: 3rem;
   cursor: pointer;
 }
 
@@ -369,11 +362,8 @@ export default class App extends Vue {
   box-shadow: none;
 }
 
-.v-toolbar.v-app-bar--is-scrolled > .v-toolbar__content > .container {
+.v-toolbar > .v-toolbar__content > .container {
   align-items: center !important;
-  will-change: padding;
-  padding-top: 0;
-  padding-bottom: 0;
 }
 
 .nav-items {
