@@ -249,7 +249,7 @@ export default class App extends Vue {
 
     if (this.$route.name !== "submissions") {
       // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
-      Submission.fetchSubmissions()
+      // Submission.fetchSubmissions()
     }
 
     this.onToast = CzNotification.toast$.subscribe((toast: IToast) => {

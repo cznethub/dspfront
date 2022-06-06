@@ -7,6 +7,8 @@ import {
   EnumSortDirections,
 } from "@/components/submissions/types"
 import { itemsPerPageArray } from '@/components/submissions/constants'
+import CzNotification from './notifications.model'
+import Repository from './repository.model'
 
 // temporary workaround to circular dependecy error
 function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
@@ -167,7 +169,18 @@ export default class Submission extends Model implements ISubmission {
       return response.status
     }
     catch(e: any) {
-      console.log(e)
+      if (e.response?.status === 401 || e.response?.status === 403) {
+        // Token has expired
+        this.commit((state) => {
+          state.accessToken = ''
+        })
+
+        CzNotification.toast({
+          message: 'Authorization token is invalid or has expired.'
+        })
+
+        Repository.openAuthorizeDialog('hydroshare')
+      }
       this.commit((state) => {
         return state.isFetching = false
       })

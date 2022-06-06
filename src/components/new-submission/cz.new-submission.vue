@@ -1,37 +1,6 @@
 <template>
   <v-container id="cz-new-submission" class="cz-new-submission px-4">
     <h1 class="text-h4">{{ data.title }}</h1>
-    <!-- <v-divider class="mb-4"></v-divider>
-    <v-alert id="instructions" v-if="!isLoading && wasLoaded"
-      class="text-subtitle-1 my-8 " border="left" colored-border type="info" elevation="2">
-      <div class="d-flex flex-wrap-wrap justify-space-between">
-        <div>
-          <div><b>Instructions</b></div>
-          <p>Fill in the required fields (marked with * and highlighted in red).
-                Press the "Save / Finish" button to upload your
-                submission.</p>
-        </div>
-
-        <v-img
-          class="my-4 flex-grow-0"
-          :src="activeRepository.get().logoSrc"
-          :alt="activeRepository.get().name"
-          width="350px"
-          contain
-        />
-      </div>
-    </v-alert> -->
-
-    <!-- <v-alert class="my-8" outlined
-      v-if="isReadOnly"
-      icon="mdi-lock"
-      type="warning"
-      prominent
-      border="left">
-      <div class="text-body-1">
-        This submission has been submitted for review and can no longer be modified.
-      </div>
-    </v-alert> -->
 
     <cz-new-submission-actions
       id="cz-new-submission-actions-top"

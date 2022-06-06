@@ -17,62 +17,7 @@
               prepend-inner-icon="mdi-magnify"
               label="Search..."
             />
-
-            <!-- <v-select
-              v-model="filters.repoOptions"
-              :items="repoOptions"
-              class="ma-1"
-              small-chips
-              deletable-chips
-              clearable
-              label="Repository"
-              chips
-              multiple
-              dense
-              outlined
-            >
-              <template v-slot:item="data">
-                <v-list-item-action>
-                  <v-icon v-if="data.attrs.inputValue">mdi-checkbox-marked</v-icon>
-                  <v-icon v-else>mdi-checkbox-blank-outline</v-icon>
-                </v-list-item-action>
-                <v-list-item-content>
-                  <v-list-item-title>
-                    {{ repoMetadata[data.item].name }}
-                  </v-list-item-title>
-                </v-list-item-content>
-              </template>
-            </v-select> -->
           </div>
-          <!-- <v-spacer></v-spacer> -->
-
-          <!-- <v-speed-dial
-            transition="slide-y-reverse-transition"
-            origin="center"
-            direction="bottom"
-          >
-            <template v-slot:activator>
-              <v-btn color="primary" rounded>
-                <v-icon>mdi-plus</v-icon>
-                New Submission
-              </v-btn>
-            </template>
-
-            <v-card color="blue-grey lighten-4">
-              <v-card-text>
-                <template v-for="repo of supportedRepoMetadata" >
-                  <v-tooltip :key="repo.name" left transition="fade">
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs">
-                        {{ repo.name }}
-                      </v-btn>
-                    </template>
-                    <span>{{ repo.submitTooltip }}</span>
-                  </v-tooltip>
-                </template>
-              </v-card-text>
-            </v-card>
-          </v-speed-dial> -->
         </div>
       </div>
     </div>
@@ -106,7 +51,6 @@
             item-key="identifier"
             hide-default-footer
           >
-
             <template v-slot:item.created="{ item }">
               {{ (new Date(item.created)).toLocaleString() }}
             </template>
@@ -114,172 +58,21 @@
             <template v-slot:item.lastModified="{ item }">
               {{ (new Date(item.lastModified)).toLocaleString() }}
             </template>
-            <!-- <template v-slot:header>
-              <v-toolbar elevation="0" class="has-bg-light-gray">
-                <template v-if="$vuetify.breakpoint.mdAndUp">
-                  <v-btn rounded @click="exportSubmissions" :disabled="!filteredSubmissions.length">Export Submissions</v-btn>
-                  <v-spacer></v-spacer>
-                  <div class="sort-controls">
-                    <v-select
-                      id="sort-by"
-                      :items="sortOptions"
-                      item-text="label"
-                      v-model="sortBy"
-                      class="mr-1 sort-control"
-                      outlined
-                      dense
-                      hide-details="auto"
-                      label="Sort by"
-                    />
-                    
-                    <v-select
-                      id="sort-order"
-                      :items="sortDirectionOptions"
-                      v-model="sortDirection"
-                      class="sort-control"
-                      item-text="label"
-                      outlined
-                      dense
-                      hide-details="auto"
-                      label="Order"
-                    />
-                  </div>
-                </template>
-              </v-toolbar>
-            </template> -->
-
-            <!-- <template v-slot:default="{ items }">
-              <v-divider />
-              <div :id="`submission-${index}`" v-for="(item, index) in items" :key="item.identifier">
-                <div class="table-item d-flex justify-space-between">
-                  <div class="flex-grow-1 mr-4">
-                    <table class="text-body-1">
-                      <tr>
-                        <th class="pr-4"></th>
-                        <td :id="`sub-${index}-title`" class="text-h6">{{ item.title }}</td>
-                      </tr>
-                      <tr v-if="item.authors.length">
-                        <th class="pr-4">Authors:</th>
-                        <td>{{ item.authors.join(", ") }}</td>
-                      </tr>
-                      <tr>
-                        <th class="pr-4">Submission Repository:</th>
-                        <td>{{ getRepositoryName(item) }}</td>
-                      </tr>
-                      <tr>
-                        <th class="pr-4">Submission Date:</th>
-                        <td :id="`sub-${index}-date`">{{ new Date(item.date).toLocaleString() }}</td>
-                      </tr>
-                      <tr>
-                        <th class="pr-4">Identifier:</th>
-                        <td>{{ item.identifier }}</td>
-                      </tr>
-                      <tr v-if="item.metadata.status">
-                        <th class="pr-4">Status:</th>
-                        
-                        <td>
-                          <v-chip
-                            v-if="item.metadata.status === 'submitted'"
-                            color="orange"
-                            small
-                            outlined
-                          >
-                            <v-icon left small>mdi-lock</v-icon>
-                            {{ item.metadata.status }}
-                          </v-chip>
-
-                          <v-chip
-                            v-if="item.metadata.status === 'incomplete'"
-                            small
-                            outlined
-                          >
-                            <v-icon left small>mdi-pencil</v-icon>
-                            {{ item.metadata.status }}
-                          </v-chip>
-                        </td>
-                      </tr>
-                    </table>
-                  </div>
-
-                  <div class="d-flex flex-column actions">
-                    <v-btn :id="`sub-${index}-view`" :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
-                      <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
-                    </v-btn>
-                    <v-btn :id="`sub-${index}-edit`" @click="goToEditSubmission(item)" rounded>
-                      <v-icon class="mr-1">mdi-pencil</v-icon> Edit
-                    </v-btn>
-                    <v-btn
-                      :id="`sub-${index}-update`"
-                      v-if="!repoMetadata[item.repository].isExternal"
-                      @click="onUpdateRecord(item)"
-                      :disabled="isUpdating[`${item.repository}-${item.identifier}`]"
-                      rounded
-                    >
-                      <v-icon v-if="isUpdating[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
-                      <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
-                    </v-btn>
-                    <v-btn :id="`sub-${index}-delete`" @click="onDelete(item, repoMetadata[item.repository].isExternal)" :disabled="isDeleting[`${item.repository}-${item.identifier}`]" rounded>
-                      <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
-                      <v-icon v-else>mdi-delete</v-icon><span class="ml-1">
-                      {{ isDeleting[`${item.repository}-${item.identifier}`] ? 'Deleting...' : 'Delete' }}</span>
-                    </v-btn>
-                  </div>
-                </div>
-                <v-divider />
-              </div>
-            </template> -->
-
-            <!-- <template v-slot:footer>
-              <div class="footer d-flex justify-space-between">
-                <div>
-                  <span class="grey--text text-body-2 mr-1">Items per page</span>
-                  <v-menu offset-y>
-                    <template v-slot:activator="{ on, attrs }">
-                      <v-btn text v-bind="attrs" v-on="on">
-                        {{ itemsPerPage }}
-                        <v-icon>mdi-chevron-down</v-icon>
-                      </v-btn>
-                    </template>
-                    <v-list>
-                      <v-list-item
-                        v-for="(number, index) in itemsPerPageArray"
-                        :key="index"
-                        @click="itemsPerPage = number"
-                      >
-                        <v-list-item-title>{{ number }}</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </div>
-
-                <div v-if="numberOfPages">
-                  <span class="mr-4 grey--text text-body-2">
-                    Page {{ page }} of {{ numberOfPages }}
-                  </span>
-                  <v-btn class="mr-2" small fab @click="formerPage" :disabled="page <= 1">
-                    <v-icon>mdi-chevron-left</v-icon>
-                  </v-btn>
-                  <v-btn small fab @click="nextPage" :disabled="page >= numberOfPages">
-                    <v-icon>mdi-chevron-right</v-icon>
-                  </v-btn>
-                </div>
-              </div>
-            </template>
-
-            <template v-slot:no-data>
-              <div class="text-subtitle-1 text--secondary ma-4">
-                You don't have any submissions that match the selected criteria.
-              </div>
-            </template>
-
-            <template v-slot:no-results>
-              <div class="text-subtitle-1 text--secondary ma-4">
-                You don't have any submissions that match the selected criteria.
-              </div>
-            </template> -->
           </v-data-table>
         </v-card>
       </div>
+      <template v-else-if="wasUnauthorized">
+        <v-alert class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
+          <v-row>
+            <v-col class="flex-grow-1">We need your authorization to access HydroShare.</v-col>
+            <v-col class="flex-grow-0">
+              <v-btn @click="openAuthorizePopup" color="primary" class="mb-4">
+                <i class="fas fa-key mr-2" />Authorize
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+      </template>
       <div v-else class="text-body-2 text-center mt-4 d-flex flex-column">
         <template v-if="!submissions.length">
           <v-icon style="font-size: 6rem;" class="mb-4">mdi-text-box-remove</v-icon>
@@ -332,12 +125,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected enumSortDirections = EnumSortDirections
   protected currentItems = []
   protected loggedInSubject = new Subscription()
+  protected authorizedSubject = new Subscription()
   protected headers = [
     { text: 'Title', value: 'title', sortable: true },
     { text: 'First Author', value: 'authors' },
     { text: 'Date Created', value: 'created' },
     { text: 'Last Modified', value: 'lastModified' },
   ]
+  protected wasUnauthorized = false
 
   protected get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata)
@@ -428,18 +223,32 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
-  created() {
+  async created() {
     if (User.$state.isLoggedIn) {
-      Submission.fetchSubmissions()
+      const response = await Submission.fetchSubmissions()
+      if (response === 403) {
+        this.wasUnauthorized = true
+      }
     }
     
     this.loggedInSubject = User.loggedIn$.subscribe(async () => {
-      Submission.fetchSubmissions()
+      const response = await Submission.fetchSubmissions()
+      if (response === 403) {
+        this.wasUnauthorized = true
+      }
+    })
+
+    this.authorizedSubject = Repository.authorized$.subscribe(async () => {
+      const response = await Submission.fetchSubmissions()
+      if (response === 403) {
+        this.wasUnauthorized = true
+      }
     })
   }
 
   beforeDestroy() {
     this.loggedInSubject.unsubscribe()
+    this.authorizedSubject.unsubscribe()
   }
 
   protected onRowClick(submission: ISubmission, item) {
@@ -479,40 +288,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     )
   }
 
-  // protected exportSubmissions() {
-  //   const parsedSubmissions = this.filteredSubmissions.map((s) => {
-  //     return {
-  //       authors: s.authors.join('; '),
-  //       created: (new Date(s.date)).toISOString(),
-  //       title: s.title,
-  //       repository: this.getRepositoryName(s),
-  //       url: s.url
-  //     }
-  //   })
-
-  //   const columnLabels = ['Authors', 'Publication Date', 'Title', 'Repository', 'URL']
-
-  //   const headerRow = columnLabels.join(',') + '\n'
-  //   const rows = parsedSubmissions.map((s) => {
-  //     return Object.keys(s).map( key => `"${s[key]}"`)
-  //   })
-
-  //   const csvContent = headerRow + rows.map(c => c.join(",")).join("\n")
-
-  //   // Download as CSV
-  //   const filename = `CZNet_submissions.csv`
-
-  //   const element = document.createElement('a')
-  //   element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(csvContent))
-  //   element.setAttribute('download', filename)
-
-  //   element.style.display = 'none';
-  //   document.body.appendChild(element)
-
-  //   element.click()
-
-  //   document.body.removeChild(element)
-  // }
+  protected async openAuthorizePopup() {
+    const repository = this.getRepositoryFromKey('hydroshare')
+    Repository.authorize(repository)  // We don't need to provide a callback because we already have a subject set
+  }
 
   protected onDelete(submission: ISubmission, isExternal: boolean) {
     CzNotification.openDialog({
