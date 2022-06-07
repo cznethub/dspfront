@@ -121,6 +121,7 @@
     </fieldset>
     <div v-if="control.schema.description" class="text--secondary text-body-1 ml-2">{{ control.schema.description }}</div>
     <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
+      <v-divider v-if="isFlat" class="mb-4"></v-divider>
       {{ control.errors }}
     </div>
   </div>
@@ -274,7 +275,9 @@ const controlRenderer = defineComponent({
       }
     },
     showForm() {
-      this.isAdded = true
+      if (this.control.enabled) {
+        this.isAdded = true
+      }
     },
     removeForm() {
       this.isAdded = false

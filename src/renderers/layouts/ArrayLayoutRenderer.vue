@@ -46,18 +46,12 @@
                       </v-chip>
                     </v-col>
 
-                    <v-col align-self="center" justify-self="start" class="text-truncate flex-grow-1">
-                      {{ element[appliedOptions.elementLabelProp] }}
+                    <v-col v-if="appliedOptions.elementLabelProp" align-self="center" justify-self="start" class="text-truncate flex-grow-1">
+                      {{ getItemLabel(element) }}
                     </v-col>
 
                     <v-spacer></v-spacer>
 
-                    <!-- <v-col
-                      align-self="center"
-                      :class="`text-truncate pa-1 ${styles.arrayList.itemLabel}`"
-                      style="height: 2rem;"
-                      >{{ childLabelForIndex(index) }}</v-col
-                    > -->
                     <v-col
                       align-self="center"
                       class="flex-grow-0"
@@ -389,6 +383,16 @@ const controlRenderer = defineComponent({
       // @ts-ignore
       return this.control.schema.contains?.enum?.some(requiredItem => isEqual(item, requiredItem))
     },
+    getItemLabel(element) {
+      if (Array.isArray(this.appliedOptions.elementLabelProp)) {
+        return this.appliedOptions.elementLabelProp
+          .map(prop => element[prop])
+          .join(" ")
+      }
+      else {
+        return element[this.appliedOptions.elementLabelProp]
+      }
+    }
   },
 });
 
