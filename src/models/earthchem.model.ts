@@ -26,14 +26,17 @@ export default class EarthChem extends Repository {
       const url = bucketUrl // new api
       const form = new window.FormData()
       form.append('file', file.file, file.name)
+      form.append('description', file.name)
 
       file.isDisabled = true
       const response = await axios.post(
         url,
         form,
         { 
-          headers: { 'Content-Type': 'multipart/form-data' }, 
-          params: { "access_token": accessToken }
+          headers: { 
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${accessToken}`,
+          }
         }
       )
       file.isDisabled = false
@@ -71,17 +74,23 @@ export default class EarthChem extends Repository {
     
     const response = await axios.get(
       folderReadUrl,
-      { params: { "access_token": this.accessToken } }
+      { 
+        headers: { 
+          'Authorization': `Bearer ${this.accessToken}`,
+        }
+      }
     )
+
     if (response.status === 200) {
-      const files: IFile[] = response.data.map((file: any): IFile => {
+      const files: IFile[] = response.data.map((file: any, index): IFile => {
         return {
-          name: file.filename,
+          name: file.name,
+          serverName: file.serverName,
           parent: rootDirectory,
           isRenaming: false,
           isCutting: false,
           isDisabled: false,
-          key: file.id, // We use the file id in this case, so we can use it again as reference to edit files
+          key: `${Date.now().toString()}-${index}`,
           path: path,
           file: null,
         }
@@ -110,13 +119,11 @@ export default class EarthChem extends Repository {
         form,
         { 
           headers: { 
-            'Content-Type': 'multipart/form-data', 
-          }, 
-          params: { "access_token": this.accessToken }
+            'Content-Type': 'multipart/form-data',
+            'Authorization': `Bearer ${this.accessToken}`,
+          }
         }
       )
-
-      console.log(response)
   
       if (response.status === 200) {
         return true
@@ -131,11 +138,13 @@ export default class EarthChem extends Repository {
 
   static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
     const url = this.get()?.urls?.fileDeleteUrl
-    const deleteUrl = sprintf(url, identifier, item.key)
+    const deleteUrl = sprintf(url, identifier, (item as IFile).serverName)
 
     try {
       const response = await axios.delete(deleteUrl, { 
-        params: { "access_token": this.accessToken }
+        headers: { 
+          'Authorization': `Bearer ${this.accessToken}`,
+        }
       })
   
       if (response.status === 200 || response.status === 204) {

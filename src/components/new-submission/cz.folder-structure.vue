@@ -633,15 +633,18 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     }
   }
 
-  private _getAvailableName(name: string, parent: IFolder, currentName?: string): string {
-    let availableName = name
+  private _getAvailableName(fileName: string, parent: IFolder, currentName?: string): string {
+    let availableName = fileName
     let nameAlreadyExists = parent.children.some((item: IFile | IFolder) => {
       return item.name === availableName && item.name !== currentName
     })
     let counter = 1
 
     while(nameAlreadyExists) {
-      availableName = `${name} (${counter})`
+      const nameWithoutExtension = this._getFileNameWithoutExtension(fileName)
+      const extention = fileName.replace(nameWithoutExtension, "")
+
+      availableName = `${nameWithoutExtension} (${counter})${extention}`
       nameAlreadyExists = parent.children.some((item: IFile | IFolder) => {
         return item.name === availableName && item.name !== currentName
       })
@@ -649,6 +652,10 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     }
 
     return availableName
+  }
+
+  private _getFileNameWithoutExtension(fileName: string) {
+    return fileName.replace(/\.[^/.]+$/, "")
   }
 
   private _clearRenamingRecursive(item: IFile | IFolder) {

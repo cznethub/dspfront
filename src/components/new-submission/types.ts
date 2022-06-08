@@ -1,5 +1,6 @@
 export interface IFile {
   name: string
+  serverName?: string
   parent: IFolder | null
   isRenaming?: boolean
   isCutting?: boolean
