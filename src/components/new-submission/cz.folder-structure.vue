@@ -144,7 +144,7 @@
                   </v-row>
                 </template>
                 <template v-slot:append="{ item, active }">
-                  <template v-if="active && !item.isDisabled && !isReadOnly">
+                  <template v-if="active && !item.isDisabled && canRename">
                     <v-btn v-if="!item.isRenaming"
                       @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
                   </template>
@@ -256,6 +256,14 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
   protected get canCut() {
     return this.selected.length && !this.isReadOnly
+  }
+
+  protected get canRename() {
+    return !(this.isEditMode && !this.canRenameUploadedFiles) && !this.isReadOnly
+  }
+
+  protected get canRenameUploadedFiles() {
+    return this.activeRepository.get()?.urls?.moveOrRenameUrl
   }
 
   created() {
@@ -472,6 +480,18 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected async deleteSelected() {
+    CzNotification.openDialog({
+      title: 'Remove all files?',
+      content: 'Are you sure you want to remove these files?',
+      confirmText: 'Remove',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        this._deleteSelected()
+      }
+    })
+  }
+
+  private async _deleteSelected() {
     this.isDeleting = true
     const reversedSelected = this.selected.reverse()
     const deletePromises: Promise<boolean>[] = []
@@ -499,8 +519,9 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     }
 
     const wereDeleted = await Promise.all(deletePromises)
-    if (wereDeleted) {
+    if (wereDeleted.includes(false)) {
       // Failed to delete some file
+      CzNotification.toast({ message: "Some of your files failed to be deleted" })
     }
     this.isDeleting = false
     this.selected = []

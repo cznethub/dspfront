@@ -17,51 +17,49 @@ export default class EarthChem extends Repository {
     }
   }
 
+  /** Uploads multiple files sequentially */
   static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
-    const uploadPromises: Promise<boolean>[] = itemsToUpload.map((file) => {
-      return _uploadFile(file, this.accessToken)
-    })
+    // EarthChem needs files uploaded sequentially
+    const response: any[] = []
 
-    async function _uploadFile(file, accessToken) {
-      const url = bucketUrl // new api
-      const form = new window.FormData()
-      form.append('file', file.file, file.name)
-      form.append('description', file.name)
-
-      file.isDisabled = true
-      const response = await axios.post(
-        url,
-        form,
-        { 
-          headers: { 
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${accessToken}`,
-          }
-        }
-      )
-      file.isDisabled = false
-
-      if (response.status === 200) {
-        return true
-      }
-      
-      return false
+    for (const item of itemsToUpload) {
+      const message = await this._uploadFile(item, bucketUrl)
+      response.push(message)
     }
 
-    const response = await Promise.allSettled(uploadPromises)
-
     itemsToUpload.map((f, index) => {
-      if (response[index].status !== 'fulfilled') {
+      if (!response[index]) {
         // Uplaod failed for this file
         f.parent.children = f.parent.children.filter(file => file.name !== f.name)
       }
     })
-    console.log(response)
 
     // TODO: figure out how to identify that fail was due to a name that already exists
-    if (response.some(r => r.status === 'rejected')) {
+    if (response.some(r => !r)) {
       CzNotification.toast({ message: 'Some of your files failed to upload'})
     }
+  }
+
+  /** Uploads a single file */
+  private static async _uploadFile(file, url: string) {
+    const form = new window.FormData()
+    form.append('file', file.file, file.name)
+    form.append('description', file.name)
+
+    file.isDisabled = true
+    const response = await axios.post(
+      url,
+      form,
+      { 
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${this.accessToken}`,
+        }
+      }
+    )
+    file.isDisabled = false
+
+    return response.status === 200
   }
 
   static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
@@ -102,39 +100,39 @@ export default class EarthChem extends Repository {
     return []
   }
 
-  static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string): Promise<boolean> {
-    const url = this.get()?.urls?.moveOrRenameUrl
-    const renameUrl = sprintf(url, identifier, item.key)
+  /** @deprecated currently not supported by EarthChem */
+  // static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string): Promise<boolean> {
+  //   const url = this.get()?.urls?.moveOrRenameUrl
+  //   const renameUrl = sprintf(url, identifier, item.key)
+  //   const form = new window.FormData()
 
-    const form = new window.FormData()
-
-    const newName = newPath.split('/').pop()
-    if (!newName) {
-      return false
-    }
-    form.append('filename ', newName)
-    try {
-      const response = await axios.put(
-        renameUrl,
-        form,
-        { 
-          headers: { 
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${this.accessToken}`,
-          }
-        }
-      )
+  //   const newName = newPath.split('/').pop()
+  //   if (!newName) {
+  //     return false
+  //   }
+  //   form.append('filename ', newName)
+  //   try {
+  //     const response = await axios.put(
+  //       renameUrl,
+  //       form,
+  //       { 
+  //         headers: { 
+  //           'Content-Type': 'multipart/form-data',
+  //           'Authorization': `Bearer ${this.accessToken}`,
+  //         }
+  //       }
+  //     )
   
-      if (response.status === 200) {
-        return true
-      }
-      return false
-    }
-    catch(e: any) {
-      console.log(e)
-      return false
-    }
-  }
+  //     if (response.status === 200) {
+  //       return true
+  //     }
+  //     return false
+  //   }
+  //   catch(e: any) {
+  //     console.log(e)
+  //     return false
+  //   }
+  // }
 
   static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
     const url = this.get()?.urls?.fileDeleteUrl
