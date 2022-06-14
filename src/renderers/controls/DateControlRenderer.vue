@@ -155,7 +155,7 @@ const controlRenderer = defineComponent({
         }
         
         if (this.maxDate) {
-          const maxDate = parse(this.minDate, this.defaultDateFormat, new Date())
+          const maxDate = parse(this.maxDate, this.defaultDateFormat, new Date())
           if (this.parsedDate.getTime() > maxDate.getTime()) {
             this.selectedDate = this.maxDate
           }
