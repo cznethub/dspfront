@@ -92,12 +92,12 @@
             :label="control.schema.title"
             :value="anyOfRenderInfos[selectedIndex]"
             :data-id="computedLabel.replaceAll(` `, ``)"
-            :hint="control.description"
             :required="control.required"
             :error-messages="control.errors"
             :placeholder="appliedOptions.placeholder"
             :disabled="!control.enabled"
             :readonly="control.schema.readOnly"
+            :hint="anyOfRenderInfos[selectedIndex].schema.description"
             class="py-4"
             hide-details="auto"
             item-text="label"
@@ -119,7 +119,7 @@
         </template>
       </template>
     </fieldset>
-    <div v-if="control.schema.description" class="text--secondary text-body-1 ml-2">{{ control.schema.description }}</div>
+    <div v-if="control.schema.options.description" class="text--secondary text-body-1 ml-2">{{ control.schema.options.description }}</div>
     <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
       <v-divider v-if="isFlat" class="mb-4"></v-divider>
       {{ control.errors }}

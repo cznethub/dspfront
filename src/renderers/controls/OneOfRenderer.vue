@@ -91,7 +91,7 @@
             :label="control.schema.title"
             :value="oneOfRenderInfos[selectedIndex]"
             :data-id="computedLabel.replaceAll(` `, ``)"
-            :hint="control.description"
+            :hint="anyOfRenderInfos[selectedIndex].schema.description"
             :required="control.required"
             :error-messages="control.errors"
             :placeholder="appliedOptions.placeholder"
