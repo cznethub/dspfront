@@ -40,6 +40,7 @@
           <template v-if="step.finish">
             <v-alert class="my-8" outlined
               type="warning"
+              color="warning darken-2"
               prominent
               border="left">
               <div class="text-body-1">
