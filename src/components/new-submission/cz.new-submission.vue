@@ -416,7 +416,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
           this.rootDirectory.children = initialStructure
         }
         catch(e) {
-          CzNotification.toast({ message: 'Failed to load existing files.' })
+          CzNotification.toast({ 
+            message: 'Failed to load existing files.',
+            type: 'error'
+          })
         }
       }
       this.isLoadingInitialFiles = false
@@ -548,6 +551,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       message: this.isEditMode
         ? "Your changes have been saved"
         : "Your submission has been saved!",
+      type: 'success'
     })
 
     return true

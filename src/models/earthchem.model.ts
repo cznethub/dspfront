@@ -36,7 +36,10 @@ export default class EarthChem extends Repository {
 
     // TODO: figure out how to identify that fail was due to a name that already exists
     if (response.some(r => !r)) {
-      CzNotification.toast({ message: 'Some of your files failed to upload'})
+      CzNotification.toast({
+        message: 'Some of your files failed to upload',
+        type: 'error'
+      })
     }
   }
 
@@ -93,7 +96,10 @@ export default class EarthChem extends Repository {
     }
     catch(e: any) {
       console.log(e)
-      CzNotification.toast({ message: 'Failed to delete file' })
+      CzNotification.toast({
+        message: 'Failed to delete file',
+        type: 'error'
+      })
     }
 
     return false

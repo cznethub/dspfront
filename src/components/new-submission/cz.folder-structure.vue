@@ -521,7 +521,10 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     const wereDeleted = await Promise.all(deletePromises)
     if (wereDeleted.includes(false)) {
       // Failed to delete some file
-      CzNotification.toast({ message: "Some of your files failed to be deleted" })
+      CzNotification.toast({
+        message: "Some of your files could not be deleted",
+        type: 'error'
+      })
     }
     this.isDeleting = false
     this.selected = []

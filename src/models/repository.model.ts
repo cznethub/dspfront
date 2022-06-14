@@ -119,7 +119,10 @@ export default class Repository extends Model implements IRepository {
     const authorizeUrl = activeRepository?.get()?.urls?.authorizeUrl
 
     if (!authorizeUrl) {
-      CzNotification.toast({ message: 'Failed to authorize repository' })
+      CzNotification.toast({
+        message: 'Failed to authorize repository',
+        type: 'error'
+      })
       return
     }
 
@@ -145,7 +148,10 @@ export default class Repository extends Model implements IRepository {
           this.authorized$.next(this.entity as EnumRepositoryKeys)
         }
         else {
-          CzNotification.toast({ message: 'Failed to authorize repository' })
+          CzNotification.toast({
+            message: 'Failed to authorize repository',
+            type: 'error'
+          })
         }
       })
     }
@@ -279,13 +285,17 @@ export default class Repository extends Model implements IRepository {
         })
 
         CzNotification.toast({
-          message: 'Authorization token is invalid or has expired.'
+          message: 'Authorization token is invalid or has expired.',
+          type: 'error'
         })
 
         Repository.openAuthorizeDialog(this.entity)
       }
       else {
-        CzNotification.toast({ message: 'Failed to create submission' })
+        CzNotification.toast({
+          message: 'Failed to create submission',
+          type: 'error'
+        })
         console.error(`${repository}: failed to create submission.`, e.response)
       }
       throw(e)
@@ -324,7 +334,10 @@ export default class Repository extends Model implements IRepository {
         params: { "access_token": User.$state.orcidAccessToken },
       })
       await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data, repository, identifier) })
-      CzNotification.toast({ message: 'Your submission has been reloaded with its latest changes' })
+      CzNotification.toast({
+        message: 'Your submission has been reloaded with its latest changes',
+        type: 'success'
+      })
     }
     catch(e: any) {
       console.log(e)
@@ -334,7 +347,8 @@ export default class Repository extends Model implements IRepository {
           state.accessToken = ''
         })
         CzNotification.toast({
-          message: 'Authorization token is invalid or has expired.'
+          message: 'Authorization token is invalid or has expired.',
+          type: 'error'
         })
 
         Repository.openAuthorizeDialog(this.entity)
@@ -342,7 +356,10 @@ export default class Repository extends Model implements IRepository {
       else {
         console.error(`${repository}: failed to update submission.`, e.response)
       }
-      CzNotification.toast({ message: 'Failed to update record' })
+      CzNotification.toast({
+        message: 'Failed to update record',
+        type: 'error'
+      })
     }
   }
 
@@ -359,12 +376,18 @@ export default class Repository extends Model implements IRepository {
   
       if (response.status === 200) {
         await Submission.delete([identifier, repository])
-        CzNotification.toast({ message: 'Your submission has been deleted' })
+        CzNotification.toast({
+          message: 'Your submission has been deleted',
+          type: 'success'
+        })
       }
     }
     catch(e: any) {
       console.log(e)
-      CzNotification.toast({ message: 'Failed to delete submission' })
+      CzNotification.toast({
+        message: 'Failed to delete submission',
+        type: 'error'
+      })
 
       if (e.response.status === 401) {
         // Token has expired
@@ -372,7 +395,8 @@ export default class Repository extends Model implements IRepository {
           state.accessToken = ''
         })
         CzNotification.toast({
-          message: 'Authorization token is invalid or has expired.'
+          message: 'Authorization token is invalid or has expired.',
+          type: 'error'
         })
 
         Repository.openAuthorizeDialog(this.entity)
@@ -399,7 +423,10 @@ export default class Repository extends Model implements IRepository {
         return response.data
       }
       else {
-        CzNotification.toast({ message: 'Failed to load submission' })
+        CzNotification.toast({
+          message: 'Failed to load submission',
+          type: 'error'
+        })
         return null
       }
     }
@@ -411,7 +438,8 @@ export default class Repository extends Model implements IRepository {
         })
         
         CzNotification.toast({
-          message: 'Authorization token is invalid or has expired.'
+          message: 'Authorization token is invalid or has expired.',
+          type: 'error'
         })
 
         Repository.openAuthorizeDialog(repository)
@@ -419,7 +447,10 @@ export default class Repository extends Model implements IRepository {
       }
       else if (e.response.status === 403) {
         // Submission might have been deleted or service unavailable
-        CzNotification.toast({ message: 'Failed to load submission' })
+        CzNotification.toast({
+          message: 'Failed to load submission',
+          type: 'error'
+        })
         return e.response.status
       }
       else {

@@ -77,6 +77,7 @@
     <v-snackbar
       v-model="snackbar.isActive"
       :timeout="snackbar.isInfinite ? -1 : snackbar.duration"
+      :color="snackbarColors[snackbar.type].snackbar"
     >
       <span>{{ snackbar.message }}</span>
 
@@ -84,6 +85,7 @@
         <v-btn
           @click="snackbar.isActive = false"
           v-bind="attrs"
+          :color="snackbarColors[snackbar.type].actionButton"
           >Dismiss</v-btn
         >
       </template>
@@ -184,6 +186,12 @@ export default class App extends Vue {
   protected loggedInSubject = new Subscription()
   protected authorizedSubject = new Subscription()
   protected isAppBarExtended = true
+  protected snackbarColors = {
+    success:  { snackbar: 'success',        actionButton: 'success darken-2' },
+    error:    { snackbar: 'error', actionButton: 'error darken-2' },
+    info:     { snackbar: 'primary',      actionButton: 'primary darken-2' },
+    default:  { snackbar: undefined,      actionButton: undefined },
+  }
 
   mounted() {
     this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
@@ -195,6 +203,7 @@ export default class App extends Vue {
     message: "",
     duration: DEFAULT_TOAST_DURATION,
     position: "center",
+    type: 'default',
     isActive: false,
     isInfinite: false,
     // isPersistent: false,
