@@ -40,28 +40,6 @@ export default class EarthChem extends Repository {
     }
   }
 
-  /** Uploads a single file */
-  private static async _uploadFile(file, url: string) {
-    const form = new window.FormData()
-    form.append('file', file.file, file.name)
-    form.append('description', file.name)
-
-    file.isDisabled = true
-    const response = await axios.post(
-      url,
-      form,
-      { 
-        headers: { 
-          'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${this.accessToken}`,
-        }
-      }
-    )
-    file.isDisabled = false
-
-    return response.status === 200
-  }
-
   static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
     const url = this.get()?.urls?.fileReadUrl
     const folderReadUrl = sprintf(
@@ -100,6 +78,49 @@ export default class EarthChem extends Repository {
     return []
   }
 
+  static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
+    const url = this.get()?.urls?.fileDeleteUrl
+    const deleteUrl = sprintf(url, identifier, (item as IFile).serverName)
+
+    try {
+      const response = await axios.delete(deleteUrl, { 
+        headers: { 
+          'Authorization': `Bearer ${this.accessToken}`,
+        }
+      })
+      
+      return response.status === 200 || response.status === 204
+    }
+    catch(e: any) {
+      console.log(e)
+      CzNotification.toast({ message: 'Failed to delete file' })
+    }
+
+    return false
+  }
+
+  /** Uploads a single file */
+  private static async _uploadFile(file, url: string) {
+    const form = new window.FormData()
+    form.append('file', file.file, file.name)
+    form.append('description', file.name)
+
+    file.isDisabled = true
+    const response = await axios.post(
+      url,
+      form,
+      { 
+        headers: { 
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${this.accessToken}`,
+        }
+      }
+    )
+    file.isDisabled = false
+
+    return response.status === 200
+  }
+
   /** @deprecated currently not supported by EarthChem */
   // static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string): Promise<boolean> {
   //   const url = this.get()?.urls?.moveOrRenameUrl
@@ -133,28 +154,4 @@ export default class EarthChem extends Repository {
   //     return false
   //   }
   // }
-
-  static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
-    const url = this.get()?.urls?.fileDeleteUrl
-    const deleteUrl = sprintf(url, identifier, (item as IFile).serverName)
-
-    try {
-      const response = await axios.delete(deleteUrl, { 
-        headers: { 
-          'Authorization': `Bearer ${this.accessToken}`,
-        }
-      })
-  
-      if (response.status === 200 || response.status === 204) {
-        return true
-      }
-      return false
-    }
-    catch(e: any) {
-      console.log(e)
-      CzNotification.toast({ message: 'Failed to delete file' })
-    }
-
-    return false
-  }
 }
