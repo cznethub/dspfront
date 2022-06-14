@@ -65,10 +65,11 @@
           <router-link to="/resources/recommendations" class="has-space-bottom text-h6 is-clickable" tag="div">Find the Right Repository</router-link>
           <div class="text--secondary text-subtitle-1">Don't know which repository to use? Use our repository recommendation system to decide which repository is the best place for your data.</div>
         </v-col>
-        <v-col>
+        <!-- TODO: link to cataloging and discovery once implemented -->
+        <!-- <v-col>
           <v-icon >mdi-database-search</v-icon>
           <div class=" has-space-bottom text-h6">Explore CZCN Data</div>
-        </v-col>
+        </v-col> -->
       </v-row>
     </section>
 
