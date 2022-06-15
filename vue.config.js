@@ -1,5 +1,6 @@
 // const ImageminPlugin = require('imagemin-webpack-plugin').default
 // const defaultFileLoaderOptionsGenerator = require("webpack-image-resize-loader/dist/index").defaultFileLoaderOptionsGenerator
+process.env.VUE_APP_VERSION = process.env.npm_package_version
 
 const configureWebpack = (config) => {
   if (process.env.NODE_ENV !== 'development') {
