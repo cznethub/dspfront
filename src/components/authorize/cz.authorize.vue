@@ -35,7 +35,7 @@
     @Prop() repo!: string
 
     protected get repository() {
-      return this.getRepositoryFromKey(this.repo)
+      return this.getRepositoryFromKey(this.repo) as typeof Repository
     }
 
     protected get authorizeUrl() {

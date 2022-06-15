@@ -11,7 +11,7 @@ import EarthChem from '@/models/earthchem.model'
 export class ActiveRepositoryMixin extends Vue {
   protected get activeRepository() {
     const key = Repository.$state.submittingTo
-    return this.getRepositoryFromKey(key)
+    return this.getRepositoryFromKey(key) as typeof Repository
   }
 
   protected getRepositoryFromKey(key: string) {
@@ -20,7 +20,6 @@ export class ActiveRepositoryMixin extends Vue {
       case EnumRepositoryKeys.zenodo: return Zenodo
       case EnumRepositoryKeys.earthchem: return EarthChem
       case EnumRepositoryKeys.external: return External
-      default: return HydroShare
     }
   }
 

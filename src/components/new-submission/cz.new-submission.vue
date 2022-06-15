@@ -351,7 +351,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected async openAuthorizePopup() {
-    const repository = this.getRepositoryFromKey(this.repositoryKey)
+    const repository = this.getRepositoryFromKey(this.repositoryKey) as typeof Repository
     Repository.authorize(repository)  // We don't need to provide a callback because we already have a subject set
   }
 
