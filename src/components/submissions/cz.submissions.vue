@@ -158,7 +158,7 @@
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Date:</th>
-                          <td :id="`sub-${index}-date`">{{ new Date(item.date).toLocaleString() }}</td>
+                          <td :id="`sub-${index}-date`">{{ new Date(item.date).toLocaleString() }} (UTC)</td>
                         </tr>
                         <tr>
                           <th class="pr-4">Identifier:</th>

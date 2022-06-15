@@ -8,11 +8,11 @@
 
     <v-container class="mb-4">
       <div class="text-center pt-8">
-        <div class="mb-2 text-h4">Best Practices and Data Templates</div>
+        <div class="mb-6 text-h4">Best Practices and Data Templates</div>
       </div>
 
       <div class="d-flex flex-column align-center pt-8">
-        <div class="mb-2 text-h6"><a :href="guideUrls['main']" target="_blank">Best Practices for All CZ Net Data</a></div>
+        <div class="mb-6 text-h6"><a :href="guideUrls['main']" target="_blank">Best Practices for All CZ Net Data</a></div>
         <p class="text--secondary text-subtitle-1 text-center">Access best practices, recommendations, suggested formats and repository recommendations for the data types listed below.</p>
       </div>
 
