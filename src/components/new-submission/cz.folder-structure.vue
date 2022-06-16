@@ -481,8 +481,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
   protected async deleteSelected() {
     CzNotification.openDialog({
-      title: 'Remove all files?',
-      content: 'Are you sure you want to remove these files?',
+      title: 'Remove files?',
+      content: 'Are you sure you want to remove the selected files?',
       confirmText: 'Remove',
       cancelText: 'Cancel',
       onConfirm: async () => {
