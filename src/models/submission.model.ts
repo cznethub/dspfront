@@ -86,6 +86,7 @@ export default class Submission extends Model implements ISubmission {
   }
 
   // Used to transform submission data that comes from the repository API
+  // TODO: this should be moved as a dedicated method on each repository model
   static getInsertData(apiSubmission, repository: EnumRepositoryKeys, identifier: string): ISubmission | Partial<Submission> {
     if (repository === EnumRepositoryKeys.hydroshare) {
       return {
@@ -107,7 +108,7 @@ export default class Submission extends Model implements ISubmission {
         // Zenodo returns a date, and we need a datetime, so we don't override the one we stored on creation
         // date: 
         identifier: identifier,
-        url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
+        url: getViewUrl(identifier, repository)  // TODO: Get from model after fixing circular dependency issue
       }
     }
     else if (repository === EnumRepositoryKeys.earthchem) {
@@ -116,7 +117,7 @@ export default class Submission extends Model implements ISubmission {
         authors: apiSubmission.creators?.map(a => `${a.familyName}, ${a.givenName}`),
         repository: repository,
         identifier: identifier,
-        url: getViewUrl(apiSubmission.identifier, repository)  // TODO: Get from model after fixing circular dependency issue
+        url: getViewUrl(identifier, repository)  // TODO: Get from model after fixing circular dependency issue
       }
     }
     else if (repository === EnumRepositoryKeys.external) {
@@ -130,7 +131,7 @@ export default class Submission extends Model implements ISubmission {
       repository: apiSubmission.repo_type,
       date: new Date(apiSubmission.submitted).getTime(),
       identifier: apiSubmission.identifier,
-      url: getViewUrl(apiSubmission.identifier, apiSubmission.repo_type),  // TODO: Get from model after fixing circular dependency issue
+      url: getViewUrl(identifier, apiSubmission.repo_type),  // TODO: Get from model after fixing circular dependency issue
       metadata: {}
     }
   }
