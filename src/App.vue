@@ -188,7 +188,7 @@ export default class App extends Vue {
   protected isAppBarExtended = true
   protected snackbarColors = {
     success: { snackbar: 'primary', actionButton: 'primary darken-2' },
-    error: { snackbar: 'error darken-1', actionButton: 'error darken-2' },
+    error: { snackbar: 'error darken-2', actionButton: 'error darken-3' },
     info: { snackbar: 'primary', actionButton: 'primary darken-2' },
     default: { snackbar: undefined, actionButton: undefined },
   }

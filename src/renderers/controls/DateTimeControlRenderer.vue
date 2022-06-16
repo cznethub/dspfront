@@ -96,8 +96,12 @@ const controlRenderer = defineComponent({
   created() {
     if (this.dataDateTime) {
       // Format data value and populate the form
-      const selected = new Date(this.control.data)
-      const formatted = format(selected, DATE_FORMATS[this.dateTimeFormat])
+      const selected = new Date(this.dataDateTime) // in UTC
+      const offset = selected.getTimezoneOffset() * 60 * 1000
+      const localDateTime = selected.getTime() + offset
+      const localizedDate = new Date(localDateTime) // in local time
+
+      const formatted = format(localizedDate, DATE_FORMATS[this.dateTimeFormat])
       this.handleChange(this.control.path, formatted)
     }
   },

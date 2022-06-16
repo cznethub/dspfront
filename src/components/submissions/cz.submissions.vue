@@ -158,7 +158,7 @@
                         </tr>
                         <tr>
                           <th class="pr-4">Submission Date:</th>
-                          <td :id="`sub-${index}-date`">{{ new Date(item.date).toLocaleString() }} (UTC)</td>
+                          <td :id="`sub-${index}-date`">{{ getDateInLocalTime(item.date) }}</td>
                         </tr>
                         <tr>
                           <th class="pr-4">Identifier:</th>
@@ -298,6 +298,7 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { Subscription } from "rxjs"
 import { itemsPerPageArray } from '@/components/submissions/constants'
+// import { formatDistanceToNow } from 'date-fns'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -440,6 +441,16 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       name: "submit.repository",
       params: { repository: repo.key, id: submission.identifier },
     })
+  }
+
+  protected getDateInLocalTime(date: number): string {
+    const offset = (new Date(date)).getTimezoneOffset() * 60 * 1000
+    const localDateTime = date - offset
+    const localizedDate = new Date(localDateTime).toLocaleString()
+
+    // const ago = formatDistanceToNow(new Date(localDateTime), { addSuffix: true })
+
+    return localizedDate
   }
 
   protected async onUpdateRecord(submission: ISubmission) {
