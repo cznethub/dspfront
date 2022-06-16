@@ -80,8 +80,8 @@
     </v-sheet>
 
     <v-card-text style="min-height: 10rem;">
-      <v-alert v-if="isEditMode && !isReadOnly" class="text-subtitle-1" border="left" colored-border type="info" elevation="2">
-        These are your files as they appear in the repository. Any changes you make here will be immediately applied to your files.
+      <v-alert v-if="isEditMode && !isReadOnly" class="text-subtitle-1" border="left" colored-border type="info" elevation="1">
+        These are your files as they appear in the repository. Any changes you make here will be immediately applied to your files. You do not need to click the Save Changes button for your changes to be effective.
       </v-alert>
 
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
