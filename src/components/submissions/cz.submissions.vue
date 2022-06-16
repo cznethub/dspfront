@@ -141,7 +141,7 @@
               <template v-slot:default="{ items }">
                 <v-divider />
                 <div :id="`submission-${index}`" v-for="(item, index) in items" :key="item.identifier">
-                  <div class="table-item d-flex justify-space-between">
+                  <div class="table-item d-flex justify-space-between flex-sm-column flex-md-row">
                     <div class="flex-grow-1 mr-4">
                       <table class="text-body-1">
                         <tr>
@@ -191,7 +191,7 @@
                       </table>
                     </div>
 
-                    <div class="d-flex flex-column actions">
+                    <div class="d-flex flex-column mt-sm-4 actions ">
                       <v-btn :id="`sub-${index}-view`" :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
                       </v-btn>
