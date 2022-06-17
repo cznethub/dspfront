@@ -88,10 +88,10 @@
           <v-select
             @change="handleSelect"
             :items="oneOfRenderInfos"
-            :label="control.schema.title"
+            :label="title"
             :value="oneOfRenderInfos[selectedIndex]"
             :data-id="computedLabel.replaceAll(` `, ``)"
-            :hint="anyOfRenderInfos[selectedIndex].schema.description"
+            :hint="description"
             :required="control.required"
             :error-messages="control.errors"
             :placeholder="appliedOptions.placeholder"
@@ -226,6 +226,18 @@ const controlRenderer = defineComponent({
     isDropDown(): boolean {
       // @ts-ignore
       return this.control.schema.options?.dropdown
+    },
+    title(): string {
+      // @ts-ignore
+      return this.control.schema?.options?.title 
+      || this.control.schema.title
+      || ''
+    },
+    description(): string {
+      // @ts-ignore
+      return this.control.schema?.options?.description 
+      || this.oneOfRenderInfos[this.selectedIndex].schema.description
+      || ''
     },
     currentLabel(): string {
       return this.selectedIndex >= 0 
