@@ -516,6 +516,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   private async _save() {
     this.isSaving = true
+    let wasSaved = false
     let submission
 
     // If first time saving, create a new record
@@ -530,8 +531,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       }
 
       if (submission?.identifier) {
-        // HydroShare
         this.identifier = submission.identifier
+        wasSaved = true
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...")
@@ -546,15 +547,25 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       await this.uploadFiles(this.uploads)
     }
 
-    // Indicate that changes have been saved
-    CzNotification.toast({
-      message: this.isEditMode
-        ? "Your changes have been saved"
-        : "Your submission has been saved!",
-      type: 'success'
-    })
+    if (wasSaved) {
+      // Indicate that changes have been saved
+      CzNotification.toast({
+        message: this.isEditMode
+          ? "Your changes have been saved"
+          : "Your submission has been saved!",
+        type: 'success'
+      })
+    }
+    else {
+      CzNotification.toast({
+        message: this.isEditMode
+          ? "Your changes could not be saved"
+          : "Failed to create submission",
+        type: 'error'
+      })
+    }
 
-    return true
+    return wasSaved
   }
 
   protected onChange(event: JsonFormsChangeEvent) {
