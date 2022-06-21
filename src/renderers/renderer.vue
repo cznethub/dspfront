@@ -33,7 +33,7 @@
     enumControlRenderer,
     enumArrayRenderer,
     arrayPrimitiveRenderer,
-    arrayControlRenderer,
+    // arrayControlRenderer,
     groupRenderer,
     numberControlRenderer,
     stringControlRenderer,

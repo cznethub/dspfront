@@ -108,7 +108,7 @@ export default class Repository extends Model implements IRepository {
       data: { urls, schema, uischema, schemaDefaults }
     })
 
-    // await this.fetchAccessToken()
+    await this.fetchAccessToken()
   }
 
   static openAuthorizeDialog(repository: string, redirectTo?: RawLocation) {
@@ -310,16 +310,18 @@ export default class Repository extends Model implements IRepository {
   */
   static async updateSubmission(identifier: string, data: any) {
     try {
-      await axios.put(
+      const response = await axios.put(
         `/api/metadata/${this.entity}/${identifier}`,
         data, { 
           headers: { "Content-Type": "application/json"},
           params: { "access_token": User.$state.orcidAccessToken },
         }
       )
+      return response.status === 200
     }
     catch(e: any) {
       console.log(e)
+      return false
     }
   }
 

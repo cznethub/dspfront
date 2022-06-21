@@ -270,6 +270,12 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     // this.activeDirectoryItem = this.rootDirectory
   }
 
+  // There is a bug in v-treeview when moving items or changing keys. Items become unactivatable
+  // We redraw the treeview as a workaround
+  public redrawFileTree() {
+    this.redraw = this.redraw ? 0 : 1
+  }
+
   @Watch('rootDirectory.children', { deep: true })
   protected onInput() {
     const items = this._getDirectoryItems(this.rootDirectory) as IFile[]
@@ -390,9 +396,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       item.isCutting = false
     })
     this.unselectAll()
-     // There is a bug in v-treeview when moving items. Moved items become unactivatable
-     // We redraw the treeview as a workaround
-    this.redraw = this.redraw ? 0 : 1
+    this.redrawFileTree()
   }
 
   protected moveItem(item: IFolder | IFile, destination: IFolder) {
@@ -494,7 +498,14 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   private async _deleteSelected() {
     this.isDeleting = true
     const reversedSelected = this.selected.reverse()
-    const deletePromises: Promise<boolean>[] = []
+
+    const response: any[] = []
+
+    // First, disable all items to delete
+    for (let i = 0; i < reversedSelected.length; i++) {
+      const item = reversedSelected[i]
+      this.toggleItemDisabled(item, true)
+    }
 
     for (let i = 0; i < reversedSelected.length; i++) {
       const item = reversedSelected[i]
@@ -507,9 +518,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
         if (this.isEditMode) {
           const isParentSelected = this.isSelected(item.parent as IFolder)
           if (!isParentSelected) {
-            const p = this.deleteFileOrFolder(item)
-
-            deletePromises.push(p)
+            const message = await this.deleteFileOrFolder(item)
+            response.push(message)
           }
         }
         else {
@@ -518,8 +528,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       }
     }
 
-    const wereDeleted = await Promise.all(deletePromises)
-    if (wereDeleted.includes(false)) {
+    // TODO: zenodo cannot handle multiple deletes in parallel. We do it sequentially
+    if (response.includes(false)) {
       // Failed to delete some file
       CzNotification.toast({
         message: "Some of your files could not be deleted",
@@ -530,8 +540,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     this.selected = []
   }
 
-  private async deleteFileOrFolder(item: IFile | IFolder) {
-    this.toggleItemDisabled(item, true)
+  private async deleteFileOrFolder(item: IFile | IFolder): Promise<boolean> {
     const wasDeleted = await this.activeRepository.deleteFileOrFolder(this.identifier, item)
     this.toggleItemDisabled(item, false)
     if (wasDeleted) {

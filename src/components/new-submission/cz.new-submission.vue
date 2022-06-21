@@ -231,7 +231,7 @@ ajvErrors(customAjv)
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms
-  // @Ref("folderStructure") folderStructure!: InstanceType<typeof CzFolderStructure>
+  @Ref("folderStructure") folderStructure!: InstanceType<typeof CzFolderStructure>
 
   protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '', path: '' }
   protected isLoading = false
@@ -536,7 +536,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...")
-      await this.activeRepository?.updateSubmission(
+      wasSaved = await this.activeRepository?.updateSubmission(
         this.identifier,
         this.data
       )
@@ -600,6 +600,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         '%s'  // replaced file by file inside repo model
       )
       await this.activeRepository?.uploadFiles(url, files, createFolderUrl)
+      this.folderStructure.redrawFileTree()
     }
   }
 }
