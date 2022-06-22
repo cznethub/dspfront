@@ -103,7 +103,7 @@ export default class Submission extends Model implements ISubmission {
     else if (repository === EnumRepositoryKeys.zenodo) {
       return {
         title: apiSubmission.title,
-        authors: apiSubmission.authors,
+        authors: apiSubmission.creators.map(c => c.name),
         repository: repository,
         // Zenodo returns a date, and we need a datetime, so we don't override the one we stored on creation
         // date: 
@@ -143,23 +143,23 @@ export default class Submission extends Model implements ISubmission {
         return state.isFetching = true
       })
       
-      const resp = await axios.get('/api/submissions', { 
+      const response = await axios.get('/api/submissions', { 
         params: { "access_token": User.$state.orcidAccessToken }
       })
 
-      if (resp.status === 200) {
-        let data = resp.data as any[]
+      if (response.status === 200) {
+        let data = response.data as any[]
         data = data.map(this.getInsertDataFromDb)
         this.insertOrUpdate({ data })
       }
-      else if (resp.status === 401) {
+      else if (response.status === 401) {
         // User has been logged out
         User.logOut()
       }
       this.commit((state) => {
         return state.isFetching = false
       })
-      return resp.status
+      return response.status
     }
     catch(e: any) {
       this.commit((state) => {
