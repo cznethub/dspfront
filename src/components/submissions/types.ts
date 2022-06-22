@@ -80,6 +80,7 @@ export interface IRepositoryUrls {
 export interface IRepository {
   key: EnumRepositoryKeys
   name: string
+  dropdownName?: string
   logoSrc: string
   description: string
   submitLabel?: string

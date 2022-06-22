@@ -1,64 +1,84 @@
 
 
 <template>
-  <v-combobox
-    v-if="suggestions !== undefined"
-    :id="control.id + '-input'"
-    :class="styles.control.input"
-    :disabled="!control.enabled"
-    :autofocus="appliedOptions.focus"
-    :placeholder="placeholder"
-    :label="computedLabel"
-    :hint="control.description"
-    persistent-hint
-    :required="control.required"
-    :error-messages="control.errors"
-    :maxlength="
-      appliedOptions.restrict ? control.schema.maxLength : undefined
-    "
-    :counter="
-      control.schema.maxLength !== undefined
-        ? control.schema.maxLength
-        : undefined
-    "
-    :value="control.data"
-    :items="suggestions"
-    hide-details="auto"
-    hide-no-data
-    v-bind="vuetifyProps('v-combobox')"
-    @input="beforeChange"
-    dense
-    outlined
-    class="py-3"
-  />
-  <v-text-field
-    v-else
-    :id="control.id + '-input'"
-    :class="styles.control.input"
-    :disabled="!control.enabled"
-    :autofocus="appliedOptions.focus"
-    :placeholder="placeholder"
-    :label="computedLabel"
-    :hint="control.description"
-    persistent-hint
-    :required="control.required"
-    :error-messages="control.errors"
-    :value="control.data"
-    :maxlength="
-      appliedOptions.restrict ? control.schema.maxLength : undefined
-    "
-    :counter="
-      control.schema.maxLength !== undefined
-        ? control.schema.maxLength
-        : undefined
-    "
-    v-bind="vuetifyProps('v-text-field')"
-    @input="beforeChange"
-    hide-details="auto"
-    class="py-3"
-    dense
-    outlined
-  />
+  <div>
+    <v-combobox
+      v-if="suggestions !== undefined"
+      :id="control.id + '-input'"
+      :class="styles.control.input"
+      :disabled="!control.enabled"
+      :autofocus="appliedOptions.focus"
+      :placeholder="placeholder"
+      :label="computedLabel"
+      :hint="control.description"
+      persistent-hint
+      :required="control.required"
+      :error-messages="control.errors"
+      :maxlength="
+        appliedOptions.restrict ? control.schema.maxLength : undefined
+      "
+      :counter="
+        control.schema.maxLength !== undefined
+          ? control.schema.maxLength
+          : undefined
+      "
+      :value="control.data"
+      :items="suggestions"
+      hide-details="auto"
+      hide-no-data
+      v-bind="vuetifyProps('v-combobox')"
+      @input="beforeChange"
+      dense
+      outlined
+      class="py-3"
+    >
+      <template v-slot:message>
+        <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
+          {{ control.schema.description }}
+        </div>
+        <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
+          {{ control.errors }}
+        </div>
+      </template>
+    </v-combobox>
+    
+    <v-text-field
+      v-else
+      :id="control.id + '-input'"
+      :class="styles.control.input"
+      :disabled="!control.enabled"
+      :autofocus="appliedOptions.focus"
+      :placeholder="placeholder"
+      :label="computedLabel"
+      :hint="control.description"
+      persistent-hint
+      :required="control.required"
+      :error-messages="control.errors"
+      :value="control.data"
+      :maxlength="
+        appliedOptions.restrict ? control.schema.maxLength : undefined
+      "
+      :counter="
+        control.schema.maxLength !== undefined
+          ? control.schema.maxLength
+          : undefined
+      "
+      v-bind="vuetifyProps('v-text-field')"
+      @input="beforeChange"
+      class="py-3"
+      dense
+      outlined
+    >
+      <template v-slot:message>
+        <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
+          {{ control.schema.description }}
+        </div>
+        <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
+          {{ control.errors }}
+        </div>
+      </template>
+    </v-text-field>
+  </div>
 </template>
 
 <script lang="ts">
