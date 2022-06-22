@@ -103,7 +103,7 @@ export default class Submission extends Model implements ISubmission {
     else if (repository === EnumRepositoryKeys.zenodo) {
       return {
         title: apiSubmission.title,
-        authors: apiSubmission.creators.map(c => c.name),
+        authors: apiSubmission.creators?.map(c => c.name),
         repository: repository,
         // Zenodo returns a date, and we need a datetime, so we don't override the one we stored on creation
         // date: 

@@ -355,6 +355,18 @@ export default class Repository extends Model implements IRepository {
 
         Repository.openAuthorizeDialog(this.entity)
       }
+      else if (e.response?.status === 410) {
+        // Resource has been deleted in repository
+        CzNotification.openDialog({
+          title: "This resource has been deleted",
+          content: "The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?",
+          confirmText: "Remove",
+          cancelText: 'Cancel',
+          onConfirm: async () => {
+            await this.deleteSubmission(identifier, repository)
+          }
+        })
+      }
       else {
         console.error(`${repository}: failed to update submission.`, e.response)
       }
@@ -385,7 +397,6 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch(e: any) {
-      console.log(e)
       CzNotification.toast({
         message: 'Failed to delete submission',
         type: 'error'
@@ -402,6 +413,14 @@ export default class Repository extends Model implements IRepository {
         })
 
         Repository.openAuthorizeDialog(this.entity)
+      }
+      else if (e.response.status === 410) {
+        // Resource has been deleted in the repository
+        await Submission.delete([identifier, repository])
+        CzNotification.toast({
+          message: 'Your submission has been deleted',
+          type: 'success'
+        })
       }
       else {
         console.error(`${repository}: failed to delete submission.`, e.response)
