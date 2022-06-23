@@ -474,6 +474,11 @@ export default class Repository extends Model implements IRepository {
         })
         return e.response.status
       }
+      else if (e.response.status === 410) {
+        // Resource has been deleted in repository
+        // Error handled in component
+        return e.response.status
+      }
       else {
         console.error(`${repository}: failed to read submission.`, e.response)
         return null

@@ -390,6 +390,20 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         })
       }
     }
+    else if (response === 410) {
+      // Resource has been deleted in repository
+      this.repositoryRecord = null
+      CzNotification.openDialog({
+        title: "This resource has been deleted",
+        content: "The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?",
+        confirmText: "Remove",
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          await Repository.deleteSubmission(this.identifier, this.repositoryKey)
+          this.$router.push({ name: "submissions" })
+        }
+      })      
+    }
     else {
       this.repositoryRecord = response
       this.wasUnauthorized = false

@@ -99,7 +99,7 @@
     >
       <v-card>
         <v-card-title>{{ dialog.title }}</v-card-title>
-        <v-card-text>{{ dialog.content }}</v-card-text>
+        <v-card-text class="text-body-1">{{ dialog.content }}</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
