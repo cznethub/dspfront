@@ -4,19 +4,11 @@ import { repoMetadata } from "@/components/submit/constants"
 import { Subject } from 'rxjs'
 import { RawLocation } from 'vue-router'
 import { IFile, IFolder } from '@/components/new-submission/types'
+import { DELETED_RESOURCE_STATUS_CODES } from '@/constants'
 import axios from "axios"
 import Submission from './submission.model'
 import CzNotification from './notifications.model'
 import User from './user.model'
-
-/** 
- * Status codeds returned by repositories when the resource has been deleted from their sites 
- * Endpoint: /api/metadata/${repository}/${identifier}
- * */
-const DELETED_RESOURCE_STATUS_CODES = [
-  404,  // HydroShare
-  410,  // Zenodo
-]
 
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'

@@ -208,6 +208,7 @@ import { IFile, IFolder } from '@/components/new-submission/types'
 import { ErrorObject } from 'ajv'
 import { Subscription } from "rxjs"
 import { createAjv } from "@jsonforms/core"
+import { DELETED_RESOURCE_STATUS_CODES } from '@/constants'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -390,7 +391,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         })
       }
     }
-    else if (response === 410) {
+    else if (DELETED_RESOURCE_STATUS_CODES.includes(response)) {
       // Resource has been deleted in repository
       this.repositoryRecord = null
       CzNotification.openDialog({
