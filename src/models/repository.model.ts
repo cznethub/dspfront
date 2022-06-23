@@ -9,6 +9,15 @@ import Submission from './submission.model'
 import CzNotification from './notifications.model'
 import User from './user.model'
 
+/** 
+ * Status codeds returned by repositories when the resource has been deleted from their sites 
+ * Endpoint: /api/metadata/${repository}/${identifier}
+ * */
+const DELETED_RESOURCE_STATUS_CODES = [
+  404,  // HydroShare
+  410,  // Zenodo
+]
+
 export default class Repository extends Model implements IRepository {
   static entity = 'repository'
   static primaryKey = 'key'
@@ -355,7 +364,7 @@ export default class Repository extends Model implements IRepository {
 
         Repository.openAuthorizeDialog(this.entity)
       }
-      else if (e.response?.status === 410) {
+      else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         // Resource has been deleted in repository
         CzNotification.openDialog({
           title: "This resource has been deleted",
@@ -402,7 +411,7 @@ export default class Repository extends Model implements IRepository {
         type: 'error'
       })
 
-      if (e.response.status === 401) {
+      if (e.response?.status === 401) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''
@@ -414,7 +423,7 @@ export default class Repository extends Model implements IRepository {
 
         Repository.openAuthorizeDialog(this.entity)
       }
-      else if (e.response.status === 410) {
+      else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         // Resource has been deleted in the repository
         await Submission.delete([identifier, repository])
         CzNotification.toast({
@@ -466,7 +475,7 @@ export default class Repository extends Model implements IRepository {
         Repository.openAuthorizeDialog(repository)
         return e.response.status
       }
-      else if (e.response.status === 403) {
+      else if (e.response?.status === 403) {
         // Submission might have been deleted or service unavailable
         CzNotification.toast({
           message: 'Failed to load submission',
@@ -474,7 +483,7 @@ export default class Repository extends Model implements IRepository {
         })
         return e.response.status
       }
-      else if (e.response.status === 410) {
+      else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         // Resource has been deleted in repository
         // Error handled in component
         return e.response.status
