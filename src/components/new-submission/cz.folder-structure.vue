@@ -1,7 +1,7 @@
 <template>
   <v-card class="mb-8">
     <v-sheet class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included">
-      <v-tooltip v-if="allowFolders && !isReadOnly" bottom transition="fade">
+      <v-tooltip v-if="repoMetadata.hasFolderStructure && !isReadOnly" bottom transition="fade">
         <template v-slot:activator="{ on, attrs}">
           <v-btn @click="newFolder" class="mr-4" small icon v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
         </template>
@@ -35,7 +35,7 @@
         <v-divider class="mx-4" vertical></v-divider>
       </template>
 
-      <template v-if="allowFolders">
+      <template v-if="repoMetadata.hasFolderStructure">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
             <v-btn @click="cut" :disabled="!canCut" class="mr-1" icon small v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
@@ -141,6 +141,25 @@
                     :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap ma-0">
                     <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
                     <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes }}</v-col>
+                    <v-col v-if="!isFolder(item) && isFileInvalid(item) || hasFileWarnings(item)"
+                      class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">
+                      <v-menu open-on-hover bottom left offset-y>
+                        <template v-slot:activator="{ on, attrs}">
+                          <div v-bind="attrs" v-on="on">
+                            <v-icon :color="isFileInvalid(item) ? 'error' : 'warning'">mdi-alert-circle</v-icon>
+                          </div>
+                        </template>
+
+                        <div class="pa-4 has-bg-white">
+                          <div v-if="isFileInvalid(item)" class="text-body-2 mb-4"><b>This file cannot be uploaded</b></div>
+                          <ul class="text-subtitle-1">
+                            <li v-if="!isFileExtensionValid(item)">This file extension is not allowed for upload.</li>
+                            <li v-if="!isFileNameValid(item)">This file name contains invalid characters.</li>
+                            <li v-if="isFileTooBig(item)">Files cannot be larger than <b>{{ repoMetadata.maxUploadSizePerFileBase10 | prettyBytes }}</b>.</li>
+                          </ul>
+                        </div>
+                      </v-menu>
+                    </v-col>
                   </v-row>
                 </template>
                 <template v-slot:append="{ item, active }">
@@ -177,6 +196,7 @@ import { Component, Watch, Prop } from "vue-property-decorator"
 import { IFolder, IFile } from '@/components/new-submission/types'
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { IRepository } from "../submissions/types"
 
 @Component({
   name: "cz-folder-structure",
@@ -185,7 +205,7 @@ import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   }
 })
 export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
-  @Prop({ default: false }) allowFolders!: boolean
+  @Prop({ default: false }) repoMetadata!: IRepository
   @Prop({ default: false }) isEditMode!: boolean
   @Prop({ default: false }) isReadOnly!: boolean
   @Prop() identifier!: string  // Use if isEditMode is true
@@ -267,7 +287,6 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   created() {
-    // this.activeDirectoryItem = this.rootDirectory
   }
 
   // There is a bug in v-treeview when moving items or changing keys. Items become unactivatable
@@ -281,7 +300,9 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     const items = this._getDirectoryItems(this.rootDirectory) as IFile[]
     // Update paths
     items.map(i => i.path = this.getPathString(i.parent as IFolder))
-    this.$emit('input', this._getDirectoryItems(this.rootDirectory))
+    const updatedItems = this._getDirectoryItems(this.rootDirectory)
+    const validItems = updatedItems.filter(item => !this.isFileInvalid(item as IFile))
+    this.$emit('input', validItems)
   }
 
   @Watch('dropFiles')
@@ -313,7 +334,10 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     this._openRecursive(targetFolder)
 
     if (this.isEditMode) {
-      this.$emit('upload', addedFiles)
+      const validFiles = addedFiles.filter(f => !this.isFileInvalid(f))
+      if (validFiles.length) {
+        this.$emit('upload', addedFiles)
+      }
     }
     this.dropFiles = []
   }
@@ -462,6 +486,41 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     item.isRenaming = true
   }
 
+  protected isFileExtensionValid(file: IFile) {
+    if (!this.repoMetadata.supportedFileTypes) {
+      return true
+    }
+
+    const nameWithoutExtension = this._getFileNameWithoutExtension(file.name)
+    const extention = file.name.replace(nameWithoutExtension, "")
+    return this.repoMetadata.supportedFileTypes.includes(extention)
+  }
+
+  protected isFileNameValid(file: IFile) {
+    if (!this.repoMetadata.fileNameRegex) {
+      return true
+    }
+    const nameWithoutExtension = this._getFileNameWithoutExtension(file.name)
+    const isValid = this.repoMetadata.fileNameRegex.test(nameWithoutExtension)
+    return isValid
+  }
+
+  protected isFileInvalid(file: IFile) {
+    return !this.isFileExtensionValid(file) || this.isFileTooBig(file)
+  }
+
+  protected hasFileWarnings(file: IFile) {
+    return  !this.isFileNameValid(file)
+  }
+
+  protected isFileTooBig(file: IFile) {
+    if (!this.repoMetadata.maxUploadSizePerFile) {
+      return false
+    }
+
+    return file.file?.size && file.file?.size > this.repoMetadata.maxUploadSizePerFile
+  }
+
   protected async onRenamed(item: IFile | IFolder, name: string) {
     if (name.trim()) {
       const newName = this._getAvailableName(name, item.parent as IFolder, item.name)
@@ -541,7 +600,15 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   private async deleteFileOrFolder(item: IFile | IFolder): Promise<boolean> {
-    const wasDeleted = await this.activeRepository.deleteFileOrFolder(this.identifier, item)
+    let wasDeleted = false
+    if (!this.isFolder(item) && this.isFileInvalid(item as IFile)) {
+      // File was not uplaoded because it was invalid. No need to delete in repository.
+      wasDeleted = true
+    }
+    else {
+      wasDeleted = await this.activeRepository.deleteFileOrFolder(this.identifier, item)
+    }
+    
     this.toggleItemDisabled(item, false)
     if (wasDeleted) {
       this._deleteItem(item)
@@ -595,7 +662,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected newFolder() {
-    if (!this.allowFolders) {
+    if (!this.repoMetadata.hasFolderStructure) {
       return
     }
 

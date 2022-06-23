@@ -93,6 +93,15 @@ export interface IRepository {
   isComingSoon?: boolean
   isExternal?: boolean
   hasFolderStructure?: boolean
+  supportedFileTypes?: string[]
+  /** Largest size per file allowed for upload. In KibiBytes. https://web.archive.org/web/20150324153922/https://pacoup.com/2009/05/26/kb-kb-kib-whats-up-with-that/ */
+  maxUploadSizePerFile?: number
+  /** Same, but used to display size in prettyBytes */
+  maxUploadSizePerFileBase10?: number
+  /** Maximum allowed total upload size */
+  maxTotalUploadSize?: number
+  maxNumberOfFiles?: number
+  fileNameRegex?: any
   url?: string,
   supportUrl?: string,
   submitTooltip?: string

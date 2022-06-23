@@ -122,7 +122,6 @@ export default class EarthChem extends Repository {
         }
       }
     )
-    console.log(response)
     file.isDisabled = false
 
     return response.status === 200

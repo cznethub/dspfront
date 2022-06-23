@@ -59,7 +59,7 @@
           @upload="uploadFiles($event)"
           :isReadOnly="isReadOnly"
           :rootDirectory.sync="rootDirectory"
-          :allowFolders="repoMetadata[repositoryKey].hasFolderStructure"
+          :repoMetadata="repoMetadata[repositoryKey]"
           :isEditMode="isEditMode"
           :identifier="identifier"
         />
@@ -559,6 +559,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
     // If we are in edit mode, files have already been saved
     if (!this.isEditMode) {
+      const validUploads = this.uploads.filter(item => this)
       await this.uploadFiles(this.uploads)
     }
 
