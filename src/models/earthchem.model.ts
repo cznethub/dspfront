@@ -123,6 +123,8 @@ export default class EarthChem extends Repository {
       }
     )
     file.isDisabled = false
+    // TODO: EarthChem api currently does not return this id
+    // file.key = response.data.id
 
     return response.status === 200
   }
