@@ -5,7 +5,7 @@ export interface IFile {
   isRenaming?: boolean
   isCutting?: boolean
   isDisabled?: boolean
-  isUploaded: boolean
+  isUploaded: boolean | undefined
   key: string
   path: string
   file: File | null

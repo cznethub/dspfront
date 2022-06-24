@@ -598,7 +598,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     }
 
     if (!this.isEditMode) {
-      await this.uploadFiles(this.uploads)
+      if (!this.folderStructure.hasTooManyFiles) {
+        await this.uploadFiles(this.uploads)
+      }
     }
     else {
       // If we are in edit mode, files have already been saved

@@ -359,7 +359,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
         isRenaming: false,
         isCutting: false,
         isDisabled: false,
-        isUploaded: false,
+        isUploaded: undefined,
       } as IFile
 
       targetFolder.children.push(newItem)
@@ -561,11 +561,13 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       && !this.hasTooManyFiles
       && !this.isFolder(item)
       && !this.isFileInvalid(item as IFile)
-      && !(item as IFile).isUploaded
+      && (item as IFile).isUploaded === false
   }
 
   protected couldNotUploadFile(item: IFile) {
-    return this.isEditMode && !item.isUploaded && this.hasTooManyFiles
+    return this.isEditMode
+      && item.isUploaded === false
+      && this.hasTooManyFiles
   }
 
   protected showFileWarnings(item: IFile) {
@@ -631,13 +633,13 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
         if (this.isEditMode) {
           const isParentSelected = this.isSelected(item.parent as IFolder)
-          if (!isParentSelected) {
+          if (this.isFolder(item) && !(item as IFile).isUploaded) {
+            this._deleteItem(item)  // Item hasn't been uploaded, just discard it
+          }
+          else if (!isParentSelected) {
             const message = await this.deleteFileOrFolder(item)
             response.push(message)
           }
-        }
-        else {
-          this._deleteItem(item)
         }
       }
     }
