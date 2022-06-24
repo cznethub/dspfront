@@ -62,10 +62,11 @@ export const repoMetadata: { [key: string]: IRepository } = {
       '.rdf',
       '.hdf',
     ],
+    maxNumberOfFiles: 20,
     maxUploadSizePerFile: 52428800, // 50 MB = 52428800 Bytes
     maxUploadSizePerFileBase10: 50000000, // 50 MB = 52428800 Bytes
     maxTotalUploadSize: 419430400, // 400 MB = 419430400 Bytes,
-    fileNameRegex: /^[-_()\w\s]*$/  // File names can only contain upper or lowercase letters, numbers, spaces, _(underscores), -(dashes) and parenthesis().
+    fileNameRegex: /^[-_()\w\s]*$/,  // File names can only contain upper or lowercase letters, numbers, spaces, _(underscores), -(dashes) and parenthesis().
   },
   [EnumRepositoryKeys.zenodo]: {
     key: EnumRepositoryKeys.zenodo,

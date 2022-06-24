@@ -141,24 +141,31 @@
                     :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap ma-0">
                     <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
                     <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes }}</v-col>
-                    <v-col v-if="!isFolder(item) && isFileInvalid(item) || hasFileWarnings(item)"
+                    <v-col v-if="showFileWarnings(item)"
                       class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">
                       <v-menu open-on-hover bottom left offset-y>
                         <template v-slot:activator="{ on, attrs}">
                           <div v-bind="attrs" v-on="on">
-                            <v-icon :color="isFileInvalid(item) ? 'error' : 'warning'">mdi-alert-circle</v-icon>
+                            <v-icon :color="isFileInvalid(item) || couldNotUploadFile(item) ? 'error' : 'warning'">mdi-alert-circle</v-icon>
                           </div>
                         </template>
 
                         <div class="pa-4 has-bg-white">
-                          <div v-if="isFileInvalid(item)" class="text-body-2 mb-4"><b>This file cannot be uploaded</b></div>
+                          <div v-if="isFileInvalid(item) || couldNotUploadFile(item)" class="text-body-2 mb-4"><b>This file cannot be uploaded</b></div>
                           <ul class="text-subtitle-1">
+                            <li v-if="couldNotUploadFile(item)">Maximum number of files exceeded.</li>
                             <li v-if="!isFileExtensionValid(item)">This file extension is not allowed for upload.</li>
                             <li v-if="!isFileNameValid(item)">This file name contains invalid characters.</li>
                             <li v-if="isFileTooBig(item)">Files cannot be larger than <b>{{ repoMetadata.maxUploadSizePerFileBase10 | prettyBytes }}</b>.</li>
                           </ul>
                         </div>
                       </v-menu>
+                    </v-col>
+                    <v-col v-if="canRetryUpload(item)" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0">
+                      <v-btn color="info" @click="$emit('upload', [item])" :disabled="item.isDisabled" small depressed>
+                        <v-icon left>mdi-cloud-upload</v-icon>
+                        Retry
+                      </v-btn>
                     </v-col>
                   </v-row>
                 </template>
@@ -175,9 +182,14 @@
           </v-row>
         </v-card-text>
       </v-card>
+
       <div v-else-if="isReadOnly" class="pa-2 text-body-1 text--secondary">
         No files have been included in this submission
       </div>
+
+      <v-alert v-if="hasTooManyFiles" class="text-subtitle-1" border="left" colored-border type="error" elevation="1">
+        The maximum number of files cannot exceed <b>{{ repoMetadata.maxNumberOfFiles}}</b>
+      </v-alert>
 
       <div v-if="!isReadOnly" class="upload-drop-area files-container--included">
         <b-upload type="file" multiple drag-drop expanded v-model="dropFiles" class="has-bg-light-gray">
@@ -286,7 +298,29 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     return this.activeRepository.get()?.urls?.moveOrRenameUrl
   }
 
+  protected get allItems(): (IFile | IFolder)[] {
+    return this._getDirectoryItems(this.rootDirectory)
+  }
+
+  public get hasInvalidFilesToUpload() {
+    return this.allItems.some((item: IFile | IFolder) => {
+      return !this.isFolder(item)
+        && !(item as IFile).isUploaded
+        && this.isFileInvalid(item as IFile)
+    })
+  }
+
+  public get hasTooManyFiles() {
+    if (!this.repoMetadata.maxNumberOfFiles) {
+      return false
+    }
+
+    const validFiles = this.allItems.filter(item => !this.isFileInvalid(item as IFile))
+    return validFiles.length > this.repoMetadata.maxNumberOfFiles
+  }
+
   created() {
+    
   }
 
   // There is a bug in v-treeview when moving items or changing keys. Items become unactivatable
@@ -325,6 +359,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
         isRenaming: false,
         isCutting: false,
         isDisabled: false,
+        isUploaded: false,
       } as IFile
 
       targetFolder.children.push(newItem)
@@ -335,16 +370,15 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
     if (this.isEditMode) {
       const validFiles = addedFiles.filter(f => !this.isFileInvalid(f))
-      if (validFiles.length) {
-        this.$emit('upload', addedFiles)
+      if (validFiles.length && !this.hasTooManyFiles) {
+        this.$emit('upload', validFiles)
       }
     }
     this.dropFiles = []
   }
 
   protected selectAll() {
-    const allItems = this._getDirectoryItems(this.rootDirectory)
-    this.select(allItems)
+    this.select(this.allItems)
   }
 
   protected getPathString(item: IFolder | IFile) {
@@ -506,7 +540,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected isFileInvalid(file: IFile) {
-    return !this.isFileExtensionValid(file) || this.isFileTooBig(file)
+    return !this.isFileExtensionValid(file)
+      || this.isFileTooBig(file)
   }
 
   protected hasFileWarnings(file: IFile) {
@@ -519,6 +554,26 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     }
 
     return file.file?.size && file.file?.size > this.repoMetadata.maxUploadSizePerFile
+  }
+
+  protected canRetryUpload(item: IFile | IFolder) {
+    return this.isEditMode
+      && !this.hasTooManyFiles
+      && !this.isFolder(item)
+      && !this.isFileInvalid(item as IFile)
+      && !(item as IFile).isUploaded
+  }
+
+  protected couldNotUploadFile(item: IFile) {
+    return this.isEditMode && !item.isUploaded && this.hasTooManyFiles
+  }
+
+  protected showFileWarnings(item: IFile) {
+    return !this.isFolder(item) && (
+        this.isFileInvalid(item)
+        || this.hasFileWarnings(item)
+        || this.couldNotUploadFile(item)
+      )
   }
 
   protected async onRenamed(item: IFile | IFolder, name: string) {

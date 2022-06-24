@@ -62,12 +62,9 @@ export default class Zenodo extends Repository {
     )
     file.isDisabled = false
     file.key = response.data.id
-
-    if (response.status === 200) {
-      return true
-    }
+    file.isUploaded = response.status === 200
     
-    return false
+    return response.status === 200
   }
 
   static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
@@ -90,6 +87,7 @@ export default class Zenodo extends Repository {
           isRenaming: false,
           isCutting: false,
           isDisabled: false,
+          isUploaded: true,
           key: file.id, // We use the file id in this case, so we can use it again as reference to edit files
           path: path,
           file: null,

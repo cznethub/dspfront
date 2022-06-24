@@ -101,6 +101,7 @@ export default class HydroShare extends Repository {
         if (response[index].status === 'fulfilled') {
           // @ts-ignore
           f.name = (response[index]).value.data.file_name
+          f.isUploaded = true
         }
         else {
           // Uplaod failed for this file
@@ -200,6 +201,7 @@ export default class HydroShare extends Repository {
             isRenaming: false,
             isCutting: false,
             isDisabled: false,
+            isUploaded: true,
             key: `${Date.now().toString()}-a-${index}`,
             path: path,
             file: null,

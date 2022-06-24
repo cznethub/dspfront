@@ -462,7 +462,27 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.showUISchema = true
   }
 
-  protected async onSaveAndFinish() {
+  protected onSaveAndFinish() {
+    if (this.folderStructure.hasInvalidFilesToUpload || this.folderStructure.hasTooManyFiles) {
+      CzNotification.openDialog({
+        title: 'Some of your files cannot be uploaded',
+        content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
+        confirmText: 'Continue',
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          this._onSaveAndFinish()
+        },
+        onCancel: () => {
+          return false
+        }
+      })
+    }
+    else {
+      this._onSaveAndFinish()
+    }
+  }
+
+  private async _onSaveAndFinish() {
     if (this.isReadOnly) {
       this.$router.push({ name: "submissions" })
       return
@@ -496,7 +516,27 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     }
   }
 
-  protected async onSave() {
+  protected onSave() {
+    if (this.folderStructure.hasInvalidFilesToUpload || this.folderStructure.hasTooManyFiles) {
+      CzNotification.openDialog({
+        title: 'Some of your files cannot be uploaded',
+        content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
+        confirmText: 'Continue',
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          this._onSave()
+        },
+        onCancel: () => {
+          return false
+        }
+      })
+    }
+    else {
+      this._onSave()
+    }
+  }
+
+  private async _onSave() {
     const wasSaved = await this._save()
     
     if (wasSaved) {
@@ -557,10 +597,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       )
     }
 
-    // If we are in edit mode, files have already been saved
     if (!this.isEditMode) {
-      const validUploads = this.uploads.filter(item => this)
       await this.uploadFiles(this.uploads)
+    }
+    else {
+      // If we are in edit mode, files have already been saved
     }
 
     if (wasSaved) {
