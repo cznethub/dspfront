@@ -143,28 +143,34 @@ const controlRenderer = defineComponent({
   },
   methods: {
     onInput(newDate) {
-      if (!this.formattedDate) {
-        this.selectedDate = null
-        this.handleChange(this.control.path, undefined)
+      try {
+         if (!this.formattedDate) {
+            this.selectedDate = null
+            this.handleChange(this.control.path, undefined)
+          }
+          else {
+            this.selectedDate = newDate
+            
+            if (this.minDate) {
+              const minDate = parse(this.minDate, this.defaultDateFormat, new Date())
+              if (this.parsedDate.getTime() < minDate.getTime()) {
+                this.selectedDate = this.minDate
+              }
+            }
+            
+            if (this.maxDate) {
+              const maxDate = parse(this.maxDate, this.defaultDateFormat, new Date())
+              if (this.parsedDate.getTime() > maxDate.getTime()) {
+                this.selectedDate = this.maxDate
+              }
+            }
+            
+            this.handleChange(this.control.path, this.formattedDate)
+          }
       }
-      else {
-        this.selectedDate = newDate
-        
-        if (this.minDate) {
-          const minDate = parse(this.minDate, this.defaultDateFormat, new Date())
-          if (this.parsedDate.getTime() < minDate.getTime()) {
-            this.selectedDate = this.minDate
-          }
-        }
-        
-        if (this.maxDate) {
-          const maxDate = parse(this.maxDate, this.defaultDateFormat, new Date())
-          if (this.parsedDate.getTime() > maxDate.getTime()) {
-            this.selectedDate = this.maxDate
-          }
-        }
-        
-        this.handleChange(this.control.path, this.formattedDate)
+      catch(e) {
+        // Let JsonForms validation handle the invalid datestring
+        this.handleChange(this.control.path, newDate)
       }
     },
     getDateFromOption(option: string | { amount: number, unit: string }) {
