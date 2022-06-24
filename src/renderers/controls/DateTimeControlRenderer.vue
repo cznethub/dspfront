@@ -33,7 +33,7 @@
       <v-col>
         <v-date-picker
           v-model="selectedDate" 
-          @change="onInput($event)"
+          @change="onDatePickerInput($event)"
           :disabled="!control.enabled"
           scrollable
         />
@@ -42,7 +42,7 @@
       <v-col>
         <v-time-picker
           v-model="selectedTime"
-          @input="onInput($event)"
+          @input="onTimePickerInput($event)"
           :disabled="!control.enabled"
           scrollable
         />
@@ -83,8 +83,8 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>()
   },
   setup(props: RendererProps<ControlElement>) {
-    let selectedDate = null
-    let selectedTime = DEFAULT_TIME
+    let selectedDate: any = null
+    let selectedTime: any = DEFAULT_TIME
 
     return {
       selectedDate,
@@ -117,6 +117,7 @@ const controlRenderer = defineComponent({
         if (this.selectedTime.length === 5) {
           datetimeString += ':00'
         }
+        console.log("selected: ", this.selectedDate + ' ' + this.selectedTime)
         // @ts-ignore
         return parse(datetimeString, this.defaultDateTimeFormat, new Date())
       } else {
@@ -149,9 +150,36 @@ const controlRenderer = defineComponent({
     }
   },
   methods: {
-    onInput() {
-      this.handleChange(this.control.path, this.formattedDatetime)
+    onInput(dateTimeString) {
+      if (dateTimeString) {
+        // Datetime was input by typing. We most parse back the values.
+        try{
+          const selectedDateTime = new Date(dateTimeString) // UTC
+          const offset = selectedDateTime.getTimezoneOffset() * 60 * 1000
+          const localDateTime = selectedDateTime.getTime() - offset
+          const localizedDate = new Date(localDateTime) // in local time
+          this.selectedDate = localizedDate.toISOString().split('T')[0]
+          this.selectedTime = localizedDate.toISOString().split('T')[1].split('.')[0]
+          this.handleChange(this.control.path, this.formattedDatetime)
+        }
+        catch(e) {
+          // Let JsonForms validation handle the invalid datestring
+          this.handleChange(this.control.path, dateTimeString)
+        }
+      }
+      else {
+        // Datetime input using widget. Values already updated, no need to parse.
+        this.handleChange(this.control.path, this.formattedDatetime)
+      }
     },
+    onDatePickerInput(dateString: string) {
+      this.selectedDate = dateString
+      this.onInput(null)
+    },
+    onTimePickerInput(timeString: string) {
+      this.selectedTime = timeString
+      this.onInput(null)
+    }
   },
 })
 
