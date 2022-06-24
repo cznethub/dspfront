@@ -5,6 +5,7 @@
     <v-combobox
       v-if="suggestions !== undefined"
       :id="control.id + '-input'"
+      :data-id="computedLabel.replaceAll(` `, ``)"
       :class="styles.control.input"
       :disabled="!control.enabled"
       :autofocus="appliedOptions.focus"
@@ -45,6 +46,7 @@
     <v-text-field
       v-else
       :id="control.id + '-input'"
+      :data-id="computedLabel.replaceAll(` `, ``)"
       :class="styles.control.input"
       :disabled="!control.enabled"
       :autofocus="appliedOptions.focus"
