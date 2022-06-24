@@ -8,23 +8,6 @@ import {
 } from "@/components/submissions/types"
 import { itemsPerPageArray } from '@/components/submissions/constants'
 
-// temporary workaround to circular dependecy error
-function getViewUrl(identifier: string, repo: EnumRepositoryKeys) {
-  if (repo === EnumRepositoryKeys.hydroshare) {
-    return `https://beta.hydroshare.org/resource/${identifier}`
-  }
-  else if (repo === EnumRepositoryKeys.zenodo) {
-    return  `https://sandbox.zenodo.org/deposit/${identifier}`
-  }
-  else if (repo === EnumRepositoryKeys.earthchem) {
-    return  `https://ecl.earthchem.org/view.php?id=${identifier}`
-  }
-  else if (repo === EnumRepositoryKeys.external) {
-    return  `/api/metadata/external/${identifier}`
-  }
-  return ''
-}
-
 export interface ISubmisionState {
   sortBy: { key: string, label: string },
   sortDirection: { key: string, label: string },
@@ -108,7 +91,6 @@ export default class Submission extends Model implements ISubmission {
         // Zenodo returns a date, and we need a datetime, so we don't override the one we stored on creation
         // date: 
         identifier: identifier,
-        url: getViewUrl(identifier, repository)  // TODO: Get from model after fixing circular dependency issue
       }
     }
     else if (repository === EnumRepositoryKeys.earthchem) {
@@ -117,7 +99,6 @@ export default class Submission extends Model implements ISubmission {
         authors: apiSubmission.creators?.map(a => `${a.familyName}, ${a.givenName}`),
         repository: repository,
         identifier: identifier,
-        url: getViewUrl(identifier, repository)  // TODO: Get from model after fixing circular dependency issue
       }
     }
     else if (repository === EnumRepositoryKeys.external) {
@@ -131,7 +112,6 @@ export default class Submission extends Model implements ISubmission {
       repository: apiSubmission.repo_type,
       date: new Date(apiSubmission.submitted).getTime(),
       identifier: apiSubmission.identifier,
-      url: getViewUrl(identifier, apiSubmission.repo_type),  // TODO: Get from model after fixing circular dependency issue
       metadata: {}
     }
   }
