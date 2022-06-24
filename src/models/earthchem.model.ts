@@ -69,6 +69,7 @@ export default class EarthChem extends Repository {
           isRenaming: false,
           isCutting: false,
           isDisabled: false,
+          isUploaded: true,
           key: `${Date.now().toString()}-${index}`,
           path: path,
           file: null,
@@ -123,6 +124,11 @@ export default class EarthChem extends Repository {
       }
     )
     file.isDisabled = false
+    file.isUploaded = response.status === 200
+    // TODO: EarthChem api currently does not return this id
+    // file.key = response.data.id
+    // file.serverName = response.data.serverName
+    // file.name = response.data.name
 
     return response.status === 200
   }

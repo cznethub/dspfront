@@ -4,6 +4,7 @@ import { repoMetadata } from "@/components/submit/constants"
 import { Subject } from 'rxjs'
 import { RawLocation } from 'vue-router'
 import { IFile, IFolder } from '@/components/new-submission/types'
+import { DELETED_RESOURCE_STATUS_CODES } from '@/constants'
 import axios from "axios"
 import Submission from './submission.model'
 import CzNotification from './notifications.model'
@@ -108,7 +109,7 @@ export default class Repository extends Model implements IRepository {
       data: { urls, schema, uischema, schemaDefaults }
     })
 
-    // await this.fetchAccessToken()
+    await this.fetchAccessToken()
   }
 
   static openAuthorizeDialog(repository: string, redirectTo?: RawLocation) {
@@ -310,16 +311,18 @@ export default class Repository extends Model implements IRepository {
   */
   static async updateSubmission(identifier: string, data: any) {
     try {
-      await axios.put(
+      const response = await axios.put(
         `/api/metadata/${this.entity}/${identifier}`,
         data, { 
           headers: { "Content-Type": "application/json"},
           params: { "access_token": User.$state.orcidAccessToken },
         }
       )
+      return response.status === 200
     }
     catch(e: any) {
       console.log(e)
+      return false
     }
   }
 
@@ -353,6 +356,18 @@ export default class Repository extends Model implements IRepository {
 
         Repository.openAuthorizeDialog(this.entity)
       }
+      else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
+        // Resource has been deleted in repository
+        CzNotification.openDialog({
+          title: "This resource has been deleted",
+          content: "The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?",
+          confirmText: "Remove",
+          cancelText: 'Cancel',
+          onConfirm: async () => {
+            await this.deleteSubmission(identifier, repository)
+          }
+        })
+      }
       else {
         console.error(`${repository}: failed to update submission.`, e.response)
       }
@@ -383,13 +398,12 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch(e: any) {
-      console.log(e)
       CzNotification.toast({
         message: 'Failed to delete submission',
         type: 'error'
       })
 
-      if (e.response.status === 401) {
+      if (e.response?.status === 401) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''
@@ -400,6 +414,14 @@ export default class Repository extends Model implements IRepository {
         })
 
         Repository.openAuthorizeDialog(this.entity)
+      }
+      else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
+        // Resource has been deleted in the repository
+        await Submission.delete([identifier, repository])
+        CzNotification.toast({
+          message: 'Your submission has been deleted',
+          type: 'success'
+        })
       }
       else {
         console.error(`${repository}: failed to delete submission.`, e.response)
@@ -445,12 +467,17 @@ export default class Repository extends Model implements IRepository {
         Repository.openAuthorizeDialog(repository)
         return e.response.status
       }
-      else if (e.response.status === 403) {
+      else if (e.response?.status === 403) {
         // Submission might have been deleted or service unavailable
         CzNotification.toast({
           message: 'Failed to load submission',
           type: 'error'
         })
+        return e.response.status
+      }
+      else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
+        // Resource has been deleted in repository
+        // Error handled in component
         return e.response.status
       }
       else {

@@ -17,6 +17,7 @@
         :label="computedLabel"
         :hint="control.description"
         :error-messages="control.errors"
+        :placeholder="placeholder"
         persistent-hint
         class="py-3"
         prepend-icon="mdi-calendar"
@@ -141,6 +142,10 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       );
+    },
+    placeholder() {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder
     }
   },
   methods: {

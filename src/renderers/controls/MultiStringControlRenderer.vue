@@ -15,7 +15,7 @@
     :value="control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
-    :placeholder="appliedOptions.placeholder"
+    :placeholder="placeholder"
     :label="computedLabel"
     persistent-hint
     outlined
@@ -72,7 +72,11 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       );
-    }
+    },
+    placeholder(): string {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder || ''
+    },
   },
   methods: {
     // If value changed to an empty string, we need to set the data to undefined in order to trigger validation error

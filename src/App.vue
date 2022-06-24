@@ -99,7 +99,7 @@
     >
       <v-card>
         <v-card-title>{{ dialog.title }}</v-card-title>
-        <v-card-text>{{ dialog.content }}</v-card-text>
+        <v-card-text class="text-body-1">{{ dialog.content }}</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -172,6 +172,26 @@ import Repository from "./models/repository.model"
 import External from "./models/external.model"
 import EarthChem from "./models/earthchem.model"
 
+const INITIAL_DIALOG = {
+  title: "",
+  content: "",
+  confirmText: "",
+  cancelText: "",
+  isActive: false,
+  onConfirm: () => {},
+  onCancel: () => {},
+}
+
+const INITIAL_SNACKBAR =  {
+  message: '',
+  duration: DEFAULT_TOAST_DURATION,
+  position: 'center' as ('center' | 'left' | undefined),
+  type: 'default' as ('default' | 'success' | 'error' | 'info'),
+  isActive: false,
+  isInfinite: false,
+  // isPersistent: false,
+}
+
 @Component({
   name: "app",
   components: { CzFooter, CzLogin, CzAuthorize },
@@ -192,46 +212,19 @@ export default class App extends Vue {
     info: { snackbar: 'primary', actionButton: 'primary darken-2' },
     default: { snackbar: undefined, actionButton: undefined },
   }
-
-  mounted() {
-    this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
-      this.isAppBarExtended = newValue > oldValue
-    })
-  }
-
-  protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
-    message: "",
-    duration: DEFAULT_TOAST_DURATION,
-    position: "center",
-    type: 'default',
-    isActive: false,
-    isInfinite: false,
-    // isPersistent: false,
-  }
-
-  protected dialog: IDialog & { isActive: boolean } = {
-    title: "",
-    content: "",
-    confirmText: "",
-    cancelText: "",
-    isActive: false,
-    onConfirm: () => {},
-    onCancel: () => {},
-  }
-
+  protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = INITIAL_SNACKBAR
+  protected dialog: IDialog & { isActive: boolean } = INITIAL_DIALOG
   protected logInDialog: any & { isActive: boolean } = {
     isActive: false,
     onLoggedIn: () => {},
     onCancel: () => {},
   }
-
   protected authorizeDialog: any & { isActive: boolean } = {
     isActive: false,
     repo: '',
     onAuthorized: () => {},
     onCancel: () => {},
   }
-
   protected paths = [
     { to: "/submissions", label: "My Submissions", icon: "mdi-bookmark-multiple" },
     { to: "/resources", label: "Resources", icon: "mdi-library" },
@@ -242,6 +235,12 @@ export default class App extends Vue {
 
   protected get isLoggedIn() {
     return User.$state.isLoggedIn
+  }
+
+  mounted() {
+    this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
+      this.isAppBarExtended = newValue > oldValue
+    })
   }
 
   protected openLogInDialog() {
@@ -274,7 +273,7 @@ export default class App extends Vue {
     })
 
     this.onOpenDialog = CzNotification.dialog$.subscribe((dialog: IDialog) => {
-      this.dialog = { ...this.dialog, ...dialog }
+      this.dialog = { ...INITIAL_DIALOG, ...dialog }
       this.dialog.isActive = true
     })
 

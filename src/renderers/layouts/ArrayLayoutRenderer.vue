@@ -295,7 +295,7 @@ const controlRenderer = defineComponent({
         this.handleChange(this.control.path, undefined)
       }
       // We most use isEqual to compare objects instead of Arra.includes
-      const isIncluded = this.control.data.some(existingItem => isEqual(item, existingItem))
+      const isIncluded = this.control.data?.some(existingItem => isEqual(item, existingItem))
       if (!isIncluded) {
         this.addItem(
           this.control.path,
@@ -399,12 +399,14 @@ const controlRenderer = defineComponent({
 export default controlRenderer;
 
 const useTableLayout = (uiSchema) => {
-  return uiSchema.options?.useTableLayout
+  return false  // TODO: table layout disabled until issue with asterik is solved
+  // return uiSchema.options?.useTableLayout
 }
 
 export const arrayLayoutRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(4, or(and(isObjectArrayControl, not(useTableLayout)), isObjectArrayWithNesting) ),
+  tester: rankWith(4, or(and(
+    isObjectArrayControl, not(useTableLayout)), isObjectArrayWithNesting) ),
 };
 </script>
 

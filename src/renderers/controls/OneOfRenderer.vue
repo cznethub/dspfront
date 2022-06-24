@@ -115,7 +115,6 @@
             :cells="control.cells"
             :enabled="control.enabled"
           />
-          
         </template>
       </template>
     </fieldset>

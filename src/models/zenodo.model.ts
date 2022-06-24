@@ -19,31 +19,8 @@ export default class Zenodo extends Repository {
 
   static async uploadFiles(bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) {
     const uploadPromises: Promise<boolean>[] = itemsToUpload.map((file) => {
-      return _uploadFile(file, this.accessToken)
+      return this._uploadFile(file, bucketUrl)
     })
-
-    async function _uploadFile(file, accessToken) {
-      const url = bucketUrl // new api
-      const form = new window.FormData()
-      form.append('file', file.file, file.name)
-
-      file.isDisabled = true
-      const response = await axios.post(
-        url,
-        form,
-        { 
-          headers: { 'Content-Type': 'multipart/form-data' }, 
-          params: { "access_token": accessToken }
-        }
-      )
-      file.isDisabled = false
-
-      if (response.status === 200) {
-        return true
-      }
-      
-      return false
-    }
 
     const response = await Promise.allSettled(uploadPromises)
 
@@ -61,6 +38,33 @@ export default class Zenodo extends Repository {
         type: 'error'
       })
     }
+  }
+
+  private static async _uploadFile(file: IFile, url: string) {
+    const form = new window.FormData();
+
+    // Make sure the file itself has our resolved name
+    // Object.defineProperty(file.file, 'name', {
+    //   writable: true,
+    //   value: file.name
+    // })
+
+    form.append('file', file.file as File, file.name)
+
+    file.isDisabled = true
+    const response = await axios.post(
+      url,
+      form,
+      { 
+        headers: { 'Content-Type': 'multipart/form-data' }, 
+        params: { "access_token": this.accessToken }
+      }
+    )
+    file.isDisabled = false
+    file.key = response.data.id
+    file.isUploaded = response.status === 200
+    
+    return response.status === 200
   }
 
   static async readRootFolder(identifier: string, path: string, rootDirectory: IFolder): Promise<(IFile | IFolder)[]> {
@@ -83,6 +87,7 @@ export default class Zenodo extends Repository {
           isRenaming: false,
           isCutting: false,
           isDisabled: false,
+          isUploaded: true,
           key: file.id, // We use the file id in this case, so we can use it again as reference to edit files
           path: path,
           file: null,

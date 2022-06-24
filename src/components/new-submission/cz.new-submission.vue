@@ -59,7 +59,7 @@
           @upload="uploadFiles($event)"
           :isReadOnly="isReadOnly"
           :rootDirectory.sync="rootDirectory"
-          :allowFolders="repoMetadata[repositoryKey].hasFolderStructure"
+          :repoMetadata="repoMetadata[repositoryKey]"
           :isEditMode="isEditMode"
           :identifier="identifier"
         />
@@ -208,6 +208,7 @@ import { IFile, IFolder } from '@/components/new-submission/types'
 import { ErrorObject } from 'ajv'
 import { Subscription } from "rxjs"
 import { createAjv } from "@jsonforms/core"
+import { DELETED_RESOURCE_STATUS_CODES } from '@/constants'
 import JsonViewer from "vue-json-viewer"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
@@ -231,7 +232,7 @@ ajvErrors(customAjv)
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   @Ref("form") jsonForm!: typeof JsonForms
-  // @Ref("folderStructure") folderStructure!: InstanceType<typeof CzFolderStructure>
+  @Ref("folderStructure") folderStructure!: InstanceType<typeof CzFolderStructure>
 
   protected rootDirectory: IFolder = { name: 'root', children: [], parent: null, key: '', path: '' }
   protected isLoading = false
@@ -390,6 +391,20 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         })
       }
     }
+    else if (DELETED_RESOURCE_STATUS_CODES.includes(response)) {
+      // Resource has been deleted in repository
+      this.repositoryRecord = null
+      CzNotification.openDialog({
+        title: "This resource has been deleted",
+        content: "The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?",
+        confirmText: "Remove",
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          await Repository.deleteSubmission(this.identifier, this.repositoryKey)
+          this.$router.push({ name: "submissions" })
+        }
+      })      
+    }
     else {
       this.repositoryRecord = response
       this.wasUnauthorized = false
@@ -447,7 +462,27 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     this.showUISchema = true
   }
 
-  protected async onSaveAndFinish() {
+  protected onSaveAndFinish() {
+    if (this.folderStructure.hasInvalidFilesToUpload || this.folderStructure.hasTooManyFiles) {
+      CzNotification.openDialog({
+        title: 'Some of your files cannot be uploaded',
+        content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
+        confirmText: 'Continue',
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          this._onSaveAndFinish()
+        },
+        onCancel: () => {
+          return false
+        }
+      })
+    }
+    else {
+      this._onSaveAndFinish()
+    }
+  }
+
+  private async _onSaveAndFinish() {
     if (this.isReadOnly) {
       this.$router.push({ name: "submissions" })
       return
@@ -481,7 +516,27 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     }
   }
 
-  protected async onSave() {
+  protected onSave() {
+    if (this.folderStructure.hasInvalidFilesToUpload || this.folderStructure.hasTooManyFiles) {
+      CzNotification.openDialog({
+        title: 'Some of your files cannot be uploaded',
+        content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
+        confirmText: 'Continue',
+        cancelText: 'Cancel',
+        onConfirm: async () => {
+          this._onSave()
+        },
+        onCancel: () => {
+          return false
+        }
+      })
+    }
+    else {
+      this._onSave()
+    }
+  }
+
+  private async _onSave() {
     const wasSaved = await this._save()
     
     if (wasSaved) {
@@ -536,15 +591,17 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...")
-      await this.activeRepository?.updateSubmission(
+      wasSaved = await this.activeRepository?.updateSubmission(
         this.identifier,
         this.data
       )
     }
 
-    // If we are in edit mode, files have already been saved
     if (!this.isEditMode) {
       await this.uploadFiles(this.uploads)
+    }
+    else {
+      // If we are in edit mode, files have already been saved
     }
 
     if (wasSaved) {
@@ -600,6 +657,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         '%s'  // replaced file by file inside repo model
       )
       await this.activeRepository?.uploadFiles(url, files, createFolderUrl)
+      this.folderStructure.redrawFileTree()
     }
   }
 }

@@ -1,7 +1,7 @@
 <template>
   <v-card class="mb-8">
     <v-sheet class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included">
-      <v-tooltip v-if="allowFolders && !isReadOnly" bottom transition="fade">
+      <v-tooltip v-if="repoMetadata.hasFolderStructure && !isReadOnly" bottom transition="fade">
         <template v-slot:activator="{ on, attrs}">
           <v-btn @click="newFolder" class="mr-4" small icon v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
         </template>
@@ -35,7 +35,7 @@
         <v-divider class="mx-4" vertical></v-divider>
       </template>
 
-      <template v-if="allowFolders">
+      <template v-if="repoMetadata.hasFolderStructure">
         <v-tooltip bottom transition="fade">
           <template v-slot:activator="{ on, attrs}">
             <v-btn @click="cut" :disabled="!canCut" class="mr-1" icon small v-on="on" v-bind="attrs"><v-icon>mdi-content-cut</v-icon></v-btn>
@@ -141,6 +141,32 @@
                     :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap ma-0">
                     <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
                     <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes }}</v-col>
+                    <v-col v-if="showFileWarnings(item)"
+                      class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">
+                      <v-menu open-on-hover bottom left offset-y>
+                        <template v-slot:activator="{ on, attrs}">
+                          <div v-bind="attrs" v-on="on">
+                            <v-icon :color="isFileInvalid(item) || couldNotUploadFile(item) ? 'error' : 'warning'">mdi-alert-circle</v-icon>
+                          </div>
+                        </template>
+
+                        <div class="pa-4 has-bg-white">
+                          <div v-if="isFileInvalid(item) || couldNotUploadFile(item)" class="text-body-2 mb-4"><b>This file cannot be uploaded</b></div>
+                          <ul class="text-subtitle-1">
+                            <li v-if="couldNotUploadFile(item)">Maximum number of files exceeded.</li>
+                            <li v-if="!isFileExtensionValid(item)">This file extension is not allowed for upload.</li>
+                            <li v-if="!isFileNameValid(item)">This file name contains invalid characters.</li>
+                            <li v-if="isFileTooBig(item)">Files cannot be larger than <b>{{ repoMetadata.maxUploadSizePerFileBase10 | prettyBytes }}</b>.</li>
+                          </ul>
+                        </div>
+                      </v-menu>
+                    </v-col>
+                    <v-col v-if="canRetryUpload(item)" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0">
+                      <v-btn color="info" @click="$emit('upload', [item])" :disabled="item.isDisabled" small depressed>
+                        <v-icon left>mdi-cloud-upload</v-icon>
+                        Retry
+                      </v-btn>
+                    </v-col>
                   </v-row>
                 </template>
                 <template v-slot:append="{ item, active }">
@@ -156,9 +182,14 @@
           </v-row>
         </v-card-text>
       </v-card>
+
       <div v-else-if="isReadOnly" class="pa-2 text-body-1 text--secondary">
         No files have been included in this submission
       </div>
+
+      <v-alert v-if="hasTooManyFiles" class="text-subtitle-1" border="left" colored-border type="error" elevation="1">
+        The maximum number of files cannot exceed <b>{{ repoMetadata.maxNumberOfFiles}}</b>
+      </v-alert>
 
       <div v-if="!isReadOnly" class="upload-drop-area files-container--included">
         <b-upload type="file" multiple drag-drop expanded v-model="dropFiles" class="has-bg-light-gray">
@@ -177,6 +208,7 @@ import { Component, Watch, Prop } from "vue-property-decorator"
 import { IFolder, IFile } from '@/components/new-submission/types'
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+import { IRepository } from "../submissions/types"
 
 @Component({
   name: "cz-folder-structure",
@@ -185,7 +217,7 @@ import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   }
 })
 export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
-  @Prop({ default: false }) allowFolders!: boolean
+  @Prop({ default: false }) repoMetadata!: IRepository
   @Prop({ default: false }) isEditMode!: boolean
   @Prop({ default: false }) isReadOnly!: boolean
   @Prop() identifier!: string  // Use if isEditMode is true
@@ -266,8 +298,35 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     return this.activeRepository.get()?.urls?.moveOrRenameUrl
   }
 
+  protected get allItems(): (IFile | IFolder)[] {
+    return this._getDirectoryItems(this.rootDirectory)
+  }
+
+  public get hasInvalidFilesToUpload() {
+    return this.allItems.some((item: IFile | IFolder) => {
+      return !this.isFolder(item)
+        && !(item as IFile).isUploaded
+        && this.isFileInvalid(item as IFile)
+    })
+  }
+
+  public get hasTooManyFiles() {
+    if (!this.repoMetadata.maxNumberOfFiles) {
+      return false
+    }
+
+    const validFiles = this.allItems.filter(item => !this.isFileInvalid(item as IFile))
+    return validFiles.length > this.repoMetadata.maxNumberOfFiles
+  }
+
   created() {
-    // this.activeDirectoryItem = this.rootDirectory
+    
+  }
+
+  // There is a bug in v-treeview when moving items or changing keys. Items become unactivatable
+  // We redraw the treeview as a workaround
+  public redrawFileTree() {
+    this.redraw = this.redraw ? 0 : 1
   }
 
   @Watch('rootDirectory.children', { deep: true })
@@ -275,7 +334,9 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     const items = this._getDirectoryItems(this.rootDirectory) as IFile[]
     // Update paths
     items.map(i => i.path = this.getPathString(i.parent as IFolder))
-    this.$emit('input', this._getDirectoryItems(this.rootDirectory))
+    const updatedItems = this._getDirectoryItems(this.rootDirectory)
+    const validItems = updatedItems.filter(item => !this.isFileInvalid(item as IFile))
+    this.$emit('input', validItems)
   }
 
   @Watch('dropFiles')
@@ -298,6 +359,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
         isRenaming: false,
         isCutting: false,
         isDisabled: false,
+        isUploaded: false,
       } as IFile
 
       targetFolder.children.push(newItem)
@@ -307,14 +369,16 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     this._openRecursive(targetFolder)
 
     if (this.isEditMode) {
-      this.$emit('upload', addedFiles)
+      const validFiles = addedFiles.filter(f => !this.isFileInvalid(f))
+      if (validFiles.length && !this.hasTooManyFiles) {
+        this.$emit('upload', validFiles)
+      }
     }
     this.dropFiles = []
   }
 
   protected selectAll() {
-    const allItems = this._getDirectoryItems(this.rootDirectory)
-    this.select(allItems)
+    this.select(this.allItems)
   }
 
   protected getPathString(item: IFolder | IFile) {
@@ -390,9 +454,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       item.isCutting = false
     })
     this.unselectAll()
-     // There is a bug in v-treeview when moving items. Moved items become unactivatable
-     // We redraw the treeview as a workaround
-    this.redraw = this.redraw ? 0 : 1
+    this.redrawFileTree()
   }
 
   protected moveItem(item: IFolder | IFile, destination: IFolder) {
@@ -458,6 +520,62 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     item.isRenaming = true
   }
 
+  protected isFileExtensionValid(file: IFile) {
+    if (!this.repoMetadata.supportedFileTypes) {
+      return true
+    }
+
+    const nameWithoutExtension = this._getFileNameWithoutExtension(file.name)
+    const extention = file.name.replace(nameWithoutExtension, "")
+    return this.repoMetadata.supportedFileTypes.includes(extention)
+  }
+
+  protected isFileNameValid(file: IFile) {
+    if (!this.repoMetadata.fileNameRegex) {
+      return true
+    }
+    const nameWithoutExtension = this._getFileNameWithoutExtension(file.name)
+    const isValid = this.repoMetadata.fileNameRegex.test(nameWithoutExtension)
+    return isValid
+  }
+
+  protected isFileInvalid(file: IFile) {
+    return !this.isFileExtensionValid(file)
+      || this.isFileTooBig(file)
+  }
+
+  protected hasFileWarnings(file: IFile) {
+    return  !this.isFileNameValid(file)
+  }
+
+  protected isFileTooBig(file: IFile) {
+    if (!this.repoMetadata.maxUploadSizePerFile) {
+      return false
+    }
+
+    return file.file?.size && file.file?.size > this.repoMetadata.maxUploadSizePerFile
+  }
+
+  protected canRetryUpload(item: IFile | IFolder) {
+    return this.isEditMode
+      && !this.hasTooManyFiles
+      && !this.isFolder(item)
+      && !this.isFileInvalid(item as IFile)
+      && !(item as IFile).isUploaded
+  }
+
+  protected couldNotUploadFile(item: IFile) {
+    return this.isEditMode && !item.isUploaded && this.hasTooManyFiles
+  }
+
+  protected showFileWarnings(item: IFile) {
+    return !this.isFolder(item) && (
+        this.isFileInvalid(item)
+        || this.hasFileWarnings(item)
+        || this.couldNotUploadFile(item)
+      )
+  }
+
   protected async onRenamed(item: IFile | IFolder, name: string) {
     if (name.trim()) {
       const newName = this._getAvailableName(name, item.parent as IFolder, item.name)
@@ -494,7 +612,14 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   private async _deleteSelected() {
     this.isDeleting = true
     const reversedSelected = this.selected.reverse()
-    const deletePromises: Promise<boolean>[] = []
+
+    const response: any[] = []
+
+    // First, disable all items to delete
+    for (let i = 0; i < reversedSelected.length; i++) {
+      const item = reversedSelected[i]
+      this.toggleItemDisabled(item, true)
+    }
 
     for (let i = 0; i < reversedSelected.length; i++) {
       const item = reversedSelected[i]
@@ -507,9 +632,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
         if (this.isEditMode) {
           const isParentSelected = this.isSelected(item.parent as IFolder)
           if (!isParentSelected) {
-            const p = this.deleteFileOrFolder(item)
-
-            deletePromises.push(p)
+            const message = await this.deleteFileOrFolder(item)
+            response.push(message)
           }
         }
         else {
@@ -518,8 +642,8 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       }
     }
 
-    const wereDeleted = await Promise.all(deletePromises)
-    if (wereDeleted.includes(false)) {
+    // TODO: zenodo cannot handle multiple deletes in parallel. We do it sequentially
+    if (response.includes(false)) {
       // Failed to delete some file
       CzNotification.toast({
         message: "Some of your files could not be deleted",
@@ -530,9 +654,16 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     this.selected = []
   }
 
-  private async deleteFileOrFolder(item: IFile | IFolder) {
-    this.toggleItemDisabled(item, true)
-    const wasDeleted = await this.activeRepository.deleteFileOrFolder(this.identifier, item)
+  private async deleteFileOrFolder(item: IFile | IFolder): Promise<boolean> {
+    let wasDeleted = false
+    if (!this.isFolder(item) && this.isFileInvalid(item as IFile)) {
+      // File was not uplaoded because it was invalid. No need to delete in repository.
+      wasDeleted = true
+    }
+    else {
+      wasDeleted = await this.activeRepository.deleteFileOrFolder(this.identifier, item)
+    }
+    
     this.toggleItemDisabled(item, false)
     if (wasDeleted) {
       this._deleteItem(item)
@@ -586,7 +717,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected newFolder() {
-    if (!this.allowFolders) {
+    if (!this.repoMetadata.hasFolderStructure) {
       return
     }
 

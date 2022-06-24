@@ -115,25 +115,29 @@ export default class User extends Model {
 
   static async logOut() {
     try {
-      await axios.get('/api/logout')  // We don't care about the response status. We at least log the user out in the frontend.
-      await User.commit((state) => {
-        state.isLoggedIn = false,
-        // state.orcid = ''
-        state.orcidAccessToken = ''
-      })
-      this.isLoginListenerSet = false
-
-      CzNotification.toast({ 
-        message: 'You have logged out!',
-        type: 'info'
-      })
-
-      if (router.currentRoute.meta?.hasLoggedInGuard) {
-        router.push({ path: '/' })
-      }
+      await axios.get('/api/logout')
+      this._logOut()
     }
     catch(e) {
-      console.error("Failed to log out", e)
+      // We don't care about the response status. We at least log the user out in the frontend.
+      this._logOut()
+    }
+  }
+
+  private static async _logOut() {
+    await User.commit((state) => {
+      state.isLoggedIn = false,
+      state.orcidAccessToken = ''
+    })
+    this.isLoginListenerSet = false
+
+    CzNotification.toast({ 
+      message: 'You have logged out!',
+      type: 'info'
+    })
+
+    if (router.currentRoute.meta?.hasLoggedInGuard) {
+      router.push({ path: '/' })
     }
   }
 }
