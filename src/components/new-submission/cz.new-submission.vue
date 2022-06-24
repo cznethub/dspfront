@@ -658,6 +658,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         this.identifier,
         '%s'  // replaced file by file inside repo model
       )
+      files.map(f => f.isDisabled = true)
       await this.activeRepository?.uploadFiles(url, files, createFolderUrl)
       this.folderStructure.redrawFileTree()
     }

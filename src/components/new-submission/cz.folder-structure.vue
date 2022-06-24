@@ -411,7 +411,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
     if (this.isEditMode) {
       const validFiles = addedFiles.filter(f => !this.isFileInvalid(f))
-      if (validFiles.length && !this.hasTooManyFiles) {
+      if (validFiles.length && this.canUploadFiles) {
         this.$emit('upload', validFiles)
       }
     }
