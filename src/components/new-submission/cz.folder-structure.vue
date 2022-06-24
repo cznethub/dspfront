@@ -162,6 +162,9 @@
                         </div>
                       </v-menu>
                     </v-col>
+                    <v-col v-if="!isFolder(item) && item.isUploaded" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0">
+                      <v-icon class="text--disabled" small>mdi-cloud-check</v-icon>
+                    </v-col>
                     <v-col v-if="canRetryUpload(item)" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0">
                       <v-btn color="info" @click="$emit('upload', [item])" :disabled="item.isDisabled" small depressed>
                         <v-icon left>mdi-cloud-upload</v-icon>
@@ -184,7 +187,7 @@
         </v-card-text>
         <v-divider></v-divider>
 
-        <div class="pa-2" v-if="rootDirectory.children.length">
+        <div class="py-2 px-4" v-if="rootDirectory.children.length">
           <span>{{ allItems.length }} file{{ allItems.length > 1 ? 's': '' }}</span>
           <v-divider class="mx-4" vertical></v-divider>
           <span v-if="totalUploadSize"
