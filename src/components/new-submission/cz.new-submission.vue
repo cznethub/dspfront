@@ -598,7 +598,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     }
 
     if (!this.isEditMode) {
-      if (!this.folderStructure.canUploadFiles) {
+      if (this.folderStructure.canUploadFiles) {
         await this.uploadFiles(this.uploads)
       }
     }
