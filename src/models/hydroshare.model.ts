@@ -194,6 +194,7 @@ export default class HydroShare extends Repository {
       )
   
       if (response.status === 200) {
+        // TODO: Request file metadata to be returned in HydroShare API. Use it to populate file uploaded size below.
         const files: IFile[] = response.data.files.map((fileName: string, index: number): IFile => {
           return {
             name: fileName,

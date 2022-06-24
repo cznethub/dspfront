@@ -86,7 +86,7 @@
 
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem;">
-          <v-row>
+          <v-row class="flex-grow-1">
             <v-col cols="9" v-click-outside="{ handler: onClickOutside, include }">
               <v-treeview
                 item-disabled="isDisabled"
@@ -182,6 +182,26 @@
             <v-col cols="3"></v-col>
           </v-row>
         </v-card-text>
+        <v-divider></v-divider>
+
+        <div class="pa-2" v-if="rootDirectory.children.length">
+          <span>{{ allItems.length }} file{{ allItems.length > 1 ? 's': '' }}</span>
+          <v-divider class="mx-4" vertical></v-divider>
+          <span v-if="totalUploadSize"
+            :class="isTotalUploadSizeTooBig ? 'red--text text--lighten-1 font-weight-bold' : ''">{{ totalUploadSize | prettyBytes(2, false) }}
+          </span>
+          <v-menu v-if="isTotalUploadSizeTooBig" open-on-hover top right offset-y>
+            <template v-slot:activator="{ on, attrs}">
+              <div class="ml-4 d-inline-block" v-bind="attrs" v-on="on">
+                <v-icon color="error">mdi-alert-circle</v-icon>
+              </div>
+            </template>
+
+            <div class="pa-4 has-bg-white text-subtitle-1">
+              The total upload size cannot exceed <b>{{ repoMetadata.maxTotalUploadSize | prettyBytes(2, false) }}</b>
+            </div>
+          </v-menu>
+        </div>
       </v-card>
 
       <div v-else-if="isReadOnly" class="pa-2 text-body-1 text--secondary">
@@ -268,6 +288,34 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   protected fileReleaseDate = null
   protected shiftAnchor: IFolder | IFile | null = null
 
+  public get hasInvalidFilesToUpload() {
+    return this.allItems.some((item: IFile | IFolder) => {
+      return !this.isFolder(item)
+        && !(item as IFile).isUploaded
+        && this.isFileInvalid(item as IFile)
+    })
+  }
+
+  public get canUploadFiles() {
+    return !this.hasTooManyFiles && !this.isTotalUploadSizeTooBig
+  }
+
+  protected get hasTooManyFiles() {
+    if (!this.repoMetadata.maxNumberOfFiles) {
+      return false
+    }
+
+    const validFiles = this.allItems.filter(item => !this.isFileInvalid(item as IFile))
+    return validFiles.length > this.repoMetadata.maxNumberOfFiles
+  }
+
+  protected get isTotalUploadSizeTooBig() {
+    if (!this.repoMetadata.maxTotalUploadSize) {
+      return false
+    }
+    return this.totalUploadSize > this.repoMetadata.maxTotalUploadSize
+  }
+
   protected get itemsToCut(): (IFile | IFolder)[] {
     return this._itemsToCutRecursive(this.rootDirectory)
   }
@@ -299,29 +347,18 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
     return this.activeRepository.get()?.urls?.moveOrRenameUrl
   }
 
-  protected get allItems(): (IFile | IFolder)[] {
+  protected get allItems(): IFile[] {
     return this._getDirectoryItems(this.rootDirectory)
   }
 
-  public get hasInvalidFilesToUpload() {
-    return this.allItems.some((item: IFile | IFolder) => {
-      return !this.isFolder(item)
-        && !(item as IFile).isUploaded
-        && this.isFileInvalid(item as IFile)
-    })
-  }
-
-  public get hasTooManyFiles() {
-    if (!this.repoMetadata.maxNumberOfFiles) {
-      return false
-    }
-
+  /** @return total size of files uploaded and valid files pending to upload */
+  protected get totalUploadSize(): number {
     const validFiles = this.allItems.filter(item => !this.isFileInvalid(item as IFile))
-    return validFiles.length > this.repoMetadata.maxNumberOfFiles
-  }
 
-  created() {
-    console.log(this.allItems)
+    return validFiles.reduce((acc: number, file: IFile) => {
+      const currentFileSize = file.file?.size || file.uploadedSize || 0 
+      return acc + currentFileSize
+    }, 0)
   }
 
   // There is a bug in v-treeview when moving items or changing keys. Items become unactivatable
@@ -824,7 +861,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   /** Returns all files inside the given folder */
-  private _getDirectoryItems(item: IFolder): (IFile | IFolder)[] {
+  private _getDirectoryItems(item: IFolder): IFile[] {
     const childFolders = item.children.filter(i => this.isFolder(i)) as IFolder[]
 
     let nestedItems: (IFile | IFolder)[] = []
@@ -833,7 +870,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
       nestedItems.push(...newItems)
     }
 
-    return [...item.children, ...nestedItems]
+    return [...item.children, ...nestedItems] as IFile[]
   }
 
   private _itemsToCutRecursive(item: IFolder): (IFile | IFolder)[] {

@@ -70,7 +70,7 @@ export default class EarthChem extends Repository {
           isCutting: false,
           isDisabled: false,
           isUploaded: true,
-          key: `${Date.now().toString()}-${index}`,
+          key: `${Date.now().toString()}-${index}`, // EarthChem does not use file ids for operations. They use the serverName instead.
           path: path,
           file: null,
           uploadedSize: file.size
