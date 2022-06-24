@@ -627,6 +627,12 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
         if (wasRenamed) {
           item.name = newName
         }
+        else {
+          CzNotification.toast({
+            message: `Failed to rename ${this.isFolder(item) ? 'folder' : 'file'}`,
+            type: 'error'
+          })
+        }
         item.isDisabled = false
       }
       else {

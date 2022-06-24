@@ -89,7 +89,7 @@ export default class Zenodo extends Repository {
           isCutting: false,
           isDisabled: false,
           isUploaded: true,
-          key: file.id, // We use the file id in this case, so we can use it again as reference to edit files
+          key: file.id,
           path: path,
           uploadedSize: file.filesize,
           file: null,
@@ -103,32 +103,28 @@ export default class Zenodo extends Repository {
   }
 
   static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string): Promise<boolean> {
+    // TODO: zenodo api throws an error when trying to rename the same file more than once
+    // https://github.com/zenodo/zenodo/issues/2342
     const url = this.get()?.urls?.moveOrRenameUrl
     const renameUrl = sprintf(url, identifier, item.key)
-
-    const form = new window.FormData()
-
     const newName = newPath.split('/').pop()
+
     if (!newName) {
       return false
     }
-    form.append('filename ', newName)
     try {
       const response = await axios.put(
         renameUrl,
-        form,
+        { filename: newName },
         { 
           headers: { 
-            'Content-Type': 'multipart/form-data', 
+            'Content-Type': 'application/json', 
           }, 
           params: { "access_token": this.accessToken }
         }
       )
   
-      if (response.status === 200) {
-        return true
-      }
-      return false
+      return response.status === 200
     }
     catch(e: any) {
       console.log(e)
@@ -138,7 +134,7 @@ export default class Zenodo extends Repository {
 
   static async deleteFileOrFolder(identifier: string, item: IFile | IFolder): Promise<boolean> {
     const url = this.get()?.urls?.fileDeleteUrl
-    const deleteUrl = sprintf(url, identifier, item.key)
+    const deleteUrl = sprintf(url, identifier, item.name) // Zenodo delete file endpoint uses the file name. Their documentation is wrong (does not use file id).
 
     try {
       const response = await axios.delete(deleteUrl, { 

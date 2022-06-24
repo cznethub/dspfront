@@ -75,7 +75,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
     submitTooltip: 'Submit a dataset to the Zenodo repository.',
     isSupported: true,
     url: 'https://www.zenodo.org',
-    supportUrl: 'https://help.zenodo.org/'
+    supportUrl: 'https://help.zenodo.org/',
+    maxTotalUploadSize: 50000000000, // 50 GB
   },
   [EnumRepositoryKeys.external]: {
     key: EnumRepositoryKeys.external,

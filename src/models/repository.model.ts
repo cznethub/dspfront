@@ -174,28 +174,28 @@ export default class Repository extends Model implements IRepository {
 
   protected static async getUrls(): Promise<undefined | IRepositoryUrls> {
     try {
-      const resp = await axios.get("/api/urls/" + this.get()?.key, { 
+      const response = await axios.get("/api/urls/" + this.get()?.key, { 
         params: { "access_token": User.$state.orcidAccessToken }
       })
 
       return {
-        schemaUrl: resp.data.schema,
-        uischemaUrl: resp.data.uischema,
-        schemaDefaultsUrl: resp.data.schema_defaults,
-        createUrl: resp.data.create,
-        updateUrl: resp.data.update,
-        readUrl: resp.data.read,
+        schemaUrl: response.data.schema,
+        uischemaUrl: response.data.uischema,
+        schemaDefaultsUrl: response.data.schema_defaults,
+        createUrl: response.data.create,
+        updateUrl: response.data.update,
+        readUrl: response.data.read,
         deleteUrl: '',
-        fileCreateUrl: resp.data.file_create,
-        fileDeleteUrl: resp.data.file_delete,
-        fileReadUrl: resp.data.file_read,
-        folderCreateUrl: resp.data.folder_create,
-        folderReadUrl: resp.data.folder_read,
-        folderDeleteUrl: resp.data.folder_delete,
-        moveOrRenameUrl: resp.data.move_or_rename_url,  // TODO: split into two in the backend (move and rename)
-        accessTokenUrl: resp.data.access_token,
-        authorizeUrl: resp.data.authorize_url,
-        viewUrl: resp.data.view_url
+        fileCreateUrl: response.data.file_create,
+        fileDeleteUrl: response.data.file_delete,
+        fileReadUrl: response.data.file_read,
+        folderCreateUrl: response.data.folder_create,
+        folderReadUrl: response.data.folder_read,
+        folderDeleteUrl: response.data.folder_delete,
+        moveOrRenameUrl: response.data.move_or_rename_url,  // TODO: split into two in the backend (move and rename)
+        accessTokenUrl: response.data.access_token,
+        authorizeUrl: response.data.authorize_url,
+        viewUrl: response.data.view_url
       }
     }
     catch(e) {
