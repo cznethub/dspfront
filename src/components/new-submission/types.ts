@@ -6,6 +6,7 @@ export interface IFile {
   isCutting?: boolean
   isDisabled?: boolean
   isUploaded: boolean | undefined
+  uploadedSize?: number
   key: string
   path: string
   file: File | null

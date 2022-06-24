@@ -73,6 +73,7 @@ export default class EarthChem extends Repository {
           key: `${Date.now().toString()}-${index}`,
           path: path,
           file: null,
+          uploadedSize: file.size
         }
       })
 

@@ -140,7 +140,8 @@
                     @click.shift.exact="onItemShiftClick(item)"
                     :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap ma-0">
                     <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
-                    <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes }}</v-col>
+                    <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes(2, false) }}</v-col>
+                    <v-col v-else-if="item.uploadedSize" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.uploadedSize | prettyBytes(2, false) }}</v-col>
                     <v-col v-if="showFileWarnings(item)"
                       class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">
                       <v-menu open-on-hover bottom left offset-y>
@@ -156,7 +157,7 @@
                             <li v-if="couldNotUploadFile(item)">Maximum number of files exceeded.</li>
                             <li v-if="!isFileExtensionValid(item)">This file extension is not allowed for upload.</li>
                             <li v-if="!isFileNameValid(item)">This file name contains invalid characters.</li>
-                            <li v-if="isFileTooBig(item)">Files cannot be larger than <b>{{ repoMetadata.maxUploadSizePerFileBase10 | prettyBytes }}</b>.</li>
+                            <li v-if="isFileTooBig(item)">Files cannot be larger than <b>{{ repoMetadata.maxUploadSizePerFile | prettyBytes(2, false) }}</b>.</li>
                           </ul>
                         </div>
                       </v-menu>
@@ -320,7 +321,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
   }
 
   created() {
-    
+    console.log(this.allItems)
   }
 
   // There is a bug in v-treeview when moving items or changing keys. Items become unactivatable
