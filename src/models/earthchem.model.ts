@@ -126,12 +126,11 @@ export default class EarthChem extends Repository {
     )
     file.isDisabled = false
     file.isUploaded = response.status === 200
-    // TODO: EarthChem api currently does not return this id
-    // file.key = response.data.id
-    // file.serverName = response.data.serverName
-    // file.name = response.data.name
+    file.serverName = response.data.serverName
+    file.name = response.data.name
+    file.uploadedSize = response.data.size
 
-    return response.status === 200
+    return file.isUploaded
   }
 
   /** @deprecated currently not supported by EarthChem */
