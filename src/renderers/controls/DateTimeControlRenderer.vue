@@ -117,7 +117,6 @@ const controlRenderer = defineComponent({
         if (this.selectedTime.length === 5) {
           datetimeString += ':00'
         }
-        console.log("selected: ", this.selectedDate + ' ' + this.selectedTime)
         // @ts-ignore
         return parse(datetimeString, this.defaultDateTimeFormat, new Date())
       } else {
