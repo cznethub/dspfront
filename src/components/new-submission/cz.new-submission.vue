@@ -463,7 +463,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected onSaveAndFinish() {
-    if (this.folderStructure?.hasInvalidFilesToUpload || !this.folderStructure?.canUploadFiles) {
+    if (!this.isExternal
+      && (this.folderStructure?.hasInvalidFilesToUpload || !this.folderStructure?.canUploadFiles)) {
       CzNotification.openDialog({
         title: 'Some of your files cannot be uploaded',
         content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
@@ -517,7 +518,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   protected onSave() {
-    if (this.folderStructure?.hasInvalidFilesToUpload || !this.folderStructure?.canUploadFiles) {
+    if (!this.isExternal
+      && (this.folderStructure?.hasInvalidFilesToUpload || !this.folderStructure?.canUploadFiles)) {
       CzNotification.openDialog({
         title: 'Some of your files cannot be uploaded',
         content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
