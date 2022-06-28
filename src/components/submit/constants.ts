@@ -9,6 +9,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     submitTooltip: 'Submit a dataset to the HydroShare repository.',
     isSupported: true,
     hasFolderStructure: true,
+    maxUploadSizePerFile: 1000000000, // 1 GB
     url: 'https://www.hydroshare.org',
     supportUrl: 'https://help.hydroshare.org/'
   },

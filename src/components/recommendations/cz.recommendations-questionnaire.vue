@@ -160,7 +160,6 @@
     }
 
     created() {
-      console.log(this.guideUrls)
     }
   }
 </script>

@@ -28,7 +28,16 @@
         v-bind="attrs"
         dense
         v-on="on"
-      />
+      >
+        <template v-slot:message>
+          <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
+            {{ control.schema.description }}
+          </div>
+          <div v-if="cleanedErrors" class="ml-2 v-messages error--text" :class="styles.control.error">
+            {{ cleanedErrors }}
+          </div>
+        </template>
+      </v-text-field>
     </template>
 
     <v-date-picker
@@ -139,6 +148,10 @@ const controlRenderer = defineComponent({
     placeholder() {
       // @ts-ignore
       return this.control.schema.options?.placeholder
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
     }
   },
   methods: {

@@ -37,8 +37,8 @@
         <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
           {{ control.schema.description }}
         </div>
-        <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
-          {{ control.errors }}
+        <div v-if="cleanedErrors" class="ml-2 v-messages error--text" :class="styles.control.error">
+          {{ cleanedErrors }}
         </div>
       </template>
     </v-combobox>
@@ -75,8 +75,8 @@
         <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
           {{ control.schema.description }}
         </div>
-        <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
-          {{ control.errors }}
+        <div v-if="cleanedErrors" class="ml-2 v-messages error--text" :class="styles.control.error">
+          {{ cleanedErrors }}
         </div>
       </template>
     </v-text-field>
@@ -139,6 +139,10 @@ const controlRenderer = defineComponent({
     isReadOnly() {
       // @ts-ignore
       return this.control.schema.options?.readonly
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
     }
   },
   methods: {

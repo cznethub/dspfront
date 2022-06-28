@@ -181,8 +181,8 @@
       </v-dialog>
     </fieldset>
     <div v-if="control.description" class="text--secondary text-body-1 ml-2">{{ control.description }}</div>
-    <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
-      {{ control.errors }}
+    <div v-if="cleanedErrors" class="ml-2 v-messages error--text" :class="styles.control.error">
+      {{ cleanedErrors }}
     </div>
   </div>
 </template>
@@ -343,6 +343,10 @@ const controlRenderer = defineComponent({
     hideAvatar(): boolean {
       return !!this.appliedOptions.hideAvatar;
     },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
+    }
   },
   methods: {
     composePaths,

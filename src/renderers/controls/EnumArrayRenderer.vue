@@ -27,7 +27,16 @@
       item-value="value"
       outlined
       multiple
-    />
+    >
+      <template v-slot:message>
+        <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
+          {{ control.schema.description }}
+        </div>
+        <div v-if="cleanedErrors" class="ml-2 v-messages error--text" :class="styles.control.error">
+          {{ cleanedErrors }}
+        </div>
+      </template>
+    </v-select>
   </v-hover>
 </template>
 
@@ -95,6 +104,12 @@ const controlRenderer = defineComponent({
   },
   created() {
     // console.log(this.control)
+  },
+  computed: {
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
+    }
   },
   methods: {
     dataHasEnum(value: any) {

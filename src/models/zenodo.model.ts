@@ -60,7 +60,6 @@ export default class Zenodo extends Repository {
         params: { "access_token": this.accessToken }
       }
     )
-    console.log(response)
     file.isDisabled = false
     file.key = response.data.id
     file.isUploaded = response.status === 201

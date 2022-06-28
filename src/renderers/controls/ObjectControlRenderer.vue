@@ -92,7 +92,6 @@ const controlRenderer = defineComponent({
       return result
     },
     isFlat() {
-      console.log(this.control.schema)
       // We show objects as flat by default
       // @ts-ignore
       return this.control.schema.options?.flat !== false
