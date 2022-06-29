@@ -161,7 +161,7 @@
       </v-card>
     </fieldset>
     <div v-if="control.description" class="text--secondary text-body-1 ml-2">{{ control.description }}</div>
-    <div v-if="cleanedErrors" class="ml-2 v-messages error--text" :class="styles.control.error">
+    <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
       {{ cleanedErrors }}
     </div>
   </div>

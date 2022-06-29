@@ -32,7 +32,7 @@
         <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
           {{ control.schema.description }}
         </div>
-        <div v-if="cleanedErrors" class="ml-2 v-messages error--text" :class="styles.control.error">
+        <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
           {{ cleanedErrors }}
         </div>
       </template>
