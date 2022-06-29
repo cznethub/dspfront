@@ -135,10 +135,9 @@ export default class Repository extends Model implements IRepository {
 
     if (!this.isAuthorizeListenerSet) {
       window.addEventListener("message", async (message) => {
-        this.isAuthorizeListenerSet = true // Prevents registering the listener more than once
-        console.info(`Repository: listening to authorization window...`)
+        console.info(`${activeRepository.entity}: listening to authorization window...`)
 
-        if (message.data.token) {
+        if (message.data?.token) {
           activeRepository.commit((state) => {
             state.accessToken = message.data.token.access_token || ''
           })
@@ -146,7 +145,7 @@ export default class Repository extends Model implements IRepository {
           if (callback) {
             callback()
           }
-          this.authorized$.next(this.entity as EnumRepositoryKeys)
+          this.authorized$.next(activeRepository.entity as EnumRepositoryKeys)
         }
         else {
           CzNotification.toast({
@@ -154,7 +153,9 @@ export default class Repository extends Model implements IRepository {
             type: 'error'
           })
         }
-      })
+        this.isAuthorizeListenerSet = false
+      }, { once: true })
+      this.isAuthorizeListenerSet = true
     }
   }
 
@@ -398,12 +399,7 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch(e: any) {
-      CzNotification.toast({
-        message: 'Failed to delete submission',
-        type: 'error'
-      })
-
-      if (e.response?.status === 401) {
+      if (e.response?.status === 401 || e.response?.status === 403) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''
@@ -413,7 +409,7 @@ export default class Repository extends Model implements IRepository {
           type: 'error'
         })
 
-        Repository.openAuthorizeDialog(this.entity)
+        Repository.openAuthorizeDialog(repository)
       }
       else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         // Resource has been deleted in the repository
@@ -425,6 +421,10 @@ export default class Repository extends Model implements IRepository {
       }
       else {
         console.error(`${repository}: failed to delete submission.`, e.response)
+        CzNotification.toast({
+          message: 'Failed to delete submission',
+          type: 'error'
+        })
       }
     }
   }
