@@ -7,7 +7,7 @@
       :label="computedLabel"
       :data-id="computedLabel.replaceAll(` `, ``)"
       :hint="control.description"
-      :delimiters="[',']"
+      :delimiters="delimeters"
       :error-messages="control.errors"
       :menu-props="{ openOnClick: false }"
       class="py-3 mb-0"
@@ -105,6 +105,12 @@ const controlRenderer = defineComponent({
       }
     }
   },
+  computed: {
+    delimeters() {
+      // @ts-ignore
+      return this.control.schema.options?.delimeter === false ? undefined : [',']
+    }
+  },
   methods: {
     onTagsChange() {
       // Prevent inserting duplicates and trim values
@@ -126,7 +132,7 @@ const controlRenderer = defineComponent({
 });
 export default controlRenderer;
 
-export const arrayPrimitiveRenderer: JsonFormsRendererRegistryEntry = {
+export const arrayPrimitiveControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
   tester: rankWith(4, isPrimitiveArrayControl),
 }

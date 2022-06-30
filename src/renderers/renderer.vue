@@ -13,7 +13,7 @@
   import { dateTimeControlRenderer } from './controls/DateTimeControlRenderer.vue'
   import { objectControlRenderer } from './controls/ObjectControlRenderer.vue'
   import { enumControlRenderer } from './controls/EnumControlRenderer.vue'
-  import { arrayPrimitiveRenderer } from './array/ArrayPrimitiveControl.vue'
+  import { arrayPrimitiveControlRenderer } from './array/ArrayPrimitiveControlRenderer.vue'
   import { anyOfRenderer } from './controls/AnyOfRenderer.vue'
   import { allOfRenderer } from './controls/AllOfRenderer.vue'
   import { radioGroupControlRenderer } from './controls/RadioGroupControlRenderer.vue'
@@ -32,7 +32,7 @@
   export const CzRenderers: JsonFormsRendererRegistryEntry[] = [
     enumControlRenderer,
     enumArrayRenderer,
-    arrayPrimitiveRenderer,
+    arrayPrimitiveControlRenderer,
     // arrayControlRenderer,
     groupRenderer,
     numberControlRenderer,
