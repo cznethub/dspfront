@@ -4,11 +4,11 @@
       <v-container class="d-flex align-end full-height">
         <router-link
           :to="{ path: `/` }"
-          :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
-          tag="img"
           class="logo"
-          alt="Critical Zone Network logo"
         >
+          <img :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
+            alt="Critical Zone Network logo"
+          />
         </router-link>
         <div class="spacer"></div>
         <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
@@ -365,8 +365,12 @@ export default class App extends Vue {
 
 <style lang="scss" scoped>
 .logo {
-  max-height: 100%;
+  height: 100%;
   cursor: pointer;
+
+  img {
+    height: 100%;
+  }
 }
 
 #footer {
