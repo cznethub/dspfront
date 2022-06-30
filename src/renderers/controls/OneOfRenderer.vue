@@ -201,6 +201,7 @@ const controlRenderer = defineComponent({
   mounted() {
     // indexOfFittingSchema is only populated after mounted hook
     this.selectedIndex = this.control.indexOfFittingSchema || 0
+    this.annotateFittingSchema()  // Watchers are not setup yet, so we call it manually
   },
   computed: {
     oneOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
@@ -247,6 +248,11 @@ const controlRenderer = defineComponent({
         : ''
     },
   },
+  watch: {
+    selectedIndex(newIndex, oldIndex) {
+      this.annotateFittingSchema()
+    }
+  },
   methods: {
     handleTabChange(): void {
       if (!this.control.enabled) {
@@ -266,6 +272,12 @@ const controlRenderer = defineComponent({
             createDefaultValue(this.oneOfRenderInfos[this.selectedIndex].schema)
           )
         }
+      })
+    },
+    annotateFittingSchema() {
+      this.oneOfRenderInfos.map((info, index) => {
+        // @ts-ignore: used by error handling to figure out the used fitting schema
+        info.schema.isFittingSchema = index === this.selectedIndex
       })
     },
     handleSelect(label: string) {

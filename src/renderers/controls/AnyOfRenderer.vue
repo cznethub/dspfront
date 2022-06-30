@@ -202,6 +202,7 @@ const controlRenderer = defineComponent({
   mounted() {
     // indexOfFittingSchema is only populated after mounted hook
     this.selectedIndex = this.control.indexOfFittingSchema || 0
+    this.annotateFittingSchema()  // Watchers are not setup yet, so we call it manually
   },
   computed: {
     anyOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
@@ -215,7 +216,9 @@ const controlRenderer = defineComponent({
         this.control.uischemas
       );
       // JsonSchema does not pass the required attribute, so we do it ourselves
-      info.map(i => { i.schema.required = this.control.schema.required })
+      info.map(i => { 
+        i.schema.required = this.control.schema.required
+      })
       return info
     },
     hasToggle() {
@@ -248,6 +251,11 @@ const controlRenderer = defineComponent({
         : ''
     },
   },
+  watch: {
+    selectedIndex(newIndex, oldIndex) {
+      this.annotateFittingSchema()
+    }
+  },
   methods: {
     handleTabChange(): void {
       if (!this.control.enabled) {
@@ -269,10 +277,16 @@ const controlRenderer = defineComponent({
         }
       })
     },
+    annotateFittingSchema() {
+      this.anyOfRenderInfos.map((info, index) => {
+        // @ts-ignore: used by error handling to figure out the used fitting schema
+        info.schema.isFittingSchema = index === this.selectedIndex
+      })
+    },
     handleSelect(label: string) {
       this.$set(this.tabData, this.selectedIndex, this.control.data)  // Store form state before tab change
       this.selectedIndex = this.anyOfRenderInfos.findIndex((info: CombinatorSubSchemaRenderInfo) => info.label === label)
-
+      
       if (this.selectedIndex === -1) {
         this.handleChange(
           this.control.path,

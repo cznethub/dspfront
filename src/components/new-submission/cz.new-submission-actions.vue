@@ -64,12 +64,15 @@ export default class CzNewSubmissionActions extends Vue {
     if (error.keyword === 'required') {
       if (error.instancePath) {
         // Error is in a nested object
-        /** TODO: find a better way to get the missing property's title. This won't work with combinator renderers
-         * because ErrorObject is not aware of fitting schema 
-        */ 
-        const prop = error.parentSchema?.properties?.[error.params.missingProperty]?.title
-        if (prop) {
-          return `must have required property '${prop}'`
+        // For combinator renderers we must anotate the fitting schema in the renderer itself and then use it here to get the corresponding prop title
+        const isCombinatorSchema = this._isCombinatorSchema(error.parentSchema)
+       
+        const propTitle = isCombinatorSchema
+          ? this._getCombinatorSchemaProperties(error.parentSchema)?.[error.params.missingProperty].title
+          : error.parentSchema?.properties?.[error.params.missingProperty]?.title
+
+        if (propTitle) {
+          return `must have required property '${propTitle}'`
         }
       }
       else {
@@ -77,6 +80,32 @@ export default class CzNewSubmissionActions extends Vue {
       }
     }
     return error.message
+  }
+
+  private _isCombinatorSchema(schema: any): string {
+    return schema.anyOf ? 'anyOf' :
+      schema.allOf ? 'allOf' :
+      schema.oneOf ? 'oneOf' :
+      ''
+  }
+
+  /** Find and return the properties array inside nested combinator schemas */
+  private _getCombinatorSchemaProperties(schema: any) {
+    const isCombinatorSchema = this._isCombinatorSchema(schema)
+
+    if (!isCombinatorSchema) {
+      return
+    }
+
+    let fittingSchema = schema[isCombinatorSchema].find(s => s.isFittingSchema)
+    if (fittingSchema) {
+      if (fittingSchema.properties) {
+        return fittingSchema.properties
+      }
+      else {
+        return this._getCombinatorSchemaProperties(fittingSchema)
+      }
+    }
   }
 }
 </script>
