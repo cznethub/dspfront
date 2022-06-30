@@ -68,7 +68,7 @@ export default class CzNewSubmissionActions extends Vue {
         const isCombinatorSchema = this._isCombinatorSchema(error.parentSchema)
        
         const propTitle = isCombinatorSchema
-          ? this._getCombinatorSchemaProperties(error.parentSchema)?.[error.params.missingProperty].title
+          ? this._getCombinatorSchemaProperties(error.parentSchema)?.[error.params.missingProperty]?.title
           : error.parentSchema?.properties?.[error.params.missingProperty]?.title
 
         if (propTitle) {

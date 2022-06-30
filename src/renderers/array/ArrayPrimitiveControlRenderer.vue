@@ -20,7 +20,7 @@
       :class="styles.control.input"
       :disabled="!control.enabled"
       :autofocus="appliedOptions.focus"
-      :placeholder="appliedOptions.placeholder"
+      :placeholder="placeholder"
       persistent-hint
       :required="control.required"
       :clearable="hover"
@@ -109,7 +109,11 @@ const controlRenderer = defineComponent({
     delimeters() {
       // @ts-ignore
       return this.control.schema.options?.delimeter === false ? undefined : [',']
-    }
+    },
+    placeholder(): string {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder || ''
+    },
   },
   methods: {
     onTagsChange() {
