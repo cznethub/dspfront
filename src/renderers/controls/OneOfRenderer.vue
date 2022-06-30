@@ -204,7 +204,7 @@ const controlRenderer = defineComponent({
   },
   computed: {
     oneOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
-      return createCombinatorRenderInfos(
+      const info = createCombinatorRenderInfos(
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         this.control.schema.oneOf!,
         this.control.rootSchema,
@@ -213,6 +213,9 @@ const controlRenderer = defineComponent({
         this.control.path,
         this.control.uischemas
       );
+      // JsonSchema does not pass the required attribute, so we do it ourselves
+      info.map(i => { i.schema.required = this.control.schema.required })
+      return info
     },
     hasToggle() {
       // @ts-ignore

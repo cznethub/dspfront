@@ -56,12 +56,25 @@ export default class CzNewSubmissionActions extends Vue {
     if (error.instancePath) {
       return error.parentSchema?.title || error.params.missingProperty
     }
-    return error.params.missingProperty || ''
+    return error.parentSchema?.properties?.[error.params.missingProperty]?.title
+      || error.params.missingProperty || ''
   }
 
-  protected getMessage(error: any) {
-    if (!error.instancePath && error.keyword === 'required') {
-      return 'is a required property'
+  protected getMessage(error: ErrorObject) {
+    if (error.keyword === 'required') {
+      if (error.instancePath) {
+        // Error is in a nested object
+        /** TODO: find a better way to get the missing property's title. This won't work with combinator renderers
+         * because ErrorObject is not aware of fitting schema 
+        */ 
+        const prop = error.parentSchema?.properties?.[error.params.missingProperty]?.title
+        if (prop) {
+          return `must have required property '${prop}'`
+        }
+      }
+      else {
+        return 'is a required property'
+      }
     }
     return error.message
   }
