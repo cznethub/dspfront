@@ -2,10 +2,10 @@ name: Selenium Browser QA Tests
 
 on:
   push:
-    branches: [ selenium-workflow ]
+    branches: [ gh-workflow ]
   pull_request:
     # branches: [ develop ]
-    branches: [ selenium-workflow ]
+    branches: [ gh-workflow ]
   workflow_dispatch:
 
 jobs:
