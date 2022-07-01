@@ -12,7 +12,7 @@
     :required="control.required"
     :class="styles.control.textarea"
     :hint="control.description"
-    :value="control.data"
+    :value="stripHTML ? strip(control.data) : control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="placeholder"
@@ -89,6 +89,10 @@ const controlRenderer = defineComponent({
     cleanedErrors() {
       // @ts-ignore
       return this.control.errors.replaceAll(`is a required property`, ``)
+    },
+    stripHTML(): string {
+      // @ts-ignore
+      return !!this.control.schema.options?.stripHTML
     }
   },
   methods: {
@@ -100,6 +104,10 @@ const controlRenderer = defineComponent({
       else {
         this.onChange(event)
       }
+    },
+    strip(html: string){
+      const doc = new DOMParser().parseFromString(html, 'text/html');
+      return doc.body.textContent || '';
     }
   }
 })
