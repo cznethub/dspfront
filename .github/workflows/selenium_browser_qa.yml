@@ -95,8 +95,8 @@ jobs:
       run: make build
     
     - name: Build DSPFront
-      working-directory: dspback
-      run: make build-dspfront
+    run: docker build -t dspfront dspfront
+
 
     - name: Startup containers
       working-directory: dspback
