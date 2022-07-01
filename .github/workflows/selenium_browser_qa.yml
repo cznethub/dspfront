@@ -36,7 +36,6 @@ jobs:
       working-directory: QA-AutomationEngine
       run: pip3 install -r requirements.txt
 
-    # https://github.com/SeleniumHQ/selenium/blob/selenium-4.0.0-beta-3/.github/actions/setup-chrome/action.yml
     - name: Prepare Selenium
       run: |
         wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
