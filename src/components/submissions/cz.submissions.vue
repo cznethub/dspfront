@@ -100,7 +100,7 @@
               :page.sync="page"
               :search="filters.searchStr"
               :sort-by="sortBy.key || Object.keys(enumSubmissionSorts).find(k => enumSubmissionSorts[k] === sortBy)"
-              :sort-desc="sortDirection.key === 'desc' || sortDirection === 'Descending'"
+              :sort-desc="sortDirection.label === 'Descending' || sortDirection === 'Descending'"
               item-key="identifier"
               hide-default-footer
             >
@@ -344,7 +344,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     })
   }
 
-  protected get sortDirection() {
+  protected get sortDirection(): { key: string, label: string } {
     return Submission.$state.sortDirection
   }
 

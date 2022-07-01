@@ -34,7 +34,7 @@ export default class Submission extends Model implements ISubmission {
   static state() {
     return {
       sortBy: { key: 'date', label: EnumSubmissionSorts.date },
-      sortDirection: { 'desc': '', label: EnumSortDirections.desc },
+      sortDirection: { desc: '', label: EnumSortDirections.desc },
       itemsPerPage: itemsPerPageArray[0],
       isFetching: false
     }
