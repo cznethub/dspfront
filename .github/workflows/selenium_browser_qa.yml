@@ -2,11 +2,10 @@ name: Selenium Browser QA Tests
 
 on:
   push:
-    branches: [ gh-workflow ]
-    # TODO: change back:
-    # branches: [ develop ]
+    branches: [ selenium-workflow ]
   pull_request:
-    branches: [ gh-workflow ]
+    # branches: [ develop ]
+    branches: [ selenium-workflow ]
   workflow_dispatch:
 
 jobs:
@@ -36,6 +35,7 @@ jobs:
       working-directory: QA-AutomationEngine
       run: pip3 install -r requirements.txt
 
+    # https://github.com/SeleniumHQ/selenium/blob/selenium-4.0.0-beta-3/.github/actions/setup-chrome/action.yml
     - name: Prepare Selenium
       run: |
         wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
@@ -82,7 +82,7 @@ jobs:
 
 
 
-      - name: Clone DSPBACK
+    - name: Clone DSPBACK
       uses: actions/checkout@v2
       with:
         repository: cznethub/dspback
@@ -113,6 +113,8 @@ jobs:
     - name: Create Output Dir
       working-directory: QA-AutomationEngine
       run: mkdir output
+
+
 
     
     - name: Run Tests
