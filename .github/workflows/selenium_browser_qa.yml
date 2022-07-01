@@ -95,7 +95,7 @@ jobs:
       run: make build
     
     - name: Build DSPFront
-    run: docker build -t dspfront dspfront
+      run: docker build -t dspfront dspfront
 
 
     - name: Startup containers
