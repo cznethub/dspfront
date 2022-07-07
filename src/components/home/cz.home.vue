@@ -23,25 +23,25 @@
         </div>
 
         <v-row id="features-1" justify="center" align="baseline" class="has-space-top-2x">
-          <v-col class="d-flex align-start">
+          <v-col class="d-flex align-center align-md-start flex-md-row flex-column">
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-            <div>
+            <div class="text-md-left text-center">
               <div class="text-h6">Which repository?</div>
               <p class="text--secondary text-subtitle-1">Use the Portal's repository recommendation system to determine which repository is right for submitting your research products.</p>
             </div>
           </v-col>
 
-          <v-col class="d-flex align-start">
+          <v-col class="d-flex align-center align-md-start flex-md-row flex-column">
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-            <div>
+            <div class="text-md-left text-center">
               <div class="text-h6">Which format?</div>
               <p class="text--secondary text-subtitle-1">Use CZ community recommendations to decide on formats and conventions for your data files.</p>
             </div>
           </v-col>
 
-          <v-col class="d-flex align-start">
+          <v-col class="d-flex align-center align-md-start flex-md-row flex-column">
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-            <div>
+            <div class="text-md-left text-center">
               <div class="text-h6">Which metadata?</div>
               <p class="text--secondary text-subtitle-1">Use the Portal's submission tools to ensure your metadata are complete and that your data are well described.</p>
             </div>
@@ -75,8 +75,8 @@
 
     <v-divider/>
 
-    <section class="d-flex align-center flex-wrap">
-      <div>
+    <section class="d-flex align-center flex-column flex-lg-row">
+      <div class="text-center text-lg-left">
         <div class="has-space-bottom-2x text-h4">Make your Data FAIR</div>
         <p class="text--secondary text-subtitle-1">This Data Submission Portal works with reputable Earth Science repositories to ensure that research products you submit are <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and <u>R</u>eusable.</p>
       </div>
