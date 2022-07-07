@@ -12,7 +12,7 @@
     :required="control.required"
     :class="styles.control.textarea"
     :hint="control.description"
-    :value="stripHTML ? strip(control.data) : control.data"
+    :value="control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="placeholder"
@@ -64,14 +64,15 @@ const controlRenderer = defineComponent({
       this.handleChange(this.control.path, undefined)
     }
 
+    // If no value loaded but there is a default, populate it
     if (!this.control.data && this.control.schema.default) {
       this.control.data = this.control.schema.default
       this.handleChange(this.control.path, this.control.data)
     }
-    
-    // If the value that was loaded is null, turn it into undefined
-    if (this.control.data === null) {
-      this.handleChange(this.control.path, undefined)
+
+    // If a value was loaded, check if HTML needs to be stripped
+    if (this.control.data && this.stripHTML) {
+      this.handleChange(this.control.path, this.strip(this.control.data))
     }
   },
   computed: {
@@ -105,9 +106,9 @@ const controlRenderer = defineComponent({
         this.onChange(event)
       }
     },
-    strip(html: string){
-      const doc = new DOMParser().parseFromString(html, 'text/html');
-      return doc.body.textContent || '';
+    strip(html: string) {
+      const doc = new DOMParser().parseFromString(html, 'text/html')
+      return doc.body.textContent || ''
     }
   }
 })
