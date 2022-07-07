@@ -90,10 +90,9 @@ const controlRenderer = defineComponent({
     }
   },
   created() {
-    if (this.dataDateTime) {
-      const selected = new Date(this.dataDate)
-      const formatted = format(selected, DATE_FORMATS[this.dateFormat])
-      this.handleChange(this.control.path, formatted)
+    if (this.dataDate) {
+      const selected = parse(this.dataDate, this.defaultDateFormat, new Date())
+      this.select(selected)
     }
   },
   computed: {
@@ -194,20 +193,28 @@ const controlRenderer = defineComponent({
           if (option.unit === 'day') {
             const targetDate = new Date(now.setDate(now.getDate() + option.amount))
             // @ts-ignore
-            return format(targetDate, DATE_FORMATS[this.dateFormat])
+            return format(targetDate, DATE_FORMATS[this.dateFormat], new Date())
           }
           else if (option.unit === 'month') {
             const targetDate = new Date(now.setMonth(now.getMonth() + option.amount))
             // @ts-ignore
-            return format(targetDate, DATE_FORMATS[this.dateFormat])
+            return format(targetDate, DATE_FORMATS[this.dateFormat], new Date())
           }
           else if (option.unit === 'year') {
             const targetDate = new Date(now.setFullYear(now.getFullYear() + option.amount))
             // @ts-ignore
-            return format(targetDate, DATE_FORMATS[this.dateFormat])
+            return format(targetDate, DATE_FORMATS[this.dateFormat], new Date())
           }
         }
       }
+    },
+    select(dateTime: Date) {
+      const year = dateTime.getFullYear()
+      const month = (dateTime.getMonth() + 1).toString().padStart(2, '0')
+      const date = (dateTime.getDate()).toString().padStart(2, '0')
+      
+      this.selectedDate = `${year}-${month}-${date}`
+      this.handleChange(this.control.path, this.formattedDate)
     },
     onClear() {
       this.selectedDate = null
