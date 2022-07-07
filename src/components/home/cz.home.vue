@@ -1,6 +1,6 @@
 <template>
   <div class="cz-home">
-    <div class="banner text-center"
+    <div class="banner text-center px-4"
       :class="isLoggedIn ? '' : ''"
       :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.7), rgba(28, 37, 65, 0.3)), url(' + require('@/assets/img/bg-2.png') + ')', 'flex-direction': 'column' }">
       <div class="has-text-shadow">
@@ -81,8 +81,10 @@
         <p class="text--secondary text-subtitle-1">This Data Submission Portal works with reputable Earth Science repositories to ensure that research products you submit are <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and <u>R</u>eusable.</p>
       </div>
 
-      <div class="has-space-top-2x">
-        <a href="https://www.go-fair.org/fair-principles/" target="_blank"><img :src="require('@/assets/img/fair.png')" alt="FAIR"></a>
+      <div class="has-space-top-2x text-center text-sm-center text-right">
+        <a href="https://www.go-fair.org/fair-principles/" class="d-block full-width" target="_blank" style="max-width: 100%;">
+          <img :src="require('@/assets/img/fair.png')" alt="FAIR" style="max-width: 100%;">
+        </a>
       </div>
     </section>
 
@@ -168,27 +170,18 @@
     .v-icon {
       font-size: 5rem;
     }
-
-    // .:nth-child(1) .v-icon {
-    //   color: #AFB9C8;
-    // }
-    // .:nth-child(2) .v-icon {
-    //   color: #E3CDC1;
-    // }
-    // .:nth-child(3) .v-icon {
-    //   color: #A6D6D6;
-    // }
   }
 
   .repos {
-    // display: flex;
     gap: 2rem 4rem;
-    // flex-wrap: wrap;
-    // align-items: center;
-    // justify-content: center;
 
-    img {
-      height: 5rem;
+    a {
+      max-width: 100%;
+
+      img {
+        max-height: 5rem;
+        max-width: 100%;
+      }
     }
   }
 </style>
