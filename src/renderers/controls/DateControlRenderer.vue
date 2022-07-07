@@ -90,15 +90,9 @@ const controlRenderer = defineComponent({
     }
   },
   created() {
-    if (this.dataDate) {
-      // Format data value and populate the form
-      const selected = new Date(this.dataDate) // in UTC
-      const offset = selected.getTimezoneOffset() * 60 * 1000
-      const localDateTime = selected.getTime() + offset
-      const localizedDate = new Date(localDateTime) // in local time
-
-      const formatted = format(localizedDate, DATE_FORMATS[this.dateFormat])
-      this.selectedDate = formatted
+    if (this.dataDateTime) {
+      const selected = new Date(this.dataDate)
+      const formatted = format(selected, DATE_FORMATS[this.dateFormat])
       this.handleChange(this.control.path, formatted)
     }
   },
@@ -198,7 +192,7 @@ const controlRenderer = defineComponent({
           const now = new Date(Date.now())
 
           if (option.unit === 'day') {
-            const targetDate = new Date(now.setDate(now.getDate() + option.amount)) // in UTC
+            const targetDate = new Date(now.setDate(now.getDate() + option.amount))
             // @ts-ignore
             return format(targetDate, DATE_FORMATS[this.dateFormat])
           }
