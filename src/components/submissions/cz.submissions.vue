@@ -4,16 +4,16 @@
       <div class="text-h4">My Submissions</div>
       <v-divider class="has-space-bottom" />
       <div>
-        <div class="d-flex align-center">
-          <div v-if="!isFetching && submissions.length" class="d-flex">
+        <div class="d-flex align-sm-center flex-column flex-sm-row">
+          <div v-if="!isFetching && submissions.length" class="d-flex flex-column flex-sm-row">
             <v-text-field
               id="my_submissions_search"
-              class="ma-1"
+              class="ma-1 my-2 my-sm-0"
               v-model="filters.searchStr"
               dense
               clearable
               outlined
-              hide-details="auto"
+              hide-details
               prepend-inner-icon="mdi-magnify"
               label="Search..."
             />
@@ -21,11 +21,12 @@
             <v-select
               v-model="filters.repoOptions"
               :items="repoOptions"
-              class="ma-1"
+              class="ma-1 my-2 my-sm-0"
               small-chips
               deletable-chips
               clearable
               label="Repository"
+              hide-details
               chips
               multiple
               dense
@@ -52,7 +53,7 @@
             direction="bottom"
           >
             <template v-slot:activator>
-              <v-btn color="primary" rounded>
+              <v-btn color="primary" rounded block>
                 <v-icon>mdi-plus</v-icon>
                 New Submission
               </v-btn>
@@ -63,7 +64,7 @@
                 <template v-for="repo of supportedRepoMetadata" >
                   <v-tooltip :key="repo.name" left transition="fade">
                     <template v-slot:activator="{ on, attrs }">
-                      <v-btn v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs">
+                      <v-btn class="mx-0 my-4" v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs" block>
                         {{ repo.name }}
                       </v-btn>
                     </template>
@@ -81,7 +82,7 @@
       <v-progress-circular indeterminate color="primary" />
     </template>
     <template v-else>
-      <div v-if="submissions.length">
+      <div v-if="submissions.length" class="mt-4">
         <div>
           <div id="total_submissions" class="has-space-bottom text-h6">
             {{ submissions.length }} Total Submissions
@@ -105,17 +106,17 @@
               hide-default-footer
             >
               <template v-slot:header>
-                <v-toolbar elevation="0" class="has-bg-light-gray">
-                  <template v-if="$vuetify.breakpoint.mdAndUp">
-                    <v-btn rounded @click="exportSubmissions" :disabled="!filteredSubmissions.length">Export Submissions</v-btn>
+                <div elevation="0" class="has-bg-light-gray pa-4">
+                  <div class="d-flex justify-space-between full-width flex-column flex-md-row">
+                    <v-btn class="mb-md-0 mb-4" rounded @click="exportSubmissions" :disabled="!filteredSubmissions.length">Export Submissions</v-btn>
                     <v-spacer></v-spacer>
-                    <div class="sort-controls">
+                    <div class="sort-controls d-flex flex-column flex-md-row">
                       <v-select
                         id="sort-by"
                         :items="sortOptions"
                         item-text="label"
                         v-model="sortBy"
-                        class="mr-1 sort-control"
+                        class="mr-1 sort-control my-md-0 my-2"
                         outlined
                         dense
                         hide-details="auto"
@@ -126,7 +127,7 @@
                         id="sort-order"
                         :items="sortDirectionOptions"
                         v-model="sortDirection"
-                        class="sort-control"
+                        class="sort-control my-md-0 my-2"
                         item-text="label"
                         outlined
                         dense
@@ -134,38 +135,39 @@
                         label="Order"
                       />
                     </div>
-                  </template>
-                </v-toolbar>
+                  </div>
+                </div>
               </template>
 
               <template v-slot:default="{ items }">
                 <v-divider />
                 <div :id="`submission-${index}`" v-for="(item, index) in items" :key="item.identifier">
-                  <div class="table-item d-flex justify-space-between flex-sm-column flex-md-row">
+                  <div class="table-item d-flex justify-space-between flex-column flex-md-row">
                     <div class="flex-grow-1 mr-4">
                       <table class="text-body-1">
                         <tr>
-                          <th class="pr-4"></th>
-                          <td :id="`sub-${index}-title`" class="text-h6">{{ item.title }}</td>
+                          <td colspan="2" :id="`sub-${index}-title`" class="text-h6 pb-2 title">
+                            {{ item.title }}
+                          </td>
                         </tr>
                         <tr v-if="item.authors.length">
-                          <th class="pr-4">Authors:</th>
+                          <th class="pr-4 body-2">Authors:</th>
                           <td>{{ item.authors.join(", ") }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4">Submission Repository:</th>
+                          <th class="pr-4 body-2">Submission Repository:</th>
                           <td>{{ getRepositoryName(item) }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4">Submission Date:</th>
+                          <th class="pr-4 body-2">Submission Date:</th>
                           <td :id="`sub-${index}-date`">{{ getDateInLocalTime(item.date) }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4">Identifier:</th>
+                          <th class="pr-4 body-2">Identifier:</th>
                           <td>{{ item.identifier }}</td>
                         </tr>
                         <tr v-if="item.metadata.status">
-                          <th class="pr-4">Status:</th>
+                          <th class="pr-4 body-2">Status:</th>
                           
                           <td>
                             <v-chip
@@ -559,9 +561,23 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 .table-item {
   padding: 1rem;
 
+  table {
+    width: 100%;
+  }
+
   table th {
     text-align: right;
-    width: 15rem;
+    width: 11rem;
+    font-weight: normal;
+  }
+
+  table td {
+    word-break: break-word;
+  }
+
+  table td.title {
+    padding-left: 2rem;
+    border-left: 4px solid #DDD;
   }
 }
 
@@ -571,11 +587,11 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
 .actions .v-btn {
   margin: 0.5rem 0;
-  max-width: 30rem;
+  // max-width: 30rem;
 }
 
 .sort-controls {
-  max-width: 30rem;
+  // max-width: 30rem;
   display: flex;
 
   > * {
