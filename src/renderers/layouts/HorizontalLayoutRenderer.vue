@@ -3,7 +3,7 @@
     v-if="layout.visible"
     :class="`pa-0 ${styles.horizontalLayout.root}`"
   >
-    <v-row class="flex-sm-column flex-md-row">
+    <v-row class="flex-column flex-md-row">
       <v-col
         v-for="(element, index) in layout.uischema.elements"
         :data-id="`horizontal-${index}`"

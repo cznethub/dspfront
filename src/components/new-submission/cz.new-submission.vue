@@ -4,7 +4,7 @@
     <v-divider class="mb-4"></v-divider>
     <v-alert id="instructions" v-if="!isLoading && wasLoaded"
       class="text-subtitle-1 my-8 " border="left" colored-border type="info" elevation="2">
-      <div class="d-flex flex-wrap-wrap justify-space-between">
+      <div class="d-flex flex-wrap-wrap justify-space-between flex-column flex-md-row">
         <div>
           <div><b>Instructions</b></div>
           <p>Fill in the required fields (marked with * and highlighted in red).
@@ -13,7 +13,7 @@
         </div>
 
         <v-img
-          class="my-4 flex-grow-0"
+          class="my-4 flex-grow-0 ml-md-4 ml-0"
           :src="activeRepository.get().logoSrc"
           :alt="activeRepository.get().name"
           width="350px"
@@ -688,7 +688,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 }
 
 #instructions .d-flex {
-  gap: 4rem;
   align-items: center;
 }
 
@@ -704,5 +703,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
 ::v-deep .horizontal-layout {
   gap: 2rem;
+}
+
+::v-deep .v-alert__content {
+  width: 0;
 }
 </style>

@@ -1,24 +1,24 @@
 <template>
   <div class="cz-new-submission-actions d-flex align-center my-4">
-    <v-spacer></v-spacer>
-    <div class="d-flex form-controls">
-      <v-btn v-if="isDevMode" @click="$emit('show-ui-schema')" rounded
+    <v-spacer class="d-none d-sm-block"></v-spacer>
+    <div class="d-flex form-controls flex-column flex-sm-row flex-grow-1 flex-sm-grow-0">
+      <v-btn v-if="isDevMode" @click="$emit('show-ui-schema')" class="my-1 my-sm-0" rounded
         >UI Schema</v-btn
       >
-      <v-btn v-if="isEditMode" @click="$emit('cancel')" rounded class="submission-cancel"
+      <v-btn v-if="isEditMode" @click="$emit('cancel')" rounded class="submission-cancel my-2 my-sm-0"
         >Cancel</v-btn
       >
       <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
         <template v-slot:activator="{ on, attrs}">
-          <div v-bind="attrs" v-on="on">
+          <div v-bind="attrs" v-on="on" class="d-flex form-controls flex-column flex-sm-row">
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn @click="$emit('save')" color="primary" class="submission-save" :disabled="isSaving || !!errors.length || !hasUnsavedChanges || isReadOnly" rounded>
+              <v-btn @click="$emit('save')" color="primary" class="submission-save my-1 my-sm-0" :disabled="isSaving || !!errors.length || !hasUnsavedChanges || isReadOnly" rounded block>
                 {{ isSaving ? "Saving..." : confirmText }}
               </v-btn>
             </v-badge>
 
             <v-badge :value="!!errors.length" bordered color="error" icon="mdi-exclamation-thick" overlap>
-              <v-btn @click="$emit('save-and-finish')" class="ml-2 submission-finish" color="primary" :disabled="isSaving || !!errors.length || isReadOnly" rounded>
+              <v-btn @click="$emit('save-and-finish')" class="ml-sm-2 my-1 my-sm-0 submission-finish" color="primary" :disabled="isSaving || !!errors.length || isReadOnly" rounded block>
                 Finish
               </v-btn>
             </v-badge>
