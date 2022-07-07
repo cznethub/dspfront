@@ -10,8 +10,8 @@
       <v-text-field
         @click:clear="selectedDate = null; selectedTime = defaultTime"
         @change="onInput($event)"
+        :value="dataDateTimeShort"
         :disabled="!control.enabled"
-        :value="dataDateTime"
         :id="control.id + '-input'"
         :data-id="computedLabel.replaceAll(` `, ``)"
         :label="computedLabel"
@@ -85,9 +85,6 @@ const DATE_FORMATS = {
 
 const controlRenderer = defineComponent({
   name: 'datetime-control-renderer',
-  components: {
-    // ControlWrapper
-  },
   props: {
     ...rendererProps<ControlElement>()
   },
@@ -105,21 +102,18 @@ const controlRenderer = defineComponent({
   },
   created() {
     if (this.dataDateTime) {
-      // Format data value and populate the form
-      const selected = new Date(this.dataDateTime) // in UTC
-      const offset = selected.getTimezoneOffset() * 60 * 1000
-      const localDateTime = selected.getTime() + offset
-      const localizedDate = new Date(localDateTime) // in local time
-
-      const formatted = format(localizedDate, DATE_FORMATS[this.dateTimeFormat])
-      this.handleChange(this.control.path, formatted)
+      const selectedDateTime = new Date(this.dataDateTime)
+      this.select(selectedDateTime)
     }
   },
   computed: {
     dataDateTime(): string {
-      return (this.control.data ?? '').substr(0, 16)
+      return (this.control.data ?? '')
     },
-    selectedDatetime() {
+    dataDateTimeShort(): string {
+      return this.dataDateTime.substr(0, 16)
+    },
+    selectedDatetime(): Date | null {
       if (this.selectedDate && this.selectedTime) {
         // @ts-ignore
         let datetimeString = this.selectedDate + ' ' + this.selectedTime
@@ -127,10 +121,10 @@ const controlRenderer = defineComponent({
           datetimeString += ':00'
         }
         // @ts-ignore
-        return parse(datetimeString, this.defaultDateTimeFormat, new Date())
-      } else {
-        return null
+        return parse(datetimeString, this.defaultDateTimeFormat, new Date())  // parse will assume UTC and transform to local time
       }
+
+      return null
     },
     dateTimeFormat() {
       // @ts-ignore
@@ -164,15 +158,9 @@ const controlRenderer = defineComponent({
   methods: {
     onInput(dateTimeString) {
       if (dateTimeString) {
-        // Datetime was input by typing. We most parse back the values.
         try{
-          const selectedDateTime = new Date(dateTimeString) // UTC
-          const offset = selectedDateTime.getTimezoneOffset() * 60 * 1000
-          const localDateTime = selectedDateTime.getTime() - offset
-          const localizedDate = new Date(localDateTime) // in local time
-          this.selectedDate = localizedDate.toISOString().split('T')[0]
-          this.selectedTime = localizedDate.toISOString().split('T')[1].split('.')[0]
-          this.handleChange(this.control.path, this.formattedDatetime)
+          const selectedDateTime = new Date(dateTimeString)
+          this.select(selectedDateTime)
         }
         catch(e) {
           // Let JsonForms validation handle the invalid datestring
@@ -183,6 +171,19 @@ const controlRenderer = defineComponent({
         // Datetime input using widget. Values already updated, no need to parse.
         this.handleChange(this.control.path, this.formattedDatetime)
       }
+    },
+    select(dateTime: Date) {
+      const year = dateTime.getFullYear()
+      const month = (dateTime.getMonth() + 1).toString().padStart(2, '0')
+      const date = (dateTime.getDate()).toString().padStart(2, '0')
+      const hour = dateTime.getHours().toString().padStart(2, '0')
+      const minute = dateTime.getMinutes().toString().padStart(2, '0')
+      const second = dateTime.getSeconds().toString().padStart(2, '0')
+      
+      this.selectedDate = `${year}-${month}-${date}`
+      this.selectedTime = `${hour}:${minute}:${second}`
+
+      this.handleChange(this.control.path, this.formattedDatetime)
     },
     onDatePickerInput(dateString: string) {
       this.selectedDate = dateString
