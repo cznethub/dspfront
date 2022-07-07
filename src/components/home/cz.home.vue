@@ -81,7 +81,7 @@
         <p class="text--secondary text-subtitle-1">This Data Submission Portal works with reputable Earth Science repositories to ensure that research products you submit are <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and <u>R</u>eusable.</p>
       </div>
 
-      <div class="has-space-top-2x text-center text-sm-center text-right">
+      <div class="has-space-top-2x text-center text-sm-center text-right flex-shrink-0">
         <a href="https://www.go-fair.org/fair-principles/" class="d-block full-width" target="_blank" style="max-width: 100%;">
           <img :src="require('@/assets/img/fair.png')" alt="FAIR" style="max-width: 100%;">
         </a>
