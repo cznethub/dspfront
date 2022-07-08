@@ -144,9 +144,9 @@
                 <div :id="`submission-${index}`" v-for="(item, index) in items" :key="item.identifier">
                   <div class="table-item d-flex justify-space-between flex-column flex-md-row">
                     <div class="flex-grow-1 mr-4">
-                      <table class="text-body-1">
+                      <table class="text-body-1" :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
                         <tr>
-                          <td colspan="2" :id="`sub-${index}-title`" class="text-h6 pb-2 title">
+                          <td colspan="2" :id="`sub-${index}-title`" class="text-h6 title">
                             {{ item.title }}
                           </td>
                         </tr>
@@ -563,21 +563,32 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   table {
     width: 100%;
-  }
 
-  table th {
-    text-align: right;
-    width: 11rem;
-    font-weight: normal;
-  }
+    &.is-xs-small {
+      tr, td, th {
+        display: block;
+        text-align: left;
+      }
 
-  table td {
-    word-break: break-word;
-  }
+      th {
+        padding-top: 1rem;
+      }
+    }
 
-  table td.title {
-    padding-left: 2rem;
-    border-left: 4px solid #DDD;
+    th {
+      text-align: right;
+      width: 11rem;
+      font-weight: normal;
+    }
+
+    td {
+      word-break: break-word;
+
+      &.title {
+        padding-left: 2rem;
+        border-left: 4px solid #DDD;
+      }
+    }
   }
 }
 
