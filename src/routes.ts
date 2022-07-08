@@ -23,6 +23,9 @@ export const routes: RouteConfig[] = [
   {
     name: 'about',
     path: '/about',
+    meta: { 
+      title: 'About',
+    },
     components: {
       content: CzAbout,
       footer: CzFooter
@@ -31,19 +34,14 @@ export const routes: RouteConfig[] = [
   {
     name: 'resources',
     path: '/resources',
+    meta: { 
+      title: 'Resources',
+    },
     components: {
       content: CzResources,
       footer: CzFooter
     },
   },
-  // {
-  //   name: 'recommendations',
-  //   path: '/resources/recommendations',
-  //   components: {
-  //     content: CzRecommendations,
-  //     footer: CzFooter
-  //   },
-  // },
   {
     name: 'recommendations',
     path: '/resources/recommendations',
@@ -51,7 +49,9 @@ export const routes: RouteConfig[] = [
       content: CzRecomendationsQuestionnaire,
       footer: CzFooter
     },
-    
+    meta: { 
+      title: 'Repository Recommendations',
+    },
   },
   {
     name: 'submissions',
@@ -60,7 +60,10 @@ export const routes: RouteConfig[] = [
       content: CzSubmissions,
       footer: CzFooter
     },
-    meta: { hasLoggedInGuard: true },
+    meta: { 
+      hasLoggedInGuard: true,
+      title: 'My Submissions',
+    },
   },
   {
     name: 'submit',
@@ -69,6 +72,15 @@ export const routes: RouteConfig[] = [
       content: CzSubmit,
       footer: CzFooter
     },
+    meta: {
+      title: 'Submit Data',
+      metaTags: [
+        {
+          name: "keywords",
+          content: 'HydroShare, EarthChem, Zenodo, Submit, Data, Repositories'
+        }
+      ],
+    },
     children: [
       {
         name: 'submit.repository',
@@ -76,13 +88,20 @@ export const routes: RouteConfig[] = [
         components: {
           default: CzNewSubmission,
         },
-        meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true, hasUnsavedChangesGuard: true }
+        meta: { 
+          hasLoggedInGuard: true, 
+          hasAccessTokenGuard: true, 
+          hasUnsavedChangesGuard: true,
+        }
       },
     ]
   },
   {
     name: 'contact',
     path: '/contact',
+    meta: { 
+      title: 'How to Contact Us',
+    },
     components: {
       content: CzContact,
       footer: CzFooter
