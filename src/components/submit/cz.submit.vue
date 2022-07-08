@@ -60,7 +60,7 @@
 <style lang="scss" scoped>
   .repositories {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(min(30rem, 100%), 1fr));
     gap: 2rem;
   }
 
