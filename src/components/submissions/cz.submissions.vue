@@ -222,7 +222,7 @@
               </template>
 
               <template v-slot:footer>
-                <div class="footer d-flex justify-space-between">
+                <div class="footer d-flex justify-space-between align-center">
                   <div>
                     <span class="grey--text text-body-2 mr-1">Items per page</span>
                     <v-menu offset-y>
@@ -244,16 +244,18 @@
                     </v-menu>
                   </div>
 
-                  <div v-if="numberOfPages">
-                    <span class="mr-4 grey--text text-body-2">
+                  <div v-if="numberOfPages" class="d-flex flex-sm-row flex-column align-center justify-center" style="gap: 0.5rem;">
+                    <span class="grey--text text-body-2 text-center">
                       Page {{ page }} of {{ numberOfPages }}
                     </span>
-                    <v-btn class="mr-2" small fab @click="formerPage" :disabled="page <= 1">
-                      <v-icon>mdi-chevron-left</v-icon>
-                    </v-btn>
-                    <v-btn small fab @click="nextPage" :disabled="page >= numberOfPages">
-                      <v-icon>mdi-chevron-right</v-icon>
-                    </v-btn>
+                    <div>
+                      <v-btn class="mr-2" small fab @click="formerPage" :disabled="page <= 1">
+                        <v-icon>mdi-chevron-left</v-icon>
+                      </v-btn>
+                      <v-btn small fab @click="nextPage" :disabled="page >= numberOfPages">
+                        <v-icon>mdi-chevron-right</v-icon>
+                      </v-btn>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -585,7 +587,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       word-break: break-word;
 
       &.title {
-        padding-left: 2rem;
+        padding-left: 1.25rem;
         border-left: 4px solid #DDD;
       }
     }
