@@ -680,13 +680,16 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 
         if (this.isEditMode) {
           const isParentSelected = this.isSelected(item.parent as IFolder)
-          if (this.isFolder(item) && !(item as IFile).isUploaded) {
+          if (!this.isFolder(item) && !(item as IFile).isUploaded) {
             this._deleteItem(item)  // Item hasn't been uploaded, just discard it
           }
           else if (!isParentSelected) {
             const message = await this.deleteFileOrFolder(item)
             response.push(message)
           }
+        }
+        else {
+          this._deleteItem(item)  // Item hasn't been uploaded, just discard it
         }
       }
     }
