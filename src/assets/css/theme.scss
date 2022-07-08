@@ -116,6 +116,11 @@ p {
   }
 }
 
+// https://stackoverflow.com/a/27660473/3288102
+fieldset, .cz-fieldset {
+  min-width: 0;
+}
+
 .cz-fieldset {
   background-color: #fff;
   color: rgba(0,0,0,.87);
