@@ -110,7 +110,7 @@
                   <div class="d-flex justify-space-between full-width flex-column flex-md-row">
                     <v-btn class="mb-md-0 mb-4" rounded @click="exportSubmissions" :disabled="!filteredSubmissions.length">Export Submissions</v-btn>
                     <v-spacer></v-spacer>
-                    <div class="sort-controls d-flex flex-column flex-md-row">
+                    <div class="sort-controls d-flex flex-column flex-sm-row">
                       <v-select
                         id="sort-by"
                         :items="sortOptions"
