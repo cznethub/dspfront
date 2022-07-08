@@ -1,6 +1,6 @@
 <template>
   <v-card class="mb-8">
-    <v-sheet class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included">
+    <v-sheet class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included flex-wrap">
       <v-tooltip v-if="repoMetadata.hasFolderStructure && !isReadOnly" bottom transition="fade">
         <template v-slot:activator="{ on, attrs}">
           <v-btn @click="newFolder" class="mr-4" small icon v-on="on" v-bind="attrs"><v-icon>mdi-folder</v-icon></v-btn>
@@ -87,7 +87,7 @@
       <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem;">
           <v-row class="flex-grow-1">
-            <v-col cols="9" v-click-outside="{ handler: onClickOutside, include }">
+            <v-col :cols="$vuetify.breakpoint.smAndUp ? 9 : 11" v-click-outside="{ handler: onClickOutside, include }">
               <v-treeview
                 item-disabled="isDisabled"
                 :items="rootDirectory.children"
@@ -138,19 +138,34 @@
                     @click.ctrl.exact="onItemCtrlClick(item)"
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
-                    :class="{ 'text--secondary': item.isCutting }" class="flex-nowrap ma-0">
-                    <v-col class="flex-grow-1 flex-shrink-1" style="overflow: hidden; text-overflow: ellipsis;">{{ item.name }}</v-col>
-                    <v-col v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes(2, false) }}</v-col>
-                    <v-col v-else-if="item.uploadedSize" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">{{ item.uploadedSize | prettyBytes(2, false) }}</v-col>
+                    :class="{ 'text--secondary': item.isCutting }" class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column">
+                    
+                    <v-col class="d-flex flex-column flex-sm-row align-start align-sm-center">
+                      <div class="item-name flex-grow-1 flex-shrink-1">{{ item.name }}</div>
+                      <div v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-0 ma-sm-3 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes(2, false) }}</div>
+                      <div v-else-if="item.uploadedSize" class="flex-grow-0 flex-shrink-0 ma-0 ma-sm-3 pa-0 text-caption text--secondary">{{ item.uploadedSize | prettyBytes(2, false) }}</div>
+                    </v-col>
+                  </v-row>
+                </template>
+                <template v-slot:append="{ item, active }">
+                  <v-row v-if="!item.isRenaming">
+                    <v-col v-if="!isFolder(item) && item.isUploaded" class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 align-center">
+                      <v-icon class="text--disabled" small>mdi-cloud-check</v-icon>
+                    </v-col>
+                    <v-col v-if="canRetryUpload(item)" class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 align-center">
+                      <v-btn color="info" @click="$emit('upload', [item])" :disabled="item.isDisabled" small depressed>
+                        <v-icon left>mdi-cloud-upload</v-icon>
+                        Retry
+                      </v-btn>
+                    </v-col>
                     <v-col v-if="showFileWarnings(item)"
-                      class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary">
+                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary align-center">
                       <v-menu open-on-hover bottom left offset-y>
                         <template v-slot:activator="{ on, attrs}">
                           <div v-bind="attrs" v-on="on">
                             <v-icon :color="isFileInvalid(item) || couldNotUploadFile(item) ? 'error' : 'warning'">mdi-alert-circle</v-icon>
                           </div>
                         </template>
-
                         <div class="pa-4 has-bg-white">
                           <div v-if="isFileInvalid(item) || couldNotUploadFile(item)" class="text-body-2 mb-4"><b>This file cannot be uploaded</b></div>
                           <ul class="text-subtitle-1">
@@ -162,27 +177,20 @@
                         </div>
                       </v-menu>
                     </v-col>
-                    <v-col v-if="!isFolder(item) && item.isUploaded" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0">
-                      <v-icon class="text--disabled" small>mdi-cloud-check</v-icon>
+                    <v-col v-if="active && !item.isDisabled && canRename">
+                      <template>
+                        <v-btn v-if="!item.isRenaming"
+                          @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
+                      </template>
                     </v-col>
-                    <v-col v-if="canRetryUpload(item)" class="flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0">
-                      <v-btn color="info" @click="$emit('upload', [item])" :disabled="item.isDisabled" small depressed>
-                        <v-icon left>mdi-cloud-upload</v-icon>
-                        Retry
-                      </v-btn>
+                    <v-col v-if="item.isDisabled">
+                      <v-icon small>fas fa-circle-notch fa-spin</v-icon>
                     </v-col>
-                  </v-row>
-                </template>
-                <template v-slot:append="{ item, active }">
-                  <template v-if="active && !item.isDisabled && canRename">
-                    <v-btn v-if="!item.isRenaming"
-                      @click.stop="renameItem(item)" fab small text><v-icon>mdi-pencil-outline</v-icon></v-btn>
-                  </template>
-                  <v-icon v-if="item.isDisabled" small>fas fa-circle-notch fa-spin</v-icon>
+                   </v-row>
                 </template>
               </v-treeview>
             </v-col>
-            <v-col cols="3"></v-col>
+            <v-col cols="3" v-if="$vuetify.breakpoint.smAndUp"></v-col>
           </v-row>
         </v-card-text>
         <v-divider></v-divider>
@@ -931,5 +939,14 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(Act
 .files-container {
   overflow: auto;
   resize: vertical;
+}
+
+.item-row {
+  .item-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-basis: fit-content;
+    max-width: 100%;
+  }
 }
 </style>

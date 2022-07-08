@@ -97,7 +97,7 @@ export default class CzNewSubmissionActions extends Vue {
       return
     }
 
-    let fittingSchema = schema[isCombinatorSchema].find(s => s.isFittingSchema)
+    const fittingSchema = schema[isCombinatorSchema]?.find(s => s.isFittingSchema)
     if (fittingSchema) {
       if (fittingSchema.properties) {
         return fittingSchema.properties
