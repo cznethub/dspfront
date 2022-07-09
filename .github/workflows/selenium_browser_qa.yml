@@ -2,128 +2,121 @@ name: Selenium Browser QA Tests
 
 on:
   push:
-    branches: [ develop ]
+    branches: [develop]
   pull_request:
-    branches: [ develop ]
+    branches: [develop]
   workflow_dispatch:
 
 jobs:
   build-test:
-
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Clone QA Engine
-      uses: actions/checkout@v2
-      with:
-        repository: CUAHSI/QA-AutomationEngine
-        path: QA-AutomationEngine
-        ref: master
+      - name: Clone QA Engine
+        uses: actions/checkout@v2
+        with:
+          repository: CUAHSI/QA-AutomationEngine
+          path: QA-AutomationEngine
+          ref: master
 
-    - name: Set up Python 3.9
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.9
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.9
 
-    - name: Install dependencies
-      working-directory: QA-AutomationEngine
-      run: pip3 install -r requirements.txt
+      - name: Install dependencies
+        working-directory: QA-AutomationEngine
+        run: pip3 install -r requirements.txt
 
-    # https://github.com/SeleniumHQ/selenium/blob/selenium-4.0.0-beta-3/.github/actions/setup-chrome/action.yml
-    - name: Prepare Selenium
-      run: |
-        wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
-        echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
-        sudo apt-get update -qqy
-        sudo apt-get -qqy install google-chrome-stable
-        CHROME_VERSION=$(google-chrome-stable --version)
-        CHROME_FULL_VERSION=${CHROME_VERSION%%.*}
-        CHROME_MAJOR_VERSION=${CHROME_FULL_VERSION//[!0-9]}
-        sudo rm /etc/apt/sources.list.d/google-chrome.list
-        export CHROMEDRIVER_VERSION=`curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION%%.*}`
-        curl -L -O "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-        unzip chromedriver_linux64.zip && chmod +x chromedriver && sudo mv chromedriver /usr/local/bin
-        export CHROMEDRIVER_VERSION=`curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION%%.*}`
-        curl -L -O "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
-        unzip chromedriver_linux64.zip && chmod +x chromedriver && sudo mv chromedriver /usr/local/bin
-        chromedriver -version
-      shell: bash
+      # https://github.com/SeleniumHQ/selenium/blob/selenium-4.0.0-beta-3/.github/actions/setup-chrome/action.yml
+      - name: Prepare Selenium
+        run: |
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
+          sudo apt-get update -qqy
+          sudo apt-get -qqy install google-chrome-stable
+          CHROME_VERSION=$(google-chrome-stable --version)
+          CHROME_FULL_VERSION=${CHROME_VERSION%%.*}
+          CHROME_MAJOR_VERSION=${CHROME_FULL_VERSION//[!0-9]}
+          sudo rm /etc/apt/sources.list.d/google-chrome.list
+          export CHROMEDRIVER_VERSION=`curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION%%.*}`
+          curl -L -O "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+          unzip chromedriver_linux64.zip && chmod +x chromedriver && sudo mv chromedriver /usr/local/bin
+          export CHROMEDRIVER_VERSION=`curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_MAJOR_VERSION%%.*}`
+          curl -L -O "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip"
+          unzip chromedriver_linux64.zip && chmod +x chromedriver && sudo mv chromedriver /usr/local/bin
+          chromedriver -version
+        shell: bash
 
-    # - name: Prepare Selenium
-    #   uses: nanasess/setup-chromedriver@v1
+      # - name: Prepare Selenium
+      #   uses: nanasess/setup-chromedriver@v1
       # https://github.com/marketplace/actions/setup-chromedriver
       # with:
       #   # Optional: do not specify to match Chrome's version
       #   chromedriver-version: '88.0.4324.96'
-    # - run: |
-    #     export DISPLAY=:99
-    #     chromedriver --url-base=/wd/hub &
-    #     # sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
+      # - run: |
+      #     export DISPLAY=:99
+      #     chromedriver --url-base=/wd/hub &
+      #     # sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 & # optional
 
+      # - name: Prepare Firefox
+      #   # uses: browser-actions/setup-firefox@latest
+      #   run: sudo apt install firefox
 
-    # - name: Prepare Firefox
-    #   # uses: browser-actions/setup-firefox@latest
-    #   run: sudo apt install firefox
+      # - name: Firefox version
+      #   run: firefox --version
 
-    # - name: Firefox version
-    #   run: firefox --version
+      # - name: Geckodriver
+      #   run: sudo apt install firefox-geckodriver
 
-    # - name: Geckodriver
-    #   run: sudo apt install firefox-geckodriver
+      - name: Clone DSPBACK
+        uses: actions/checkout@v2
+        with:
+          repository: cznethub/dspback
+          path: dspback
+          ref: master
 
+      - name: Build DSPBack
+        working-directory: dspback
+        run: make build
 
+      - name: Build DSPFront
+        run: docker build -t dspfront .
 
-    - name: Clone DSPBACK
-      uses: actions/checkout@v2
-      with:
-        repository: cznethub/dspback
-        path: dspback
-        ref: master
+      - name: Startup containers
+        working-directory: dspback
+        run: make up-all-d
 
+      - name: Sleep for 10 seconds
+        run: sleep 10s
+        shell: bash
 
-    - name: Build DSPBack
-      working-directory: dspback
-      run: make build
-    
-    - name: Build DSPFront
-      run: docker build -t dspfront .
+      # - name: Install dependencies
+      #   run: make install
 
+      - name: Create Output Dir
+        working-directory: QA-AutomationEngine
+        run: mkdir output
 
-    - name: Startup containers
-      working-directory: dspback
-      run: make up-all-d
+      - name: Run Tests
+        working-directory: QA-AutomationEngine
+        # https://dsp-alpha.criticalzone.org/
+        run: |
+          ./hydrotest dsp DspHydroshareTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/hydroshare-browser-test-coverage.txt
+          ./hydrotest dsp DspExternalTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/external-browser-test-coverage.txt
+          ./hydrotest dsp DspZenodoTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/zenodo-browser-test-coverage.txt
+          ./hydrotest dsp DspEarthchemTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/earthchem-browser-test-coverage.txt
 
-    - name: Sleep for 10 seconds
-      run: sleep 10s
-      shell: bash
-      
-    # - name: Install dependencies
-    #   run: make install
+      - name: Archive test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: QA-ARTIFACTS
+          path: QA-AutomationEngine/output
 
-
-    - name: Create Output Dir
-      working-directory: QA-AutomationEngine
-      run: mkdir output
-
-    
-    - name: Run Tests
-      working-directory: QA-AutomationEngine
-      # https://dsp-alpha.criticalzone.org/
-      run: |
-        ./hydrotest dsp DspHydroshareTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/hydroshare-browser-test-coverage.txt
-        ./hydrotest dsp DspExternalTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/external-browser-test-coverage.txt
-        ./hydrotest dsp DspZenodoTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/zenodo-browser-test-coverage.txt
-        ./hydrotest dsp DspEarthchemTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/earthchem-browser-test-coverage.txt
-
-    - name: Check whether passing
-      working-directory: QA-AutomationEngine/output
-      run: if grep -rl "FAILED (" . >/dev/null; then grep -rh "FAIL:" . && exit 1; else grep -rh "^Ran [0-9]* test in [0-9]*\.*[0-9]*s$\n\n^OK" .; fi
-
-
-    - name: Archive test results
-      uses: actions/upload-artifact@v3
-      with:
-        name: QA-ARTIFACTS
-        path: QA-AutomationEngine/output
+      - name: Check whether passing
+        working-directory: QA-AutomationEngine/output
+        run: |
+          grep -rh "ERROR:" .
+          if grep -rl "FAILED (" . >/dev/null; then grep -rh "FAIL:" . && exit 1; else grep -rh "^Ran [0-9]* test in [0-9]*\.*[0-9]*s$\n\n^OK" .; fi
