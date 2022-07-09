@@ -1,6 +1,7 @@
 <template>
   <v-container id="cz-new-submission" class="cz-new-submission px-4">
     <h1 class="text-h4">{{ formTitle }}</h1>
+    {{ data }}
     <v-divider class="mb-4"></v-divider>
     <v-alert id="instructions" v-if="!isLoading && wasLoaded"
       class="text-subtitle-1 my-8 " border="left" colored-border type="info" elevation="2">

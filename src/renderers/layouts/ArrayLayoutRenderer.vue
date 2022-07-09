@@ -19,9 +19,8 @@
             :disabled="
               !control.enabled ||
               (appliedOptions.restrict &&
-                arraySchema !== undefined &&
-                arraySchema.maxItems !== undefined && control.data &&
-                control.data.length >= arraySchema.maxItems)
+                maxItems !== undefined && control.data &&
+                control.data.length >= maxItems)
             ">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
@@ -121,8 +120,8 @@
                               !control.enabled ||
                               (appliedOptions.restrict &&
                                 arraySchema !== undefined &&
-                                arraySchema.minItems !== undefined &&
-                                control.data.length <= arraySchema.minItems)
+                                minItems !== undefined &&
+                                control.data.length <= minItems)
                             "
                             @click.stop.native="suggestToDelete = index"
                           >
@@ -320,7 +319,7 @@ const controlRenderer = defineComponent({
   },
   computed: {
     noData(): boolean {
-      return !this.control.data || this.control.data.length === 0;
+      return !this.control.data || this.control.data.length === 0
     },
     foundUISchema(): UISchemaElement {
       return findUISchema(
@@ -331,14 +330,14 @@ const controlRenderer = defineComponent({
         undefined,
         this.control.uischema,
         this.control.rootSchema
-      );
+      )
     },
     arraySchema(): JsonSchema | undefined {
       return Resolve.schema(
         this.control.rootSchema,
         this.control.uischema.scope,
         this.control.rootSchema
-      );
+      )
     },
     hideAvatar(): boolean {
       return !!this.appliedOptions.hideAvatar;
@@ -346,6 +345,14 @@ const controlRenderer = defineComponent({
     cleanedErrors() {
       // @ts-ignore
       return this.control.errors.replaceAll(`is a required property`, ``)
+    },
+    maxItems() {
+      // @ts-ignore
+      return this.control.schema.maxItems || this.arraySchema?.maxItems
+    },
+    minItems() {
+      // @ts-ignore
+      return this.control.schema.minItems || this.arraySchema?.minItems
     }
   },
   methods: {
