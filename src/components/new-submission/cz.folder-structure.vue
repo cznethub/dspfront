@@ -139,11 +139,10 @@
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
                     :class="{ 'text--secondary': item.isCutting }" class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column">
-                    
                     <v-col class="d-flex flex-column flex-sm-row align-start align-sm-center">
                       <div class="item-name flex-grow-1 flex-shrink-1">{{ item.name }}</div>
-                      <div v-if="item.file" class="flex-grow-0 flex-shrink-0 ma-0 ma-sm-3 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes(2, false) }}</div>
-                      <div v-else-if="item.uploadedSize" class="flex-grow-0 flex-shrink-0 ma-0 ma-sm-3 pa-0 text-caption text--secondary">{{ item.uploadedSize | prettyBytes(2, false) }}</div>
+                      <div v-if="item.file" class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption text--secondary">{{ item.file.size | prettyBytes(2, false) }}</div>
+                      <div v-else-if="item.uploadedSize" class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption text--secondary">{{ item.uploadedSize | prettyBytes(2, false) }}</div>
                     </v-col>
                   </v-row>
                 </template>
