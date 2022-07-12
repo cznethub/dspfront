@@ -210,7 +210,8 @@
                         <v-icon v-if="isUpdating[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                       </v-btn>
-                      <v-btn :id="`sub-${index}-delete`" @click="onDelete(item, repoMetadata[item.repository].isExternal)" :disabled="isDeleting[`${item.repository}-${item.identifier}`]" rounded>
+                      <v-btn :id="`sub-${index}-delete`" @click="onDelete(item, repoMetadata[item.repository].isExternal)"
+                        :disabled="isDeleting[`${item.repository}-${item.identifier}`] || item.metadata.status === 'submitted'" rounded>
                         <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-delete</v-icon><span class="ml-1">
                         {{ isDeleting[`${item.repository}-${item.identifier}`] ? 'Deleting...' : 'Delete' }}</span>
