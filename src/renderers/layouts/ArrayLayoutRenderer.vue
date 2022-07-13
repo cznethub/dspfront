@@ -200,9 +200,7 @@ import {
   JsonSchema,
   getControlPath,
   or,
-  isObjectArrayControl,
-  and,
-  not,
+  isObjectArrayControl
 } from '@jsonforms/core';
 import { defineComponent } from "@vue/composition-api"
 import {
@@ -414,10 +412,13 @@ const useTableLayout = (uiSchema) => {
   // return uiSchema.options?.useTableLayout
 }
 
+const useArrayLayout = (uiSchema) => {
+  return uiSchema.options?.useArrayLayout
+}
+
 export const arrayLayoutRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(4, or(and(
-    isObjectArrayControl, not(useTableLayout)), isObjectArrayWithNesting) ),
+  tester: rankWith(4, or(isObjectArrayControl, isObjectArrayWithNesting, useArrayLayout)),
 };
 </script>
 

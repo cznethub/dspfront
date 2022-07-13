@@ -48,9 +48,11 @@
 
 <script lang="ts">
 import {
+  and,
   ControlElement,
   isPrimitiveArrayControl,
   JsonFormsRendererRegistryEntry,
+  not,
   rankWith,
 } from "@jsonforms/core"
 import { defineComponent } from "@vue/composition-api"
@@ -136,9 +138,13 @@ const controlRenderer = defineComponent({
 });
 export default controlRenderer;
 
+const useArrayLayout = (uiSchema) => {
+  return uiSchema.options?.useArrayLayout
+}
+
 export const arrayPrimitiveControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(4, isPrimitiveArrayControl),
+  tester: rankWith(4, and(not(useArrayLayout), isPrimitiveArrayControl)),
 }
 </script>
 
