@@ -101,7 +101,7 @@
               :page.sync="page"
               :search="filters.searchStr"
               :sort-by="sortBy.key || Object.keys(enumSubmissionSorts).find(k => enumSubmissionSorts[k] === sortBy)"
-              :sort-desc="sortDirection.label === 'Descending' || sortDirection === 'Descending'"
+              :sort-desc="sortDesc"
               item-key="identifier"
               hide-default-footer
             >
@@ -114,8 +114,9 @@
                       <v-select
                         id="sort-by"
                         :items="sortOptions"
-                        item-text="label"
                         v-model="sortBy"
+                        item-text="label"
+                        return-object
                         class="mr-1 sort-control my-md-0 my-2"
                         outlined
                         dense
@@ -127,8 +128,9 @@
                         id="sort-order"
                         :items="sortDirectionOptions"
                         v-model="sortDirection"
-                        class="sort-control my-md-0 my-2"
                         item-text="label"
+                        return-object
+                        class="sort-control my-md-0 my-2"
                         outlined
                         dense
                         hide-details="auto"
@@ -302,7 +304,7 @@ import { repoMetadata } from "@/components/submit/constants"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { Subscription } from "rxjs"
-import { itemsPerPageArray } from '@/components/submissions/constants'
+import { itemsPerPageArray, sortDirectionsOverrides } from '@/components/submissions/constants'
 // import { formatDistanceToNow } from 'date-fns'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
@@ -327,6 +329,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected repoMetadata = repoMetadata
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
+  protected sortDirectionsOverrides = sortDirectionsOverrides
   protected currentItems = []
   protected loggedInSubject = new Subscription()
 
@@ -343,10 +346,15 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return Submission.$state.sortBy
   }
 
-  protected  set sortBy(sortBy: { key: string, label: string }) {
+  protected set sortBy(sortBy: { key: string, label: string }) {
     Submission.commit((state) => {
       state.sortBy = sortBy
     })
+
+    const selectedOption = this.sortDirectionOptions.find(s => s.key === this.sortDirection.key)
+    if (selectedOption) {
+      this.sortDirection = selectedOption
+    }
   }
 
   protected get sortDirection(): { key: string, label: string } {
@@ -379,15 +387,23 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected get sortOptions() {
-    return Object.keys(EnumSubmissionSorts).map(key => { return { key: key, label: EnumSubmissionSorts[key]} })
+    return Object.keys(EnumSubmissionSorts).map(key => { 
+      return { key: key, label: EnumSubmissionSorts[key]}
+    })
   }
 
   protected get isLoggedIn() {
-      return User.$state.isLoggedIn
-    }
+    return User.$state.isLoggedIn
+  }
 
   protected get sortDirectionOptions() {
-    return Object.keys(EnumSortDirections).map(key => { return { key: key, label: EnumSortDirections[key]} })
+    return Object.keys(EnumSortDirections).map(key => { 
+      return { 
+        key, 
+        label: sortDirectionsOverrides[this.sortBy.key]?.[key]
+          || EnumSortDirections[key]
+      }
+    })
   }
 
   protected get isAnyFilterAcitve() {
@@ -416,6 +432,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       return Math.ceil(this.currentItems.length / this.itemsPerPage)
     }
     return Math.ceil(this.submissions.length / this.itemsPerPage)
+  }
+
+  protected get sortDesc(): boolean {
+    return this.sortDirection.key === 'desc'
   }
 
   created() {
