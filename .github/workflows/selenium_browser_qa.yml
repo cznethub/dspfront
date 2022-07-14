@@ -2,9 +2,10 @@ name: Selenium Browser QA Tests
 
 on:
   push:
-    # branches: [develop]
+    # TODO: change to develop when ready
+    branches: [rc1-workflow-tests]
   pull_request:
-    # branches: [develop]
+    branches: [rc1-workflow-tests]
   workflow_dispatch:
 
 jobs:
