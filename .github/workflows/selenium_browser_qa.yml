@@ -2,9 +2,9 @@ name: Selenium Browser QA Tests
 
 on:
   push:
-    branches: [develop]
+    # branches: [develop]
   pull_request:
-    branches: [develop]
+    # branches: [develop]
   workflow_dispatch:
 
 jobs:
