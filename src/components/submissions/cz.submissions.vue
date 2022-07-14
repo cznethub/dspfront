@@ -351,10 +351,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       state.sortBy = sortBy
     })
 
-    const selectedOption = this.sortDirectionOptions.find(s => s.key === this.sortDirection.key)
-    if (selectedOption) {
-      this.sortDirection = selectedOption
-    }
+    this._loadSortDirection()
   }
 
   protected get sortDirection(): { key: string, label: string } {
@@ -446,6 +443,8 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     this.loggedInSubject = User.loggedIn$.subscribe(() => {
       Submission.fetchSubmissions()
     })
+
+    this._loadSortDirection()
   }
 
   beforeDestroy() {
@@ -563,6 +562,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return repoMetadata[item.repository]
       ? repoMetadata[item.repository].name
       : ''
+  }
+
+  /** Use this function to load the correct sort option in case we have mutaded the entries to override the labels */
+  private _loadSortDirection() {
+    const selectedOption = this.sortDirectionOptions.find(s => s.key === this.sortDirection.key)
+    if (selectedOption) {
+      this.sortDirection = selectedOption
+    }
   }
 }
 </script>
