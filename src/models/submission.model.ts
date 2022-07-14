@@ -96,7 +96,8 @@ export default class Submission extends Model implements ISubmission {
     else if (repository === EnumRepositoryKeys.earthchem) {
       return {
         title: apiSubmission.title,
-        authors: apiSubmission.creators?.map(a => `${a.familyName}, ${a.givenName}`),
+        authors: [apiSubmission.leadAuthor, ...apiSubmission.contributors]
+          .map(a => `${a.familyName}, ${a.givenName}`),
         repository: repository,
         identifier: identifier,
       }

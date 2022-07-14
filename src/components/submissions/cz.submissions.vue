@@ -154,7 +154,7 @@
                         </tr>
                         <tr v-if="item.authors.length">
                           <th class="pr-4 body-2">Authors:</th>
-                          <td>{{ item.authors.join(", ") }}</td>
+                          <td>{{ item.authors.join(" | ") }}</td>
                         </tr>
                         <tr>
                           <th class="pr-4 body-2">Submission Repository:</th>
