@@ -13,19 +13,27 @@
   import { dateTimeControlRenderer } from './controls/DateTimeControlRenderer.vue'
   import { objectControlRenderer } from './controls/ObjectControlRenderer.vue'
   import { enumControlRenderer } from './controls/EnumControlRenderer.vue'
-  import { arrayPrimitiveRenderer } from './array/ArrayPrimitiveControl.vue'
+  import { arrayPrimitiveControlRenderer } from './array/ArrayPrimitiveControlRenderer.vue'
   import { anyOfRenderer } from './controls/AnyOfRenderer.vue'
   import { allOfRenderer } from './controls/AllOfRenderer.vue'
   import { radioGroupControlRenderer } from './controls/RadioGroupControlRenderer.vue'
   import { verticalLayoutRenderer } from './layouts/VerticalLayoutRenderer.vue'
   import { horizontalLayoutRenderer } from './layouts/HorizontalLayoutRenderer.vue'
+  import { integerControlRenderer } from './controls/IntegerControlRenderer.vue'
+  import { anyOfStringOrControlRenderer } from './controls/AnyOfStringOrControlRenderer.vue'
+  import { enumArrayRenderer } from './controls/EnumArrayRenderer.vue'
+  import { oneOfRenderer } from './controls/OneOfRenderer.vue'
+  import { oneOfEnumControlRenderer } from './controls/OneOfEnumControlRenderer.vue'
+  import { arrayLayoutRenderer } from './layouts/ArrayLayoutRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
 
   export const CzRenderers: JsonFormsRendererRegistryEntry[] = [
     enumControlRenderer,
-    arrayControlRenderer,
+    enumArrayRenderer,
+    arrayPrimitiveControlRenderer,
+    // arrayControlRenderer,
     groupRenderer,
     numberControlRenderer,
     stringControlRenderer,
@@ -33,11 +41,15 @@
     dateControlRenderer,
     dateTimeControlRenderer,
     objectControlRenderer,
-    arrayPrimitiveRenderer,
     anyOfRenderer,
+    oneOfRenderer,
+    oneOfEnumControlRenderer,
     allOfRenderer,
     radioGroupControlRenderer,
     verticalLayoutRenderer,
-    horizontalLayoutRenderer
+    horizontalLayoutRenderer,
+    arrayLayoutRenderer,
+    integerControlRenderer,
+    anyOfStringOrControlRenderer,
   ]
 </script>

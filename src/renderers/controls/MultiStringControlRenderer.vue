@@ -1,6 +1,7 @@
 <template>
   <v-textarea
     :id="control.id + '-input'"
+    :data-id="computedLabel.replaceAll(` `, ``)"
     @change.native="beforeChange"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined
@@ -14,13 +15,22 @@
     :value="control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
-    :placeholder="appliedOptions.placeholder"
+    :placeholder="placeholder"
     :label="computedLabel"
-    class="my-8"
     persistent-hint
     outlined
     dense
-  />
+    class="py-3"
+  >
+    <template v-slot:message>
+      <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
+        {{ control.schema.description }}
+      </div>
+      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        {{ cleanedErrors }}
+      </div>
+    </template>
+  </v-textarea>
 </template>
 
 <script lang="ts">
@@ -54,14 +64,15 @@ const controlRenderer = defineComponent({
       this.handleChange(this.control.path, undefined)
     }
 
+    // If no value loaded but there is a default, populate it
     if (!this.control.data && this.control.schema.default) {
       this.control.data = this.control.schema.default
       this.handleChange(this.control.path, this.control.data)
     }
-    
-    // If the value that was loaded is null, turn it into undefined
-    if (this.control.data === null) {
-      this.handleChange(this.control.path, undefined)
+
+    // If a value was loaded, check if HTML needs to be stripped
+    if (this.control.data && this.stripHTML) {
+      this.handleChange(this.control.path, this.strip(this.control.data))
     }
   },
   computed: {
@@ -71,6 +82,18 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       );
+    },
+    placeholder(): string {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder || ''
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
+    },
+    stripHTML(): string {
+      // @ts-ignore
+      return !!this.control.schema.options?.stripHTML
     }
   },
   methods: {
@@ -82,6 +105,10 @@ const controlRenderer = defineComponent({
       else {
         this.onChange(event)
       }
+    },
+    strip(html: string) {
+      const doc = new DOMParser().parseFromString(html, 'text/html')
+      return doc.body.textContent || ''
     }
   }
 })

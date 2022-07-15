@@ -2,11 +2,14 @@
   <v-container
     v-if="layout.visible"
     :class="`pa-0 ${styles.verticalLayout.root}`"
+    v-bind="vuetifyProps('v-container')"
   >
     <v-row
       v-for="(element, index) in layout.uischema.elements"
+      :data-id="`vertical-${index}`"
       :key="`${layout.path}-${index}`"
       no-gutters
+      v-bind="vuetifyProps(`v-row[${index}]`)"
     >
       <v-col cols="12" :class="styles.verticalLayout.item">
         <dispatch-renderer
@@ -28,16 +31,17 @@ import {
   JsonFormsRendererRegistryEntry,
   Layout,
   rankWith,
-} from '@jsonforms/core';
+} from '@jsonforms/core'
 import { defineComponent } from '@vue/composition-api'
 import {
   DispatchRenderer,
   rendererProps,
   useJsonFormsLayout,
   RendererProps,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue2'
 import { useVuetifyLayout } from '@jsonforms/vue2-vuetify'
-import { VContainer, VRow, VCol } from 'vuetify/lib';
+import { VContainer, VRow, VCol } from 'vuetify/lib'
+
 const layoutRenderer = defineComponent({
   name: 'vertical-layout-renderer',
   components: {
@@ -50,12 +54,15 @@ const layoutRenderer = defineComponent({
     ...rendererProps<Layout>(),
   },
   setup(props: RendererProps<Layout>) {
-    return useVuetifyLayout(useJsonFormsLayout(props));
+    return useVuetifyLayout(
+      useJsonFormsLayout(props)
+    )
   },
-});
-export default layoutRenderer;
+})
+
+export default layoutRenderer
 export const verticalLayoutRenderer: JsonFormsRendererRegistryEntry = {
   renderer: layoutRenderer,
   tester: rankWith(2, uiTypeIs('VerticalLayout')),
-};
+}
 </script>

@@ -4,6 +4,7 @@
     :label="computedLabel"
     :step="step"
     :id="control.id + '-input'"
+    :data-id="computedLabel.replaceAll(` `, ``)"
     :class="styles.control.input"
     :value="control.data"
     :disabled="!control.enabled"
@@ -14,11 +15,20 @@
     :min="control.schema.exclusiveMinumum"
     :error-messages="control.errors"
     @change.native="beforeChange"
-    class="my-4"
+    class="py-3"
     persistent-hint
     dense
     outlined
-  />
+  >
+    <template v-slot:message>
+      <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
+        {{ control.schema.description }}
+      </div>
+      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        {{ cleanedErrors }}
+      </div>
+    </template>
+  </v-text-field>
 </template>
 
 <script lang="ts">
@@ -65,6 +75,10 @@ const controlRenderer = defineComponent({
         this.control.required,
         !!this.appliedOptions?.hideRequiredAsterisk
       );
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
     }
   },
   methods: {

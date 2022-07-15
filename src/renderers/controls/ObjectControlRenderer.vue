@@ -1,5 +1,9 @@
 <template>
-  <div v-if="control.visible" class="cz-object" :class="{ 'is-invalid': control.errors && control.errors.length > 0}">
+  <div v-if="isFlat"
+    class="cz-object my-4" 
+    :class="{ 'is-invalid': control.errors && control.errors.length > 0}" 
+    :data-id="computedLabel.replaceAll(` `, ``)"
+    >
     <dispatch-renderer
       :visible="control.visible"
       :enabled="control.enabled"
@@ -9,10 +13,28 @@
       :renderers="control.renderers"
       :cells="control.cells"
     />
-    <div v-if="control.errors" class="ml-2 v-messages error--text" style="margin-top: -2rem;" :class="styles.control.error">
-      {{ control.errors }}
+    <div v-if="control.errors || control.schema.description">
+      <div class="text--secondary text-body-1 ml-2">{{ control.schema.description }}</div>
+      <div v-if="control.errors" class="ml-2 v-messages error--text"
+        :class="styles.control.error">
+        {{ control.errors }}
+      </div>
     </div>
   </div>
+
+  <fieldset v-else class="cz-fieldset my-4" :class="{ 'is-invalid': control.errors && control.errors.length > 0}"
+    :data-id="computedLabel.replaceAll(` `, ``)">
+    <legend class="v-label v-label--active">{{ computedLabel }}</legend>
+    <dispatch-renderer
+      :visible="control.visible"
+      :enabled="control.enabled"
+      :schema="control.schema"
+      :uischema="detailUiSchema"
+      :path="control.path"
+      :renderers="control.renderers"
+      :cells="control.cells"
+    />
+  </fieldset>
 </template>
 
 <script lang="ts">
@@ -49,6 +71,8 @@ const controlRenderer = defineComponent({
   created() {
     // console.log(this.control)
   },
+  methods: {
+  },
   computed: {
     detailUiSchema(): UISchemaElement {
       const result = findUISchema(
@@ -66,6 +90,11 @@ const controlRenderer = defineComponent({
         (result as GroupLayout).label  = this.computedLabel as string
       }
       return result
+    },
+    isFlat() {
+      // We show objects as flat by default
+      // @ts-ignore
+      return this.control.schema.options?.flat !== false
     },
   },
 })

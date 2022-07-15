@@ -1,11 +1,12 @@
-const ImageminPlugin = require('imagemin-webpack-plugin').default
-const defaultFileLoaderOptionsGenerator = require("webpack-image-resize-loader/dist/index").defaultFileLoaderOptionsGenerator
+// const ImageminPlugin = require('imagemin-webpack-plugin').default
+// const defaultFileLoaderOptionsGenerator = require("webpack-image-resize-loader/dist/index").defaultFileLoaderOptionsGenerator
+process.env.VUE_APP_VERSION = process.env.npm_package_version
 
 const configureWebpack = (config) => {
   if (process.env.NODE_ENV !== 'development') {
     // prevent class name mangling
     config.optimization.minimizer[0].options.terserOptions.keep_classnames = true
-    config.plugins.push(new ImageminPlugin())
+    // config.plugins.push(new ImageminPlugin())
   }
 }
 
@@ -65,6 +66,17 @@ const chainWebpack = (config) => {
     //     }),
     //   })
 
+
+    // config.module
+    //   .rule('babel')
+    //   .test(/\.(js|jsx|tsx)$/i)
+    //     .exclude
+    //       .add('/node_modules/**')
+    //       .end()
+    //   .use('babel-loader')
+    //   .loader('babel-loader')
+      // .query(['es2015', 'stage-3', 'env', 'vue'])
+
     config.module
       .rule('vuetify')
       .test('/\.s(c|a)ss$/')
@@ -89,6 +101,9 @@ module.exports = {
     disableHostCheck: true
   },
   transpileDependencies: [
-    'vuetify'
+    'vuetify',
+    '@jsonforms/core', 
+    '@jsonforms/vue', 
+    '@jsonforms/vue-vanilla'
   ]
 }

@@ -4,6 +4,6 @@ COPY package*.json ./
 RUN npm i @vue/cli-service
 RUN npm install --production
 COPY . .
-RUN npm run build
+RUN npm run build-prod
 EXPOSE 5001
 CMD ["npm", "run", "serve", "--", "--port", "5001", "--host", "dspfront"]

@@ -7,6 +7,7 @@ import Repository from './models/repository.model'
 import Zenodo from './models/zenodo.model'
 import External from './models/external.model'
 import CzNotification from './models/notifications.model'
+import EarthChem from './models/earthchem.model'
 
 export const router = new VueRouter({
   mode: 'history',
@@ -51,8 +52,8 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
       switch (repo) {
         case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;
         case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
+        case EnumRepositoryKeys.earthchem: activeRepository = EarthChem; break;
         case EnumRepositoryKeys.external: activeRepository = External; break;
-        default: activeRepository = HydroShare
       }
 
       if (activeRepository !== External && !(activeRepository?.$state.accessToken)) {
@@ -84,6 +85,54 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
 
     return null
   },
+
+  // https://www.digitalocean.com/community/tutorials/vuejs-vue-router-modify-head
+  // Append head tags and update page title
+  (to, from, next) => {
+    // This goes through the matched routes from last to first, finding the closest route with a title.
+    // e.g., if we have `/some/deep/nested/route` and `/some`, `/deep`, and `/nested` have titles,
+    // `/nested`'s will be chosen.
+    const nearestWithTitle = to.matched.slice().reverse().find(r => r.meta && r.meta.title)
+
+    // Find the nearest route element with meta tags.
+    const nearestWithMeta = to.matched.slice().reverse().find(r => r.meta && r.meta.metaTags)
+
+    const previousNearestWithMeta = from?.matched.slice().reverse().find(r => r.meta && r.meta.metaTags)
+
+    // If a route with a title was found, set the document (page) title to that value.
+    if(nearestWithTitle) {
+      document.title = `CZ Hub | ${nearestWithTitle.meta.title}`
+    } else if(previousNearestWithMeta) {
+      document.title = previousNearestWithMeta.meta.title
+    }
+    else {
+      document.title = `CZ Hub`
+    }
+
+    // Remove any stale meta tags from the document using the key attribute we set below.
+    Array.from(document.querySelectorAll('[data-vue-router-controlled]')).map(el => el.parentNode?.removeChild(el))
+
+    // Skip rendering meta tags if there are none.
+    if(!nearestWithMeta) return null
+
+    // Turn the meta tag definitions into actual elements in the head.
+    nearestWithMeta.meta.metaTags.map(tagDef => {
+      const tag = document.createElement('meta')
+
+      Object.keys(tagDef).forEach(key => {
+        tag.setAttribute(key, tagDef[key])
+      })
+
+      // We use this to track which meta tags we create so we don't interfere with other ones.
+      tag.setAttribute('data-vue-router-controlled', '')
+
+      return tag
+    })
+    // Add the meta tags to the document head.
+    .forEach(tag => document.head.appendChild(tag))
+
+    return null
+  }
 ]
 
 export function setupRouteGuards() {

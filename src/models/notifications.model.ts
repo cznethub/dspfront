@@ -7,6 +7,7 @@ export interface IToast {
   duration?: number
   position?: 'center' | 'left'
   isInfinite?: boolean
+  type?: 'success' | 'error' | 'info' | 'default'
   // isPersistent?: boolean // Currently has no effect
 }
 
@@ -14,8 +15,10 @@ export interface IDialog {
   title: string
   content: string
   confirmText: string
+  secondaryActionText?: string
   cancelText: string
   onConfirm: () => any
+  onSecondaryAction?: () => any
   onCancel?: () => any
 }
 
@@ -30,6 +33,7 @@ export default class CzNotification extends Model {
       duration: params.duration !== undefined ? params.duration : DEFAULT_TOAST_DURATION,
       position: params.position || 'center',
       isInfinite: !!params.isInfinite,
+      type: params.type
       // isPersistent: params.isPersistent !== undefined ? params.isPersistent : true,
     })
   }

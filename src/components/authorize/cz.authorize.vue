@@ -6,17 +6,17 @@
     
     <v-divider></v-divider>
     <v-card-title class="justify-center">
-      <div class="text-h4 mt-2">Submit to {{ repository.name }}</div>
-      <div class="text-body-1 mb-4">Permission is needed to post to this repository</div>
+      <div class="text-h4 mt-2">Access {{ repository.name }}</div>
+      <div class="text-body-1 my-4">Permission is needed to access this repository</div>
     </v-card-title>
     <v-card-text class="d-flex flex-column align-center">
-      <v-btn @click="openAuthorizePopup(repository.key)" color="primary" class="mb-4">
+      <v-btn @click="openAuthorizePopup" color="primary" class="mb-4">
         <i class="fas fa-key mr-2" />Authorize
       </v-btn>
     </v-card-text>
     <v-divider></v-divider>
     <v-card-text class="text-center mt-4">
-      <p class="text-subtitle">Follow the instructions on the next page to allow CZnet to submit to this repository.</p>
+      <p class="text-subtitle">Follow the instructions on the next page to allow CZnet to access this repository.</p>
     </v-card-text>
   </v-card>
 </template>
@@ -35,7 +35,7 @@
     @Prop() repo!: string
 
     protected get repository() {
-      return this.getRepositoryFromKey(this.repo)
+      return this.getRepositoryFromKey(this.repo) as typeof Repository
     }
 
     protected get authorizeUrl() {

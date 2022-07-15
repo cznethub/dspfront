@@ -1,8 +1,11 @@
 <template>
-  <div class="mb-8">
-    <fieldset v-if="control.visible" class="cz-fieldset" :class="{'is-invalid': tooltipMessages.length }">
+  <div class="py-4">
+    <fieldset v-if="control.visible" class="cz-fieldset" 
+      :class="{'is-invalid': control.childErrors.length }" 
+      :data-id="computedLabel.replaceAll(` `, ``)"
+    >
       <legend v-if="computedLabel"
-        @click="noData ? addButtonClick() : null"
+        @click="noData && control.enabled ? addButtonClick() : null"
         class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
         {{ computedLabel }}
       </legend>
@@ -27,112 +30,209 @@
         </template>
         {{ `Add to ${control.label}` }}
       </v-tooltip>
-
-      <div v-if="control.data && control.data.length" class="list-elements-container mt-4 pb-2">
-        <array-list-element
-          v-for="(item, index) of control.data"
-          @deleted="afterDelete"
-          :isRequired="isRequired(item)"
-          :key="index"
-          :styles="styles"
-          :moveUp="moveUp(control.path, index)"
-          :moveDown="moveDown(control.path, index)"
-          :delete="removeItems(control.path, [index])"
-          :moveUpEnabled="index > 0"
-          :moveDownEnabled="index < control.data.length - 1"
-          :label="childLabelForIndex(index)"
-          class="list-complete-item mt-2"
-        >
-          <dispatch-renderer
-            :schema="control.schema"
-            :uischema="childUiSchema"
-            :path="composePaths(control.path, `${index}`)"
-            :enabled="control.enabled && !isRequired(item)"
-            :renderers="control.renderers"
-            :cells="control.cells"
-          />
-        </array-list-element>
-      </div>
-      <!-- Layout with drag and drop: -->
-      <!-- <drop-list v-if="control.data && control.data.length" name="list-complete" class="list-elements-container mt-4 pb-2" 
-        :items="control.data || []"
-        @reorder="reorderElements($event.from, $event.to)"
-      >
-        <template v-slot:item="{ index }">
-          <drag class="item" :key="index">
-            <array-list-element
-              class="list-complete-item mt-2"
-              :styles="styles"
-              :moveUp="moveUp(control.path, index)"
-              :moveDown="moveDown(control.path, index)"
-              :delete="removeItems(control.path, [index])"
-              :moveUpEnabled="index > 0"
-              :moveDownEnabled="index < control.data.length - 1"
-              :label="childLabelForIndex(index)"
-            >
-              <dispatch-renderer
-                :schema="control.schema"
-                :uischema="childUiSchema"
-                :path="composePaths(control.path, `${index}`)"
-                :enabled="control.enabled"
-                :renderers="control.renderers"
-                :cells="control.cells"
-              />
-            </array-list-element>
-          </drag>
-        </template>
-
-        <template v-slot:feedback="{data}">
-          <div class="item feedback" :key="data">{{data}}</div>
-        </template>
-      </drop-list> -->
+    
+      <v-card v-if="control.visible && !noData" :class="styles.arrayList.root" elevation="0">
+        <v-container justify-space-around align-content-center>
+          <v-row justify="center">
+            <v-simple-table class="array-container flex">
+              <thead v-if="control.schema.type === 'object'">
+                <tr>
+                  <th
+                    v-for="(prop, index) in getValidColumnProps(control.schema)"
+                    :key="`${control.path}-header-${index}`"
+                    scope="col"
+                    class="text-body-1"
+                  >
+                    {{ title(prop) }}
+                  </th>
+                  <th
+                    v-if="control.enabled"
+                    :class="
+                      appliedOptions.showSortButtons
+                        ? 'fixed-cell'
+                        : 'fixed-cell-small'
+                    "
+                    scope="col"
+                  ></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="(element, index) in control.data"
+                  :key="`${control.path}-${index}`"
+                  :class="styles.arrayList.item"
+                >
+                  <td
+                    v-for="propName in getValidColumnProps(control.schema)"
+                    :key="
+                      composePaths(
+                        composePaths(control.path, `${index}`),
+                        propName
+                      )
+                    "
+                  >
+                    <dispatch-renderer
+                      :schema="control.schema"
+                      :uischema="resolveUiSchema(propName)"
+                      :path="composePaths(control.path, `${index}`)"
+                      :enabled="control.enabled && !isRequired(element)"
+                      :renderers="control.renderers"
+                      :cells="control.cells"
+                    />
+                  </td>
+                  <td
+                    v-if="control.enabled"
+                    :class="
+                      appliedOptions.showSortButtons
+                        ? 'fixed-cell'
+                        : 'fixed-cell-small'
+                    "
+                  >
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on: onTooltip }">
+                        <v-btn
+                          v-on="onTooltip"
+                          v-if="appliedOptions.showSortButtons"
+                          fab
+                          text
+                          elevation="0"
+                          small
+                          aria-label="Move up"
+                          :disabled="index <= 0 || !control.enabled"
+                          :class="styles.arrayList.itemMoveUp"
+                          @click.native="moveUpClick($event, index)"
+                        >
+                          <v-icon class="notranslate">mdi-arrow-up</v-icon>
+                        </v-btn>
+                      </template>
+                      Move Up
+                    </v-tooltip>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on: onTooltip }">
+                        <v-btn
+                          v-on="onTooltip"
+                          v-if="appliedOptions.showSortButtons"
+                          fab
+                          text
+                          elevation="0"
+                          small
+                          aria-label="Move down"
+                          :disabled="
+                            index >= control.data.length - 1 || !control.enabled
+                          "
+                          :class="styles.arrayList.itemMoveDown"
+                          @click.native="moveDownClick($event, index)"
+                        >
+                          <v-icon class="notranslate">mdi-arrow-down</v-icon>
+                        </v-btn>
+                      </template>
+                      Move Down
+                    </v-tooltip>
+                    <v-tooltip bottom>
+                      <template v-slot:activator="{ on: onTooltip }">
+                        <v-btn
+                          v-on="onTooltip"
+                          fab
+                          text
+                          elevation="0"
+                          small
+                          aria-label="Delete"
+                          :class="styles.arrayList.itemDelete"
+                          :disabled="
+                            !control.enabled ||
+                            (appliedOptions.restrict &&
+                              arraySchema !== undefined &&
+                              arraySchema.minItems !== undefined &&
+                              control.data.length <= arraySchema.minItems)
+                          "
+                          @click.native="removeItemsClick($event, [index])"
+                        >
+                          <v-icon class="notranslate">mdi-delete</v-icon>
+                        </v-btn>
+                      </template>
+                      Delete
+                    </v-tooltip>
+                  </td>
+                </tr>
+              </tbody>
+            </v-simple-table>
+          </v-row>
+        </v-container>
+      </v-card>
     </fieldset>
-    <div class="text--secondary text-caption ml-2">{{ control.schema.description }}</div>
-    <div v-if="control.errors" class="ml-2 v-messages error--text" :class="styles.control.error">
-      {{ control.errors }}
+    <div v-if="control.description" class="text--secondary text-body-1 ml-2">{{ control.description }}</div>
+    <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+      {{ cleanedErrors }}
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import {
+  isObjectArrayControl,
+  isPrimitiveArrayControl,
   JsonFormsRendererRegistryEntry,
+  or,
   rankWith,
   composePaths,
   createDefaultValue,
   ControlElement,
   JsonSchema,
   Resolve,
-  schemaTypeIs,
-  createLabelDescriptionFrom
+  and
 } from '@jsonforms/core';
+import startCase from 'lodash/startCase';
 import { defineComponent } from "@vue/composition-api"
 import {
+  DispatchCell,
   DispatchRenderer,
   rendererProps,
   useJsonFormsArrayControl,
   RendererProps,
   useJsonFormsControl,
-} from '@jsonforms/vue2'
-import { useVuetifyArrayControl } from '@jsonforms/vue2-vuetify'
-import { useVanillaArrayControl } from "@jsonforms/vue2-vanilla"
-import { Drag, Drop, DropList } from 'vue-easy-dnd'
-import { ErrorObject } from 'ajv';
-import { createControlElement } from '@jsonforms/core/lib/generators/uischema'
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
-import ArrayListElement from './ArrayListElement.vue'
-import findIndex from 'lodash/findIndex'
-
+} from '@jsonforms/vue2';
+import { useVuetifyArrayControl, useVuetifyControl } from '@jsonforms/vue2-vuetify'
+import {
+  VCard,
+  VCardTitle,
+  VCardText,
+  VRow,
+  VCol,
+  VContainer,
+  VToolbar,
+  VToolbarTitle,
+  VTooltip,
+  VIcon,
+  VBtn,
+  VAvatar,
+  VSpacer,
+  VSimpleTable,
+} from 'vuetify/lib';
+import ValidationBadge from '@/renderers/controls/components/ValidationBadge.vue';
+import ValidationIcon from '@/renderers/controls/components/ValidationIcon.vue';
 const isEqual = require('lodash.isequal')
 
 const controlRenderer = defineComponent({
   name: 'array-control-renderer',
   components: {
+    DispatchCell,
     DispatchRenderer,
-    ArrayListElement,
-    Drop, 
-    DropList, 
-    Drag
+    VCard,
+    VCardTitle,
+    VCardText,
+    VAvatar,
+    VRow,
+    VCol,
+    VToolbar,
+    VToolbarTitle,
+    VTooltip,
+    VIcon,
+    VBtn,
+    VSpacer,
+    VContainer,
+    ValidationIcon,
+    ValidationBadge,
+    VSimpleTable,
   },
   props: {
     ...rendererProps<ControlElement>(),
@@ -143,15 +243,26 @@ const controlRenderer = defineComponent({
         useJsonFormsControl(props),
         (value) => value || undefined
       ),  // Needed for handleChange function
-      ...useVuetifyArrayControl(
-        useVanillaArrayControl(
-          useJsonFormsArrayControl(props),
-        ),
-      )
+      ...useVuetifyArrayControl(useJsonFormsArrayControl(props))
+    };
+  },
+  computed: {
+    arraySchema(): JsonSchema | undefined {
+      return Resolve.schema(
+        this.control.rootSchema,
+        this.control.uischema.scope,
+        this.control.rootSchema
+      );
+    },
+    noData(): boolean {
+      return !this.control.data || this.control.data.length === 0;
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
     }
   },
   created() {
-    // console.log(this.control)
     // @ts-ignore
     const requiredItems = this.control.schema.contains?.enum || []
     
@@ -178,55 +289,6 @@ const controlRenderer = defineComponent({
       })
     }
   },
-  computed: {
-    arraySchema(): JsonSchema | undefined {
-      return Resolve.schema(
-        this.control.rootSchema,
-        this.control.uischema.scope,
-        this.control.rootSchema
-      )
-    },
-    noData(): boolean {
-      return !this.control.data || this.control.data.length === 0
-    },
-    tooltipMessages(): string[] {
-      const error: {
-        instancePath: string;
-        schemaPath: string;
-        labels: (string | undefined)[];
-        message: string;
-      }[] = [];
-
-      for (const e of this.control.childErrors) {
-        const errorObject = e as ErrorObject;
-        const index = findIndex(error, { schemaPath: errorObject.schemaPath });
-        if (errorObject.message) {
-          if (index == -1) {
-            error.push({
-              schemaPath: errorObject.schemaPath,
-              instancePath: errorObject.dataPath,
-              labels: [
-                createLabelDescriptionFrom(
-                  createControlElement(errorObject.dataPath),
-                  errorObject.schema as JsonSchema
-                ).text,
-              ],
-              message: errorObject.message,
-            })
-          } else {
-            error[index].labels.push(
-              createLabelDescriptionFrom(
-                createControlElement(errorObject.dataPath),
-                errorObject.schema as JsonSchema
-              ).text
-            )
-          }
-        }
-      }
-
-      return error.map((v) => v.labels.join(',') + ': ' + v.message);
-    }
-  },
   methods: {
     composePaths,
     createDefaultValue,
@@ -234,75 +296,98 @@ const controlRenderer = defineComponent({
       this.addItem(
         this.control.path,
         createDefaultValue(this.control.schema)
-      )()
+      )();
     },
-    reorderElements(index, newIndex) {
-      if (newIndex < 0 || newIndex >= this.control.data.length) {
-          return
-      } // Already at the top or bottom.
-      this.control.data.splice(newIndex, 0, this.control.data.splice(index, 1)[0])
+    moveUpClick(event: Event, toMove: number): void {
+      event.stopPropagation();
+      this.moveUp?.(this.control.path, toMove)();
+    },
+    moveDownClick(event: Event, toMove: number): void {
+      event.stopPropagation();
+      this.moveDown?.(this.control.path, toMove)();
+    },
+    removeItemsClick(event: Event, toDelete: number[]): void {
+      event.stopPropagation();
+      this.removeItems?.(this.control.path, toDelete)();
+      if (this.control.data.length === 0) {
+        this.handleChange(this.control.path, undefined)
+      }
+    },
+    getValidColumnProps(scopedSchema: JsonSchema) {
+      if (
+        scopedSchema.type === 'object' &&
+        typeof scopedSchema.properties === 'object'
+      ) {
+        return Object.keys(scopedSchema.properties).filter(
+          (prop) => {
+            const property = scopedSchema.properties![prop]
+            return property.type !== 'array'
+              // @ts-ignore
+              && !property.options?.hidden 
+          }
+        );
+      }
+      // primitives
+      return [''];
+    },
+    title(prop: string) {
+      return this.control.schema.properties?.[prop]?.title ?? startCase(prop);
+    },
+    resolveUiSchema(propName: string) {
+      return this.control.schema.properties
+        ? this.controlWithoutLabel(`#/properties/${propName}`)
+        : this.controlWithoutLabel('#');
+    },
+    controlWithoutLabel(scope: string): ControlElement {
+      return { type: 'Control', scope: scope, label: false };
     },
     // TODO: currently no way to propagate this to array elements.
     isRequired(item) {
       // @ts-ignore
-      return this.control.schema.contains?.enum?.includes(item)
-    },
-    afterDelete() {
-      if (this.control.data.length === 0) {
-        // TODO: find how to import this
-        this.handleChange(this.control.path, undefined)
-      }
+      return this.control.schema.contains?.enum?.some(requiredItem => isEqual(item, requiredItem))
     }
   },
-})
+});
 
-export default controlRenderer
+export default controlRenderer;
+
+const useTableLayout = (uiSchema) => {
+  return uiSchema.options?.useTableLayout
+}
 
 export const arrayControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(3, schemaTypeIs('array'))
-}
+  tester: rankWith(3, or(isPrimitiveArrayControl, and(isObjectArrayControl, useTableLayout))),
+};
 </script>
 
 <style lang="scss" scoped>
-  .list-elements-container {
-    ::v-deep .v-card {
-      margin: 0;
-    }
+.fixed-cell {
+  width: 150px;
+  height: 50px;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  text-align: center;
+}
 
-    ::v-deep .list-complete-item > .v-card__text {
-      overflow: auto;
-      resize: vertical;
-    }
-  }
+.fixed-cell-small {
+  width: 50px;
+  height: 50px;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  text-align: center;
+}
 
-  // .list-complete-item {
-  //   transition: all 0.35s ease;
-  // }
+.array-container tbody tr td {
+  border-bottom: none !important;
+}
 
-  // .list-complete-enter,
-  // .list-complete-leave-to {
-  //   opacity: 0;
-  // }
+.array-container tbody tr td .container {
+  padding: 0;
+  margin: 0;
+}
 
-  // .list-complete-leave-active {
-  //   position: absolute;
-  // }
-
-  .list-title {
-    position: absolute;
-    top: -2.3rem;
-    width: 100%;
-
-    & > label {
-      color: rgba(0,0,0,.6);
-      background: #FFF;
-      transform: scale(0.75);
-      font-weight: normal;
-    }
-  }
-
-  .v-alert {
-    border-color: #9e9e9e !important;
-  }
+::v-deep .array-container .v-label {
+  background-color: transparent !important;
+}
 </style>

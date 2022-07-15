@@ -1,61 +1,58 @@
 <template>
-  <!-- <control-wrapper
-    v-bind="controlWrapper"
-    :styles="styles"
-    :isFocused="isFocused"
-    :appliedOptions="appliedOptions"
-  > -->
-    <v-hover v-slot="{ hover }">
-      <v-combobox
-        v-model="tags"
-        @input="onTagsChange"
-        hide-no-data
-        :label="computedLabel"
-        :hint="control.description"
-        :delimiters="[',']"
-        :error-messages="control.errors"
-        :menu-props="{ openOnClick: false }"
-        class="my-4 mb-0"
-        small-chips
-        multiple
-        no-filter
-        outlined
-        dense
-
-        :id="control.id + '-input'"
-        :class="styles.control.input"
-        :disabled="!control.enabled"
-        :autofocus="appliedOptions.focus"
-        :placeholder="appliedOptions.placeholder"
-        :persistent-hint="persistentHint()"
-        :required="control.required"
-        :clearable="hover"
-        :value="control.data"
-        :items="control.options"
-        item-text="label"
-        item-value="value"
-        @focus="isFocused = true"
-        @blur="isFocused = false"
-      >
-        <template v-slot:selection="{ attrs, item }">
-          <v-chip
-            v-bind="attrs"
-            :close="!isRequired(item)"
-            small
-            @click:close="remove(item)"
-          >
-            {{ item }}
-          </v-chip>
-        </template>
-      </v-combobox>
-    </v-hover>
-  <!-- </control-wrapper> -->
+  <v-hover v-slot="{ hover }">
+    <v-combobox
+      v-model="tags"
+      @input="onTagsChange"
+      hide-no-data
+      :label="computedLabel"
+      :data-id="computedLabel.replaceAll(` `, ``)"
+      :hint="control.description"
+      :delimiters="delimeters"
+      :error-messages="control.errors"
+      :menu-props="{ openOnClick: false }"
+      class="py-3 mb-0"
+      small-chips
+      multiple
+      no-filter
+      outlined
+      dense
+      :id="control.id + '-input'"
+      :class="styles.control.input"
+      :disabled="!control.enabled"
+      :autofocus="appliedOptions.focus"
+      :placeholder="placeholder"
+      persistent-hint
+      :required="control.required"
+      :clearable="hover"
+      :value="control.data"
+      :items="control.options"
+      item-text="label"
+      item-value="value"
+      @focus="isFocused = true"
+      @blur="isFocused = false"
+    >
+      <template v-slot:selection="{ attrs, item }">
+        <v-chip
+          v-bind="attrs"
+          :disabled="!control.enabled"
+          :close="!isRequired(item)"
+          small
+          @click:close="remove(item)"
+        >
+          {{ item }}
+        </v-chip>
+      </template>
+    </v-combobox>
+  </v-hover>
 </template>
 
 <script lang="ts">
 import {
+  and,
+  ControlElement,
   isPrimitiveArrayControl,
   JsonFormsRendererRegistryEntry,
+  not,
   rankWith,
 } from "@jsonforms/core"
 import { defineComponent } from "@vue/composition-api"
@@ -63,7 +60,6 @@ import { rendererProps, useJsonFormsControl } from "@jsonforms/vue2"
 import { default as ControlWrapper } from '@/renderers/controls/ControlWrapper.vue'
 import { VHover } from 'vuetify/lib'
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
-// import { DisabledIconFocus } from '@/renderers/controls/directives/DisabledIconFocus'
 
 const controlRenderer = defineComponent({
   name: "control-renderer",
@@ -72,11 +68,8 @@ const controlRenderer = defineComponent({
     VHover
   },
   props: {
-    ...rendererProps(),
+    ...rendererProps<ControlElement>(),
   },
-  // directives: {
-  //   DisabledIconFocus,
-  // },
   setup(props: any) {
     const tags: string[] =[]
     
@@ -90,6 +83,10 @@ const controlRenderer = defineComponent({
   },
   created() {
     // If no initial value, load default
+    if (!this.control.data) {
+      this.onChange(undefined)
+    }
+
     if (!this.control.data && this.control.schema.default) {
       this.tags = this.control.schema.default
       this.onChange(this.tags)
@@ -100,7 +97,7 @@ const controlRenderer = defineComponent({
     }
 
     // @ts-ignore
-    const requiredValues = this.control.schema.contains.enum
+    const requiredValues = this.control.schema.contains?.enum
 
     if (requiredValues) {
       if (this.control.data) {
@@ -109,6 +106,16 @@ const controlRenderer = defineComponent({
         this.onChange(this.tags)
       }
     }
+  },
+  computed: {
+    delimeters() {
+      // @ts-ignore
+      return this.control.schema.options?.delimeter === false ? undefined : [',']
+    },
+    placeholder(): string {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder || ''
+    },
   },
   methods: {
     onTagsChange() {
@@ -131,9 +138,13 @@ const controlRenderer = defineComponent({
 });
 export default controlRenderer;
 
-export const arrayPrimitiveRenderer: JsonFormsRendererRegistryEntry = {
+const useArrayLayout = (uiSchema) => {
+  return uiSchema.options?.useArrayLayout
+}
+
+export const arrayPrimitiveControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(4, isPrimitiveArrayControl),
+  tester: rankWith(4, and(not(useArrayLayout), isPrimitiveArrayControl)),
 }
 </script>
 

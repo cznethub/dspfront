@@ -4,21 +4,21 @@
       <v-container class="d-flex align-end full-height">
         <router-link
           :to="{ path: `/` }"
-          :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
-          tag="img"
           class="logo"
-          alt="Critical Zone Network logo"
         >
+          <img :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
+            alt="Critical Zone Network logo"
+          />
         </router-link>
         <div class="spacer"></div>
         <v-card class="nav-items has-space-right d-flex" :elevation="2" v-if="!$vuetify.breakpoint.mdAndDown">
-          <v-btn to="/" :elevation="0" active-class="is-active">Home</v-btn>
-          <v-btn v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
+          <v-btn id="navbar-nav-home" to="/" :elevation="0" active-class="is-active">Home</v-btn>
+          <v-btn :id="`navbar-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`" v-for="path of paths" :key="path.to" :to="path.to" :elevation="0" active-class="is-active">{{ path.label }}</v-btn>
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
-          <v-btn v-if="!isLoggedIn" @click="openLogInDialog()" rounded>Log In</v-btn>
-          <v-btn v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
+          <v-btn id="navbar-login" v-if="!isLoggedIn" @click="openLogInDialog()" rounded>Log In</v-btn>
+          <v-btn id="navbar-logout" v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
         </template>
 
         <v-app-bar-nav-icon @click.stop="showMobileNavigation = true" v-if="$vuetify.breakpoint.mdAndDown" />
@@ -40,13 +40,14 @@
     <v-navigation-drawer class="mobile-nav-items" v-model="showMobileNavigation" temporary app>
       <v-list nav dense class="nav-items">
         <v-list-item-group class="text-body-1">
-          <v-list-item @click="showMobileNavigation = false" to="/" active-class="is-active">
+          <v-list-item id="drawer-nav-home" @click="showMobileNavigation = false" to="/" active-class="is-active">
             <v-icon class="mr-2">mdi-home</v-icon>
             <span>Home</span>
           </v-list-item>
 
           <v-list-item
             v-for="path of paths"
+            :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
             :key="path.to"
             :to="path.to"
             @click="showMobileNavigation = false"
@@ -60,12 +61,12 @@
         <v-divider class="my-4"></v-divider>
 
         <v-list-item-group class="text-body-1">
-          <v-list-item v-if="!isLoggedIn" @click="openLogInDialog(); showMobileNavigation = false">
+          <v-list-item id="drawer-nav-login" v-if="!isLoggedIn" @click="openLogInDialog(); showMobileNavigation = false">
             <v-icon class="mr-2">mdi-login</v-icon>
             <span>Log In</span>
           </v-list-item>
 
-          <v-list-item v-else @click="logOut()">
+          <v-list-item id="drawer-nav-logout" v-else @click="logOut()">
             <v-icon class="mr-2">mdi-logout</v-icon>
             <span>Log Out</span>
           </v-list-item>
@@ -76,6 +77,7 @@
     <v-snackbar
       v-model="snackbar.isActive"
       :timeout="snackbar.isInfinite ? -1 : snackbar.duration"
+      :color="snackbarColors[snackbar.type].snackbar"
     >
       <span>{{ snackbar.message }}</span>
 
@@ -83,22 +85,25 @@
         <v-btn
           @click="snackbar.isActive = false"
           v-bind="attrs"
+          :color="snackbarColors[snackbar.type].actionButton"
           >Dismiss</v-btn
         >
       </template>
     </v-snackbar>
 
     <v-dialog
+      :id="`dialog-` + dialog.title.replaceAll(` `, ``)"
       v-model="dialog.isActive"
       persistent
       width="500"
     >
       <v-card>
         <v-card-title>{{ dialog.title }}</v-card-title>
-        <v-card-text>{{ dialog.content }}</v-card-text>
+        <v-card-text class="text-body-1">{{ dialog.content }}</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
+            class="dialog-cancel"
             @click="
               dialog.isActive = false;
               dialog.onCancel();
@@ -110,6 +115,19 @@
           </v-btn>
 
           <v-btn
+            v-if="dialog.onSecondaryAction"
+            @click="
+              dialog.isActive = false;
+              dialog.onSecondaryAction();
+            "
+            color="green darken-1"
+            text
+          >
+            {{ dialog.secondaryActionText }}
+          </v-btn>
+
+          <v-btn
+            class="dialog-confirm"
             @click="
               dialog.isActive = false;
               dialog.onConfirm();
@@ -152,6 +170,27 @@ import HydroShare from "./models/hydroshare.model"
 import Submission from "./models/submission.model"
 import Repository from "./models/repository.model"
 import External from "./models/external.model"
+import EarthChem from "./models/earthchem.model"
+
+const INITIAL_DIALOG = {
+  title: "",
+  content: "",
+  confirmText: "",
+  cancelText: "",
+  isActive: false,
+  onConfirm: () => {},
+  onCancel: () => {},
+}
+
+const INITIAL_SNACKBAR =  {
+  message: '',
+  duration: DEFAULT_TOAST_DURATION,
+  position: 'center' as ('center' | 'left' | undefined),
+  type: 'default' as ('default' | 'success' | 'error' | 'info'),
+  isActive: false,
+  isInfinite: false,
+  // isPersistent: false,
+}
 
 @Component({
   name: "app",
@@ -167,45 +206,25 @@ export default class App extends Vue {
   protected loggedInSubject = new Subscription()
   protected authorizedSubject = new Subscription()
   protected isAppBarExtended = true
-
-  mounted() {
-    this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
-      this.isAppBarExtended = newValue > oldValue
-    })
+  protected snackbarColors = {
+    success: { snackbar: 'primary', actionButton: 'primary darken-2' },
+    error: { snackbar: 'error darken-2', actionButton: 'error darken-3' },
+    info: { snackbar: 'primary', actionButton: 'primary darken-2' },
+    default: { snackbar: undefined, actionButton: undefined },
   }
-
-  protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = {
-    message: "",
-    duration: DEFAULT_TOAST_DURATION,
-    position: "center",
-    isActive: false,
-    isInfinite: false,
-    // isPersistent: false,
-  }
-
-  protected dialog: IDialog & { isActive: boolean } = {
-    title: "",
-    content: "",
-    confirmText: "",
-    cancelText: "",
-    isActive: false,
-    onConfirm: () => {},
-    onCancel: () => {},
-  }
-
+  protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = INITIAL_SNACKBAR
+  protected dialog: IDialog & { isActive: boolean } = INITIAL_DIALOG
   protected logInDialog: any & { isActive: boolean } = {
     isActive: false,
     onLoggedIn: () => {},
     onCancel: () => {},
   }
-
   protected authorizeDialog: any & { isActive: boolean } = {
     isActive: false,
     repo: '',
     onAuthorized: () => {},
     onCancel: () => {},
   }
-
   protected paths = [
     { to: "/submissions", label: "My Submissions", icon: "mdi-bookmark-multiple" },
     { to: "/resources", label: "Resources", icon: "mdi-library" },
@@ -216,6 +235,12 @@ export default class App extends Vue {
 
   protected get isLoggedIn() {
     return User.$state.isLoggedIn
+  }
+
+  mounted() {
+    this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
+      this.isAppBarExtended = newValue > oldValue
+    })
   }
 
   protected openLogInDialog() {
@@ -248,7 +273,7 @@ export default class App extends Vue {
     })
 
     this.onOpenDialog = CzNotification.dialog$.subscribe((dialog: IDialog) => {
-      this.dialog = { ...this.dialog, ...dialog }
+      this.dialog = { ...INITIAL_DIALOG, ...dialog }
       this.dialog.isActive = true
     })
 
@@ -273,6 +298,9 @@ export default class App extends Vue {
           }
           else if (params.repository === EnumRepositoryKeys.zenodo) {
             await Zenodo.init()
+          }
+          else if (params.repository === EnumRepositoryKeys.earthchem) {
+            await EarthChem.init()
           }
           this.$router.push(params.redirectTo)
         }
@@ -318,6 +346,7 @@ export default class App extends Vue {
   private _initRepositories() {
     return Promise.all([
       HydroShare.init(),
+      EarthChem.init(),
       Zenodo.init(),
       External.init()
     ])
@@ -336,8 +365,12 @@ export default class App extends Vue {
 
 <style lang="scss" scoped>
 .logo {
-  max-height: 100%;
+  height: 100%;
   cursor: pointer;
+
+  img {
+    height: 100%;
+  }
 }
 
 #footer {

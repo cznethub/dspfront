@@ -67,7 +67,8 @@ export default class User extends Model {
         this.isLoginListenerSet = true // Prevents registering the listener more than once
         if (message.data.token) {
           CzNotification.toast({ 
-            message: 'You have logged in!', 
+            message: 'You have logged in!',
+            type: 'success'
           })
           await User.commit((state) => {
             state.isLoggedIn = true
@@ -81,7 +82,10 @@ export default class User extends Model {
           }
         }
         else {
-          CzNotification.toast({ message: 'Failed to Log In' })
+          CzNotification.toast({
+            message: 'Failed to Log In',
+            type: 'error'
+          })
         }
 
       }, { "once": true })
@@ -111,24 +115,29 @@ export default class User extends Model {
 
   static async logOut() {
     try {
-      await axios.get('/api/logout')  // We don't care about the response status. We at least log the user out in the frontend.
-      await User.commit((state) => {
-        state.isLoggedIn = false,
-        // state.orcid = ''
-        state.orcidAccessToken = ''
-      })
-      this.isLoginListenerSet = false
-
-      CzNotification.toast({ 
-        message: 'You have logged out!', 
-      })
-
-      if (router.currentRoute.meta?.hasLoggedInGuard) {
-        router.push({ path: '/' })
-      }
+      await axios.get('/api/logout')
+      this._logOut()
     }
     catch(e) {
-      console.error("Failed to log out", e)
+      // We don't care about the response status. We at least log the user out in the frontend.
+      this._logOut()
+    }
+  }
+
+  private static async _logOut() {
+    await User.commit((state) => {
+      state.isLoggedIn = false,
+      state.orcidAccessToken = ''
+    })
+    this.isLoginListenerSet = false
+
+    CzNotification.toast({ 
+      message: 'You have logged out!',
+      type: 'info'
+    })
+
+    if (router.currentRoute.meta?.hasLoggedInGuard) {
+      router.push({ path: '/' })
     }
   }
 }

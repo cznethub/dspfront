@@ -11,10 +11,38 @@ export interface ISubmission {
 export enum EnumRepositoryKeys {
   hydroshare = 'hydroshare',
   zenodo = 'zenodo',
-  earthChemLibrary = 'earthChemLibrary',
+  earthchem = 'earthchem',
   external = 'external',
-  // openTopography = 'openTopography',
-  // sesar = 'sesar',
+  openTopography = 'openTopography',
+  sesar = 'sesar',
+  dryad = 'dryad',
+  pangaea = 'pangaea',
+  edi = 'edi',
+  scienceBase = 'scienceBase',
+  osf = 'osf',
+  geo = 'geo',
+  bioSample = 'bioSample',
+  sra = 'sra',
+  itrdb = 'itrdb',
+  mgds = 'mgds',
+  harvardDataverse = 'harvardDataverse',
+  figshare = 'figshare',
+  magIc = 'magIc',
+  ornlDaac = 'ornlDaac',
+  bcoDmo = 'bcoDmo',
+  vegBank = 'vegBank',
+  essDive = 'geo',
+  socib = 'socib',
+  polarRock = 'polarRock',
+  crystalography = 'crystalography',
+  digitalRocksPortal = 'digitalRocksPortal',
+  doe = 'doe',
+  scienceDataBank = 'scienceDataBank',
+  tpdc = 'tpdc',
+  dataOne = 'dataOne',
+  gitHub = 'github',
+  ameriFlux = 'ameriflux',
+  hydrolearn = 'hydrolearn',
   // other = 'other'
 }
 
@@ -52,6 +80,7 @@ export interface IRepositoryUrls {
 export interface IRepository {
   key: EnumRepositoryKeys
   name: string
+  dropdownName?: string
   logoSrc: string
   description: string
   submitLabel?: string
@@ -60,8 +89,18 @@ export interface IRepository {
   uischema?: any
   schemaDefaults?: any
   isDisabled?: boolean
+  isSupported?: boolean
+  isComingSoon?: boolean
   isExternal?: boolean
   hasFolderStructure?: boolean
+  supportedFileTypes?: string[]
+  /** Largest size per file allowed for upload. In KibiBytes. https://web.archive.org/web/20150324153922/https://pacoup.com/2009/05/26/kb-kb-kib-whats-up-with-that/ */
+  maxUploadSizePerFile?: number
+  /** Maximum allowed total upload size */
+  maxTotalUploadSize?: number
+  maxNumberOfFiles?: number
+  fileNameRegex?: any
   url?: string,
+  supportUrl?: string,
   submitTooltip?: string
 }

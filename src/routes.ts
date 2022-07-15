@@ -7,6 +7,7 @@ import CzSubmit from '@/components/submit/cz.submit.vue'
 import CzResources from '@/components/resources/cz.resources.vue'
 import CzContact from '@/components/contact/cz.contact.vue'
 import CzRecommendations from '@/components/recommendations/cz.recommendations.vue'
+import CzRecomendationsQuestionnaire from '@/components/recommendations/cz.recommendations-questionnaire.vue'
 import CzSubmissions from '@/components/submissions/cz.submissions.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
 
@@ -22,6 +23,9 @@ export const routes: RouteConfig[] = [
   {
     name: 'about',
     path: '/about',
+    meta: { 
+      title: 'About',
+    },
     components: {
       content: CzAbout,
       footer: CzFooter
@@ -30,6 +34,9 @@ export const routes: RouteConfig[] = [
   {
     name: 'resources',
     path: '/resources',
+    meta: { 
+      title: 'Resources',
+    },
     components: {
       content: CzResources,
       footer: CzFooter
@@ -39,8 +46,11 @@ export const routes: RouteConfig[] = [
     name: 'recommendations',
     path: '/resources/recommendations',
     components: {
-      content: CzRecommendations,
+      content: CzRecomendationsQuestionnaire,
       footer: CzFooter
+    },
+    meta: { 
+      title: 'Repository Recommendations',
     },
   },
   {
@@ -50,7 +60,10 @@ export const routes: RouteConfig[] = [
       content: CzSubmissions,
       footer: CzFooter
     },
-    meta: { hasLoggedInGuard: true },
+    meta: { 
+      hasLoggedInGuard: true,
+      title: 'My Submissions',
+    },
   },
   {
     name: 'submit',
@@ -59,6 +72,15 @@ export const routes: RouteConfig[] = [
       content: CzSubmit,
       footer: CzFooter
     },
+    meta: {
+      title: 'Submit Data',
+      metaTags: [
+        {
+          name: "keywords",
+          content: 'HydroShare, EarthChem, Zenodo, Submit, Data, Repositories'
+        }
+      ],
+    },
     children: [
       {
         name: 'submit.repository',
@@ -66,13 +88,20 @@ export const routes: RouteConfig[] = [
         components: {
           default: CzNewSubmission,
         },
-        meta: { hasLoggedInGuard: true, hasAccessTokenGuard: true, hasUnsavedChangesGuard: true }
+        meta: { 
+          hasLoggedInGuard: true, 
+          hasAccessTokenGuard: true, 
+          hasUnsavedChangesGuard: true,
+        }
       },
     ]
   },
   {
     name: 'contact',
     path: '/contact',
+    meta: { 
+      title: 'How to Contact Us',
+    },
     components: {
       content: CzContact,
       footer: CzFooter

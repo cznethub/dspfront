@@ -101,6 +101,7 @@ export default class HydroShare extends Repository {
         if (response[index].status === 'fulfilled') {
           // @ts-ignore
           f.name = (response[index]).value.data.file_name
+          f.isUploaded = true
         }
         else {
           // Uplaod failed for this file
@@ -110,7 +111,10 @@ export default class HydroShare extends Repository {
 
       // TODO: figure out how to identify that fail was due to a name that already exists
       if (response.some(r => r.status === 'rejected')) {
-        CzNotification.toast({ message: 'Some of your files failed to upload'})
+        CzNotification.toast({
+          message: 'Some of your files failed to upload',
+          type: 'error'
+        })
       }
     }
   }
@@ -162,13 +166,14 @@ export default class HydroShare extends Repository {
         params: { "access_token": this.accessToken }
       })
   
-      if (response.status === 200) {
-        return true
-      }
+      return response.status === 200 || response.status === 204
     }
     catch(e: any) {
       console.log(e)
-      CzNotification.toast({ message: 'Failed to delete file' })
+      CzNotification.toast({
+        message: 'Failed to delete file',
+        type: 'error'
+      })
     }
 
     return false
@@ -189,6 +194,7 @@ export default class HydroShare extends Repository {
       )
   
       if (response.status === 200) {
+        // TODO: Request file metadata to be returned in HydroShare API. Use it to populate file uploaded size below.
         const files: IFile[] = response.data.files.map((fileName: string, index: number): IFile => {
           return {
             name: fileName,
@@ -196,6 +202,7 @@ export default class HydroShare extends Repository {
             isRenaming: false,
             isCutting: false,
             isDisabled: false,
+            isUploaded: true,
             key: `${Date.now().toString()}-a-${index}`,
             path: path,
             file: null,

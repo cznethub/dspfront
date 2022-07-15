@@ -1,6 +1,6 @@
 <template>
   <div class="cz-home">
-    <div class="banner text-center"
+    <div class="banner text-center px-4"
       :class="isLoggedIn ? '' : ''"
       :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.7), rgba(28, 37, 65, 0.3)), url(' + require('@/assets/img/bg-2.png') + ')', 'flex-direction': 'column' }">
       <div class="has-text-shadow">
@@ -23,25 +23,25 @@
         </div>
 
         <v-row id="features-1" justify="center" align="baseline" class="has-space-top-2x">
-          <v-col class="d-flex align-start">
+          <v-col class="d-flex align-center align-md-start flex-md-row flex-column">
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-            <div>
+            <div class="text-md-left text-center">
               <div class="text-h6">Which repository?</div>
               <p class="text--secondary text-subtitle-1">Use the Portal's repository recommendation system to determine which repository is right for submitting your research products.</p>
             </div>
           </v-col>
 
-          <v-col class="d-flex align-start">
+          <v-col class="d-flex align-center align-md-start flex-md-row flex-column">
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-            <div>
+            <div class="text-md-left text-center">
               <div class="text-h6">Which format?</div>
               <p class="text--secondary text-subtitle-1">Use CZ community recommendations to decide on formats and conventions for your data files.</p>
             </div>
           </v-col>
 
-          <v-col class="d-flex align-start">
+          <v-col class="d-flex align-center align-md-start flex-md-row flex-column">
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
-            <div>
+            <div class="text-md-left text-center">
               <div class="text-h6">Which metadata?</div>
               <p class="text--secondary text-subtitle-1">Use the Portal's submission tools to ensure your metadata are complete and that your data are well described.</p>
             </div>
@@ -65,23 +65,26 @@
           <router-link to="/resources/recommendations" class="has-space-bottom text-h6 is-clickable" tag="div">Find the Right Repository</router-link>
           <div class="text--secondary text-subtitle-1">Don't know which repository to use? Use our repository recommendation system to decide which repository is the best place for your data.</div>
         </v-col>
-        <v-col>
+        <!-- TODO: link to cataloging and discovery once implemented -->
+        <!-- <v-col>
           <v-icon >mdi-database-search</v-icon>
           <div class=" has-space-bottom text-h6">Explore CZCN Data</div>
-        </v-col>
+        </v-col> -->
       </v-row>
     </section>
 
     <v-divider/>
 
-    <section class="d-flex align-center flex-wrap">
-      <div>
+    <section class="d-flex align-center flex-column flex-lg-row">
+      <div class="text-center text-lg-left">
         <div class="has-space-bottom-2x text-h4">Make your Data FAIR</div>
         <p class="text--secondary text-subtitle-1">This Data Submission Portal works with reputable Earth Science repositories to ensure that research products you submit are <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and <u>R</u>eusable.</p>
       </div>
 
-      <div class="has-space-top-2x">
-        <a href="https://www.go-fair.org/fair-principles/" target="_blank"><img :src="require('@/assets/img/fair.png')" alt="FAIR"></a>
+      <div class="has-space-top-2x text-center text-sm-center text-right flex-shrink-0">
+        <a href="https://www.go-fair.org/fair-principles/" class="d-block full-width" target="_blank" style="max-width: 100%;">
+          <img :src="require('@/assets/img/fair.png')" alt="FAIR" style="max-width: 100%;">
+        </a>
       </div>
     </section>
 
@@ -118,7 +121,7 @@
     protected get supportedRepositories() {
       return Object.keys(repoMetadata)
         .map(key => repoMetadata[key])
-        .filter(repo => !repo.isExternal)
+        .filter(repo => !repo.isExternal && repo.isSupported)
     }
 
     protected openLogInDialog() {
@@ -167,27 +170,18 @@
     .v-icon {
       font-size: 5rem;
     }
-
-    // .:nth-child(1) .v-icon {
-    //   color: #AFB9C8;
-    // }
-    // .:nth-child(2) .v-icon {
-    //   color: #E3CDC1;
-    // }
-    // .:nth-child(3) .v-icon {
-    //   color: #A6D6D6;
-    // }
   }
 
   .repos {
-    // display: flex;
     gap: 2rem 4rem;
-    // flex-wrap: wrap;
-    // align-items: center;
-    // justify-content: center;
 
-    img {
-      height: 5rem;
+    a {
+      max-width: 100%;
+
+      img {
+        max-height: 5rem;
+        max-width: 100%;
+      }
     }
   }
 </style>

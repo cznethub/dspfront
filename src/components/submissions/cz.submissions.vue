@@ -4,10 +4,11 @@
       <div class="text-h4">My Submissions</div>
       <v-divider class="has-space-bottom" />
       <div>
-        <div class="d-flex align-center">
-          <div v-if="!isFetching && submissions.length" class="d-flex">
+        <div class="d-flex align-sm-center flex-column flex-sm-row">
+          <div v-if="!isFetching && submissions.length" class="d-flex flex-column flex-sm-row">
             <v-text-field
-              class="ma-1"
+              id="my_submissions_search"
+              class="ma-1 my-2 my-sm-0"
               v-model="filters.searchStr"
               dense
               clearable
@@ -20,11 +21,12 @@
             <v-select
               v-model="filters.repoOptions"
               :items="repoOptions"
-              class="ma-1"
+              class="ma-1 my-2 my-sm-0"
               small-chips
               deletable-chips
               clearable
               label="Repository"
+              hide-details
               chips
               multiple
               dense
@@ -37,7 +39,7 @@
                 </v-list-item-action>
                 <v-list-item-content>
                   <v-list-item-title>
-                    {{ repoMetadata[data.item].name }}
+                    {{ repoMetadata[data.item].dropdownName || repoMetadata[data.item].name }}
                   </v-list-item-title>
                 </v-list-item-content>
               </template>
@@ -51,28 +53,28 @@
             direction="bottom"
           >
             <template v-slot:activator>
-              <v-btn color="primary" rounded>
+              <v-btn color="primary" rounded block>
                 <v-icon>mdi-plus</v-icon>
                 New Submission
               </v-btn>
             </template>
 
-            <template v-for="repo of repoMetadata" >
-              <v-tooltip :key="repo.name" left transition="fade">
-                <template v-slot:activator="{ on, attrs }">
-                  <v-btn v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs">
-                    {{ repo.name }}
-                  </v-btn>
+            <v-card color="blue-grey lighten-4">
+              <v-card-text>
+                <template v-for="repo of supportedRepoMetadata" >
+                  <v-tooltip :key="repo.name" left transition="fade">
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn class="mx-0 my-4" v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs" block>
+                        {{ repo.name }}
+                      </v-btn>
+                    </template>
+                    <span>{{ repo.submitTooltip }}</span>
+                  </v-tooltip>
                 </template>
-                <span>{{ repo.submitTooltip }}</span>
-              </v-tooltip>
-              
-            </template>
+              </v-card-text>
+            </v-card>
           </v-speed-dial>
         </div>
-
-        <!-- TODO: replace for menu -->
-        <!-- @click="submitTo(repoMetadata[repo])">{{ repoMetadata[repo].name }} -->
       </div>
     </div>
 
@@ -80,9 +82,9 @@
       <v-progress-circular indeterminate color="primary" />
     </template>
     <template v-else>
-      <div v-if="submissions.length">
+      <div v-if="submissions.length" class="mt-4">
         <div>
-          <div class="has-space-bottom text-h6">
+          <div id="total_submissions" class="has-space-bottom text-h6">
             {{ submissions.length }} Total Submissions
           </div>
           <p v-if="isAnyFilterAcitve" class="text--secondary">
@@ -99,79 +101,109 @@
               :page.sync="page"
               :search="filters.searchStr"
               :sort-by="sortBy.key || Object.keys(enumSubmissionSorts).find(k => enumSubmissionSorts[k] === sortBy)"
-              :sort-desc="sortDirection.key === 'desc' || sortDirection === 'Descending'"
+              :sort-desc="sortDesc"
               item-key="identifier"
               hide-default-footer
             >
               <template v-slot:header>
-                <v-toolbar elevation="0" class="has-bg-light-gray">
-                  <template v-if="$vuetify.breakpoint.mdAndUp">
-                    <v-btn rounded @click="exportSubmissions" :disabled="!filteredSubmissions.length">Export Submissions</v-btn>
+                <div elevation="0" class="has-bg-light-gray pa-4">
+                  <div class="d-flex justify-space-between full-width flex-column flex-md-row">
+                    <v-btn class="mb-md-0 mb-4" rounded @click="exportSubmissions" :disabled="!filteredSubmissions.length">Export Submissions</v-btn>
                     <v-spacer></v-spacer>
-                    <div class="sort-controls">
+                    <div class="sort-controls d-flex flex-column flex-sm-row">
                       <v-select
+                        id="sort-by"
                         :items="sortOptions"
-                        item-text="label"
                         v-model="sortBy"
-                        class="mr-1 sort-control"
+                        item-text="label"
+                        return-object
+                        class="mr-1 sort-control my-md-0 my-2"
                         outlined
                         dense
-                        hide-details
+                        hide-details="auto"
                         label="Sort by"
                       />
                       
                       <v-select
+                        id="sort-order"
                         :items="sortDirectionOptions"
                         v-model="sortDirection"
-                        class="sort-control"
                         item-text="label"
+                        return-object
+                        class="sort-control my-md-0 my-2"
                         outlined
                         dense
-                        hide-details
+                        hide-details="auto"
                         label="Order"
                       />
                     </div>
-                  </template>
-                </v-toolbar>
+                  </div>
+                </div>
               </template>
 
               <template v-slot:default="{ items }">
                 <v-divider />
-                <div v-for="item in items" :key="item.identifier">
-                  <div class="table-item d-flex justify-space-between">
+                <div :id="`submission-${index}`" v-for="(item, index) in items" :key="item.identifier">
+                  <div class="table-item d-flex justify-space-between flex-column flex-md-row">
                     <div class="flex-grow-1 mr-4">
-                      <table class="text-body-1">
+                      <table class="text-body-1" :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
                         <tr>
-                          <th class="pr-4"></th>
-                          <td class="text-h6">{{ item.title }}</td>
+                          <td colspan="2" :id="`sub-${index}-title`" class="text-h6 title">
+                            {{ item.title }}
+                          </td>
                         </tr>
                         <tr v-if="item.authors.length">
-                          <th class="pr-4">Authors:</th>
-                          <td>{{ item.authors.join(", ") }}</td>
+                          <th class="pr-4 body-2">Authors:</th>
+                          <td>{{ item.authors.join(" | ") }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4">Submission Repository:</th>
-                          <td>{{ repoMetadata[item.repository] ? repoMetadata[item.repository].name : '' }}</td>
+                          <th class="pr-4 body-2">Submission Repository:</th>
+                          <td>{{ getRepositoryName(item) }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4">Submission Date:</th>
-                          <td>{{ new Date(item.date).toLocaleString() }}</td>
+                          <th class="pr-4 body-2">Submission Date:</th>
+                          <td :id="`sub-${index}-date`">{{ getDateInLocalTime(item.date) }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4">Identifier:</th>
+                          <th class="pr-4 body-2">Identifier:</th>
                           <td>{{ item.identifier }}</td>
+                        </tr>
+                        <tr v-if="item.metadata.status">
+                          <th class="pr-4 body-2">Status:</th>
+                          
+                          <td>
+                            <v-chip
+                              v-if="item.metadata.status === 'submitted'"
+                              color="orange"
+                              small
+                              outlined
+                            >
+                              <v-icon left small>mdi-lock</v-icon>
+                              {{ item.metadata.status }}
+                            </v-chip>
+
+                            <v-chip
+                              v-if="item.metadata.status === 'incomplete'"
+                              small
+                              outlined
+                            >
+                              <v-icon left small>mdi-pencil</v-icon>
+                              {{ item.metadata.status }}
+                            </v-chip>
+                          </td>
                         </tr>
                       </table>
                     </div>
 
-                    <div class="d-flex flex-column actions">
-                      <v-btn :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
+                    <div class="d-flex flex-column mt-sm-4 actions ">
+                      <v-btn :id="`sub-${index}-view`" :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
                       </v-btn>
-                      <v-btn @click="goToEditSubmission(item)" rounded>
+                      <v-btn :id="`sub-${index}-edit`" @click="goToEditSubmission(item)" rounded>
                         <v-icon class="mr-1">mdi-pencil</v-icon> Edit
                       </v-btn>
                       <v-btn
+                        :id="`sub-${index}-update`"
                         v-if="!repoMetadata[item.repository].isExternal"
                         @click="onUpdateRecord(item)"
                         :disabled="isUpdating[`${item.repository}-${item.identifier}`]"
@@ -180,7 +212,8 @@
                         <v-icon v-if="isUpdating[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                       </v-btn>
-                      <v-btn @click="onDelete(item, repoMetadata[item.repository].isExternal)" :disabled="isDeleting[`${item.repository}-${item.identifier}`]" rounded>
+                      <v-btn :id="`sub-${index}-delete`" @click="onDelete(item, repoMetadata[item.repository].isExternal)"
+                        :disabled="isDeleting[`${item.repository}-${item.identifier}`] || item.metadata.status === 'submitted'" rounded>
                         <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-delete</v-icon><span class="ml-1">
                         {{ isDeleting[`${item.repository}-${item.identifier}`] ? 'Deleting...' : 'Delete' }}</span>
@@ -192,7 +225,7 @@
               </template>
 
               <template v-slot:footer>
-                <div class="footer d-flex justify-space-between">
+                <div class="footer d-flex justify-space-between align-center">
                   <div>
                     <span class="grey--text text-body-2 mr-1">Items per page</span>
                     <v-menu offset-y>
@@ -214,16 +247,18 @@
                     </v-menu>
                   </div>
 
-                  <div v-if="numberOfPages">
-                    <span class="mr-4 grey--text text-body-2">
+                  <div v-if="numberOfPages" class="d-flex flex-sm-row flex-column align-center justify-center" style="gap: 0.5rem;">
+                    <span class="grey--text text-body-2 text-center">
                       Page {{ page }} of {{ numberOfPages }}
                     </span>
-                    <v-btn class="mr-2" small fab @click="formerPage" :disabled="page <= 1">
-                      <v-icon>mdi-chevron-left</v-icon>
-                    </v-btn>
-                    <v-btn small fab @click="nextPage" :disabled="page >= numberOfPages">
-                      <v-icon>mdi-chevron-right</v-icon>
-                    </v-btn>
+                    <div>
+                      <v-btn class="mr-2" small fab @click="formerPage" :disabled="page <= 1">
+                        <v-icon>mdi-chevron-left</v-icon>
+                      </v-btn>
+                      <v-btn small fab @click="nextPage" :disabled="page >= numberOfPages">
+                        <v-icon>mdi-chevron-right</v-icon>
+                      </v-btn>
+                    </div>
                   </div>
                 </div>
               </template>
@@ -257,26 +292,28 @@
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
+import { Component } from "vue-property-decorator"
 import {
   ISubmission,
   EnumSubmissionSorts,
   EnumSortDirections,
   IRepository,
+  EnumRepositoryKeys,
 } from "@/components/submissions/types"
-import { repoMetadata } from "../submit/constants"
+import { repoMetadata } from "@/components/submit/constants"
 import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { Subscription } from "rxjs"
+import { itemsPerPageArray, sortDirectionsOverrides } from '@/components/submissions/constants'
+// import { formatDistanceToNow } from 'date-fns'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
 import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
-import { itemsPerPageArray } from '@/components/submissions/constants'
 
 @Component({
   name: "cz-submissions",
-  components: {  },
+  components: { },
 })
 export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   protected isUpdating: { [key: string]: boolean } = {}
@@ -292,20 +329,32 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected repoMetadata = repoMetadata
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
+  protected sortDirectionsOverrides = sortDirectionsOverrides
   protected currentItems = []
   protected loggedInSubject = new Subscription()
+
+  protected get repoCollection(): IRepository[] {
+    return Object.keys(repoMetadata)
+      .map(r => repoMetadata[r])
+  }
+
+  protected get supportedRepoMetadata() {
+    return this.repoCollection.filter(r => r.isExternal || r.isSupported)
+  }
 
   protected get sortBy() {
     return Submission.$state.sortBy
   }
 
-  protected  set sortBy(sortBy: { key: string, label: string }) {
+  protected set sortBy(sortBy: { key: string, label: string }) {
     Submission.commit((state) => {
       state.sortBy = sortBy
     })
+
+    this._loadSortDirection()
   }
 
-  protected get sortDirection() {
+  protected get sortDirection(): { key: string, label: string } {
     return Submission.$state.sortDirection
   }
 
@@ -331,18 +380,27 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   protected get repoOptions() {
     return Object.keys(repoMetadata)
+      .filter(key => repoMetadata[key].isSupported)
   }
 
   protected get sortOptions() {
-    return Object.keys(EnumSubmissionSorts).map(key => { return { key: key, label: EnumSubmissionSorts[key]} })
+    return Object.keys(EnumSubmissionSorts).map(key => { 
+      return { key: key, label: EnumSubmissionSorts[key]}
+    })
   }
 
   protected get isLoggedIn() {
-      return User.$state.isLoggedIn
-    }
+    return User.$state.isLoggedIn
+  }
 
   protected get sortDirectionOptions() {
-    return Object.keys(EnumSortDirections).map(key => { return { key: key, label: EnumSortDirections[key]} })
+    return Object.keys(EnumSortDirections).map(key => { 
+      return { 
+        key, 
+        label: sortDirectionsOverrides[this.sortBy.key]?.[key]
+          || EnumSortDirections[key]
+      }
+    })
   }
 
   protected get isAnyFilterAcitve() {
@@ -373,6 +431,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
+  protected get sortDesc(): boolean {
+    return this.sortDirection.key === 'desc'
+  }
+
   created() {
     if (User.$state.isLoggedIn) {
       Submission.fetchSubmissions()
@@ -381,6 +443,8 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     this.loggedInSubject = User.loggedIn$.subscribe(() => {
       Submission.fetchSubmissions()
     })
+
+    this._loadSortDirection()
   }
 
   beforeDestroy() {
@@ -401,6 +465,16 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       name: "submit.repository",
       params: { repository: repo.key, id: submission.identifier },
     })
+  }
+
+  protected getDateInLocalTime(date: number): string {
+    const offset = (new Date(date)).getTimezoneOffset() * 60 * 1000
+    const localDateTime = date - offset
+    const localizedDate = new Date(localDateTime).toLocaleString()
+
+    // const ago = formatDistanceToNow(new Date(localDateTime), { addSuffix: true })
+
+    return localizedDate
   }
 
   protected async onUpdateRecord(submission: ISubmission) {
@@ -424,11 +498,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     const parsedSubmissions = this.filteredSubmissions.map((s) => {
       return {
         authors: s.authors.join('; '),
-        date: s.date,
+        date: (new Date(s.date)).toISOString(),
         title: s.title,
-        repository: s.repository,
-        url: s.url,
-        // metadata: s.metadata
+        repository: this.getRepositoryName(s),
+        url: s.url
       }
     })
 
@@ -479,6 +552,25 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
       }
     })
   }
+
+  protected getRepositoryName(item: ISubmission) {
+    // For external submissions, we return the provider name instead
+    if (item.repository === EnumRepositoryKeys.external) {
+      return item.metadata.provider?.name || ''
+    }
+
+    return repoMetadata[item.repository]
+      ? repoMetadata[item.repository].name
+      : ''
+  }
+
+  /** Use this function to load the correct sort option in case we have mutaded the entries to override the labels */
+  private _loadSortDirection() {
+    const selectedOption = this.sortDirectionOptions.find(s => s.key === this.sortDirection.key)
+    if (selectedOption) {
+      this.sortDirection = selectedOption
+    }
+  }
 }
 </script>
 
@@ -492,9 +584,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   margin: 0;
 }
 
-// #filters {
-// }
-
 .footer {
   padding: 1rem;
 }
@@ -502,8 +591,34 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 .table-item {
   padding: 1rem;
 
-  table th {
-    text-align: right;
+  table {
+    width: 100%;
+
+    &.is-xs-small {
+      tr, td, th {
+        display: block;
+        text-align: left;
+      }
+
+      th {
+        padding-top: 1rem;
+      }
+    }
+
+    th {
+      text-align: right;
+      width: 11rem;
+      font-weight: normal;
+    }
+
+    td {
+      word-break: break-word;
+
+      &.title {
+        padding-left: 1.25rem;
+        border-left: 4px solid #DDD;
+      }
+    }
   }
 }
 
@@ -513,14 +628,11 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
 .actions .v-btn {
   margin: 0.5rem 0;
-  max-width: 30rem;
+  // max-width: 30rem;
 }
 
-// .cz-submissions--header .v-card {
-// }
-
 .sort-controls {
-  max-width: 30rem;
+  // max-width: 30rem;
   display: flex;
 
   > * {
@@ -530,8 +642,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
 .v-speed-dial {
   ::v-deep .v-speed-dial__list {
+    width: auto;
+
     .v-btn {
-      width: 12rem;
+      min-width: 12rem;
     }
   }
 }
