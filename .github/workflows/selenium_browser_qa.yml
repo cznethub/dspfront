@@ -3,10 +3,13 @@ name: Selenium Browser QA Tests
 on:
   push:
     # TODO: change to develop when ready
-    branches: [rc1-workflow-tests]
+    branches: [selenium]
   pull_request:
-    branches: [rc1-workflow-tests]
+    branches: [selenium]
   workflow_dispatch:
+    inputs:
+        qa-engine-tag:
+          description: 'Ref from QA engine (Optional)'
 
 jobs:
   build-test:
@@ -15,12 +18,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Clone QA Engine
+      - name: Clone QA Engine (Latest)
         uses: actions/checkout@v2
+        if: github.event.inputs.qa-engine-tag == ''
         with:
           repository: CUAHSI/QA-AutomationEngine
           path: QA-AutomationEngine
           ref: master
+      
+      - name: Clone QA Engine by ref = ${{ github.event.inputs.qa-engine-tag }}
+        uses: actions/checkout@v2
+        if: github.event.inputs.qa-engine-tag != ''
+        with:
+          repository: CUAHSI/QA-AutomationEngine
+          path: QA-AutomationEngine
+          ref: ${{ github.event.inputs.qa-engine-tag }}
 
       - name: Set up Python 3.9
         uses: actions/setup-python@v1
@@ -93,17 +105,24 @@ jobs:
       - name: Sleep for 10 seconds
         run: sleep 10s
         shell: bash
-
-      # - name: Install dependencies
+      
+      # - name: Install DSPBack
+      #   working-directory: dspback
       #   run: make install
 
       - name: Create Output Dir
         working-directory: QA-AutomationEngine
         run: mkdir output
 
+      - name: Check 200 from DSP
+        # Fail fast if dsp isn't up
+        working-directory: QA-AutomationEngine
+        run: |
+          ./hydrotest dsp DspTestSuite.test_base_000001_home_page --headless --browser chrome --base https://localhost 2>&1 | tee -a output/home_page_check.txt
+          if grep -rl "FAILED (" ./output >/dev/null; then echo "Failed to connect" && exit 1; fi
+
       - name: Run Tests
         working-directory: QA-AutomationEngine
-        # https://dsp-alpha.criticalzone.org/
         run: |
           ./hydrotest dsp DspHydroshareTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/hydroshare-browser-test-coverage.txt
           ./hydrotest dsp DspExternalTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/external-browser-test-coverage.txt
@@ -119,5 +138,4 @@ jobs:
       - name: Check whether passing
         working-directory: QA-AutomationEngine/output
         run: |
-          grep -rh "ERROR:" .
-          if grep -rl "FAILED (" . >/dev/null; then grep -rh "FAIL:" . && exit 1; else grep -rh "^Ran [0-9]* test in [0-9]*\.*[0-9]*s$\n\n^OK" .; fi
+          if grep -rl -e "FAILED (" -e "ERROR:" . >/dev/null; then grep -rh -e "FAIL:" -e "ERROR:" . && exit 1; else grep -rh "^Ran [0-9]* test in [0-9]*\.*[0-9]*s$\n\n^OK" .; fi
