@@ -122,6 +122,13 @@ jobs:
           if grep -rl "FAILED (" ./output >/dev/null; then echo "Failed to connect" && exit 1; fi
 
       - name: Run Tests
+        env:
+          HS_USERNAME: ${{ secrets.HS_USERNAME }}
+          HS_PASSWORD: ${{ secrets.HS_PASSWORD }}
+          CZ_USERNAME: ${{ secrets.CZ_USERNAME }}
+          CZ_PASSWORD: ${{ secrets.CZ_PASSWORD }}
+          CZ_EARTHCHEM_USERNAME: ${{ secrets.CZ_EARTHCHEM_USERNAME }}
+          CZ_EARTHCHEM_PASSWORD: ${{ secrets.CZ_EARTHCHEM_PASSWORD }}
         working-directory: QA-AutomationEngine
         run: |
           ./hydrotest dsp DspHydroshareTestSuite --headless --browser chrome --base https://localhost 2>&1 | tee -a output/hydroshare-browser-test-coverage.txt
