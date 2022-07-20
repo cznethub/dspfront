@@ -8,8 +8,10 @@ on:
     branches: [selenium]
   workflow_dispatch:
     inputs:
-        qa-engine-tag:
-          description: 'Ref from QA engine (Optional)'
+      qa-engine-tag:
+        description: 'Ref from QA engine (Optional)'
+      dsp-back-ref:
+          description: 'Ref from DSPBACK (Optional)'
 
 jobs:
   build-test:
@@ -84,12 +86,21 @@ jobs:
       # - name: Geckodriver
       #   run: sudo apt install firefox-geckodriver
 
-      - name: Clone DSPBACK
+      - name: Clone DSPBACK latest
         uses: actions/checkout@v2
+        if: github.event.inputs.dsp-back-ref == ''
         with:
           repository: cznethub/dspback
           path: dspback
           ref: master
+      
+      - name: Clone DSPBACK, ref = ${{ github.event.inputs.dsp-back-ref }}
+        uses: actions/checkout@v2
+        if: github.event.inputs.dsp-back-ref != ''
+        with:
+          repository: cznethub/dspback
+          path: dspback
+          ref: ${{ github.event.inputs.dsp-back-ref }}
 
       - name: Build DSPBack
         working-directory: dspback
