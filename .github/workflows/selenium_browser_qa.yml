@@ -12,6 +12,9 @@ on:
         description: 'Ref from QA engine (Optional)'
       dsp-back-ref:
           description: 'Ref from DSPBACK (Optional)'
+      use-gh-env:
+        type: boolean
+        description: Use dspback .env file stored in GH secrets (vs default in dspback repo)
 
 jobs:
   build-test:
@@ -103,6 +106,7 @@ jobs:
           ref: ${{ github.event.inputs.dsp-back-ref }}
       
       - name: Retrieve base64 from secrets and decode to .env file
+        if: github.event.inputs.use-gh-env == 'true'
         working-directory: dspback
         env:
           DSP_TEST_ENV_BASE64: ${{ secrets.DSP_TEST_ENV_BASE64 }}
