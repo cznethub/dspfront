@@ -6,7 +6,8 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "build-prod": "vue-cli-service build --mode=production"
+    "build-prod": "vue-cli-service build --mode=production",
+    "serve-prod": "vue-cli-service serve --mode=production"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
