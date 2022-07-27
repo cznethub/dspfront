@@ -345,7 +345,7 @@ export default class Repository extends Model implements IRepository {
     }
     catch(e: any) {
       console.log(e)
-      if (e.response?.status === 401) {
+      if (e.response?.status === 401 || e.response?.status === 403) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''
@@ -355,7 +355,7 @@ export default class Repository extends Model implements IRepository {
           type: 'error'
         })
 
-        Repository.openAuthorizeDialog(this.entity)
+        Repository.openAuthorizeDialog(repository)
       }
       else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         // Resource has been deleted in repository
@@ -371,11 +371,11 @@ export default class Repository extends Model implements IRepository {
       }
       else {
         console.error(`${repository}: failed to update submission.`, e.response)
+        CzNotification.toast({
+          message: 'Failed to update record',
+          type: 'error'
+        })
       }
-      CzNotification.toast({
-        message: 'Failed to update record',
-        type: 'error'
-      })
     }
   }
 

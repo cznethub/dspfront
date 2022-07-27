@@ -173,7 +173,7 @@
                           
                           <td>
                             <v-chip
-                              v-if="item.metadata.status === 'submitted'"
+                              v-if="item.metadata.status !== 'incomplete'"
                               color="orange"
                               small
                               outlined
@@ -183,7 +183,7 @@
                             </v-chip>
 
                             <v-chip
-                              v-if="item.metadata.status === 'incomplete'"
+                              v-else
                               small
                               outlined
                             >
@@ -213,7 +213,7 @@
                         <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                       </v-btn>
                       <v-btn :id="`sub-${index}-delete`" @click="onDelete(item, repoMetadata[item.repository].isExternal)"
-                        :disabled="isDeleting[`${item.repository}-${item.identifier}`] || item.metadata.status === 'submitted'" rounded>
+                        :disabled="isDeleting[`${item.repository}-${item.identifier}`] || item.metadata.status && item.metadata.status !== 'incomplete'" rounded>
                         <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-delete</v-icon><span class="ml-1">
                         {{ isDeleting[`${item.repository}-${item.identifier}`] ? 'Deleting...' : 'Delete' }}</span>
