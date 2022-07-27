@@ -6,4 +6,4 @@ RUN npm install --production
 COPY . .
 RUN npm run build-prod
 EXPOSE 5001
-CMD ["npm", "run", "serve", "--", "--port", "5001", "--host", "dspfront"]
+CMD ["npm", "run", "serve-prod", "--", "--port", "5001", "--host", "dspfront"]
