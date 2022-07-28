@@ -33,7 +33,7 @@
       </v-container>
     </v-main>
 
-    <v-footer>
+    <v-footer class="mt-8">
       <router-view name="footer" />
     </v-footer>
 
@@ -391,6 +391,16 @@ export default class App extends Vue {
 .nav-items {
   border-radius: 2rem !important;
   overflow: hidden;
+
+  & > a.v-btn:first-child {
+    border-top-left-radius: 2rem !important;
+    border-bottom-left-radius: 2rem !important;
+  }
+
+  & > a.v-btn:last-child {
+    border-top-right-radius: 2rem !important;
+    border-bottom-right-radius: 2rem !important;
+  }
 
   .v-btn {
     margin: 0;
