@@ -392,6 +392,16 @@ export default class App extends Vue {
   border-radius: 2rem !important;
   overflow: hidden;
 
+  & > a.v-btn:first-child {
+    border-top-left-radius: 2rem !important;
+    border-bottom-left-radius: 2rem !important;
+  }
+
+  & > a.v-btn:last-child {
+    border-top-right-radius: 2rem !important;
+    border-bottom-right-radius: 2rem !important;
+  }
+
   .v-btn {
     margin: 0;
     border-radius: 0;
