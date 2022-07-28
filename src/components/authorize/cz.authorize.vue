@@ -58,6 +58,10 @@
 
 <style lang="scss" scoped>
   .v-card {
+    .v-card__title {
+      word-break: break-word;
+    }
+
     .v-card-media {
       background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);
       img {

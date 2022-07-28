@@ -1,6 +1,6 @@
-:root {
+// :root {
 
-}
+// }
 @import '~@fortawesome/fontawesome-free/css/all.min.css';
 
 html {
@@ -17,8 +17,7 @@ section {
 }
 
 #main-container {
-  min-height: 100%;
-  height: -webkit-fill-available;
+  height: 100%;
 
   & > .v-sheet {
     height: 100%;

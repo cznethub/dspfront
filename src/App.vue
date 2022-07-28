@@ -33,7 +33,7 @@
       </v-container>
     </v-main>
 
-    <v-footer>
+    <v-footer class="mt-8">
       <router-view name="footer" />
     </v-footer>
 
