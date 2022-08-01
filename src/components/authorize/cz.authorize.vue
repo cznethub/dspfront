@@ -1,12 +1,12 @@
 <template>
   <v-card class="cz-authorize">
     <div class="v-card-media py-4 px-8">
-      <v-img :src="repoLogoSrc" :alt="repository.name" width="100%" height="8rem" contain />
+      <v-img :src="repoLogoSrc" :alt="repoName" width="100%" height="8rem" contain />
     </div>
     
     <v-divider></v-divider>
     <v-card-title class="justify-center">
-      <div class="text-h4 mt-2">Access {{ repository.name }}</div>
+      <div class="text-h4 mt-2">Access {{ repoName }}</div>
       <div class="text-body-1 my-4">Permission is needed to access this repository</div>
     </v-card-title>
     <v-card-text class="d-flex flex-column align-center">
@@ -46,6 +46,10 @@
       return this.repository.get()?.logoSrc
     }
 
+    protected get repoName() {
+      return this.repository.get()?.name
+    }
+
     protected async openAuthorizePopup() {
       Repository.authorize(this.repository, this.onAuthorized)
     }
@@ -58,6 +62,10 @@
 
 <style lang="scss" scoped>
   .v-card {
+    .v-card__title {
+      word-break: break-word;
+    }
+
     .v-card-media {
       background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);
       img {
