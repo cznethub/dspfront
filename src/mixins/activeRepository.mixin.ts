@@ -14,7 +14,7 @@ export class ActiveRepositoryMixin extends Vue {
     return this.getRepositoryFromKey(key) as typeof Repository
   }
 
-  protected getRepositoryFromKey(key: string) {
+  protected getRepositoryFromKey(key: string): typeof Repository | undefined {
     switch (key) {
       case EnumRepositoryKeys.hydroshare: return HydroShare
       case EnumRepositoryKeys.zenodo: return Zenodo

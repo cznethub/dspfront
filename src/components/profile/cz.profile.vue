@@ -1,10 +1,10 @@
 <template>
   <div class="cz-profile">
-    <v-navigation-drawer>
+    <v-navigation-drawer permanent :mini-variant="$vuetify.breakpoint.mdAndDown">
       <template v-slot:prepend>
         <v-list-item two-line>
           <v-list-item-avatar>
-            <v-icon>fab fa-orcid</v-icon>
+            <v-icon left>fab fa-orcid</v-icon>
           </v-list-item-avatar>
 
           <v-list-item-content>

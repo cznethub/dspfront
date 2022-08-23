@@ -32,7 +32,7 @@
                 </v-btn>
               </template>
 
-              <v-list>
+              <v-list class="pa-0">
                 <v-list-item :to="{ path: '/profile' }">
                   <v-list-item-icon class="mr-2">
                     <v-icon>mdi-account-circle</v-icon>
@@ -47,7 +47,7 @@
 
                 <v-list-item id="navbar-logout" @click="logOut()">
                   <v-list-item-icon class="mr-2">
-                    <v-icon >mdi-logout</v-icon>
+                    <v-icon>mdi-logout</v-icon>
                   </v-list-item-icon>
 
                   <v-list-item-content>
@@ -104,10 +104,17 @@
             <span>Log In</span>
           </v-list-item>
 
-          <v-list-item id="drawer-nav-logout" v-else @click="logOut()">
-            <v-icon class="mr-2">mdi-logout</v-icon>
-            <span>Log Out</span>
-          </v-list-item>
+          <template v-else>
+            <v-list-item :to="{ path: '/profile' }">
+              <v-icon class="mr-2">mdi-account-circle</v-icon>
+              <span>Account & Settings</span>
+            </v-list-item>
+
+            <v-list-item id="drawer-nav-logout" @click="logOut()">
+              <v-icon class="mr-2">mdi-logout</v-icon>
+              <span>Log Out</span>
+            </v-list-item>
+          </template>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
