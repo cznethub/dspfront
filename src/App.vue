@@ -18,7 +18,45 @@
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
           <v-btn id="navbar-login" v-if="!isLoggedIn" @click="openLogInDialog()" rounded>Log In</v-btn>
-          <v-btn id="navbar-logout" v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
+          <template v-else>
+            <v-menu bottom left>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  elevation="2"
+                  rounded
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>mdi-account-circle</v-icon>
+                  <v-icon>mdi-menu-down</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list class="pa-0">
+                <v-list-item :to="{ path: '/profile' }">
+                  <v-list-item-icon class="mr-2">
+                    <v-icon>mdi-account-circle</v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>Account & Settings</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+
+                <v-divider></v-divider>
+
+                <v-list-item id="navbar-logout" @click="logOut()">
+                  <v-list-item-icon class="mr-2">
+                    <v-icon>mdi-logout</v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>Log Out</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
         </template>
 
         <v-app-bar-nav-icon @click.stop="showMobileNavigation = true" v-if="$vuetify.breakpoint.mdAndDown" />
@@ -28,7 +66,7 @@
     <v-main app>
       <v-container id="main-container">
         <v-sheet :elevation="$route.meta.hideMainSheet ? 0 : 2">
-          <router-view v-if="!isLoading" name="content" />
+          <router-view v-if="!isLoading" name="content" @logout="logOut" />
         </v-sheet>
       </v-container>
     </v-main>
@@ -66,10 +104,17 @@
             <span>Log In</span>
           </v-list-item>
 
-          <v-list-item id="drawer-nav-logout" v-else @click="logOut()">
-            <v-icon class="mr-2">mdi-logout</v-icon>
-            <span>Log Out</span>
-          </v-list-item>
+          <template v-else>
+            <v-list-item :to="{ path: '/profile' }">
+              <v-icon class="mr-2">mdi-account-circle</v-icon>
+              <span>Account & Settings</span>
+            </v-list-item>
+
+            <v-list-item id="drawer-nav-logout" @click="logOut()">
+              <v-icon class="mr-2">mdi-logout</v-icon>
+              <span>Log Out</span>
+            </v-list-item>
+          </template>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
@@ -254,7 +299,7 @@ export default class App extends Vue {
       confirmText: "Log Out",
       cancelText: "Cancel",
       onConfirm: () => {
-        User.logOut();
+        User.logOut()
       },
     })
   }
