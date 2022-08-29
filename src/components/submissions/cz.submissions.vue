@@ -288,6 +288,47 @@
         </template>
       </div>
     </template>
+
+    <v-dialog
+      id="dialog-delete-submission"
+      v-model="isDeleteDialogActive"
+      persistent
+      width="500"
+    >
+      <v-card>
+        <v-card-title>Delete this submission?</v-card-title>
+        <v-card-text v-if="deleteDialogData" class="text-body-1">
+          <p>This action will attempt to delete this submission record in the Data Submission Portal.</p>
+          <v-checkbox
+            v-if="!deleteDialogData.isExternal"
+            color="red"
+            v-model="alsoDeleteInRepository"
+            :label="`Also delete in ${this.getRepositoryFromKey(deleteDialogData.submission.repository).name}`"
+            hide-details
+          >
+          </v-checkbox>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            class="dialog-cancel"
+            @click="isDeleteDialogActive = false"
+            text
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn
+            class="dialog-confirm"
+            @click="isDeleteDialogActive = false; onDeleteSubmission()"
+            color="red darken-1"
+            text
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -308,7 +349,7 @@ import { itemsPerPageArray, sortDirectionsOverrides } from '@/components/submiss
 // import { formatDistanceToNow } from 'date-fns'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
-import CzNotification from "@/models/notifications.model"
+// import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
 
 @Component({
@@ -318,6 +359,9 @@ import User from "@/models/user.model"
 export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
+
+  protected isDeleteDialogActive = false
+  protected deleteDialogData: { submission: ISubmission, isExternal: boolean } | null = null 
 
   protected filters: {
     repoOptions: string[]
@@ -418,6 +462,16 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   protected get submissions(): ISubmission[] {
     return Submission.all()
+  }
+
+  protected get alsoDeleteInRepository() {
+    return Submission.$state.alsoDeleteInRepository
+  }
+
+  protected set alsoDeleteInRepository(value: boolean) {
+    Submission.commit((state) => {
+      state.alsoDeleteInRepository = value
+    })
   }
 
   protected updatePagination(page, pageSize, sort, sortOrder) {
@@ -530,27 +584,51 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected onDelete(submission: ISubmission, isExternal: boolean) {
-    CzNotification.openDialog({
-      title: 'Delete this submission?',
-      content: isExternal 
-        ? 'This action will delete metadata about your submission from the Data Submission Portal. It will not affect your resource in the external repository.'
-        : 'THIS ACTION WILL ALSO ATTEMPT TO DELETE THE SUBMISSION IN THE REPOSITORY.',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
-      onConfirm: async () => {
-        this.$set(
-          this.isDeleting,
-          `${submission.repository}-${submission.identifier}`,
-          true
-        )
-        await Repository.deleteSubmission(submission.identifier, submission.repository)
-        this.$set(
-          this.isDeleting,
-          `${submission.repository}-${submission.identifier}`,
-          false
-        )
-      }
-    })
+    this.deleteDialogData = { submission, isExternal }
+    this.isDeleteDialogActive = true
+
+    // CzNotification.openDialog({
+    //   title: 'Delete this submission?',
+    //   content: isExternal 
+    //     ? 'This action will delete metadata about your submission from the Data Submission Portal. It will not affect your resource in the external repository.'
+    //     : 'THIS ACTION WILL ALSO ATTEMPT TO DELETE THE SUBMISSION IN THE REPOSITORY.',
+    //   confirmText: 'Delete',
+    //   cancelText: 'Cancel',
+    //   onConfirm: async () => {
+    //     this.$set(
+    //       this.isDeleting,
+    //       `${submission.repository}-${submission.identifier}`,
+    //       true
+    //     )
+    //     await Repository.deleteSubmission(submission.identifier, submission.repository)
+    //     this.$set(
+    //       this.isDeleting,
+    //       `${submission.repository}-${submission.identifier}`,
+    //       false
+    //     )
+    //   }
+    // })
+  }
+
+  protected async onDeleteSubmission() {
+    this.$set(
+      this.isDeleting,
+      `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
+      true
+    )
+
+    if (this.deleteDialogData) {
+      const deleteInRepo = !this.deleteDialogData.isExternal && this.alsoDeleteInRepository
+      await Repository.deleteSubmission(this.deleteDialogData.submission.identifier, this.deleteDialogData.submission.repository, deleteInRepo)
+    }
+
+    this.$set(
+      this.isDeleting,
+      `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
+      false
+    )
+
+    this.deleteDialogData = null
   }
 
   protected getRepositoryName(item: ISubmission) {

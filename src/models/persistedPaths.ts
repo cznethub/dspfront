@@ -16,4 +16,5 @@ export const persistedPaths = [
   'entities.' + Submission.entity + '.sortBy',
   'entities.' + Submission.entity + '.sortDirection',
   'entities.' + Submission.entity + '.itemsPerPage',
+  'entities.' + Submission.entity + '.alsoDeleteInRepository',
 ]

@@ -153,7 +153,6 @@
               dialog.isActive = false;
               dialog.onCancel();
             "
-            color="green darken-1"
             text
           >
             {{ dialog.cancelText }}
