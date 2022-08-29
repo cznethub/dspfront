@@ -1,6 +1,6 @@
 <template>
   <div class="cz-profile">
-    <v-navigation-drawer permanent :mini-variant="$vuetify.breakpoint.mdAndDown">
+    <v-navigation-drawer permanent :mini-variant="$vuetify.breakpoint.mdAndDown" class="flex-shrink-0">
       <template v-slot:prepend>
         <v-list-item two-line>
           <v-list-item-avatar>
@@ -14,7 +14,7 @@
         </v-list-item>
       </template>
 
-      <v-divider></v-divider>
+      <v-divider/>
 
       <v-list dense>
         <v-list-item link :to="{ path: '/profile/account' }" active-class="active">
@@ -36,6 +36,16 @@
             <v-list-item-title>Authorized Repositories</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
+
+        <v-list-item id="drawer-nav-logout" @click="logOut()">
+          <v-list-item-icon>
+            <v-icon>mdi-logout</v-icon>
+          </v-list-item-icon>
+
+          <v-list-item-content>
+            <v-list-item-title>Log Out</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
       </v-list>
     </v-navigation-drawer>
 
@@ -54,7 +64,9 @@
     components: { },
   })
   export default class CzProfile extends Vue {
-
+    protected logOut() {
+      this.$emit('logout')
+    }
   }
 </script>
 

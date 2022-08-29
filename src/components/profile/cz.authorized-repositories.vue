@@ -1,7 +1,9 @@
 <template>
   <div class="cz-authorized-repositories">
     <div class="text-h4">Authorized Repositories</div>
-    <v-divider class="mb-8"></v-divider>
+    <v-divider class="mb-4"></v-divider>
+
+    <p class="text-body-1 mb-4">The Data Submission Portal needs your permission to access and interact with the repositories below.</p>
 
     <v-card v-for="repo of supportedRepositories" :key="repo.key" class="mb-6">
       <v-card-title :class="{'is-small': $vuetify.breakpoint.mdAndDown }">
@@ -13,7 +15,9 @@
               Authorized
             </v-chip>
           </div>
-          <div class="text-right"><v-btn small>Revoke</v-btn></div>
+          <div class="text-right">
+            <!-- <v-btn small>Revoke</v-btn> -->
+          </div>
         </template>
         <template v-else>
           <div>
@@ -83,6 +87,10 @@
 </script>
 
 <style lang="scss" scoped>
+  .v-card {
+    max-width: 40rem;
+  }
+
   .v-card__title {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;

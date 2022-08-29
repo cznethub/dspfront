@@ -66,7 +66,7 @@
     <v-main app>
       <v-container id="main-container">
         <v-sheet :elevation="$route.meta.hideMainSheet ? 0 : 2">
-          <router-view v-if="!isLoading" name="content" />
+          <router-view v-if="!isLoading" name="content" @logout="logOut" />
         </v-sheet>
       </v-container>
     </v-main>
@@ -299,7 +299,7 @@ export default class App extends Vue {
       confirmText: "Log Out",
       cancelText: "Cancel",
       onConfirm: () => {
-        User.logOut();
+        User.logOut()
       },
     })
   }

@@ -1,7 +1,9 @@
 <template>
   <div class="cz-account">
     <div class="text-h4">Account</div>
-    <v-divider class="mb-8"></v-divider>
+    <v-divider class="mb-4"></v-divider>
+
+    <p class="text-body-1 mb-8">The Data Submission Portal uses your ORCID account to manage and access data. If you are a developer, use this token to interact with the Data Submission Portal API.</p>
 
     <v-text-field
       label="ORCID access token"
@@ -9,7 +11,6 @@
       outlined
       readonly
       append-icon="mdi-content-copy"
-      ref="inputToken"
       @click:append="onCopy"
     ></v-text-field>
   </div>
