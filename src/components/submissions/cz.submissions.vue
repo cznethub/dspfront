@@ -349,7 +349,6 @@ import { itemsPerPageArray, sortDirectionsOverrides } from '@/components/submiss
 // import { formatDistanceToNow } from 'date-fns'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
-// import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
 
 @Component({
@@ -586,28 +585,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected onDelete(submission: ISubmission, isExternal: boolean) {
     this.deleteDialogData = { submission, isExternal }
     this.isDeleteDialogActive = true
-
-    // CzNotification.openDialog({
-    //   title: 'Delete this submission?',
-    //   content: isExternal 
-    //     ? 'This action will delete metadata about your submission from the Data Submission Portal. It will not affect your resource in the external repository.'
-    //     : 'THIS ACTION WILL ALSO ATTEMPT TO DELETE THE SUBMISSION IN THE REPOSITORY.',
-    //   confirmText: 'Delete',
-    //   cancelText: 'Cancel',
-    //   onConfirm: async () => {
-    //     this.$set(
-    //       this.isDeleting,
-    //       `${submission.repository}-${submission.identifier}`,
-    //       true
-    //     )
-    //     await Repository.deleteSubmission(submission.identifier, submission.repository)
-    //     this.$set(
-    //       this.isDeleting,
-    //       `${submission.repository}-${submission.identifier}`,
-    //       false
-    //     )
-    //   }
-    // })
   }
 
   protected async onDeleteSubmission() {
