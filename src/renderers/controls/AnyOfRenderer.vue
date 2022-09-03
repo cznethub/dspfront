@@ -119,7 +119,7 @@
         </template>
       </template>
     </fieldset>
-    <div v-if="control.schema.description" class="text--secondary text-body-1 ml-2">{{ control.schema.description }}</div>
+    <div v-if="control.schema.description" class="text--secondary text-body-1 ml-2 mt-2">{{ control.schema.description }}</div>
     <div v-if="control.errors" class="ml-2 v-messages error--text">
       <v-divider v-if="isFlat" class="mb-4"></v-divider>
       {{ control.errors }}
