@@ -270,9 +270,15 @@ const controlRenderer = defineComponent({
           this.handleChange(this.control.path, this.tabData[this.selectedIndex])
         }
         else {
+          const schema = this.anyOfRenderInfos[this.selectedIndex].schema
+          const val = schema.type === 'object' || schema.type === 'array'
+            ? createDefaultValue(schema)
+            : undefined
+          
+          // Only create default values for objects and arrays
           this.handleChange(
             this.control.path,
-            createDefaultValue(this.anyOfRenderInfos[this.selectedIndex].schema)
+            val
           )
         }
       })

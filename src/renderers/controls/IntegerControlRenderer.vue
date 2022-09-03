@@ -7,15 +7,25 @@
     :class="styles.control.input"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
-    :placeholder="appliedOptions.placeholder"
+    :placeholder="placeholder"
     :label="computedLabel"
     :hint="control.description"
     persistent-hint
+    dense
     :required="control.required"
     :error-messages="control.errors"
     :value="control.data"
     @change.native="beforeChange($event)"
-  />
+  >
+    <template v-slot:message>
+      <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
+        {{ control.schema.description }}
+      </div>
+      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        {{ cleanedErrors }}
+      </div>
+    </template>
+  </v-text-field>
 </template>
 
 <script lang="ts">
@@ -47,13 +57,24 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVuetifyControl(
       useJsonFormsControl(props),
-      (value) => parseInt(value, 10) || undefined
+      (value) => {
+        const val = parseInt(value, 10)
+        return isNaN(val) ? undefined : val
+      }
     );
   },
   computed: {
     step(): number {
       const options: any = this.appliedOptions;
       return options.step ?? 1;
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
+    },
+    placeholder(): string {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder || ''
     },
   },
   methods: {
@@ -63,7 +84,7 @@ const controlRenderer = defineComponent({
         this.handleChange(this.control.path, undefined)
       }
       else {
-        this.onChange(event)
+        this.onChange(event.target.value)
       }
     }
   }
