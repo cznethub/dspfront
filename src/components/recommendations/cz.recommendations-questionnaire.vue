@@ -24,7 +24,7 @@
           <template v-if="step.options">
             <v-card class="mb-12 pa-4" outlined min-height="300px">
               <div class="text-heading-5">{{ step.next }}</div>
-              <v-radio-group v-model="step.selectedOption" @change="onOptionChanged" column>
+              <v-radio-group v-model="step.selectedOption" @change="onOptionChanged">
                 <v-radio
                   v-for="(option, index) of step.options" :key="index"
                   :label="option.label"
@@ -158,9 +158,6 @@
     private _trimFurtherSteps() {
       this.steps = this.steps.slice(0, this.currentStepIndex + 1)
     }
-
-    created() {
-    }
   }
 </script>
 
@@ -179,6 +176,11 @@
     .v-stepper__step--active {
       background: rgba(0,0,0,0.05);
     }
+  }
+
+  ::v-deep .v-input--radio-group__input {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(30rem, 100%), 1fr));
   }
 
   ::v-deep .v-alert a {

@@ -15,12 +15,53 @@
 
         <div class="mb-4">
           <div class="repositories justify-space-around px-4">
-            <cz-repository-submit-card v-for="repo of supportedRepoMetadata" :repo="repo" :key="repo.key" />
-            <cz-repository-submit-card :repo="externalRepoMetadata" />
+            <cz-repository-submit-card v-for="repo of supportedRepoMetadata"
+              @click.native="submitTo(repo)"
+              :repo="repo" :key="repo.key" />
+            <cz-repository-submit-card :repo="externalRepoMetadata"
+              @click.native="isChoiceDialogShown = true" />
           </div>
         </div>
       </v-container>
+
+      <v-dialog v-model="isChoiceDialogShown" width="800">
+        <v-card class="py-8">
+          <v-card-title class="justify-center mb-4">
+            What repository is the resource in?
+          </v-card-title>
+
+          <v-card-text class="choice-container gap-1"
+            :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
+            <v-hover>
+              <template v-slot:default="{ hover }">
+                <v-card class="pa-2 transition-swing"
+                  :class="`elevation-${ hover ? 2 : 0 }`" outlined role="button">
+                  <v-card-text class="d-flex align-items-center gap-1">
+                    <v-icon color="#87AAAA">mdi-book-plus</v-icon>
+                    <div class="text-body-1">Register an existing dataset from <strong>HydroShare, EarthChem, or Zenodo</strong></div>
+                  </v-card-text>
+                </v-card>
+              </template>
+            </v-hover>
+
+            <v-hover>
+              <template v-slot:default="{ hover }">
+                <v-card class="pa-2 transition-swing"
+                  :class="`elevation-${ hover ? 2 : 0 }`" outlined role="button">
+                  <v-card-text
+                    @click="isChoiceDialogShown = false; submitTo(externalRepoMetadata)"
+                    class="d-flex align-items-center gap-1">
+                    <v-icon color="#C37B89">mdi-link-plus</v-icon>
+                    <div class="text-body-1">Register a dataset from a <strong>different repository</strong></div>
+                  </v-card-text>
+                </v-card>
+              </template>
+            </v-hover>
+          </v-card-text>
+        </v-card>
+      </v-dialog>
     </template>
+
     <template v-else>
       <router-view />
     </template>
@@ -28,16 +69,20 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import { Component } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
   import { IRepository } from '../submissions/types'
+  import { mixins } from 'vue-class-component'
+  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import CzRepositorySubmitCard from '@/components/submit/cz.repository-submit-card.vue'
 
   @Component({
     name: 'cz-submit',
     components: { CzRepositorySubmitCard },
   })
-  export default class CzSubmit extends Vue {
+  export default class CzSubmit extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+    protected isChoiceDialogShown = false
+
     protected get repoCollection(): IRepository[] {
       return Object.keys(repoMetadata)
         .map(r => repoMetadata[r])
@@ -74,5 +119,19 @@
     margin-bottom: 2rem;
     min-height: 30rem;
     flex-direction: column;
+  }
+
+  .choice-container {
+    display: grid;
+    grid-template-columns: auto auto;
+
+    .v-card {
+      color: red;
+    }
+
+    &.is-xs-small {
+      display: flex;
+      flex-direction: column;
+    }
   }
 </style>

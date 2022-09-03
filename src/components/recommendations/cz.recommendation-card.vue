@@ -1,5 +1,5 @@
 <template>
-  <div class="cz-repository-submit-card">
+  <div class="cz-recommendation-card">
     <template>
       <v-card 
         :id="repo.name.replaceAll(` `, ``) + `-card`"
