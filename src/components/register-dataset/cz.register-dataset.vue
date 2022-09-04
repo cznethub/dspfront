@@ -44,7 +44,7 @@
           >
           </v-text-field>
 
-          <v-btn color="primary" class="mt-4" @click="onRegisterDataset" :disabled="isFetching || !isValid"> Finish </v-btn>
+          <v-btn color="primary" class="mt-4" @click="onRegisterDataset" :disabled="isFetching || !isValid || !url"> Finish </v-btn>
         </v-form>
 
       </v-stepper-content>
