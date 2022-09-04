@@ -33,12 +33,12 @@
             :disabled="isFetching"
             :required="true"
             :rules="[v => !!v || 'required']"
+            :error-messages="errorMsg"
+            :placeholder="`e.g. '${selectedRepository.exampleUrl}'`"
             class="mt-4"
             label="URL*"
             type="url"
             prepend-inner-icon="mdi-link"
-            :error-messages="errorMsg"
-            :placeholder="`e.g. '${selectedRepository.exampleUrl}'`"
             persistent-hint
             outlined
           >

@@ -64,13 +64,27 @@
                 <template v-for="repo of supportedRepoMetadata" >
                   <v-tooltip :key="repo.name" left transition="fade">
                     <template v-slot:activator="{ on, attrs }">
+
                       <v-btn class="mx-0 my-4" v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs" block>
                         {{ repo.name }}
                       </v-btn>
+
                     </template>
                     <span>{{ repo.submitTooltip }}</span>
                   </v-tooltip>
                 </template>
+
+                <v-tooltip left transition="fade">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn class="mx-0 my-4" v-if="!externalRepoMetadata.isDisabled"
+                    @click="openRegisterDatasetDialog" v-on="on" v-bind="attrs" block>
+                      {{ externalRepoMetadata.name }}
+                    </v-btn>
+                  </template>
+                  <span>{{ externalRepoMetadata.submitTooltip }}</span>
+                </v-tooltip>
+
+                
               </v-card-text>
             </v-card>
           </v-speed-dial>
@@ -329,11 +343,13 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <cz-register-dataset-dialog ref="registerDatasetDialog" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator"
+import { Component, Ref } from "vue-property-decorator"
 import {
   ISubmission,
   EnumSubmissionSorts,
@@ -346,6 +362,7 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { Subscription } from "rxjs"
 import { itemsPerPageArray, sortDirectionsOverrides } from '@/components/submissions/constants'
+import CzRegisterDatasetDialog from '@/components/register-dataset/cz.register-dataset-dialog.vue'
 // import { formatDistanceToNow } from 'date-fns'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
@@ -353,9 +370,10 @@ import User from "@/models/user.model"
 
 @Component({
   name: "cz-submissions",
-  components: { },
+  components: { CzRegisterDatasetDialog },
 })
 export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<typeof CzRegisterDatasetDialog>
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
 
@@ -382,7 +400,11 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => r.isExternal || r.isSupported)
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+  }
+
+  protected get externalRepoMetadata() {
+    return this.repoCollection.find(r => r.isExternal)
   }
 
   protected get sortBy() {
@@ -528,6 +550,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     // const ago = formatDistanceToNow(new Date(localDateTime), { addSuffix: true })
 
     return localizedDate
+  }
+
+  protected openRegisterDatasetDialog() {
+    this.registerDatasetDialog.active = true
   }
 
   protected async onUpdateRecord(submission: ISubmission) {
