@@ -117,7 +117,7 @@
   export default class CzRecommendationsQuestionnaire extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
     protected currentStepIndex = 0
     protected steps: CzStep[] = [mappings]
-    protected selectedOption = null
+    protected selectedOption: CzStep | null = null
     protected repoMetadata = repoMetadata
     protected enumDataTemplateType = EnumDataTemplateType
     protected guideUrls = guideUrls

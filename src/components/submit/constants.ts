@@ -11,7 +11,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
     hasFolderStructure: true,
     maxUploadSizePerFile: 1000000000, // 1 GB
     url: 'https://www.hydroshare.org',
-    supportUrl: 'https://help.hydroshare.org/'
+    supportUrl: 'https://help.hydroshare.org/',
+    exampleUrl: 'https://www.hydroshare.org/resource/9d3d437466764bb5b6668d2742cf9db2/'
   },
   [EnumRepositoryKeys.earthchem]: {
     key: EnumRepositoryKeys.earthchem,
@@ -67,6 +68,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     maxUploadSizePerFile: 50000000, // 50 MB
     maxTotalUploadSize: 400000000, // 400 MB
     fileNameRegex: /^[-_()\w\s]*$/,  // File names can only contain upper or lowercase letters, numbers, spaces, _(underscores), -(dashes) and parenthesis().
+    exampleUrl: 'https://test-ecl.earthchem.org/my/my_view.php?id=2391'
   },
   [EnumRepositoryKeys.zenodo]: {
     key: EnumRepositoryKeys.zenodo,
@@ -78,6 +80,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     url: 'https://www.zenodo.org',
     supportUrl: 'https://help.zenodo.org/',
     maxTotalUploadSize: 50000000000, // 50 GB
+    exampleUrl: 'https://zenodo.org/deposit/7047180'
   },
   [EnumRepositoryKeys.external]: {
     key: EnumRepositoryKeys.external,

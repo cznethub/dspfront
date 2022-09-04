@@ -84,6 +84,7 @@ export interface IRepository {
   logoSrc: string
   description: string
   submitLabel?: string
+  exampleUrl?: string
   urls?: IRepositoryUrls
   schema?: any,
   uischema?: any

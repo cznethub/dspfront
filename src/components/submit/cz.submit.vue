@@ -34,11 +34,15 @@
             :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
             <v-hover>
               <template v-slot:default="{ hover }">
-                <v-card class="pa-2 transition-swing"
-                  :class="`elevation-${ hover ? 2 : 0 }`" outlined role="button">
+                <v-card class="transition-swing"
+                  :to="{ path: 'register' }"
+                  :class="`elevation-${ hover ? 2 : 0 }`" outlined>
                   <v-card-text class="d-flex align-items-center gap-1">
                     <v-icon color="#87AAAA">mdi-book-plus</v-icon>
-                    <div class="text-body-1">Register an existing dataset from <strong>HydroShare, EarthChem, or Zenodo</strong></div>
+                    <div>
+                      <div class="text-overline mb-2">SUPPORTED REPOSITORY</div>
+                      <div class="text-body-2">Register an existing dataset from HydroShare, EarthChem, or Zenodo</div>
+                    </div>
                   </v-card-text>
                 </v-card>
               </template>
@@ -46,13 +50,16 @@
 
             <v-hover>
               <template v-slot:default="{ hover }">
-                <v-card class="pa-2 transition-swing"
-                  :class="`elevation-${ hover ? 2 : 0 }`" outlined role="button">
+                <v-card class="transition-swing"
+                  :class="`elevation-${ hover ? 2 : 0 }`" outlined role="button" ripple>
                   <v-card-text
-                    @click="isChoiceDialogShown = false; submitTo(externalRepoMetadata)"
-                    class="d-flex align-items-center gap-1">
+                    class="d-flex align-items-center gap-1"
+                    @click="isChoiceDialogShown = false; submitTo(externalRepoMetadata)">
                     <v-icon color="#C37B89">mdi-link-plus</v-icon>
-                    <div class="text-body-1">Register a dataset from a <strong>different repository</strong></div>
+                    <div>
+                      <div class="text-overline mb-2">OTHER</div>
+                      <div class="text-body-2">Register a dataset from a different repository</div>
+                    </div>
                   </v-card-text>
                 </v-card>
               </template>
@@ -124,11 +131,7 @@
   .choice-container {
     display: grid;
     grid-template-columns: auto auto;
-
-    .v-card {
-      color: red;
-    }
-
+    
     &.is-xs-small {
       display: flex;
       flex-direction: column;
