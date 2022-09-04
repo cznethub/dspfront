@@ -169,7 +169,7 @@ const controlRenderer = defineComponent({
       }
       else {
         // Datetime input using widget. Values already updated, no need to parse.
-        this.handleChange(this.control.path, this.formattedDatetime)
+        this.handleChange(this.control.path, this.formattedDatetime || undefined)
       }
     },
     select(dateTime: Date) {
