@@ -5,7 +5,7 @@
         <div class="text-heading-4 mb-4">Register Dataset</div>
       </v-card-title>
 
-      <v-card-subtitle>
+      <v-card-subtitle class="text-body-1">
         What repository is the resource in?
       </v-card-subtitle>
 
@@ -17,10 +17,10 @@
               :to="{ path: 'register' }"
               :class="`elevation-${ hover ? 2 : 0 }`" outlined>
               <v-card-text class="d-flex align-items-center gap-1">
-                <v-icon color="#87AAAA">mdi-book-plus</v-icon>
+                <v-icon large color="#87AAAA">mdi-book-plus</v-icon>
                 <div>
-                  <div class="text-overline mb-2">SUPPORTED REPOSITORY</div>
-                  <div class="text-body-2">Register an existing dataset from HydroShare, EarthChem, or Zenodo</div>
+                  <div class="text-overline mb-2 has-text-black">SUPPORTED REPOSITORY</div>
+                  <div class="text-body-1">Register an existing dataset from HydroShare, EarthChem, or Zenodo</div>
                 </div>
               </v-card-text>
             </v-card>
@@ -34,10 +34,10 @@
               <v-card-text
                 class="d-flex align-items-center gap-1"
                 @click="close(); submitTo(externalRepoMetadata)">
-                <v-icon color="#C37B89">mdi-link-plus</v-icon>
+                <v-icon large color="#C37B89">mdi-link-plus</v-icon>
                 <div>
-                  <div class="text-overline mb-2">OTHER</div>
-                  <div class="text-body-2">Register a dataset from a different repository</div>
+                  <div class="text-overline mb-2 has-text-black">OTHER</div>
+                  <div class="text-body-1">Register a dataset from a different repository</div>
                 </div>
               </v-card-text>
             </v-card>
