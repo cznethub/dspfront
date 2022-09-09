@@ -25,7 +25,8 @@
   import { oneOfRenderer } from './controls/OneOfRenderer.vue'
   import { oneOfEnumControlRenderer } from './controls/OneOfEnumControlRenderer.vue'
   import { arrayLayoutRenderer } from './layouts/ArrayLayoutRenderer.vue'
-import { booleanControlRenderer } from './controls/BooleanControlRenderer.vue'
+  import { booleanControlRenderer } from './controls/BooleanControlRenderer.vue'
+  import { mapLayoutRenderer } from './layouts/MapLayoutRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -49,6 +50,7 @@ import { booleanControlRenderer } from './controls/BooleanControlRenderer.vue'
     radioGroupControlRenderer,
     verticalLayoutRenderer,
     horizontalLayoutRenderer,
+    mapLayoutRenderer,
     arrayLayoutRenderer,
     integerControlRenderer,
     anyOfStringOrControlRenderer,
