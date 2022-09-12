@@ -23,7 +23,7 @@
           </v-row>
         </v-col>
         <v-col sm="12" md="7">
-          <div ref="map" class="map-container"></div>
+          <div ref="map" class="map-container elevation-2"></div>
         </v-col>
       </v-row>
     </v-container>
@@ -67,6 +67,7 @@ const layoutRenderer = defineComponent({
     let marker: any = null;
     let rectangle: any = null;
     let map: google.maps.Map | null = null;
+    
     const rectangleOptions: google.maps.RectangleOptions = {
       fillColor: "#1976d2",
       fillOpacity: 0.25,
@@ -77,11 +78,13 @@ const layoutRenderer = defineComponent({
       draggable: true,
     };
 
+    const markerOptions: google.maps.MarkerOptions = {}
     return {
       marker,
       rectangle,
       map,
       rectangleOptions,
+      markerOptions,
       ...useVuetifyLayout(useJsonFormsLayout(props)),
       // Constructed just so we can call handleChange from a layout element
       ...useVuetifyControl(
@@ -152,6 +155,24 @@ const layoutRenderer = defineComponent({
           ? google.maps.drawing.OverlayType.MARKER
           : google.maps.drawing.OverlayType.RECTANGLE;
 
+      // Icon base from: http://kml4earth.appspot.com/icons.html
+      const iconBase = "http://earth.google.com/images/kml-icons/";
+      const icons = {
+        track_directional: {
+          icon: iconBase + "track-directional/track-8.png",
+        }
+      };
+
+      this.markerOptions = { 
+        ...this.markerOptions, 
+        animation: google.maps.Animation.DROP,
+        icon: {
+          url: icons.track_directional.icon,
+          anchor: new google.maps.Point(20, 35),
+          scaledSize: new google.maps.Size(40, 40)
+        }
+      }
+
       // add drawing menu
       const drawingManager = new google.maps.drawing.DrawingManager({
         drawingMode: drawwingMode,
@@ -161,6 +182,7 @@ const layoutRenderer = defineComponent({
           drawingModes: [drawwingMode],
         },
         rectangleOptions: this.rectangleOptions,
+        markerOptions: this.markerOptions
       });
 
       drawingManager.setMap(this.map);
@@ -270,6 +292,7 @@ const layoutRenderer = defineComponent({
     loadPoint() {
       if (this.map) {
         const marker = new google.maps.Marker({
+          ...this.markerOptions,
           position: { lat: this.layout.data.north, lng: this.layout.data.east },
           map: this.map,
         });
@@ -298,5 +321,7 @@ export const mapLayoutRenderer: JsonFormsRendererRegistryEntry = {
   width: 100%;
   min-height: 400px;
   height: 100%;
+  border: 1px solid #ffffff;
+  border-radius: 0.5rem;
 }
 </style>
