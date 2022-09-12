@@ -67,6 +67,8 @@ const layoutRenderer = defineComponent({
     let marker: any = null;
     let rectangle: any = null;
     let map: google.maps.Map | null = null;
+    let isEventFromMap = false;
+    let timeout = 50;
     
     const rectangleOptions: google.maps.RectangleOptions = {
       fillColor: "#1976d2",
@@ -85,6 +87,8 @@ const layoutRenderer = defineComponent({
       map,
       rectangleOptions,
       markerOptions,
+      isEventFromMap,
+      timeout,
       ...useVuetifyLayout(useJsonFormsLayout(props)),
       // Constructed just so we can call handleChange from a layout element
       ...useVuetifyControl(
@@ -107,8 +111,42 @@ const layoutRenderer = defineComponent({
   },
   mounted: async function () {
     await this.initMap();
+
     if (this.hasData) {
       this.loadDrawing();
+
+      if (this.map) {
+        if (this.mapType === 'box') {
+          // zoom to rectangle
+          // TODO: calculate appropiate zoom level
+          const centerLat =
+          (this.layout.data.northlimit + this.layout.data.southlimit) / 2;
+          const centerLng =
+            (this.layout.data.eastlimit + this.layout.data.westlimit) / 2;
+          (this.map as google.maps.Map).setCenter({
+            lat: centerLat,
+            lng: centerLng,
+          });
+        }
+        else {
+          // zoom to marker
+          (this.map as google.maps.Map).setCenter({
+            lat: this.layout.data.north,
+            lng: this.layout.data.east,
+          });
+        }
+      }
+    }
+  },
+  watch: {
+    'layout.data': function (newData, oldData) {
+      if (this.isEventFromMap) {
+        this.isEventFromMap = false
+      }
+      else {
+        this.loadDrawing()
+        this.isEventFromMap = false
+      }
     }
   },
   computed: {
@@ -130,13 +168,13 @@ const layoutRenderer = defineComponent({
     hasData(): boolean {
       return (
         (this.mapType === "point" &&
-          this.layout.data.hasOwnProperty("north") &&
-          this.layout.data.hasOwnProperty("east")) ||
+          !isNaN(this.layout.data.north) && 
+          !isNaN(this.layout.data.east)) ||
         (this.mapType === "box" &&
-          this.layout.data.hasOwnProperty("northlimit") &&
-          this.layout.data.hasOwnProperty("eastlimit") &&
-          this.layout.data.hasOwnProperty("southlimit") &&
-          this.layout.data.hasOwnProperty("westlimit"))
+          !isNaN(this.layout.data.northlimit) &&
+          !isNaN(this.layout.data.eastlimit) &&
+          !isNaN(this.layout.data.southlimit) &&
+          !isNaN(this.layout.data.westlimit))
       );
     },
   },
@@ -165,7 +203,7 @@ const layoutRenderer = defineComponent({
 
       this.markerOptions = { 
         ...this.markerOptions, 
-        animation: google.maps.Animation.DROP,
+        // animation: google.maps.Animation.DROP,
         icon: {
           url: icons.track_directional.icon,
           anchor: new google.maps.Point(20, 35),
@@ -193,6 +231,7 @@ const layoutRenderer = defineComponent({
         (marker: google.maps.Marker) => {
           this.clearMarkers();
           this.marker = marker;
+          this.isEventFromMap = true
           this.handleDrawing();
         }
       );
@@ -203,10 +242,17 @@ const layoutRenderer = defineComponent({
         (rectangle: google.maps.Rectangle) => {
           this.clearRectangles();
           this.rectangle = rectangle;
-          rectangle.addListener("bounds_changed", this.handleDrawing);
+          rectangle.addListener("bounds_changed", () => { this.isEventFromMap = true; this.handleDrawing() });
+          this.isEventFromMap = true
           this.handleDrawing();
         }
       );
+    },
+    debouncedHandleChange() {
+      window.clearTimeout(this.timeout)
+      this.timeout = window.setTimeout(() => {
+        this.handleChange(this.layout.path, this.layout.data)
+      }, 150)
     },
     handleDrawing() {
       // propagate to form inputs
@@ -228,7 +274,10 @@ const layoutRenderer = defineComponent({
           .lng()
           .toFixed(4);
 
-        this.handleChange(this.layout.path, this.layout.data);
+        if (this.isEventFromMap) {
+          // Debounced to prevent stuttering while draging the rectangle around
+          this.debouncedHandleChange()
+        }
       } else if (this.mapType === "point") {
         const position = this.marker.getPosition();
         const lat = position?.lat().toFixed(4);
@@ -239,7 +288,9 @@ const layoutRenderer = defineComponent({
           this.layout.data[this.inputFields.east] = +lng;
         }
 
-        this.handleChange(this.layout.path, this.layout.data);
+        if (this.isEventFromMap) {
+          this.handleChange(this.layout.path, this.layout.data)
+        }
       }
     },
     clearMarkers() {
@@ -263,47 +314,37 @@ const layoutRenderer = defineComponent({
     },
     loadRectangle() {
       if (this.map) {
-        const rectangle = new google.maps.Rectangle({
-          ...this.rectangleOptions,
-          bounds: {
-            north: this.layout.data.northlimit,
-            south: this.layout.data.southlimit,
-            east: this.layout.data.eastlimit,
-            west: this.layout.data.westlimit,
-          },
-          map: this.map,
-        });
-        this.clearRectangles();
-        this.rectangle = rectangle;
-        rectangle.addListener("bounds_changed", this.handleDrawing);
+        this.clearRectangles()
 
-        // zoom to rectangle
-        // TODO: calculate appropiate zoom level
-        const centerLat =
-          (this.layout.data.northlimit + this.layout.data.southlimit) / 2;
-        const centerLng =
-          (this.layout.data.eastlimit + this.layout.data.westlimit) / 2;
-        (this.map as google.maps.Map).setCenter({
-          lat: centerLat,
-          lng: centerLng,
-        });
+        if (this.hasData) {
+          this.rectangle = new google.maps.Rectangle({
+            ...this.rectangleOptions,
+            bounds: {
+              north: this.layout.data.northlimit,
+              south: this.layout.data.southlimit,
+              east: this.layout.data.eastlimit,
+              west: this.layout.data.westlimit,
+            },
+            map: this.map,
+          });
+
+          this.rectangle.addListener("bounds_changed", () => { this.isEventFromMap = true; this.handleDrawing() });
+        }
       }
     },
     loadPoint() {
       if (this.map) {
-        const marker = new google.maps.Marker({
-          ...this.markerOptions,
-          position: { lat: this.layout.data.north, lng: this.layout.data.east },
-          map: this.map,
-        });
         this.clearMarkers();
-        this.marker = marker;
 
-        // zoom to marker
-        (this.map as google.maps.Map).setCenter({
-          lat: this.layout.data.north,
-          lng: this.layout.data.east,
-        });
+        if (this.hasData) {
+          const marker = new google.maps.Marker({
+            ...this.markerOptions,
+            position: { lat: this.layout.data.north, lng: this.layout.data.east },
+            map: this.map,
+          });
+          
+          this.marker = marker;
+        }
       }
     },
   },
