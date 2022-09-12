@@ -215,7 +215,11 @@ const controlRenderer = defineComponent({
         this.control.uischemas
       );
       // JsonSchema does not pass the required attribute, so we do it ourselves
-      info.map(i => { i.schema.required = this.control.schema.required })
+      info.map(i => { 
+        i.schema.required = this.control.schema.required
+        // @ts-ignore: use detail uischema if specified
+        i.uischema = i.schema.options?.detail || i.uischema
+      })
       return info
     },
     hasToggle() {

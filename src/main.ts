@@ -11,14 +11,13 @@ import VueRouter from 'vue-router'
 import Vue from 'vue'
 import App from './App.vue'
 import vueFilterPrettyBytes from 'vue-filter-pretty-bytes'
+import vuetify from '@/plugins/vuetify'
+import VueAnalytics from 'vue-analytics'
 
 import { router } from './router'
 import { orm } from '@/models/orm'
 import { persistedPaths } from './models/persistedPaths'
 import { APP_NAME } from './constants'
-import vuetify from '@/plugins/vuetify'
-
-
 
 // Uncomment to filter out errors
 // Vue.config.errorHandler = (err, vm, info) => {
@@ -30,19 +29,19 @@ import vuetify from '@/plugins/vuetify'
       //   }
       // }
       
-      Vue.config.productionTip = false
-      Vue.use(Vuex)
-      
-      // Create Vuex Store and register database through Vuex ORM.
-      const store = new Vuex.Store({
-        plugins: [
-          VuexORM.install(orm),
-          createPersistedState({
-            paths: persistedPaths,
-            key: APP_NAME
-          })
-        ]
-      })
+Vue.config.productionTip = false
+Vue.use(Vuex)
+
+// Create Vuex Store and register database through Vuex ORM.
+const store = new Vuex.Store({
+  plugins: [
+    VuexORM.install(orm),
+    createPersistedState({
+      paths: persistedPaths,
+      key: APP_NAME
+    })
+  ]
+})
       
 Vue.use(vueFilterPrettyBytes)
 Vue.use(VueCompositionAPI)
@@ -54,6 +53,12 @@ Vue.use(Buefy, {
   defaultNotificationPosition: 'is-top',
   defaultNotificationDuration: 10000,
   defaultNoticeQueue: false,
+})
+// Configuration VueAnalytics
+// https://webdeasy.de/en/vue-analytics-en/
+Vue.use(VueAnalytics, {
+  id: process.env.GOOGLE_ANALYTICS_TRACKING_ID,
+  router
 })
 
 new Vue({

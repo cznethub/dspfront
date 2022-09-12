@@ -4,7 +4,7 @@
    */
   import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
   import { defineComponent } from '@vue/composition-api'
-  import { arrayControlRenderer } from './array/ArrayControlRenderer.vue'
+  // import { arrayControlRenderer } from './array/ArrayControlRenderer.vue'
   import { groupRenderer } from './layouts/GroupRenderer.vue'
   import { numberControlRenderer } from './controls/NumberControlRenderer.vue'
   import { stringControlRenderer } from './controls/StringControlRenderer.vue'
@@ -25,6 +25,8 @@
   import { oneOfRenderer } from './controls/OneOfRenderer.vue'
   import { oneOfEnumControlRenderer } from './controls/OneOfEnumControlRenderer.vue'
   import { arrayLayoutRenderer } from './layouts/ArrayLayoutRenderer.vue'
+  import { booleanControlRenderer } from './controls/BooleanControlRenderer.vue'
+  import { mapLayoutRenderer } from './layouts/MapLayoutRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -48,8 +50,10 @@
     radioGroupControlRenderer,
     verticalLayoutRenderer,
     horizontalLayoutRenderer,
+    mapLayoutRenderer,
     arrayLayoutRenderer,
     integerControlRenderer,
     anyOfStringOrControlRenderer,
+    booleanControlRenderer
   ]
 </script>
