@@ -85,6 +85,8 @@ export interface IRepository {
   description: string
   submitLabel?: string
   exampleUrl?: string
+  exampleIdentifier?: string
+  identifierUrlPattern?: RegExp
   urls?: IRepositoryUrls
   schema?: any,
   uischema?: any

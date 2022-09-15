@@ -19,7 +19,8 @@
       </v-stepper-content>
 
       <v-stepper-step :complete="step > 2" step="2" :editable="!isFetching && step > 2" edit-icon="mdi-check">
-        What is the URL to or identifier for the resource?
+        <div>What is the URL to or identifier for the resource?</div>
+        <v-chip v-if="url && step > 2" class="mt-2" color="success">{{ url }}</v-chip>
       </v-stepper-step>
 
       <v-stepper-content step="2">
@@ -34,7 +35,7 @@
             :required="true"
             :rules="[v => !!v || 'required']"
             :error-messages="errorMsg"
-            :placeholder="`e.g. '${selectedRepository.exampleUrl}'`"
+            placeholder="URL or identifier"
             class="mt-4"
             label="URL*"
             type="url"
@@ -44,9 +45,24 @@
           >
           </v-text-field>
 
-          <v-btn color="primary" class="mt-4" @click="onRegisterDataset" :disabled="isFetching || !isValid || !url"> Finish </v-btn>
-        </v-form>
+          <div class="text-subtitle-1 text--secondary pl-3">
+            {{ `e.g. '${selectedRepository.exampleUrl}' or '${selectedRepository.exampleIdentifier}'` }}
+          </div>
 
+          <v-btn color="primary" class="mt-4" @click="onReadDataset" :disabled="isFetching || !isValid || !url"> Continue </v-btn>
+        </v-form>
+      </v-stepper-content>
+
+      <v-stepper-step :complete="step > 3" step="3" :editable="step > 3" edit-icon="mdi-check">
+        Confirm
+      </v-stepper-step>
+
+      <v-stepper-content step="3">
+        <div v-if="isFetching">Loading...</div>
+        <div v-if="submission">
+          {{ submission.title }}
+        </div>
+        <v-btn color="primary" class="mt-4" @click="goToEditSubmission" :disabled="isFetching || !isValid || !url"> Continue </v-btn>
       </v-stepper-content>
     </v-stepper>
   </v-container>
@@ -56,6 +72,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import { repoMetadata } from '@/components/submit/constants'
 import { IRepository } from "../submissions/types";
+import Repository from "@/models/repository.model";
 
 @Component({
   name: "cz-register-dataset",
@@ -68,6 +85,7 @@ export default class CzRegisterDataset extends Vue {
   protected isFetching = false
   protected errorMsg = ''
   protected isValid = false
+  protected submission: any = null
 
   protected get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata)
@@ -78,28 +96,55 @@ export default class CzRegisterDataset extends Vue {
     return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
   }
 
+  protected get identifierFromUrl(): string {
+    const matches = this.selectedRepository?.identifierUrlPattern?.exec(this.url)
+
+    if (matches && matches.length) {
+      return matches[0]
+    }
+
+    return ''
+  }
+
   created() {
     this.selectedRepository = this.repoCollection[0]
   }
 
-  protected async onRegisterDataset() {
+  protected async onReadDataset() {
     this.isFetching = true
     this.errorMsg = ''
+    this.step++
     try {
-      console.log(this.selectedRepository, this.url)
+      if (this.selectedRepository) {
+        const response = await Repository.readExistingSubmission(this.identifierFromUrl, this.selectedRepository.key)
+          console.log(response)
+        if (response) {
+          this.submission = response
+        }
+      }
       // await registration
       this.isFetching = false
       // redirect to submission page
     }
     catch (e) {
       this.errorMsg = 'Some error'
+      this.isFetching = false
     }
+  }
+
+  protected goToEditSubmission() {
+    // TODO: pass data and param
+    this.$router.push({
+      name: "submit.repository",
+      params: { 
+        repository: (this.selectedRepository as IRepository).key,
+        id: this.identifierFromUrl 
+      },
+    })
   }
 }
 </script>
 
 <style lang="scss" scoped>
-.cz-register-dataset {
-  // padding: 2rem;
-}
+
 </style>

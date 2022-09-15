@@ -345,7 +345,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     if (this.isEditMode) {
       const identifier = this.$route.params.id
       this.identifier = identifier
-      this.loadExistingSubmission()
+      this.loadSavedSubmission()
     } else {
       this.isLoading = false
     }
@@ -366,7 +366,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     })
   }
 
-  protected async loadExistingSubmission() {
+  protected async loadSavedSubmission() {
     console.info("CzNewSubmission: reading existing record...")
     const response = await Repository.readSubmission(this.identifier, this.repositoryKey)
 
@@ -377,7 +377,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       // Try again when user has authorized the repository
       this.authorizedSubject = Repository.authorized$.subscribe(async (repositoryKey: EnumRepositoryKeys) => {
         this.isLoading = true
-        await this.loadExistingSubmission()
+        await this.loadSavedSubmission()
       })
     }
     else if (response === 403) {
@@ -387,7 +387,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       if (!this.isLoggedIn) {
         this.loggedInSubject = User.loggedIn$.subscribe(async () => {
           this.isLoading = true
-          await this.loadExistingSubmission()
+          await this.loadSavedSubmission()
         })
       }
     }

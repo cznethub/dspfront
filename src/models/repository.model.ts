@@ -438,7 +438,7 @@ export default class Repository extends Model implements IRepository {
   }
 
   /** 
-   * Reads a submission
+   * Reads a submission that has been saved to our database
    * @param {string} identifier - the identifier of the resource in the repository
    * @param {string} repositiry - the repository key
   */
@@ -494,6 +494,64 @@ export default class Repository extends Model implements IRepository {
       }
     }
   }
+
+    /** 
+   * Reads a submission from a repository that has not been saved to our database
+   * @param {string} identifier - the identifier of the resource in the repository
+   * @param {string} repositiry - the repository key
+  */
+     static async readExistingSubmission(identifier: string, repository: string) {
+      try {
+        const response = await axios.get(
+          `/api/json/${repository}/${identifier}`, 
+          { params: { "access_token": User.$state.orcidAccessToken } 
+        })
+  
+        if (response.status === 200) {
+          return response.data
+        }
+        else {
+          CzNotification.toast({
+            message: 'Failed to load existing submission',
+            type: 'error'
+          })
+          return null
+        }
+      }
+      catch(e: any) {
+        if (e.response.status === 401) {
+          // Token has expired
+          this.commit((state) => {
+            state.accessToken = ''
+          })
+          
+          CzNotification.toast({
+            message: 'Authorization token is invalid or has expired.',
+            type: 'error'
+          })
+  
+          Repository.openAuthorizeDialog(repository)
+          return e.response.status
+        }
+        else if (e.response?.status === 403) {
+          // Submission might have been deleted or service unavailable
+          CzNotification.toast({
+            message: 'Failed to read existing submission',
+            type: 'error'
+          })
+          return e.response.status
+        }
+        else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
+          // Resource has been deleted in repository
+          // Error handled in component
+          return e.response.status
+        }
+        else {
+          console.error(`${repository}: failed to read submission.`, e.response)
+          return null
+        }
+      }
+    }
 
   static uploadFiles: (bucketUrl: string, itemsToUpload: (IFile | IFolder)[] | any[], createFolderUrl: string) => Promise<any>
   static readRootFolder: (identifier: string, path: string, rootDirectory: IFolder) => Promise<(IFile | IFolder)[]>
