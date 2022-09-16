@@ -633,6 +633,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       })
     }
 
+    this.isSaving = false
+
     return wasSaved
   }
 

@@ -210,7 +210,7 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
   protected isFetching = false
   protected isValid = false
   protected submission: Partial<Submission> | null = null
-  protected apiSubmission: Partial<Submission> | null = null
+  protected apiSubmission: any = null
   protected wasUnauthorized = false
 
   protected get repoCollection(): IRepository[] {
@@ -248,6 +248,11 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
         if (response && isNaN(response)) {
           this.submission = Submission.getInsertData(response, this.selectedRepository.key, this.identifierFromUrl, true)
           this.apiSubmission = response
+
+          // For earthchem submissions we need to set the community to a constant
+          if (this.submission.repository === EnumRepositoryKeys.earthchem) {
+            this.apiSubmission.community = 'CZNet'
+          }
         }
         else if (response === 403) {
           // Repository was unauthorized
