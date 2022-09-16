@@ -100,7 +100,7 @@ export default class Submission extends Model implements ISubmission {
       }
 
       if (overrideDate) {
-        // Zenodo returns a date, and we need a datetime
+        // Zenodo returns a date string (e.g. "2022-09-19"), and we need a datetime
         const date = apiSubmission.publication_date.split('-')
         const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
         data.date = parsedDate.getTime()
@@ -118,7 +118,10 @@ export default class Submission extends Model implements ISubmission {
       }
 
       if (overrideDate) {
-        data.date = new Date(apiSubmission.created).getTime()
+        // Earthchem returns a date string (e.g. "2022-09-19"), and we need a datetime
+        const date = apiSubmission.datePublished.split('-')
+        const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
+        data.date = parsedDate.getTime()
       }
 
       return data
