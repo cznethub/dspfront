@@ -54,15 +54,105 @@
       </v-stepper-content>
 
       <v-stepper-step :complete="step > 3" step="3" :editable="step > 3" edit-icon="mdi-check">
-        Confirm
+        Preview
       </v-stepper-step>
 
       <v-stepper-content step="3">
-        <div v-if="isFetching">Loading...</div>
-        <div v-if="submission">
-          {{ submission.title }}
-        </div>
-        <v-btn color="primary" class="mt-4" @click="goToEditSubmission" :disabled="isFetching || !isValid || !url"> Continue </v-btn>
+        <v-card v-if="isFetching" elevation="2" outlined>
+          <div class="table-item">
+            <table>
+              <tr>
+                <td colspan="2" class="text-h6 title">
+                  <v-skeleton-loader type="heading" />
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="table-item d-flex justify-space-between flex-column flex-md-row gap-1">
+            <table class="text-body-1" :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
+              <tr>
+                <th class="pr-4 body-2 text-right"><v-skeleton-loader type="text" /></th>
+                <td><v-skeleton-loader type="text" /></td>
+              </tr>
+              <tr>
+                <th class="pr-4 body-2 text-right"><v-skeleton-loader type="text" /></th>
+                <td><v-skeleton-loader type="text" /></td>
+              </tr>
+              <tr>
+                <th class="pr-4 body-2 text-right"><v-skeleton-loader type="text" /></th>
+                <td><v-skeleton-loader type="text" /></td>
+              </tr>
+              <tr>
+                <th class="pr-4 body-2 text-right"><v-skeleton-loader type="text" /></th>
+                <td><v-skeleton-loader type="text" /></td>
+              </tr>
+            </table>
+
+            <div class="text-right">
+              <v-skeleton-loader type="heading" width="300" />
+            </div>
+          </div>
+        </v-card>
+
+        <v-card v-else-if="submission" elevation="2" outlined>
+          <div class="table-item d-flex justify-space-between flex-column flex-md-row">
+            <table class="text-body-1" :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
+              <tr>
+                <td colspan="2" class="text-h6 title">
+                  {{ submission.title }}
+                </td>
+              </tr>
+              <tr v-if="submission.authors.length">
+                <th class="pr-4 body-2 text-right">Authors:</th>
+                <td>{{ submission.authors.join(" | ") }}</td>
+              </tr>
+              <tr>
+                <th class="pr-4 body-2 text-right">Submission Repository:</th>
+                <td>{{ selectedRepository.name }}</td>
+              </tr>
+              <tr>
+                <th class="pr-4 body-2 text-right">Submission Date:</th>
+                <td>{{ getDateInLocalTime(submission.date) }}</td>
+              </tr>
+              <tr>
+                <th class="pr-4 body-2 text-right">Identifier:</th>
+                <td>{{ submission.identifier }}</td>
+              </tr>
+              <tr v-if="submission.metadata.status">
+                <th class="pr-4 body-2 text-right">Status:</th>
+                
+                <td>
+                  <v-chip
+                    v-if="submission.metadata.status !== 'incomplete'"
+                    color="orange"
+                    small
+                    outlined
+                  >
+                    <v-icon left small>mdi-lock</v-icon>
+                    {{ submission.metadata.status }}
+                  </v-chip>
+
+                  <v-chip
+                    v-else
+                    small
+                    outlined
+                  >
+                    <v-icon left small>mdi-pencil</v-icon>
+                    {{ submission.metadata.status }}
+                  </v-chip>
+                </td>
+              </tr>
+            </table>
+
+            <div class="d-flex flex-column mt-sm-4 actions">
+              <v-btn :href="submission.url" target="_blank" color="blue-grey lighten-4" rounded>
+                <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
+              </v-btn>
+            </div>
+          </div>
+        </v-card>
+        <v-btn v-if="submission" color="primary" class="mt-6" @click="goToEditSubmission" :disabled="isFetching || !isValid || !url"> Continue & Edit... </v-btn>
       </v-stepper-content>
     </v-stepper>
   </v-container>
@@ -73,19 +163,22 @@ import { Component, Vue } from "vue-property-decorator";
 import { repoMetadata } from '@/components/submit/constants'
 import { IRepository } from "../submissions/types";
 import Repository from "@/models/repository.model";
+import Submission from "@/models/submission.model";
+import User from "@/models/user.model";
 
 @Component({
   name: "cz-register-dataset",
   components: {},
 })
 export default class CzRegisterDataset extends Vue {
-  protected url = "";
+  protected url = "https://beta.hydroshare.org/resource/6f1dcb5910a64f91bc7d83b30855bda1/"
   protected step = 1
   protected selectedRepository: IRepository | null = null
   protected isFetching = false
   protected errorMsg = ''
   protected isValid = false
-  protected submission: any = null
+  protected submission: Partial<Submission> | null = null
+  protected apiSubmission: Partial<Submission> | null = null
 
   protected get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata)
@@ -114,12 +207,13 @@ export default class CzRegisterDataset extends Vue {
     this.isFetching = true
     this.errorMsg = ''
     this.step++
+
     try {
       if (this.selectedRepository) {
         const response = await Repository.readExistingSubmission(this.identifierFromUrl, this.selectedRepository.key)
-          console.log(response)
         if (response) {
-          this.submission = response
+          this.submission = Submission.getInsertData(response, this.selectedRepository.key, this.identifierFromUrl, true)
+          this.apiSubmission = response
         }
       }
       // await registration
@@ -127,24 +221,68 @@ export default class CzRegisterDataset extends Vue {
       // redirect to submission page
     }
     catch (e) {
+      console.log(e)
       this.errorMsg = 'Some error'
       this.isFetching = false
     }
   }
 
   protected goToEditSubmission() {
-    // TODO: pass data and param
+    // We cannot pass objects through routing, so we store it in ORM temporarily
+    User.commit((state) => {
+      state.registeringSubmission = this.apiSubmission
+    })
+
     this.$router.push({
       name: "submit.repository",
       params: { 
         repository: (this.selectedRepository as IRepository).key,
-        id: this.identifierFromUrl 
+        id: this.identifierFromUrl
       },
+      query: { mode: 'register' }
     })
+  }
+
+  protected getDateInLocalTime(date: number): string {
+    const offset = (new Date(date)).getTimezoneOffset() * 60 * 1000
+    const localDateTime = date - offset
+    return new Date(localDateTime).toLocaleString()
   }
 }
 </script>
 
 <style lang="scss" scoped>
+.table-item {
+  padding: 1rem;
 
+  table {
+    width: 100%;
+
+    &.is-xs-small {
+      tr, td, th {
+        display: block;
+        text-align: left;
+      }
+
+      th {
+        padding-top: 1rem;
+      }
+    }
+
+    th {
+      text-align: right;
+      width: 11rem;
+      font-weight: normal;
+    }
+
+    td {
+      word-break: break-word;
+
+      &.title {
+        padding-left: 1.25rem;
+        border-left: 4px solid #DDD;
+      }
+    }
+  }
+}
 </style>

@@ -209,7 +209,7 @@
                       </table>
                     </div>
 
-                    <div class="d-flex flex-column mt-sm-4 actions ">
+                    <div class="d-flex flex-column mt-sm-4 actions">
                       <v-btn :id="`sub-${index}-view`" :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
                       </v-btn>

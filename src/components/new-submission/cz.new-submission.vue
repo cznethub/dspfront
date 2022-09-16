@@ -216,6 +216,7 @@ import CzFolderStructure from "@/components/new-submission/cz.folder-structure.v
 import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
 import User from "@/models/user.model"
 import ajvErrors from "ajv-errors"
+import Submission from "@/models/submission.model"
 
 const renderers = [
   // ...vanillaRenderers, 
@@ -306,6 +307,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     return User.$state.hasUnsavedChanges
   }
 
+  protected get registeringSubmission(): Partial<Submission> | null {
+    return User.$state.registeringSubmission
+  }
+
   protected set hasUnsavedChanges(value: boolean) {
     User.commit((state) => {
       state.hasUnsavedChanges = value
@@ -368,7 +373,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected async loadSavedSubmission() {
     console.info("CzNewSubmission: reading existing record...")
-    const response = await Repository.readSubmission(this.identifier, this.repositoryKey)
+    const response = this.$route.query.mode === 'register' && this.registeringSubmission
+      ? { ...this.registeringSubmission }
+      : await Repository.readSubmission(this.identifier, this.repositoryKey)
 
     if (response === 401) {
       // Repository was unauthorized
@@ -447,6 +454,13 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       // Nexttick doesn't work. We use setTimeout instead.
       setTimeout(() => {
         this.hasUnsavedChanges = false
+      })
+    }
+
+    // clean up
+    if (this.registeringSubmission) {
+      User.commit((state) => {
+        state.registeringSubmission = null
       })
     }
 
@@ -557,7 +571,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   private async _saveAndFinish() {
-    if (this.hasUnsavedChanges) {
+    if (this.hasUnsavedChanges || this.$route.query.mode === 'register') {
       const wasSaved = await this._save()
 
       if (wasSaved) {

@@ -4,6 +4,7 @@ import { Subject } from 'rxjs'
 import { RawLocation } from 'vue-router'
 import axios from "axios"
 import CzNotification from './notifications.model'
+import Submission from './submission.model'
 
 export interface ICzCurrentUserState {
   orcid: string
@@ -15,7 +16,8 @@ export interface IUserState {
   orcid: string
   orcidAccessToken: string
   next: string,
-  hasUnsavedChanges: boolean
+  hasUnsavedChanges: boolean,
+  registeringSubmission: Partial<Submission> | null
 }
 
 export default class User extends Model {
@@ -46,7 +48,8 @@ export default class User extends Model {
       orcid: '',
       orcidAccessToken: '',
       next: '',
-      hasUnsavedChanges: false
+      hasUnsavedChanges: false,
+      registeringSubmission: null
     }
   }
 
