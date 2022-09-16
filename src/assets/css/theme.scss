@@ -16,6 +16,10 @@ section {
   padding: 4rem 0;
 }
 
+.gap-1 {
+  gap: 1rem;
+}
+
 #main-container {
   height: 100%;
 
@@ -52,6 +56,10 @@ section {
 
 .has-cursor-text {
   cursor: text;
+}
+
+.has-text-black {
+  color: #000;
 }
 
 // .has-background-dark--gradient {

@@ -12,6 +12,7 @@ import CzAccount from '@/components/profile/cz.account.vue'
 import CzAuthorizedRepositories from '@/components/profile/cz.authorized-repositories.vue'
 import CzSubmissions from '@/components/submissions/cz.submissions.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
+import CzRegisterDataset from '@/components/register-dataset/cz.register-dataset.vue'
 
 export const routes: RouteConfig[] = [
   {
@@ -93,6 +94,19 @@ export const routes: RouteConfig[] = [
       hasLoggedInGuard: true,
       title: 'My Submissions',
     },
+  },
+  {
+    name: 'register',
+    path: '/register',
+    components: {
+      content: CzRegisterDataset,
+      footer: CzFooter
+    },
+    meta: { 
+      hasLoggedInGuard: true, 
+      // hasAccessTokenGuard: true,
+      title: 'Register Dataset'
+    }
   },
   {
     name: 'submit',

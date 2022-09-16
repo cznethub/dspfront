@@ -70,43 +70,65 @@ export default class Submission extends Model implements ISubmission {
     }
   }
 
-  // Used to transform submission data that comes from the repository API
-  // TODO: this should be moved as a dedicated method on each repository model
-  static getInsertData(apiSubmission, repository: EnumRepositoryKeys, identifier: string): ISubmission | Partial<Submission> {
+  // Note: Do not override the date we stored on creation unless specified. Submissions fetched from repositories might return dates localized to another timezone.
+  // TODO: this should be refactored as a dedicated method on each repository model
+  /** Used to transform submission data that comes from the repository API */
+  static getInsertData(apiSubmission, repository: EnumRepositoryKeys, identifier: string, overrideDate?: boolean): ISubmission | Partial<Submission> {
     if (repository === EnumRepositoryKeys.hydroshare) {
-      return {
+      const data: Partial<Submission> = {
         title: apiSubmission.title,
         authors: apiSubmission.creators.map(c => c.name),
         repository: repository,
-        // Do not override the date we stored on creation. The one HydroShare stores has a different timezone
-        // date: new Date(apiSubmission.created).getTime(), 
         identifier: identifier,
+        url: apiSubmission.url,
         metadata: {},
         // url: apiSubmission.url
       }
+
+      if (overrideDate) {
+        data.date = new Date(apiSubmission.created).getTime()
+      }
+
+      return data
     }
     else if (repository === EnumRepositoryKeys.zenodo) {
-      return {
+      const data: Partial<Submission> = {
         title: apiSubmission.title,
         authors: apiSubmission.creators?.map(c => c.name),
         repository: repository,
-        // Zenodo returns a date, and we need a datetime, so we don't override the one we stored on creation
-        // date: 
         identifier: identifier,
       }
+
+      if (overrideDate) {
+        // Zenodo returns a date string (e.g. "2022-09-19"), and we need a datetime
+        const date = apiSubmission.publication_date.split('-')
+        const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
+        data.date = parsedDate.getTime()
+      }
+
+      return data
     }
     else if (repository === EnumRepositoryKeys.earthchem) {
-      return {
+      const data: Partial<Submission> = {
         title: apiSubmission.title,
         authors: [apiSubmission.leadAuthor, ...apiSubmission.contributors]
           .map(a => `${a.familyName}, ${a.givenName}`),
         repository: repository,
         identifier: identifier,
       }
+
+      if (overrideDate) {
+        // Earthchem returns a date string (e.g. "2022-09-19"), and we need a datetime
+        const date = apiSubmission.datePublished.split('-')
+        const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
+        data.date = parsedDate.getTime()
+      }
+
+      return data
     }
-    else if (repository === EnumRepositoryKeys.external) {
-      // Not applicable
-    }
+    // else if (repository === EnumRepositoryKeys.external) {
+    //   // Not applicable
+    // }
 
     // default
     return {
