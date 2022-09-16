@@ -28,28 +28,29 @@
           ref="form"
           v-model="isValid"
           lazy-validation
+          class="pb-2"
         >
           <v-text-field
             v-model.trim="url"
             :disabled="isFetching"
             :required="true"
             :rules="[v => !!v || 'required']"
-            :error-messages="errorMsg"
-            placeholder="URL or identifier"
+            clearable
             class="mt-4"
-            label="URL*"
+            label="URL or identifier*"
             type="url"
-            prepend-inner-icon="mdi-link"
+            hide-details="auto"
             persistent-hint
             outlined
           >
           </v-text-field>
 
-          <div class="text-subtitle-1 text--secondary pl-3">
+          <div class="text-subtitle-1 text--secondary pl-3 mb-4 mt-1">
             {{ `e.g. '${selectedRepository.exampleUrl}' or '${selectedRepository.exampleIdentifier}'` }}
           </div>
 
-          <v-btn color="primary" class="mt-4" @click="onReadDataset" :disabled="isFetching || !isValid || !url"> Continue </v-btn>
+          <v-btn color="primary" class="mr-4" @click="onReadDataset" :disabled="isFetching || !isValid || !url"> Continue </v-btn>
+          <v-btn color="default" @click="step--" :disabled="isFetching" text> Back </v-btn>
         </v-form>
       </v-stepper-content>
 
@@ -95,73 +96,105 @@
           </div>
         </v-card>
 
-        <v-card v-else-if="submission" elevation="2" outlined>
-          <div class="table-item d-flex justify-space-between flex-column flex-md-row">
-            <table class="text-body-1" :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
-              <tr>
-                <td colspan="2" class="text-h6 title">
-                  {{ submission.title }}
-                </td>
-              </tr>
-              <tr v-if="submission.authors.length">
-                <th class="pr-4 body-2 text-right">Authors:</th>
-                <td>{{ submission.authors.join(" | ") }}</td>
-              </tr>
-              <tr>
-                <th class="pr-4 body-2 text-right">Submission Repository:</th>
-                <td>{{ selectedRepository.name }}</td>
-              </tr>
-              <tr>
-                <th class="pr-4 body-2 text-right">Submission Date:</th>
-                <td>{{ getDateInLocalTime(submission.date) }}</td>
-              </tr>
-              <tr>
-                <th class="pr-4 body-2 text-right">Identifier:</th>
-                <td>{{ submission.identifier }}</td>
-              </tr>
-              <tr v-if="submission.metadata.status">
-                <th class="pr-4 body-2 text-right">Status:</th>
-                
-                <td>
-                  <v-chip
-                    v-if="submission.metadata.status !== 'incomplete'"
-                    color="orange"
-                    small
-                    outlined
-                  >
-                    <v-icon left small>mdi-lock</v-icon>
-                    {{ submission.metadata.status }}
-                  </v-chip>
+        <template v-else-if="submission">
+          <v-card  elevation="2" outlined class="mb-6">
+            <div class="table-item d-flex justify-space-between flex-column flex-md-row">
+              <table class="text-body-1" :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
+                <tr>
+                  <td colspan="2" class="text-h6 title">
+                    {{ submission.title }}
+                  </td>
+                </tr>
+                <tr v-if="submission.authors.length">
+                  <th class="pr-4 body-2 text-right">Authors:</th>
+                  <td>{{ submission.authors.join(" | ") }}</td>
+                </tr>
+                <tr>
+                  <th class="pr-4 body-2 text-right">Submission Repository:</th>
+                  <td>{{ selectedRepository.name }}</td>
+                </tr>
+                <tr>
+                  <th class="pr-4 body-2 text-right">Submission Date:</th>
+                  <td>{{ getDateInLocalTime(submission.date) }}</td>
+                </tr>
+                <tr>
+                  <th class="pr-4 body-2 text-right">Identifier:</th>
+                  <td>{{ submission.identifier }}</td>
+                </tr>
+                <tr v-if="submission.metadata && submission.metadata.status">
+                  <th class="pr-4 body-2 text-right">Status:</th>
+                  
+                  <td>
+                    <v-chip
+                      v-if="submission.metadata.status !== 'incomplete'"
+                      color="orange"
+                      small
+                      outlined
+                    >
+                      <v-icon left small>mdi-lock</v-icon>
+                      {{ submission.metadata.status }}
+                    </v-chip>
 
-                  <v-chip
-                    v-else
-                    small
-                    outlined
-                  >
-                    <v-icon left small>mdi-pencil</v-icon>
-                    {{ submission.metadata.status }}
-                  </v-chip>
-                </td>
-              </tr>
-            </table>
+                    <v-chip
+                      v-else
+                      small
+                      outlined
+                    >
+                      <v-icon left small>mdi-pencil</v-icon>
+                      {{ submission.metadata.status }}
+                    </v-chip>
+                  </td>
+                </tr>
+              </table>
 
-            <div class="d-flex flex-column mt-sm-4 actions">
-              <v-btn :href="submission.url" target="_blank" color="blue-grey lighten-4" rounded>
-                <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
-              </v-btn>
+              <div class="d-flex flex-column mt-sm-4 actions">
+                <v-btn :href="submission.url" target="_blank" color="blue-grey lighten-4" rounded>
+                  <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
+                </v-btn>
+              </div>
             </div>
+          </v-card>
+
+          <div class="mb-2">
+            <v-btn color="primary" class="mr-4" @click="goToEditSubmission" :disabled="isFetching || !isValid || !url"> Continue & Edit... </v-btn>
+            <v-btn color="default" @click="step--" :disabled="isFetching" text> Back </v-btn>
           </div>
-        </v-card>
-        <v-btn v-if="submission" color="primary" class="mt-6" @click="goToEditSubmission" :disabled="isFetching || !isValid || !url"> Continue & Edit... </v-btn>
+        </template>
+
+        <template v-else-if="wasUnauthorized">
+          <v-alert class="text-subtitle-1 ma-1" border="left" colored-border type="info" elevation="2">
+            <v-row>
+              <v-col class="flex-grow-1">We need your authorization to load this submission from the repository.</v-col>
+              <v-col class="flex-grow-0">
+                <v-btn @click="openAuthorizePopup(selectedRepository.key)" color="primary">
+                  <i class="fas fa-key mr-2" />Authorize
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-alert>
+        </template>
+
+        <template v-else>
+          <v-card elevation="2" outlined class="mb-6">
+            <v-card-text class="d-flex align-center gap-1">
+              <v-icon large color="orange">mdi-magnify-remove-outline</v-icon>
+              <div class="text-body-1">We could not find a resource matching the criteria above. Please make sure that you have selected the correct repository and that the URL or identifier is correct and try again.</div>
+            </v-card-text>
+          </v-card>
+
+          <v-btn color="default" class="mb-2" @click="step--" :disabled="isFetching" text> Back </v-btn>
+        </template>
       </v-stepper-content>
     </v-stepper>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component } from "vue-property-decorator";
 import { repoMetadata } from '@/components/submit/constants'
-import { IRepository } from "../submissions/types";
+import { EnumRepositoryKeys, IRepository } from "../submissions/types";
+import { mixins } from 'vue-class-component'
+import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import Repository from "@/models/repository.model";
 import Submission from "@/models/submission.model";
 import User from "@/models/user.model";
@@ -170,15 +203,15 @@ import User from "@/models/user.model";
   name: "cz-register-dataset",
   components: {},
 })
-export default class CzRegisterDataset extends Vue {
-  protected url = "https://beta.hydroshare.org/resource/6f1dcb5910a64f91bc7d83b30855bda1/"
+export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  protected url = ''
   protected step = 1
   protected selectedRepository: IRepository | null = null
   protected isFetching = false
-  protected errorMsg = ''
   protected isValid = false
   protected submission: Partial<Submission> | null = null
   protected apiSubmission: Partial<Submission> | null = null
+  protected wasUnauthorized = false
 
   protected get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata)
@@ -196,7 +229,7 @@ export default class CzRegisterDataset extends Vue {
       return matches[0]
     }
 
-    return ''
+    return this.url
   }
 
   created() {
@@ -204,25 +237,32 @@ export default class CzRegisterDataset extends Vue {
   }
 
   protected async onReadDataset() {
+    this.submission = null
     this.isFetching = true
-    this.errorMsg = ''
     this.step++
 
     try {
       if (this.selectedRepository) {
         const response = await Repository.readExistingSubmission(this.identifierFromUrl, this.selectedRepository.key)
-        if (response) {
+
+        if (response && isNaN(response)) {
           this.submission = Submission.getInsertData(response, this.selectedRepository.key, this.identifierFromUrl, true)
           this.apiSubmission = response
         }
+        else if (response === 403) {
+          // Repository was unauthorized
+          this.wasUnauthorized = true
+          
+          // Try again when user has authorized the repository
+          this.authorizedSubject = Repository.authorized$.subscribe(async (repositoryKey: EnumRepositoryKeys) => {
+            await this.onReadDataset()
+          })
+        }
       }
-      // await registration
       this.isFetching = false
-      // redirect to submission page
     }
     catch (e) {
       console.log(e)
-      this.errorMsg = 'Some error'
       this.isFetching = false
     }
   }
@@ -245,7 +285,7 @@ export default class CzRegisterDataset extends Vue {
 
   protected getDateInLocalTime(date: number): string {
     const offset = (new Date(date)).getTimezoneOffset() * 60 * 1000
-    const localDateTime = date - offset
+    const localDateTime = date + offset
     return new Date(localDateTime).toLocaleString()
   }
 }

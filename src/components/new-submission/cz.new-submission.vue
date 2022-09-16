@@ -109,7 +109,7 @@
           <v-row>
             <v-col class="flex-grow-1">We need your authorization to load this submission from the repository.</v-col>
             <v-col class="flex-grow-0">
-              <v-btn @click="openAuthorizePopup" color="primary" class="mb-4">
+              <v-btn @click="openAuthorizePopup(repositoryKey)" color="primary" class="mb-4">
                 <i class="fas fa-key mr-2" />Authorize
               </v-btn>
             </v-col>
@@ -249,7 +249,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected uploads: (IFile | IFolder)[] = []
   protected errors: ErrorObject[]  = []
   protected repositoryRecord: any = null
-  protected authorizedSubject = new Subscription()
   protected loggedInSubject = new Subscription()
   protected timesChanged = 0
   protected ajv = customAjv
@@ -326,7 +325,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   beforeDestroy() {
-    this.authorizedSubject.unsubscribe()
     this.loggedInSubject.unsubscribe()
   }
 
@@ -354,11 +352,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     } else {
       this.isLoading = false
     }
-  }
-
-  protected async openAuthorizePopup() {
-    const repository = this.getRepositoryFromKey(this.repositoryKey) as typeof Repository
-    Repository.authorize(repository)  // We don't need to provide a callback because we already have a subject set
   }
 
   protected onLogIn() {

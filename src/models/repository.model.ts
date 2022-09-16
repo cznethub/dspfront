@@ -519,7 +519,7 @@ export default class Repository extends Model implements IRepository {
         }
       }
       catch(e: any) {
-        if (e.response.status === 401) {
+        if (e.response.status === 401 || e.response.status === 403) {
           // Token has expired
           this.commit((state) => {
             state.accessToken = ''
@@ -533,12 +533,12 @@ export default class Repository extends Model implements IRepository {
           Repository.openAuthorizeDialog(repository)
           return e.response.status
         }
-        else if (e.response?.status === 403) {
+        else if (e.response?.status === 404) {
           // Submission might have been deleted or service unavailable
-          CzNotification.toast({
-            message: 'Failed to read existing submission',
-            type: 'error'
-          })
+          // CzNotification.toast({
+          //   message: 'Failed to read existing submission',
+          //   type: 'error'
+          // })
           return e.response.status
         }
         else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {

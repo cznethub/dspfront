@@ -544,11 +544,10 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   protected getDateInLocalTime(date: number): string {
     const offset = (new Date(date)).getTimezoneOffset() * 60 * 1000
+    // TODO: subtracting offset because db stored dates seem to have the time shifted
     const localDateTime = date - offset
     const localizedDate = new Date(localDateTime).toLocaleString()
-
     // const ago = formatDistanceToNow(new Date(localDateTime), { addSuffix: true })
-
     return localizedDate
   }
 

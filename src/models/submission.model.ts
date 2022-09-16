@@ -101,7 +101,9 @@ export default class Submission extends Model implements ISubmission {
 
       if (overrideDate) {
         // Zenodo returns a date, and we need a datetime
-        data.date = new Date(apiSubmission.created).getTime()
+        const date = apiSubmission.publication_date.split('-')
+        const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
+        data.date = parsedDate.getTime()
       }
 
       return data
