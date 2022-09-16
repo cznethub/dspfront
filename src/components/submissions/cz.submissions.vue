@@ -317,7 +317,7 @@
             v-if="!deleteDialogData.isExternal"
             color="red"
             v-model="alsoDeleteInRepository"
-            :label="`Also delete in ${this.getRepositoryFromKey(deleteDialogData.submission.repository).name}`"
+            :label="`Also delete in ${ getRepositoryFromKey(deleteDialogData.submission.repository).name }`"
             hide-details
           >
           </v-checkbox>
