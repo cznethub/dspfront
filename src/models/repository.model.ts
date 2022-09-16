@@ -387,18 +387,16 @@ export default class Repository extends Model implements IRepository {
   static async deleteSubmission(identifier: string, repository: string, deleteInRepository?: boolean) {
     try {
       // TODO: this request is attempting to delete from the repository no matter what
-      const response = await axios.delete(`/api/metadata/${repository}/${identifier}`, { 
+      const deleteUrl = deleteInRepository
+        ? `/api/metadata/${repository}/${identifier}` // also deletes in repository
+        : `/api/submit/${repository}/${identifier}`   // deletes only in database
+
+      const response = await axios.delete(deleteUrl, { 
         params: { "access_token": User.$state.orcidAccessToken }
       })
   
       if (response.status === 200) {
         await Submission.delete([identifier, repository])
-
-        if (deleteInRepository) {
-          await axios.delete(`/api/submit/${repository}/${identifier}`, { 
-            params: { "access_token": User.$state.orcidAccessToken }
-          })
-        }
 
         CzNotification.toast({
           message: 'Your submission has been deleted',
