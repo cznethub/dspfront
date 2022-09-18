@@ -12,6 +12,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import vueFilterPrettyBytes from 'vue-filter-pretty-bytes'
 import vuetify from '@/plugins/vuetify'
+import browserDetect from "vue-browser-detect-plugin"
 
 import { router } from './router'
 import { orm } from '@/models/orm'
@@ -46,6 +47,7 @@ Vue.use(vueFilterPrettyBytes)
 Vue.use(VueCompositionAPI)
 Vue.use(VueRouter)
 Vue.use(VueCookies)
+Vue.use(browserDetect);
 Vue.use(Buefy, {
   defaultIconPack: 'fas',
   defaultContainerElement: '#content',

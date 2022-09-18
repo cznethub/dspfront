@@ -1,13 +1,13 @@
 <template>
   <v-app app>
-    <v-app-bar ref="appBar" id="app-bar" color="blue-grey lighten-4" prominent elevate-on-scroll shrink-on-scroll fixed app>
-      <v-container class="d-flex align-end full-height">
-        <router-link
-          :to="{ path: `/` }"
-          class="logo"
-        >
-          <img :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
-            alt="Critical Zone Network logo"
+    <v-app-bar ref="appBar" id="app-bar" color="blue-grey lighten-4"
+      :prominent="!isSafari" elevate-on-scroll :shrink-on-scroll="!isSafari" fixed app>
+      <v-container class="d-flex align-end full-height" :class="{'pa-0 align-center': isSafari}">
+        <router-link :to="{ path: `/` }" class="logo">
+          <img v-if="isSafari" :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network home"/>
+
+          <img v-else :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
+            alt="Critical Zone Network home"
           />
         </router-link>
         <div class="spacer"></div>
@@ -279,6 +279,10 @@ export default class App extends Vue {
 
   protected get isLoggedIn() {
     return User.$state.isLoggedIn
+  }
+
+  protected get isSafari(): boolean {
+    return this.$browserDetect.isSafari
   }
 
   mounted() {
