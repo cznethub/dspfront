@@ -12,7 +12,6 @@ import Vue from 'vue'
 import App from './App.vue'
 import vueFilterPrettyBytes from 'vue-filter-pretty-bytes'
 import vuetify from '@/plugins/vuetify'
-import VueAnalytics from 'vue-analytics'
 
 import { router } from './router'
 import { orm } from '@/models/orm'
@@ -53,12 +52,6 @@ Vue.use(Buefy, {
   defaultNotificationPosition: 'is-top',
   defaultNotificationDuration: 10000,
   defaultNoticeQueue: false,
-})
-// Configuration VueAnalytics
-// https://webdeasy.de/en/vue-analytics-en/
-Vue.use(VueAnalytics, {
-  id: process.env.GOOGLE_ANALYTICS_TRACKING_ID,
-  router
 })
 
 new Vue({

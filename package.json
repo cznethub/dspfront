@@ -3,7 +3,7 @@
   "version": "1.0.7",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --mode development",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "build-prod": "vue-cli-service build --mode=production",
@@ -27,7 +27,6 @@
     "rxjs": "^7.5.5",
     "sprintf-js": "^1.1.2",
     "vue": "^2.6.11",
-    "vue-analytics": "^5.22.1",
     "vue-cookies": "^1.8.1",
     "vue-easy-dnd": "^1.19.0",
     "vue-filter-pretty-bytes": "^0.1.6",
