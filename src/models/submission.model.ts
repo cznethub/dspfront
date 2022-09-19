@@ -7,6 +7,9 @@ import {
   EnumSortDirections,
 } from "@/components/submissions/types"
 import { itemsPerPageArray } from '@/components/submissions/constants'
+import { getRepositoryFromKey } from '@/constants'
+
+const sprintf = require("sprintf-js").sprintf
 
 export interface ISubmisionState {
   sortBy: { key: string, label: string },
@@ -74,15 +77,17 @@ export default class Submission extends Model implements ISubmission {
   // TODO: this should be refactored as a dedicated method on each repository model
   /** Used to transform submission data that comes from the repository API */
   static getInsertData(apiSubmission, repository: EnumRepositoryKeys, identifier: string, overrideDate?: boolean): ISubmission | Partial<Submission> {
+    const repo = getRepositoryFromKey(repository)
+    const viewUrl = sprintf(repo?.get()?.urls?.viewUrl, identifier)
+
     if (repository === EnumRepositoryKeys.hydroshare) {
       const data: Partial<Submission> = {
         title: apiSubmission.title,
         authors: apiSubmission.creators.map(c => c.name),
         repository: repository,
         identifier: identifier,
-        url: apiSubmission.url,
+        url: viewUrl,
         metadata: {},
-        // url: apiSubmission.url
       }
 
       if (overrideDate) {
@@ -97,6 +102,7 @@ export default class Submission extends Model implements ISubmission {
         authors: apiSubmission.creators?.map(c => c.name),
         repository: repository,
         identifier: identifier,
+        url: viewUrl,
       }
 
       if (overrideDate) {
@@ -115,6 +121,7 @@ export default class Submission extends Model implements ISubmission {
           .map(a => `${a.familyName}, ${a.givenName}`),
         repository: repository,
         identifier: identifier,
+        url: viewUrl,
       }
 
       if (overrideDate) {

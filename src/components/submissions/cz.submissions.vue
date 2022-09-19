@@ -317,7 +317,7 @@
             v-if="!deleteDialogData.isExternal"
             color="red"
             v-model="alsoDeleteInRepository"
-            :label="`Also delete in ${ getRepositoryFromKey(deleteDialogData.submission.repository).name }`"
+            :label="`Also delete in ${ repoName }`"
             hide-details
           >
           </v-checkbox>
@@ -362,6 +362,7 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { Subscription } from "rxjs"
 import { itemsPerPageArray, sortDirectionsOverrides } from '@/components/submissions/constants'
+import { getRepositoryFromKey } from '@/constants'
 import CzRegisterDatasetDialog from '@/components/register-dataset/cz.register-dataset-dialog.vue'
 // import { formatDistanceToNow } from 'date-fns'
 import Submission from "@/models/submission.model"
@@ -493,6 +494,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     Submission.commit((state) => {
       state.alsoDeleteInRepository = value
     })
+  }
+
+  protected get repoName(): string {
+    if (this.deleteDialogData) {
+      return getRepositoryFromKey(this.deleteDialogData.submission.repository)?.name || ''
+    }
+    
+    return ''
   }
 
   protected updatePagination(page, pageSize, sort, sortOrder) {

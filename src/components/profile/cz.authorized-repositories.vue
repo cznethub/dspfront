@@ -55,6 +55,7 @@
   import { mixins } from 'vue-class-component'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import { IRepository } from '../submissions/types'
+  import { getRepositoryFromKey } from '@/constants'
   import CzNotification from '@/models/notifications.model'
   import Repository from '@/models/repository.model'
 
@@ -72,7 +73,7 @@
     }
 
     protected getAccessToken(repositoryKey: string): string {
-      return this.getRepositoryFromKey(repositoryKey)?.$state.accessToken
+      return getRepositoryFromKey(repositoryKey)?.$state.accessToken
     }
 
     protected onCopy(repositoryKey: string) {
@@ -81,7 +82,7 @@
     }
 
     protected async openAuthorizePopup(repositoryKey: string) {
-      Repository.authorize(this.getRepositoryFromKey(repositoryKey) as typeof Repository)
+      Repository.authorize(getRepositoryFromKey(repositoryKey) as typeof Repository)
     }
   }
 </script>

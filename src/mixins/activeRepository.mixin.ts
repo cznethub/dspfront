@@ -1,12 +1,9 @@
 import Vue from 'vue'
-import HydroShare from '@/models/hydroshare.model'
-import Zenodo from '@/models/zenodo.model'
 import Repository from '@/models/repository.model'
-import External from '@/models/external.model'
-import EarthChem from '@/models/earthchem.model'
 import { Component } from 'vue-property-decorator'
 import { EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
 import { Subscription } from "rxjs"
+import { getRepositoryFromKey } from '@/constants'
 
 @Component
 export class ActiveRepositoryMixin extends Vue {
@@ -14,20 +11,11 @@ export class ActiveRepositoryMixin extends Vue {
 
   protected get activeRepository() {
     const key = Repository.$state.submittingTo
-    return this.getRepositoryFromKey(key) as typeof Repository
-  }
-
-  protected getRepositoryFromKey(key: string): typeof Repository | undefined {
-    switch (key) {
-      case EnumRepositoryKeys.hydroshare: return HydroShare
-      case EnumRepositoryKeys.zenodo: return Zenodo
-      case EnumRepositoryKeys.earthchem: return EarthChem
-      case EnumRepositoryKeys.external: return External
-    }
+    return getRepositoryFromKey(key) as typeof Repository
   }
 
   protected async openAuthorizePopup(repositoryKey: string) {
-    const repository = this.getRepositoryFromKey(repositoryKey) as typeof Repository
+    const repository = getRepositoryFromKey(repositoryKey) as typeof Repository
     Repository.authorize(repository)  // We don't need to provide a callback because we already have a subject set
   }
 

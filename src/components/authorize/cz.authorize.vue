@@ -25,6 +25,7 @@
   import { Component, Prop } from 'vue-property-decorator'
   import { mixins } from 'vue-class-component'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
+  import { getRepositoryFromKey } from '@/constants'
   import Repository from '@/models/repository.model'
 
   @Component({
@@ -35,7 +36,7 @@
     @Prop() repo!: string
 
     protected get repository() {
-      return this.getRepositoryFromKey(this.repo) as typeof Repository
+      return getRepositoryFromKey(this.repo) as typeof Repository
     }
 
     protected get authorizeUrl() {
