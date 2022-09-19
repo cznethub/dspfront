@@ -236,40 +236,9 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
     this.selectedRepository = this.repoCollection[0]
   }
 
-  protected async onReadDataset() {
-    this.submission = null
-    this.isFetching = true
+  protected onReadDataset() {
     this.step++
-
-    try {
-      if (this.selectedRepository) {
-        const response = await Repository.readExistingSubmission(this.identifierFromUrl, this.selectedRepository.key)
-
-        if (response && isNaN(response)) {
-          this.submission = Submission.getInsertData(response, this.selectedRepository.key, this.identifierFromUrl, true)
-          this.apiSubmission = response
-
-          // For earthchem submissions we need to set the community to a constant
-          if (this.submission.repository === EnumRepositoryKeys.earthchem) {
-            this.apiSubmission.community = 'CZNet'
-          }
-        }
-        else if (response === 403) {
-          // Repository was unauthorized
-          this.wasUnauthorized = true
-          
-          // Try again when user has authorized the repository
-          this.authorizedSubject = Repository.authorized$.subscribe(async (repositoryKey: EnumRepositoryKeys) => {
-            await this.onReadDataset()
-          })
-        }
-      }
-      this.isFetching = false
-    }
-    catch (e) {
-      console.log(e)
-      this.isFetching = false
-    }
+    this._readDataset()
   }
 
   protected goToEditSubmission() {
@@ -292,6 +261,42 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
     const offset = (new Date(date)).getTimezoneOffset() * 60 * 1000
     const localDateTime = date + offset
     return new Date(localDateTime).toLocaleString()
+  }
+
+  private async _readDataset() {
+    this.submission = null
+    this.isFetching = true
+    this.wasUnauthorized = false
+
+    try {
+      if (this.selectedRepository) {
+        const response = await Repository.readExistingSubmission(this.identifierFromUrl, this.selectedRepository.key)
+
+        if (response && isNaN(response)) {
+          this.submission = Submission.getInsertData(response, this.selectedRepository.key, this.identifierFromUrl, true)
+          this.apiSubmission = response
+
+          // For earthchem submissions we need to set the community to a constant
+          if (this.submission.repository === EnumRepositoryKeys.earthchem) {
+            this.apiSubmission.community = 'CZNet'
+          }
+        }
+        else if (response === 403) {
+          // Repository was unauthorized
+          this.wasUnauthorized = true
+          
+          // Try again when user has authorized the repository
+          this.authorizedSubject = Repository.authorized$.subscribe(async (repositoryKey: EnumRepositoryKeys) => {
+            await this._readDataset()
+          })
+        }
+      }
+      this.isFetching = false
+    }
+    catch (e) {
+      console.log(e)
+      this.isFetching = false
+    }
   }
 }
 </script>
