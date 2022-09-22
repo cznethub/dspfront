@@ -312,12 +312,12 @@
       <v-card>
         <v-card-title>Delete this submission?</v-card-title>
         <v-card-text v-if="deleteDialogData" class="text-body-1">
-          <p>This action will attempt to delete this submission record in the Data Submission Portal.</p>
+          <p>This action will delete the metadata for this submission in the data submission Portal.</p>
           <v-checkbox
             v-if="!deleteDialogData.isExternal"
-            color="red"
             v-model="alsoDeleteInRepository"
-            :label="`Also delete in ${ repoName }`"
+            color="red"
+            label="Also attempt to delete this resource and its content files from the repository. If the resource is permanently published (i.e., it has been assigned a DOI), we will not be able to remove it from the repository."
             hide-details
           >
           </v-checkbox>
