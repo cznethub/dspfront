@@ -117,19 +117,11 @@ const layoutRenderer = defineComponent({
 
       if (this.map) {
         if (this.mapType === 'box') {
-          // zoom to rectangle
-          // TODO: calculate appropiate zoom level
-          const centerLat =
-          (this.layout.data.northlimit + this.layout.data.southlimit) / 2;
-          const centerLng =
-            (this.layout.data.eastlimit + this.layout.data.westlimit) / 2;
-          (this.map as google.maps.Map).setCenter({
-            lat: centerLat,
-            lng: centerLng,
-          });
+          // Zoom and center to rectangle
+          (this.map as google.maps.Map).fitBounds(this.rectangle.bounds)
         }
         else {
-          // zoom to marker
+          // Recenter at marker
           (this.map as google.maps.Map).setCenter({
             lat: this.layout.data.north,
             lng: this.layout.data.east,
