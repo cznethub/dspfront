@@ -289,7 +289,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     if (this.isExternal) {
       return 'Register Dataset from External Repository'
     }
-    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`
+    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.get()?.name }`
   }
 
   protected get submitText() {
