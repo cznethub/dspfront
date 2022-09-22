@@ -33,6 +33,7 @@
           v-model="isValid"
           lazy-validation
           class="pb-2"
+          @submit.prevent
         >
           <v-text-field
             v-model.trim="url"
@@ -46,6 +47,7 @@
             hide-details="auto"
             persistent-hint
             outlined
+            @keypress.enter="onReadDataset"
           >
           </v-text-field>
 
@@ -53,7 +55,7 @@
             {{ `e.g. '${selectedRepository.exampleUrl}' or '${selectedRepository.exampleIdentifier}'` }}
           </div>
 
-          <v-btn color="primary" class="mr-4" @click="onReadDataset" :disabled="isFetching || !isValid || !url"> Continue </v-btn>
+          <v-btn color="primary" class="mr-4" @click="onReadDataset" :disabled="!canReadDataset"> Continue </v-btn>
           <v-btn color="default" @click="step--" :disabled="isFetching" text> Back </v-btn>
         </v-form>
       </v-stepper-content>
@@ -179,12 +181,9 @@
         </template>
 
         <template v-else>
-          <v-card elevation="2" outlined class="mb-6">
-            <v-card-text class="d-flex align-center gap-1">
-              <v-icon large color="orange">mdi-magnify-remove-outline</v-icon>
-              <div class="text-body-1">We could not find a resource matching the criteria above. Please make sure that you have selected the correct repository and that the URL or identifier is correct and try again.</div>
-            </v-card-text>
-          </v-card>
+          <v-alert class="text-subtitle-1 ma-2" border="left" colored-border type="warning" elevation="2" icon="mdi-magnify-remove-outline">
+            We could not find a resource matching the criteria above. Please make sure that you have selected the correct repository and that the URL or identifier is correct and try again.
+          </v-alert>
 
           <v-btn color="default" class="mb-2" @click="step--" :disabled="isFetching" text> Back </v-btn>
         </template>
@@ -226,6 +225,10 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
     return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
   }
 
+  protected get canReadDataset(): boolean {
+    return !this.isFetching && this.isValid && !!this.url
+  }
+
   protected get identifierFromUrl(): string {
     const matches = this.selectedRepository?.identifierUrlPattern?.exec(this.url)
 
@@ -241,8 +244,10 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected onReadDataset() {
-    this.step++
-    this._readDataset()
+    if (this.canReadDataset) {
+      this.step++
+      this._readDataset()
+    }
   }
 
   protected goToEditSubmission() {
