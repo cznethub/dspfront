@@ -182,7 +182,7 @@
                           <th class="pr-4 body-2">Identifier:</th>
                           <td>{{ item.identifier }}</td>
                         </tr>
-                        <tr v-if="item.metadata.status">
+                        <tr v-if="item.metadata.status && item.repository === enumRepositoryKeys.earthchem">
                           <th class="pr-4 body-2">Status:</th>
                           
                           <td>
@@ -389,6 +389,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected itemsPerPageArray = itemsPerPageArray
   protected page = 1
   protected repoMetadata = repoMetadata
+  protected enumRepositoryKeys = EnumRepositoryKeys
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected sortDirectionsOverrides = sortDirectionsOverrides
