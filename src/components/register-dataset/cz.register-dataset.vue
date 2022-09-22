@@ -3,6 +3,10 @@
     <div class="text-h4">Register Dataset</div>
     <v-divider class="has-space-bottom" />
 
+    <v-alert border="left" colored-border type="info" elevation="1">
+      You should only use this form to register existing datasets from HydroShare, EarthChem, or Zenodo that were not submitted through the Data Submission Portal
+    </v-alert>
+
     <v-stepper v-model="step" vertical flat>
       <v-stepper-step :complete="step > 1" step="1" :editable="!isFetching && step > 1" edit-icon="mdi-check">
         <div>What repository is the resource in?</div>
