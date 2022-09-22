@@ -40,13 +40,19 @@ export const routes: RouteConfig[] = [
         path: 'account',
         components: {
           CzAccount
-        }
+        },
+        meta: { 
+          hasLoggedInGuard: true,
+        },
       },
       {
         path: 'authorized-repositories',
         components: {
           CzAuthorizedRepositories
-        }
+        },
+        meta: { 
+          hasLoggedInGuard: true,
+        },
       }
     ],
   },
