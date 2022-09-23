@@ -39,7 +39,7 @@
             v-model.trim="url"
             :disabled="isFetching"
             :required="true"
-            :rules="[v => !!v || 'required']"
+            :rules="[isValidUrlOrIdentifier()]"
             clearable
             class="mt-4"
             label="URL or identifier*"
@@ -202,6 +202,8 @@ import Repository from "@/models/repository.model";
 import Submission from "@/models/submission.model";
 import User from "@/models/user.model";
 
+const identifierOnlyPattern = new RegExp('^.[a-z0-9]*$')
+
 @Component({
   name: "cz-register-dataset",
   components: {},
@@ -230,13 +232,18 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected get identifierFromUrl(): string {
-    const matches = this.selectedRepository?.identifierUrlPattern?.exec(this.url)
+    if (identifierOnlyPattern.test(this.url)) {
+      return this.url
+    }
+    else if (this.selectedRepository?.identifierUrlPattern?.test(this.url)) {
+      const matches = this.selectedRepository?.identifierUrlPattern?.exec(this.url)
 
-    if (matches && matches.length) {
-      return matches[0]
+      if (matches && matches.length) {
+        return matches[1]
+      }
     }
 
-    return this.url
+    return this.url // default
   }
 
   created() {
@@ -270,6 +277,16 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
     const offset = (new Date(date)).getTimezoneOffset() * 60 * 1000
     const localDateTime = date + offset
     return new Date(localDateTime).toLocaleString()
+  }
+
+  protected isValidUrlOrIdentifier() {
+    if (!this.url) {
+      return 'required'
+    }
+
+    return identifierOnlyPattern.test(this.url) || this.selectedRepository?.identifierUrlPattern?.test(this.url)
+      ? true
+      : 'invalid URL or Identifier'
   }
 
   private async _readDataset() {
