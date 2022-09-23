@@ -227,7 +227,7 @@
                         <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                       </v-btn>
                       <v-btn :id="`sub-${index}-delete`" @click="onDelete(item, repoMetadata[item.repository].isExternal)"
-                        :disabled="isDeleting[`${item.repository}-${item.identifier}`] || item.metadata.status && item.metadata.status !== 'incomplete'" rounded>
+                        :disabled="isDeleteButtonDisabled(item)" rounded>
                         <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-delete</v-icon><span class="ml-1">
                         {{ isDeleting[`${item.repository}-${item.identifier}`] ? 'Deleting...' : 'Delete' }}</span>
@@ -615,6 +615,11 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     element.click()
 
     document.body.removeChild(element)
+  }
+
+  protected isDeleteButtonDisabled(item) {
+    return this.isDeleting[`${item.repository}-${item.identifier}`]
+      || (item.repository === this.enumRepositoryKeys.earthchem && item.metadata.status && item.metadata.status !== 'incomplete')
   }
 
   protected onDelete(submission: ISubmission, isExternal: boolean) {
