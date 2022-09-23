@@ -119,10 +119,10 @@
         </template>
       </template>
     </fieldset>
-    <div v-if="control.schema.description" class="text--secondary text-body-1 ml-2 mt-2">{{ control.schema.description }}</div>
-    <div v-if="control.errors" class="ml-2 v-messages error--text">
+    <div v-if="control.schema.description" class="text--secondary text-body-1 ml-2">{{ control.schema.description }}</div>
+    <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
       <v-divider v-if="isFlat" class="mb-4"></v-divider>
-      {{ control.errors }}
+      {{ cleanedErrors }}
     </div>
   </div>
 </template>
@@ -251,6 +251,10 @@ const controlRenderer = defineComponent({
       return this.selectedIndex >= 0 
         ? this.anyOfRenderInfos[this.selectedIndex].label
         : ''
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
     },
   },
   watch: {
