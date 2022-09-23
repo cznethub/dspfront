@@ -198,7 +198,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator"
+import { Component, Vue, Watch } from "vue-property-decorator"
 import { setupRouteGuards } from "./router"
 import { Subscription } from "rxjs"
 import { DEFAULT_TOAST_DURATION } from "./constants"
@@ -238,7 +238,7 @@ const INITIAL_SNACKBAR =  {
 
 @Component({
   name: "app",
-  components: { CzFooter, CzLogin, CzAuthorize },
+  components: { CzFooter, CzLogin, CzAuthorize }
 })
 export default class App extends Vue {
   protected isLoading = true
@@ -277,7 +277,7 @@ export default class App extends Vue {
     { to: "/contact", label: "Contact", icon: "mdi-book-open-blank-variant" },
   ]
 
-  protected get isLoggedIn() {
+  protected get isLoggedIn(): boolean {
     return User.$state.isLoggedIn
   }
 
@@ -307,6 +307,14 @@ export default class App extends Vue {
     })
   }
 
+  /** Check if the user is still logged in after being idle for a while */
+  @Watch('isAppIdle')
+  onIdleChange(wasActive, isActive) {
+    if (isActive) {
+      User.checkAuthorization()
+    }
+  }
+
   async created() {
     document.title = "CZ Hub"
 
@@ -326,9 +334,11 @@ export default class App extends Vue {
     })
 
     this.onOpenLogInDialog = User.logInDialog$.subscribe((redirectTo: RawLocation | undefined) => {
+      console.log("dialog")
       this.logInDialog.isActive = true
 
       this.logInDialog.onLoggedIn = () => {
+        console.log('onlogin')
         if (redirectTo) {
           this.$router.push(redirectTo)
         }

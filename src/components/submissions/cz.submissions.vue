@@ -377,7 +377,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<typeof CzRegisterDatasetDialog>
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
-
   protected isDeleteDialogActive = false
   protected deleteDialogData: { submission: ISubmission, isExternal: boolean } | null = null 
 

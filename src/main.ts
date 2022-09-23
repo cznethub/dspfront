@@ -13,6 +13,7 @@ import App from './App.vue'
 import vueFilterPrettyBytes from 'vue-filter-pretty-bytes'
 import vuetify from '@/plugins/vuetify'
 import browserDetect from "vue-browser-detect-plugin"
+import IdleVue from 'idle-vue'
 
 import { router } from './router'
 import { orm } from '@/models/orm'
@@ -42,12 +43,15 @@ const store = new Vuex.Store({
     })
   ]
 })
+
+const eventsHub = new Vue()
       
 Vue.use(vueFilterPrettyBytes)
 Vue.use(VueCompositionAPI)
 Vue.use(VueRouter)
 Vue.use(VueCookies)
 Vue.use(browserDetect);
+Vue.use(IdleVue, { eventEmitter: eventsHub, idleTime: 60000, store })
 Vue.use(Buefy, {
   defaultIconPack: 'fas',
   defaultContainerElement: '#content',

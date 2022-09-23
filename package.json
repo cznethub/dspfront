@@ -23,6 +23,7 @@
     "date-fns": "^2.28.0",
     "deepmerge": "^4.2.2",
     "google-maps": "^4.3.3",
+    "idle-vue": "^2.0.5",
     "lodash.isequal": "^4.5.0",
     "rxjs": "^7.5.5",
     "sprintf-js": "^1.1.2",

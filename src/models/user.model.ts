@@ -65,9 +65,9 @@ export default class User extends Model {
     )
 
     if (!this.isLoginListenerSet) {
+      this.isLoginListenerSet = true // Prevents registering the listener more than once
       window.addEventListener("message", async (message) => {
         console.info(`User: listening to login window...`)
-        this.isLoginListenerSet = true // Prevents registering the listener more than once
         if (message.data.token) {
           CzNotification.toast({ 
             message: 'You have logged in!',
@@ -79,6 +79,7 @@ export default class User extends Model {
             state.orcidAccessToken = message.data.token
           })
           document.cookie = `Authorization=Bearer ${message.data.token}; expires=${message.data.expiresIn}; path=/`
+          this.isLoginListenerSet = false 
           this.loggedIn$.next()
           if (callback) {
             callback()
