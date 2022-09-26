@@ -3,6 +3,7 @@ import { RouteConfig } from "vue-router"
 import CzFooter from '@/components/base/cz.footer.vue'
 import CzHome from '@/components/home/cz.home.vue'
 import CzAbout from '@/components/about/cz.about.vue'
+import CzQuickStartGuide from '@/components/quick-start-guide/cz.quick-start-guide.vue'
 import CzSubmit from '@/components/submit/cz.submit.vue'
 import CzResources from '@/components/resources/cz.resources.vue'
 import CzContact from '@/components/contact/cz.contact.vue'
@@ -64,6 +65,17 @@ export const routes: RouteConfig[] = [
     },
     components: {
       content: CzAbout,
+      footer: CzFooter
+    },
+  },
+  {
+    name: 'quick-start-guide',
+    path: '/quick-start-guide',
+    meta: { 
+      title: 'Quick Start Guide',
+    },
+    components: {
+      content: CzQuickStartGuide,
       footer: CzFooter
     },
   },
