@@ -7,7 +7,7 @@
       <p class="text-body-1 mb-4">
         For help getting started with the Data Submission Portal, visit our quick start guide
       </p>
-      <v-btn color="primary" to="/quick-start-guide">Quick Start Guide</v-btn>
+      <v-btn color="primary" to="/resources/quick-start-guide">Quick Start Guide</v-btn>
     </v-container>
     <v-container class="has-bg-light-gray text-center mb-2 banner d-flex flex-column align-center py-12">
       <div class="text-h4 mb-2">Repository Recommendations</div>
