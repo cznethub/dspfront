@@ -50,7 +50,7 @@ import { useVuetifyControl, useVuetifyLayout } from "@jsonforms/vue2-vuetify";
 import { VContainer, VRow, VCol } from "vuetify/lib";
 import { Loader, LoaderOptions } from "google-maps";
 const options: LoaderOptions = { libraries: ["drawing"] };
-const loader = new Loader(process.env.GOOGLE_MAPS_API_KEY, options);
+const loader = new Loader(process.env.VUE_APP_GOOGLE_MAPS_API_KEY, options);
 
 const layoutRenderer = defineComponent({
   name: "map-layout-renderer",
@@ -110,6 +110,7 @@ const layoutRenderer = defineComponent({
     };
   },
   mounted: async function () {
+    console.log(process.env.VUE_APP_GOOGLE_MAPS_API_KEY)
     await this.initMap();
 
     if (this.hasData) {
