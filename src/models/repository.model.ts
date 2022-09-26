@@ -386,9 +386,8 @@ export default class Repository extends Model implements IRepository {
   */
   static async deleteSubmission(identifier: string, repository: string, deleteInRepository?: boolean) {
     try {
-      // TODO: this request is attempting to delete from the repository no matter what
       const deleteUrl = deleteInRepository
-        ? `/api/metadata/${repository}/${identifier}` // also deletes in repository
+        ? `/api/metadata/${repository}/${identifier}` // also attempts to delete in repository
         : `/api/submit/${repository}/${identifier}`   // deletes only in database
 
       const response = await axios.delete(deleteUrl, { 
@@ -405,7 +404,7 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch(e: any) {
-      if (e.response?.status === 401 || e.response?.status === 403) {
+      if (e.response?.status === 401) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = ''
@@ -416,6 +415,14 @@ export default class Repository extends Model implements IRepository {
         })
 
         Repository.openAuthorizeDialog(repository)
+      }
+      if (e.response?.status === 403) {
+        await Submission.delete([identifier, repository])
+        // Repository refused to delete submission
+        CzNotification.toast({
+          message: 'Your submission could not be deleted from the repository.',
+          type: 'info'
+        })
       }
       else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         // Resource has been deleted in the repository
