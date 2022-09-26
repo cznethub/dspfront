@@ -18,7 +18,10 @@
       The DSP requires an ORCID for login. On the landing page of the DSP, users can select “Log In” and be prompted to login using their ORCID. This will create a separate window for login where users will enter their email address or ORCID and the password associated with their ORCID. 
     </p>
 
-    <p class="text-body-1"><a href="https://orcid.org/" target="_blank">Register for and learn more about ORCIDs</a></p>
+    <p class="text-body-1">
+      <a href="https://orcid.org/" target="_blank">Register for and learn more about ORCIDs</a>
+      <v-icon class="ml-2" small>mdi-open-in-new</v-icon>
+    </p>
 
     <div class="text-h6 mb-3 mt-6">Choosing a Repository</div>
     <p class="text-body-1">
