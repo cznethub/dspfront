@@ -67,7 +67,7 @@
       <v-stepper-content step="3">
         <v-card v-if="isFetching" elevation="2" outlined>
           <div class="table-item">
-            <table>
+            <table class="text-body-1" :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
               <tr>
                 <td colspan="2" class="text-h6 title">
                   <v-skeleton-loader type="heading" />
@@ -112,23 +112,23 @@
                   </td>
                 </tr>
                 <tr v-if="submission.authors.length">
-                  <th class="pr-4 body-2 text-right">Authors:</th>
+                  <th class="pr-4 body-2">Authors:</th>
                   <td>{{ submission.authors.join(" | ") }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2 text-right">Submission Repository:</th>
+                  <th class="pr-4 body-2">Submission Repository:</th>
                   <td>{{ selectedRepository.name }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2 text-right">Submission Date:</th>
+                  <th class="pr-4 body-2">Submission Date:</th>
                   <td>{{ getDateInLocalTime(submission.date) }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2 text-right">Identifier:</th>
+                  <th class="pr-4 body-2">Identifier:</th>
                   <td>{{ submission.identifier }}</td>
                 </tr>
                 <tr v-if="submission.metadata && submission.metadata.status">
-                  <th class="pr-4 body-2 text-right">Status:</th>
+                  <th class="pr-4 body-2">Status:</th>
                   
                   <td>
                     <v-chip
@@ -153,7 +153,7 @@
                 </tr>
               </table>
 
-              <div class="d-flex flex-column mt-sm-4 actions">
+              <div class="d-flex flex-column mt-4 mt-md-0 actions">
                 <v-btn :href="submission.url" target="_blank" color="blue-grey lighten-4" rounded>
                   <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
                 </v-btn>

@@ -16,7 +16,6 @@ export interface ISubmisionState {
   sortDirection: { key: string, label: string },
   itemsPerPage: number,
   isFetching: boolean,
-  alsoDeleteInRepository: boolean
 }
 
 export default class Submission extends Model implements ISubmission {
@@ -40,9 +39,7 @@ export default class Submission extends Model implements ISubmission {
       sortBy: { key: 'date', label: EnumSubmissionSorts.date },
       sortDirection: { key: 'desc', label: EnumSortDirections.desc },
       itemsPerPage: itemsPerPageArray[0],
-      isFetching: false,
-      alsoDeleteInRepository: false
-    }
+      isFetching: false    }
   }
 
   // List of all fields (schema) of the post model. `this.attr` is used
