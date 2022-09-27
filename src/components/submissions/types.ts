@@ -87,6 +87,7 @@ export interface IRepository {
   exampleUrl?: string
   exampleIdentifier?: string
   identifierUrlPattern?: RegExp
+  identifierPattern?: RegExp
   urls?: IRepositoryUrls
   schema?: any,
   uischema?: any

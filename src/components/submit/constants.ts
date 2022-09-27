@@ -14,7 +14,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
     supportUrl: 'https://help.hydroshare.org/',
     exampleUrl: 'https://www.hydroshare.org/resource/9d3d437466764bb5b6668d2742cf9db2/',
     exampleIdentifier: '9d3d437466764bb5b6668d2742cf9db2',
-    identifierUrlPattern: new RegExp(`(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:hydroshare.org\/resource\/)([a-z0-9]+)*\/?`)
+    identifierUrlPattern: new RegExp(`(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:hydroshare.org\/resource\/)([0-9a-fA-F]{32})\/?$`),
+    identifierPattern: new RegExp(`^[0-9a-fA-F]{32}$`)
   },
   [EnumRepositoryKeys.earthchem]: {
     key: EnumRepositoryKeys.earthchem,
@@ -72,7 +73,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
     fileNameRegex: /^[-_()\w\s]*$/,  // File names can only contain upper or lowercase letters, numbers, spaces, _(underscores), -(dashes) and parenthesis().
     exampleUrl: 'https://www.earthchem.org/my/my_view.php?id=2391',
     exampleIdentifier: '2391',
-    identifierUrlPattern: new RegExp(`(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:earthchem\.org\/my\/my_view\.php\\?id=)([a-z0-9]+)*/?`)
+    identifierUrlPattern: new RegExp(`(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:earthchem\.org\/my\/my_view\.php\\?id=)([0-9]+)/?$`),
+    identifierPattern: new RegExp(`^[0-9]+$`)
   },
   [EnumRepositoryKeys.zenodo]: {
     key: EnumRepositoryKeys.zenodo,
@@ -86,7 +88,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
     maxTotalUploadSize: 50000000000, // 50 GB
     exampleUrl: 'https://zenodo.org/deposit/7047180',
     exampleIdentifier: '7047180',
-    identifierUrlPattern: new RegExp(`(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:zenodo.org/deposit/)([a-z0-9]+)*/?`)
+    identifierUrlPattern: new RegExp(`(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:zenodo.org/deposit/)([0-9]+)/?$`),
+    identifierPattern: new RegExp(`^[0-9]+$`)
   },
   [EnumRepositoryKeys.external]: {
     key: EnumRepositoryKeys.external,

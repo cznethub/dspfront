@@ -202,8 +202,6 @@ import Repository from "@/models/repository.model";
 import Submission from "@/models/submission.model";
 import User from "@/models/user.model";
 
-const identifierOnlyPattern = new RegExp('^.[a-z0-9]*$')
-
 @Component({
   name: "cz-register-dataset",
   components: {},
@@ -232,7 +230,7 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
   }
 
   protected get identifierFromUrl(): string {
-    if (identifierOnlyPattern.test(this.url)) {
+    if (this.selectedRepository?.identifierPattern?.test(this.url)) {
       return this.url
     }
     else if (this.selectedRepository?.identifierUrlPattern?.test(this.url)) {
@@ -279,12 +277,15 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(Act
     return new Date(localDateTime).toLocaleString()
   }
 
-  protected isValidUrlOrIdentifier() {
+  protected isValidUrlOrIdentifier(): true | string {
     if (!this.url) {
       return 'required'
     }
 
-    return identifierOnlyPattern.test(this.url) || this.selectedRepository?.identifierUrlPattern?.test(this.url)
+    return (
+      this.selectedRepository?.identifierPattern?.test(this.url) ||
+      this.selectedRepository?.identifierUrlPattern?.test(this.url)
+    )
       ? true
       : 'invalid URL or Identifier'
   }
