@@ -3,7 +3,6 @@ WORKDIR /dspfront
 COPY package*.json ./
 RUN npm install
 COPY ./ .
-RUN mv .env.development .env # need .env present for building
 RUN npm run build-prod
 
 FROM nginx:1.23.1 as production-stage
