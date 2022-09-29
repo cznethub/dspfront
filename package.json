@@ -1,6 +1,6 @@
 {
   "name": "dsp",
-  "version": "1.0.7",
+  "version": "1.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --mode development",
