@@ -171,7 +171,7 @@ const controlRenderer = defineComponent({
               }
             }
             
-            this.handleChange(this.control.path, this.formattedDate)
+            this.handleChange(this.control.path, this.formattedDate || undefined)
           }
       }
       catch(e) {

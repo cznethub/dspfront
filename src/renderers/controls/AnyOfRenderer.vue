@@ -119,10 +119,10 @@
         </template>
       </template>
     </fieldset>
-    <div v-if="control.schema.description" class="text--secondary text-body-1 ml-2">{{ control.schema.description }}</div>
-    <div v-if="control.errors" class="ml-2 v-messages error--text">
+    <div v-if="control.schema.description" class="text--secondary text-body-1 mt-2 ml-2">{{ control.schema.description }}</div>
+    <div v-if="cleanedErrors" class="ml-2 mt-2 v-messages error--text">
       <v-divider v-if="isFlat" class="mb-4"></v-divider>
-      {{ control.errors }}
+      {{ cleanedErrors }}
     </div>
   </div>
 </template>
@@ -218,6 +218,8 @@ const controlRenderer = defineComponent({
       // JsonSchema does not pass the required attribute, so we do it ourselves
       info.map(i => { 
         i.schema.required = this.control.schema.required
+        // @ts-ignore: use detail uischema if specified
+        i.uischema = i.schema.options?.detail || i.uischema
       })
       return info
     },
@@ -250,6 +252,10 @@ const controlRenderer = defineComponent({
         ? this.anyOfRenderInfos[this.selectedIndex].label
         : ''
     },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
+    },
   },
   watch: {
     selectedIndex(newIndex, oldIndex) {
@@ -270,9 +276,15 @@ const controlRenderer = defineComponent({
           this.handleChange(this.control.path, this.tabData[this.selectedIndex])
         }
         else {
+          const schema = this.anyOfRenderInfos[this.selectedIndex].schema
+          const val = schema.type === 'object' || schema.type === 'array'
+            ? createDefaultValue(schema)
+            : undefined
+          
+          // Only create default values for objects and arrays
           this.handleChange(
             this.control.path,
-            createDefaultValue(this.anyOfRenderInfos[this.selectedIndex].schema)
+            val
           )
         }
       })

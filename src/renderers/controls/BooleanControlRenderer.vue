@@ -1,9 +1,5 @@
 <template>
-  <v-text-field
-    outlined
-    type="number"
-    @change.native="beforeChange($event)"
-    :step="step"
+  <v-checkbox
     :id="control.id + '-input'"
     :class="styles.control.input"
     :disabled="!control.enabled"
@@ -11,11 +7,16 @@
     :placeholder="placeholder"
     :label="computedLabel"
     :hint="control.description"
+    persistent-hint
     :required="control.required"
     :error-messages="control.errors"
+    :indeterminate="control.data === undefined"
+    :input-value="control.data"
     :value="control.data"
-    persistent-hint
-    dense
+    v-bind="vuetifyProps('v-checkbox')"
+    @change="onChange"
+    @focus="isFocused = true"
+    @blur="isFocused = false"
     class="py-3"
   >
     <template v-slot:message>
@@ -26,7 +27,7 @@
         {{ cleanedErrors }}
       </div>
     </template>
-  </v-text-field>
+  </v-checkbox>
 </template>
 
 <script lang="ts">
@@ -34,7 +35,7 @@ import {
   ControlElement,
   JsonFormsRendererRegistryEntry,
   rankWith,
-  isIntegerControl,
+  isBooleanControl,
 } from '@jsonforms/core';
 import { defineComponent } from '@vue/composition-api'
 import {
@@ -44,13 +45,13 @@ import {
 } from '@jsonforms/vue2';
 import { default as ControlWrapper } from './ControlWrapper.vue';
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
-import { VTextField } from 'vuetify/lib';
+import { VCheckbox } from 'vuetify/lib';
 
 const controlRenderer = defineComponent({
-  name: 'integer-control-renderer',
+  name: 'boolean-control-renderer',
   components: {
+    VCheckbox,
     ControlWrapper,
-    VTextField,
   },
   props: {
     ...rendererProps<ControlElement>(),
@@ -58,17 +59,16 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVuetifyControl(
       useJsonFormsControl(props),
-      (value) => {
-        const val = parseInt(value, 10)
-        return isNaN(val) ? undefined : val
-      }
+      (newValue) => newValue || false
     );
   },
+  created() {
+    if (!this.control.data && this.control.schema.default !== undefined) {
+      this.control.data = this.control.schema.default
+      this.handleChange(this.control.path, this.control.data)
+    }
+  },
   computed: {
-    step(): number {
-      const options: any = this.appliedOptions;
-      return options.step ?? 1;
-    },
     cleanedErrors() {
       // @ts-ignore
       return this.control.errors.replaceAll(`is a required property`, ``)
@@ -78,23 +78,12 @@ const controlRenderer = defineComponent({
       return this.control.schema.options?.placeholder || ''
     },
   },
-  methods: {
-    // If value changed to an empty string, we need to set the data to undefined in order to trigger validation error
-    beforeChange(event) {
-      if (event.target.value === null || event.target.value.trim() === '') {
-        this.handleChange(this.control.path, undefined)
-      }
-      else {
-        this.onChange(event.target.value)
-      }
-    }
-  }
 });
 
 export default controlRenderer;
 
-export const integerControlRenderer: JsonFormsRendererRegistryEntry = {
+export const booleanControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(2, isIntegerControl),
+  tester: rankWith(1, isBooleanControl),
 };
 </script>

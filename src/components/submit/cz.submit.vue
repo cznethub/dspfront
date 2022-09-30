@@ -15,12 +15,18 @@
 
         <div class="mb-4">
           <div class="repositories justify-space-around px-4">
-            <cz-repository-submit-card v-for="repo of supportedRepoMetadata" :repo="repo" :key="repo.key" />
-            <cz-repository-submit-card :repo="externalRepoMetadata" />
+            <cz-repository-submit-card v-for="repo of supportedRepoMetadata"
+              @click.native="submitTo(repo)"
+              :repo="repo" :key="repo.key" />
+            <cz-repository-submit-card :repo="externalRepoMetadata"
+              @click.native="openRegisterDatasetDialog" />
           </div>
         </div>
       </v-container>
+
+      <cz-register-dataset-dialog ref="registerDatasetDialog" />
     </template>
+
     <template v-else>
       <router-view />
     </template>
@@ -28,16 +34,21 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import { Component, Ref } from 'vue-property-decorator'
   import { repoMetadata } from '@/components/submit/constants'
   import { IRepository } from '../submissions/types'
+  import { mixins } from 'vue-class-component'
+  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import CzRepositorySubmitCard from '@/components/submit/cz.repository-submit-card.vue'
+  import CzRegisterDatasetDialog from '@/components/register-dataset/cz.register-dataset-dialog.vue'
 
   @Component({
     name: 'cz-submit',
-    components: { CzRepositorySubmitCard },
+    components: { CzRepositorySubmitCard, CzRegisterDatasetDialog },
   })
-  export default class CzSubmit extends Vue {
+  export default class CzSubmit extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+    @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<typeof CzRegisterDatasetDialog>
+
     protected get repoCollection(): IRepository[] {
       return Object.keys(repoMetadata)
         .map(r => repoMetadata[r])
@@ -53,6 +64,10 @@
 
     protected get isInSubmitLandingPage() {
       return !(this.$route.params.repository)
+    }
+
+    protected openRegisterDatasetDialog() {
+      this.registerDatasetDialog.active = true
     }
   }
 </script>

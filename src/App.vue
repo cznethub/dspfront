@@ -1,13 +1,13 @@
 <template>
   <v-app app>
-    <v-app-bar ref="appBar" id="app-bar" color="blue-grey lighten-4" prominent elevate-on-scroll shrink-on-scroll fixed app>
-      <v-container class="d-flex align-end full-height">
-        <router-link
-          :to="{ path: `/` }"
-          class="logo"
-        >
-          <img :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
-            alt="Critical Zone Network logo"
+    <v-app-bar ref="appBar" id="app-bar" color="blue-grey lighten-4"
+      :prominent="!isSafari" elevate-on-scroll :shrink-on-scroll="!isSafari" fixed app>
+      <v-container class="d-flex align-end full-height" :class="{'pa-0 align-center': isSafari}">
+        <router-link :to="{ path: `/` }" class="logo">
+          <img v-if="isSafari" :src="require('@/assets/img/CZN_Logo.png')" alt="Critical Zone Network home"/>
+
+          <img v-else :src="isAppBarExtended ? require('@/assets/img/CZN_Logo.png') : require('@/assets/img/czcnet_logo_circle.png')"
+            alt="Critical Zone Network home"
           />
         </router-link>
         <div class="spacer"></div>
@@ -18,7 +18,45 @@
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
           <v-btn id="navbar-login" v-if="!isLoggedIn" @click="openLogInDialog()" rounded>Log In</v-btn>
-          <v-btn id="navbar-logout" v-else rounded @click="logOut()"><v-icon class="mr-2">mdi-logout</v-icon>Log Out</v-btn>
+          <template v-else>
+            <v-menu bottom left>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  elevation="2"
+                  rounded
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon>mdi-account-circle</v-icon>
+                  <v-icon>mdi-menu-down</v-icon>
+                </v-btn>
+              </template>
+
+              <v-list class="pa-0">
+                <v-list-item :to="{ path: '/profile' }">
+                  <v-list-item-icon class="mr-2">
+                    <v-icon>mdi-account-circle</v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>Account & Settings</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+
+                <v-divider></v-divider>
+
+                <v-list-item id="navbar-logout" @click="logOut()">
+                  <v-list-item-icon class="mr-2">
+                    <v-icon>mdi-logout</v-icon>
+                  </v-list-item-icon>
+
+                  <v-list-item-content>
+                    <v-list-item-title>Log Out</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
         </template>
 
         <v-app-bar-nav-icon @click.stop="showMobileNavigation = true" v-if="$vuetify.breakpoint.mdAndDown" />
@@ -28,7 +66,7 @@
     <v-main app>
       <v-container id="main-container">
         <v-sheet :elevation="$route.meta.hideMainSheet ? 0 : 2">
-          <router-view v-if="!isLoading" name="content" />
+          <router-view v-if="!isLoading" name="content" @logout="logOut" />
         </v-sheet>
       </v-container>
     </v-main>
@@ -66,10 +104,17 @@
             <span>Log In</span>
           </v-list-item>
 
-          <v-list-item id="drawer-nav-logout" v-else @click="logOut()">
-            <v-icon class="mr-2">mdi-logout</v-icon>
-            <span>Log Out</span>
-          </v-list-item>
+          <template v-else>
+            <v-list-item :to="{ path: '/profile' }">
+              <v-icon class="mr-2">mdi-account-circle</v-icon>
+              <span>Account & Settings</span>
+            </v-list-item>
+
+            <v-list-item id="drawer-nav-logout" @click="logOut()">
+              <v-icon class="mr-2">mdi-logout</v-icon>
+              <span>Log Out</span>
+            </v-list-item>
+          </template>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
@@ -108,7 +153,6 @@
               dialog.isActive = false;
               dialog.onCancel();
             "
-            color="green darken-1"
             text
           >
             {{ dialog.cancelText }}
@@ -154,7 +198,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator"
+import { Component, Vue, Watch } from "vue-property-decorator"
 import { setupRouteGuards } from "./router"
 import { Subscription } from "rxjs"
 import { DEFAULT_TOAST_DURATION } from "./constants"
@@ -194,7 +238,7 @@ const INITIAL_SNACKBAR =  {
 
 @Component({
   name: "app",
-  components: { CzFooter, CzLogin, CzAuthorize },
+  components: { CzFooter, CzLogin, CzAuthorize }
 })
 export default class App extends Vue {
   protected isLoading = true
@@ -209,7 +253,7 @@ export default class App extends Vue {
   protected snackbarColors = {
     success: { snackbar: 'primary', actionButton: 'primary darken-2' },
     error: { snackbar: 'error darken-2', actionButton: 'error darken-3' },
-    info: { snackbar: 'primary', actionButton: 'primary darken-2' },
+    info: { snackbar: 'warning darken-2', actionButton: 'warning darken-4' },
     default: { snackbar: undefined, actionButton: undefined },
   }
   protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } = INITIAL_SNACKBAR
@@ -233,8 +277,12 @@ export default class App extends Vue {
     { to: "/contact", label: "Contact", icon: "mdi-book-open-blank-variant" },
   ]
 
-  protected get isLoggedIn() {
+  protected get isLoggedIn(): boolean {
     return User.$state.isLoggedIn
+  }
+
+  protected get isSafari(): boolean {
+    return this.$browserDetect.isSafari
   }
 
   mounted() {
@@ -254,9 +302,17 @@ export default class App extends Vue {
       confirmText: "Log Out",
       cancelText: "Cancel",
       onConfirm: () => {
-        User.logOut();
+        User.logOut()
       },
     })
+  }
+
+  /** Check if the user is still logged in after being idle for a while */
+  @Watch('isAppIdle')
+  onIdleChange(wasActive, isActive) {
+    if (isActive) {
+      User.checkAuthorization()
+    }
   }
 
   async created() {
@@ -278,9 +334,11 @@ export default class App extends Vue {
     })
 
     this.onOpenLogInDialog = User.logInDialog$.subscribe((redirectTo: RawLocation | undefined) => {
+      console.log("dialog")
       this.logInDialog.isActive = true
 
       this.logInDialog.onLoggedIn = () => {
+        console.log('onlogin')
         if (redirectTo) {
           this.$router.push(redirectTo)
         }

@@ -3,7 +3,6 @@
     <v-hover :key="repo.key">
       <template v-slot:default="{ hover }">
         <v-card 
-          @click.native="submitTo(repo)"
           :id="repo.name.replaceAll(` `, ``) + `-card`"
           :disabled="repo.isDisabled"
           :class="`elevation-${ hover ? 12 : 2 }`"
@@ -39,16 +38,14 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator'
+  import { Component, Prop, Vue } from 'vue-property-decorator'
   import { IRepository } from '../submissions/types'
-  import { mixins } from 'vue-class-component'
-  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
   @Component({
     name: 'cz-repository-submit-card',
     components: { },
   })
-  export default class CzRepositorySubmitCard extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  export default class CzRepositorySubmitCard extends Vue {
     @Prop({ required: true }) repo!: IRepository
     @Prop() hideLogo!: boolean
   }

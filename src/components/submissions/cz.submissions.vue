@@ -64,13 +64,27 @@
                 <template v-for="repo of supportedRepoMetadata" >
                   <v-tooltip :key="repo.name" left transition="fade">
                     <template v-slot:activator="{ on, attrs }">
+
                       <v-btn class="mx-0 my-4" v-if="!repo.isDisabled" @click="submitTo(repo)" v-on="on" v-bind="attrs" block>
                         {{ repo.name }}
                       </v-btn>
+
                     </template>
                     <span>{{ repo.submitTooltip }}</span>
                   </v-tooltip>
                 </template>
+
+                <v-tooltip left transition="fade">
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-btn class="mx-0 my-4" v-if="!externalRepoMetadata.isDisabled"
+                    @click="openRegisterDatasetDialog" v-on="on" v-bind="attrs" block>
+                      {{ externalRepoMetadata.name }}
+                    </v-btn>
+                  </template>
+                  <span>{{ externalRepoMetadata.submitTooltip }}</span>
+                </v-tooltip>
+
+                
               </v-card-text>
             </v-card>
           </v-speed-dial>
@@ -168,7 +182,7 @@
                           <th class="pr-4 body-2">Identifier:</th>
                           <td>{{ item.identifier }}</td>
                         </tr>
-                        <tr v-if="item.metadata.status">
+                        <tr v-if="item.metadata.status && item.repository === enumRepositoryKeys.earthchem">
                           <th class="pr-4 body-2">Status:</th>
                           
                           <td>
@@ -195,7 +209,7 @@
                       </table>
                     </div>
 
-                    <div class="d-flex flex-column mt-sm-4 actions ">
+                    <div class="d-flex flex-column mt-4 mt-md-0 actions">
                       <v-btn :id="`sub-${index}-view`" :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
                       </v-btn>
@@ -213,7 +227,7 @@
                         <v-icon v-else>mdi-update</v-icon><span class="ml-1"> Update Record</span>
                       </v-btn>
                       <v-btn :id="`sub-${index}-delete`" @click="onDelete(item, repoMetadata[item.repository].isExternal)"
-                        :disabled="isDeleting[`${item.repository}-${item.identifier}`] || item.metadata.status && item.metadata.status !== 'incomplete'" rounded>
+                        :disabled="isDeleteButtonDisabled(item)" rounded>
                         <v-icon v-if="isDeleting[`${item.repository}-${item.identifier}`]">fas fa-circle-notch fa-spin</v-icon>
                         <v-icon v-else>mdi-delete</v-icon><span class="ml-1">
                         {{ isDeleting[`${item.repository}-${item.identifier}`] ? 'Deleting...' : 'Delete' }}</span>
@@ -288,11 +302,54 @@
         </template>
       </div>
     </template>
+
+    <v-dialog
+      id="dialog-delete-submission"
+      v-model="isDeleteDialogActive"
+      persistent
+      width="500"
+    >
+      <v-card>
+        <v-card-title>Delete this submission?</v-card-title>
+        <v-card-text v-if="deleteDialogData" class="text-body-1">
+          <p>This action will delete the metadata for this submission in the data submission Portal.</p>
+          <v-checkbox
+            v-if="!deleteDialogData.isExternal"
+            v-model="alsoDeleteInRepository"
+            color="red"
+            label="Also attempt to delete this resource and its content files from the repository. If the resource is permanently published (i.e., it has been assigned a DOI), we will not be able to remove it from the repository."
+            hide-details
+          >
+          </v-checkbox>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            class="dialog-cancel"
+            @click="isDeleteDialogActive = false"
+            text
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn
+            class="dialog-confirm"
+            @click="isDeleteDialogActive = false; onDeleteSubmission()"
+            color="red darken-1"
+            text
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <cz-register-dataset-dialog ref="registerDatasetDialog" />
   </div>
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator"
+import { Component, Ref } from "vue-property-decorator"
 import {
   ISubmission,
   EnumSubmissionSorts,
@@ -305,19 +362,24 @@ import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 import { Subscription } from "rxjs"
 import { itemsPerPageArray, sortDirectionsOverrides } from '@/components/submissions/constants'
+import { getRepositoryFromKey } from '@/constants'
+import CzRegisterDatasetDialog from '@/components/register-dataset/cz.register-dataset-dialog.vue'
 // import { formatDistanceToNow } from 'date-fns'
 import Submission from "@/models/submission.model"
 import Repository from "@/models/repository.model"
-import CzNotification from "@/models/notifications.model"
 import User from "@/models/user.model"
 
 @Component({
   name: "cz-submissions",
-  components: { },
+  components: { CzRegisterDatasetDialog },
 })
 export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<typeof CzRegisterDatasetDialog>
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
+  protected isDeleteDialogActive = false
+  protected deleteDialogData: { submission: ISubmission, isExternal: boolean } | null = null
+  protected alsoDeleteInRepository = false
 
   protected filters: {
     repoOptions: string[]
@@ -327,6 +389,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected itemsPerPageArray = itemsPerPageArray
   protected page = 1
   protected repoMetadata = repoMetadata
+  protected enumRepositoryKeys = EnumRepositoryKeys
   protected enumSubmissionSorts = EnumSubmissionSorts
   protected enumSortDirections = EnumSortDirections
   protected sortDirectionsOverrides = sortDirectionsOverrides
@@ -339,7 +402,11 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   }
 
   protected get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => r.isExternal || r.isSupported)
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+  }
+
+  protected get externalRepoMetadata() {
+    return this.repoCollection.find(r => r.isExternal)
   }
 
   protected get sortBy() {
@@ -420,6 +487,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return Submission.all()
   }
 
+  protected get repoName(): string {
+    if (this.deleteDialogData) {
+      return getRepositoryFromKey(this.deleteDialogData.submission.repository)?.name || ''
+    }
+    
+    return ''
+  }
+
   protected updatePagination(page, pageSize, sort, sortOrder) {
     console.log("pagination has updated", page, pageSize, sort, sortOrder)
   }
@@ -469,12 +544,15 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   protected getDateInLocalTime(date: number): string {
     const offset = (new Date(date)).getTimezoneOffset() * 60 * 1000
+    // TODO: subtracting offset because db stored dates seem to have the time shifted
     const localDateTime = date - offset
     const localizedDate = new Date(localDateTime).toLocaleString()
-
     // const ago = formatDistanceToNow(new Date(localDateTime), { addSuffix: true })
-
     return localizedDate
+  }
+
+  protected openRegisterDatasetDialog() {
+    this.registerDatasetDialog.active = true
   }
 
   protected async onUpdateRecord(submission: ISubmission) {
@@ -529,28 +607,36 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     document.body.removeChild(element)
   }
 
+  protected isDeleteButtonDisabled(item) {
+    return this.isDeleting[`${item.repository}-${item.identifier}`]
+      || (item.repository === this.enumRepositoryKeys.earthchem && item.metadata.status && item.metadata.status !== 'incomplete')
+  }
+
   protected onDelete(submission: ISubmission, isExternal: boolean) {
-    CzNotification.openDialog({
-      title: 'Delete this submission?',
-      content: isExternal 
-        ? 'This action will delete metadata about your submission from the Data Submission Portal. It will not affect your resource in the external repository.'
-        : 'THIS ACTION WILL ALSO ATTEMPT TO DELETE THE SUBMISSION IN THE REPOSITORY.',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
-      onConfirm: async () => {
-        this.$set(
-          this.isDeleting,
-          `${submission.repository}-${submission.identifier}`,
-          true
-        )
-        await Repository.deleteSubmission(submission.identifier, submission.repository)
-        this.$set(
-          this.isDeleting,
-          `${submission.repository}-${submission.identifier}`,
-          false
-        )
-      }
-    })
+    this.deleteDialogData = { submission, isExternal }
+    this.alsoDeleteInRepository = false // we want it unchecked initially
+    this.isDeleteDialogActive = true
+  }
+
+  protected async onDeleteSubmission() {
+    this.$set(
+      this.isDeleting,
+      `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
+      true
+    )
+
+    if (this.deleteDialogData) {
+      const deleteInRepo = !this.deleteDialogData.isExternal && this.alsoDeleteInRepository
+      await Repository.deleteSubmission(this.deleteDialogData.submission.identifier, this.deleteDialogData.submission.repository, deleteInRepo)
+    }
+
+    this.$set(
+      this.isDeleting,
+      `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
+      false
+    )
+
+    this.deleteDialogData = null
   }
 
   protected getRepositoryName(item: ISubmission) {

@@ -109,7 +109,7 @@
           <v-row>
             <v-col class="flex-grow-1">We need your authorization to load this submission from the repository.</v-col>
             <v-col class="flex-grow-0">
-              <v-btn @click="openAuthorizePopup" color="primary" class="mb-4">
+              <v-btn @click="openAuthorizePopup(repositoryKey)" color="primary" class="mb-4">
                 <i class="fas fa-key mr-2" />Authorize
               </v-btn>
             </v-col>
@@ -216,6 +216,7 @@ import CzFolderStructure from "@/components/new-submission/cz.folder-structure.v
 import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue"
 import User from "@/models/user.model"
 import ajvErrors from "ajv-errors"
+import Submission from "@/models/submission.model"
 
 const renderers = [
   // ...vanillaRenderers, 
@@ -248,7 +249,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   protected uploads: (IFile | IFolder)[] = []
   protected errors: ErrorObject[]  = []
   protected repositoryRecord: any = null
-  protected authorizedSubject = new Subscription()
   protected loggedInSubject = new Subscription()
   protected timesChanged = 0
   protected ajv = customAjv
@@ -289,7 +289,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     if (this.isExternal) {
       return 'Register Dataset from External Repository'
     }
-    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.name }`
+    return this.isEditMode ? "Edit Submission" : `Submit to ${ this.activeRepository.get()?.name }`
   }
 
   protected get submitText() {
@@ -304,6 +304,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected get hasUnsavedChanges(): boolean {
     return User.$state.hasUnsavedChanges
+  }
+
+  protected get registeringSubmission(): Partial<Submission> | null {
+    return User.$state.registeringSubmission
   }
 
   protected set hasUnsavedChanges(value: boolean) {
@@ -321,7 +325,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   beforeDestroy() {
-    this.authorizedSubject.unsubscribe()
     this.loggedInSubject.unsubscribe()
   }
 
@@ -345,15 +348,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     if (this.isEditMode) {
       const identifier = this.$route.params.id
       this.identifier = identifier
-      this.loadExistingSubmission()
+      this.loadSavedSubmission()
     } else {
       this.isLoading = false
     }
-  }
-
-  protected async openAuthorizePopup() {
-    const repository = this.getRepositoryFromKey(this.repositoryKey) as typeof Repository
-    Repository.authorize(repository)  // We don't need to provide a callback because we already have a subject set
   }
 
   protected onLogIn() {
@@ -366,9 +364,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
     })
   }
 
-  protected async loadExistingSubmission() {
+  protected async loadSavedSubmission() {
     console.info("CzNewSubmission: reading existing record...")
-    const response = await Repository.readSubmission(this.identifier, this.repositoryKey)
+    const response = this.$route.query.mode === 'register' && this.registeringSubmission
+      ? { ...this.registeringSubmission }
+      : await Repository.readSubmission(this.identifier, this.repositoryKey)
 
     if (response === 401) {
       // Repository was unauthorized
@@ -377,7 +377,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       // Try again when user has authorized the repository
       this.authorizedSubject = Repository.authorized$.subscribe(async (repositoryKey: EnumRepositoryKeys) => {
         this.isLoading = true
-        await this.loadExistingSubmission()
+        await this.loadSavedSubmission()
       })
     }
     else if (response === 403) {
@@ -387,7 +387,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       if (!this.isLoggedIn) {
         this.loggedInSubject = User.loggedIn$.subscribe(async () => {
           this.isLoading = true
-          await this.loadExistingSubmission()
+          await this.loadSavedSubmission()
         })
       }
     }
@@ -447,6 +447,13 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
       // Nexttick doesn't work. We use setTimeout instead.
       setTimeout(() => {
         this.hasUnsavedChanges = false
+      })
+    }
+
+    // clean up
+    if (this.registeringSubmission) {
+      User.commit((state) => {
+        state.registeringSubmission = null
       })
     }
 
@@ -557,7 +564,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
   }
 
   private async _saveAndFinish() {
-    if (this.hasUnsavedChanges) {
+    if (this.hasUnsavedChanges || this.$route.query.mode === 'register') {
       const wasSaved = await this._save()
 
       if (wasSaved) {
@@ -625,6 +632,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
         type: 'error'
       })
     }
+
+    this.isSaving = false
 
     return wasSaved
   }

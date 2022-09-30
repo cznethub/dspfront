@@ -1,5 +1,14 @@
 <template>
   <div class="cz-resources">
+    <v-container class="text-center mb-2 banner d-flex flex-column align-center py-12">
+      <div class="text-h4 mb-4">
+        Data Submission Portal Quick Start Guide
+      </div>
+      <p class="text-body-1 mb-4">
+        For help getting started with the Data Submission Portal, visit our quick start guide
+      </p>
+      <v-btn color="primary" to="/resources/quick-start-guide">Quick Start Guide</v-btn>
+    </v-container>
     <v-container class="has-bg-light-gray text-center mb-2 banner d-flex flex-column align-center py-12">
       <div class="text-h4 mb-2">Repository Recommendations</div>
       <p class="text-body-1 mb-4">If you aren't sure which repository to use, visit our repository recommendation system to get help.</p>

@@ -3,13 +3,17 @@ import { RouteConfig } from "vue-router"
 import CzFooter from '@/components/base/cz.footer.vue'
 import CzHome from '@/components/home/cz.home.vue'
 import CzAbout from '@/components/about/cz.about.vue'
+import CzQuickStartGuide from '@/components/quick-start-guide/cz.quick-start-guide.vue'
 import CzSubmit from '@/components/submit/cz.submit.vue'
 import CzResources from '@/components/resources/cz.resources.vue'
 import CzContact from '@/components/contact/cz.contact.vue'
-import CzRecommendations from '@/components/recommendations/cz.recommendations.vue'
 import CzRecomendationsQuestionnaire from '@/components/recommendations/cz.recommendations-questionnaire.vue'
+import CzProfile from '@/components/profile/cz.profile.vue'
+import CzAccount from '@/components/profile/cz.account.vue'
+import CzAuthorizedRepositories from '@/components/profile/cz.authorized-repositories.vue'
 import CzSubmissions from '@/components/submissions/cz.submissions.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
+import CzRegisterDataset from '@/components/register-dataset/cz.register-dataset.vue'
 
 export const routes: RouteConfig[] = [
   {
@@ -19,6 +23,39 @@ export const routes: RouteConfig[] = [
       content: CzHome,
       footer: CzFooter
     },
+  },
+  {
+    name: 'profile',
+    path: '/profile',
+    redirect: '/profile/account',
+    components: {
+      content: CzProfile,
+      footer: CzFooter
+    },
+    meta: { 
+      hasLoggedInGuard: true,
+    },
+    children: [
+      {
+        // name: 'account',
+        path: 'account',
+        components: {
+          CzAccount
+        },
+        meta: { 
+          hasLoggedInGuard: true,
+        },
+      },
+      {
+        path: 'authorized-repositories',
+        components: {
+          CzAuthorizedRepositories
+        },
+        meta: { 
+          hasLoggedInGuard: true,
+        },
+      }
+    ],
   },
   {
     name: 'about',
@@ -54,6 +91,17 @@ export const routes: RouteConfig[] = [
     },
   },
   {
+    name: 'quick-start-guide',
+    path: '/resources/quick-start-guide',
+    meta: { 
+      title: 'Quick Start Guide',
+    },
+    components: {
+      content: CzQuickStartGuide,
+      footer: CzFooter
+    },
+  },
+  {
     name: 'submissions',
     path: '/submissions',
     components: {
@@ -64,6 +112,19 @@ export const routes: RouteConfig[] = [
       hasLoggedInGuard: true,
       title: 'My Submissions',
     },
+  },
+  {
+    name: 'register',
+    path: '/register',
+    components: {
+      content: CzRegisterDataset,
+      footer: CzFooter
+    },
+    meta: { 
+      hasLoggedInGuard: true, 
+      // hasAccessTokenGuard: true,
+      title: 'Register Dataset'
+    }
   },
   {
     name: 'submit',

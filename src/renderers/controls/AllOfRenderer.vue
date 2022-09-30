@@ -25,7 +25,11 @@
         />
       </template>
     </fieldset>
-    <div class="text--secondary text-body-1 mb-8 ml-4">{{ control.schema.description }}</div>
+    <div v-if="control.schema.description" class="text--secondary text-body-1 mt-2 ml-2">{{ control.schema.description }}</div>
+    <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+      <v-divider v-if="isFlat" class="mb-4"></v-divider>
+      {{ cleanedErrors }}
+    </div>
   </div>
 </template>
 
@@ -72,7 +76,7 @@ const controlRenderer = defineComponent({
       );
     },
     allOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
-      return createCombinatorRenderInfos(
+      const info = createCombinatorRenderInfos(
         this.control.schema.allOf!,
         this.control.rootSchema,
         'allOf',
@@ -80,6 +84,18 @@ const controlRenderer = defineComponent({
         this.control.path,
         this.control.uischemas
       );
+
+      // JsonSchema does not pass the required attribute, so we do it ourselves
+      info.map(i => { 
+        i.schema.required = this.control.schema.required
+        // @ts-ignore: use detail uischema if specified
+        i.uischema = i.schema.options?.detail || i.uischema
+      })
+      return info
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``)
     },
   },
 });
