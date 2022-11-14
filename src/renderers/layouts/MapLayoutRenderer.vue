@@ -110,7 +110,6 @@ const layoutRenderer = defineComponent({
     };
   },
   mounted: async function () {
-    console.log(process.env.VUE_APP_GOOGLE_MAPS_API_KEY)
     await this.initMap();
 
     if (this.hasData) {
