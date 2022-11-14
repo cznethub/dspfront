@@ -16,7 +16,7 @@
             </v-chip>
           </div>
           <div class="text-right">
-            <!-- <v-btn small>Revoke</v-btn> -->
+            <v-btn @click="openRevokeDialog(repo.key)" small><v-icon small class="mr-1">mdi-cancel</v-icon> Revoke</v-btn>
           </div>
         </template>
         <template v-else>
@@ -82,7 +82,16 @@
     }
 
     protected async openAuthorizePopup(repositoryKey: string) {
-      Repository.authorize(getRepositoryFromKey(repositoryKey) as typeof Repository)
+      Repository.authorize(getRepositoryFromKey(repositoryKey) as typeof Repository, () => {
+        CzNotification.toast({
+          message: 'Access to this repository has been authorized',
+          type: 'success'
+        })
+      })
+    }
+
+    protected openRevokeDialog(repositoryKey: string) {
+      Repository.openRevokeDialog(getRepositoryFromKey(repositoryKey) as typeof Repository)
     }
   }
 </script>

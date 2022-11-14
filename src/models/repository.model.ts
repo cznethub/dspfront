@@ -159,6 +159,51 @@ export default class Repository extends Model implements IRepository {
     }
   }
 
+  static openRevokeDialog(repository: typeof Repository) {
+    CzNotification.openDialog({
+      title: "Revoke access",
+      content: "Are you sure you want to revoke access to this repository?",
+      confirmText: "Revoke",
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        const accessTokenUrl = repository?.get()?.urls?.accessTokenUrl
+        if (!accessTokenUrl) {
+          CzNotification.toast({
+            message: 'Failed to revoke access',
+            type: 'error'
+          })
+          return
+        }
+        try {
+          const response = await axios.delete(accessTokenUrl, { params: { "access_token": User.$state.orcidAccessToken } })
+          if (response.status === 200) {
+            repository.commit((state) => {
+              state.accessToken = ''
+            })
+    
+            CzNotification.toast({
+              message: 'Access to this repository has been revoked',
+              type: 'success'
+            })
+          }
+          else {
+            CzNotification.toast({
+              message: 'Failed to revoke access to this repository',
+              type: 'error'
+            })
+          }
+        }
+        catch(e) {
+          console.log(e)
+          CzNotification.toast({
+            message: 'Failed to revoke access to this repository',
+            type: 'error'
+          })
+        }
+      }
+    }) 
+  }
+
   protected static async getJson(jsonUrl: string | undefined) {
     if (!jsonUrl) {
       return undefined
