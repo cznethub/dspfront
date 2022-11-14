@@ -209,7 +209,7 @@
                       </table>
                     </div>
 
-                    <div class="d-flex flex-column mt-sm-4 actions">
+                    <div class="d-flex flex-column mt-4 mt-md-0 actions">
                       <v-btn :id="`sub-${index}-view`" :href="item.url" target="_blank" color="blue-grey lighten-4" rounded>
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
                       </v-btn>
@@ -378,7 +378,8 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
   protected isUpdating: { [key: string]: boolean } = {}
   protected isDeleting: { [key: string]: boolean } = {}
   protected isDeleteDialogActive = false
-  protected deleteDialogData: { submission: ISubmission, isExternal: boolean } | null = null 
+  protected deleteDialogData: { submission: ISubmission, isExternal: boolean } | null = null
+  protected alsoDeleteInRepository = false
 
   protected filters: {
     repoOptions: string[]
@@ -484,16 +485,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   protected get submissions(): ISubmission[] {
     return Submission.all()
-  }
-
-  protected get alsoDeleteInRepository() {
-    return Submission.$state.alsoDeleteInRepository
-  }
-
-  protected set alsoDeleteInRepository(value: boolean) {
-    Submission.commit((state) => {
-      state.alsoDeleteInRepository = value
-    })
   }
 
   protected get repoName(): string {
@@ -623,6 +614,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
 
   protected onDelete(submission: ISubmission, isExternal: boolean) {
     this.deleteDialogData = { submission, isExternal }
+    this.alsoDeleteInRepository = false // we want it unchecked initially
     this.isDeleteDialogActive = true
   }
 
