@@ -99,12 +99,13 @@ const controlRenderer = defineComponent({
     // @ts-ignore
     const requiredValues = this.control.schema.contains?.enum
 
-    if (requiredValues) {
-      if (this.control.data) {
-        // TODO: add the requried value to the submission in the repository
-        this.tags = [...new Set([...requiredValues, ...this.control.data])]
-        this.onChange(this.tags)
-      }
+    if (requiredValues && this.control.data) {
+      // We need to check if existing values are required values with different casing. And if so, use the casing specified in required values.
+      const existingValues = this.control.data
+        .filter(val => !requiredValues.some(requiredVal => requiredVal.toLowerCase().trim() === val.toLowerCase().trim()))
+      // TODO: add the missing requried value to the submission in the repository. For now autopopulated in our forms.
+      this.tags = [...new Set([...requiredValues, ...existingValues])]
+      this.onChange(this.tags)
     }
   },
   computed: {
