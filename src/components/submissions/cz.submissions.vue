@@ -495,10 +495,6 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(ActiveR
     return ''
   }
 
-  protected updatePagination(page, pageSize, sort, sortOrder) {
-    console.log("pagination has updated", page, pageSize, sort, sortOrder)
-  }
-
   protected get numberOfPages() {
     if (this.isAnyFilterAcitve) {
       return Math.ceil(this.currentItems.length / this.itemsPerPage)

@@ -334,11 +334,9 @@ export default class App extends Vue {
     })
 
     this.onOpenLogInDialog = User.logInDialog$.subscribe((redirectTo: RawLocation | undefined) => {
-      console.log("dialog")
       this.logInDialog.isActive = true
 
       this.logInDialog.onLoggedIn = () => {
-        console.log('onlogin')
         if (redirectTo) {
           this.$router.push(redirectTo)
         }
