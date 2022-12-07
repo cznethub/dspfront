@@ -366,9 +366,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(Activ
 
   protected async loadSavedSubmission() {
     console.info("CzNewSubmission: reading existing record...")
-    const response = this.$route.query.mode === 'register' && this.registeringSubmission
-      ? { ...this.registeringSubmission }
-      : await Repository.readSubmission(this.identifier, this.repositoryKey)
+    const response = this.$route.query.mode === 'register'
+      ? this.registeringSubmission 
+        ? { ...this.registeringSubmission } // Load it from persistent state if we have it
+        : await Repository.readExistingSubmission(this.identifier, this.repositoryKey)  // Otherwise, refetch from repository
+    : await Repository.readSubmission(this.identifier, this.repositoryKey)
 
     if (response === 401) {
       // Repository was unauthorized
