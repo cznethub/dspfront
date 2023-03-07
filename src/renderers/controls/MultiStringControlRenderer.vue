@@ -102,7 +102,7 @@ const controlRenderer = defineComponent({
         this.handleChange(this.control.path, undefined)
       }
       else {
-        this.onChange(event)
+        this.onChange(event.target.value.trim())
       }
     },
     strip(html: string) {
