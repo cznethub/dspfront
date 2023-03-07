@@ -3,7 +3,7 @@
    * This file is used to export all renderers in an array. Could not do it with a simple index.ts file
    */
   import { JsonFormsRendererRegistryEntry } from '@jsonforms/core'
-  import { defineComponent } from '@vue/composition-api'
+  import { defineComponent } from 'vue'
   // import { arrayControlRenderer } from './array/ArrayControlRenderer.vue'
   import { groupRenderer } from './layouts/GroupRenderer.vue'
   import { numberControlRenderer } from './controls/NumberControlRenderer.vue'

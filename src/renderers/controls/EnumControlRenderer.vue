@@ -10,7 +10,7 @@
       :autofocus="appliedOptions.focus"
       :placeholder="appliedOptions.placeholder"
       :label="computedLabel"
-      :hint="control.description"
+      :hint="description"
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover && !control.schema.readOnly"
@@ -26,8 +26,8 @@
       dense
     >
       <template v-slot:message>
-        <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
-          {{ control.schema.description }}
+        <div v-if="description" class="text-subtitle-1 text--secondary">
+          {{ description }}
         </div>
         <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
           {{ cleanedErrors }}
@@ -44,7 +44,7 @@ import {
   rankWith,
   isEnumControl,
 } from '@jsonforms/core'
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 import {
   rendererProps,
   useJsonFormsEnumControl,
@@ -83,7 +83,10 @@ const controlRenderer = defineComponent({
     cleanedErrors() {
       // @ts-ignore
       return this.control.errors.replaceAll(`is a required property`, ``)
-    }
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
+    },
   }
 })
 

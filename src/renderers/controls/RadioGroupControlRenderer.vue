@@ -29,7 +29,7 @@
         ></v-radio>
       </v-radio-group>
     </fieldset>
-    <div v-if="control.description" class="text--secondary text-body-1 ml-2">{{ control.description }}</div>
+    <div v-if="description" class="text--secondary text-body-1 ml-2">{{ description }}</div>
     <div v-if="control.errors" class="ml-2 v-messages error--text">
       {{ control.errors }}
     </div>
@@ -54,7 +54,7 @@ import { default as ControlWrapper } from './ControlWrapper.vue';
 import { VRadioGroup, VRadio, VLabel } from 'vuetify/lib';
 
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 
 const controlRenderer = defineComponent({
   name: 'radio-group-control-renderer',
@@ -70,6 +70,11 @@ const controlRenderer = defineComponent({
   setup(props: RendererProps<ControlElement>) {
     return useVuetifyControl(useJsonFormsEnumControl(props));
   },
+  computed: {
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
+    },
+  }
 });
 
 export default controlRenderer;

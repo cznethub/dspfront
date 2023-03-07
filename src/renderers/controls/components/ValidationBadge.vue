@@ -30,10 +30,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api"
+import { defineComponent, PropType } from 'vue'
 import { VBadge, VTooltip } from 'vuetify/lib';
 import { ErrorObject } from 'ajv';
-import { CompType } from '@jsonforms/vue2-vuetify/lib/vue'
 // import findIndex from 'lodash/findIndex';
 // import {
 //   createControlElement,
@@ -50,7 +49,7 @@ export default defineComponent({
   props: {
     errors: {
       required: true,
-      type: Array as CompType<ErrorObject, ArrayConstructor>,
+      type: Array as PropType<ErrorObject[]>,
     },
     bordered: {
       type: Boolean,

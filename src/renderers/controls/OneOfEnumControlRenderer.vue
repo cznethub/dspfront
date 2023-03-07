@@ -10,7 +10,7 @@
       :autofocus="appliedOptions.focus"
       :placeholder="placeholder"
       :label="computedLabel"
-      :hint="control.description"
+      :hint="description"
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover"
@@ -34,7 +34,7 @@
       :autofocus="appliedOptions.focus"
       :placeholder="placeholder"
       :label="computedLabel"
-      :hint="control.description"
+      :hint="description"
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover"
@@ -59,7 +59,7 @@ import {
   isOneOfEnumControl,
   EnumOption,
 } from '@jsonforms/core';
-import { defineComponent } from "@vue/composition-api"
+import { defineComponent } from 'vue'
 import {
   rendererProps,
   useJsonFormsOneOfEnumControl,
@@ -100,6 +100,9 @@ const controlRenderer = defineComponent({
     placeholder(): string {
       // @ts-ignore
       return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
     sortedOptions() {
        // @ts-ignore

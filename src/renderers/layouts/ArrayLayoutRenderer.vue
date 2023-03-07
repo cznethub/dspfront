@@ -179,7 +179,7 @@
         </v-card>
       </v-dialog>
     </fieldset>
-    <div v-if="control.description" class="text--secondary text-body-1 ml-2">{{ control.description }}</div>
+    <div v-if="description" class="text--secondary text-body-1 ml-2">{{ description }}</div>
     <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
       {{ cleanedErrors }}
     </div>
@@ -202,7 +202,7 @@ import {
   or,
   isObjectArrayControl
 } from '@jsonforms/core';
-import { defineComponent } from "@vue/composition-api"
+import { defineComponent } from 'vue'
 import {
   DispatchRenderer,
   rendererProps,
@@ -235,9 +235,8 @@ import {
 import ValidationBadge from '@/renderers/controls/components/ValidationBadge.vue';
 import ValidationIcon from '@/renderers/controls/components/ValidationIcon.vue';
 import { ErrorObject } from 'ajv';
-import { ref } from '@vue/composition-api';
-
-const isEqual = require('lodash.isequal')
+import { ref } from 'vue';
+import { isEqual } from 'lodash';
 
 const controlRenderer = defineComponent({
   name: 'array-layout-renderer',
@@ -338,6 +337,7 @@ const controlRenderer = defineComponent({
       )
     },
     hideAvatar(): boolean {
+      // @ts-ignore
       return !!this.appliedOptions.hideAvatar;
     },
     cleanedErrors() {
@@ -351,7 +351,10 @@ const controlRenderer = defineComponent({
     minItems() {
       // @ts-ignore
       return this.control.schema.minItems || this.arraySchema?.minItems
-    }
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
+    },
   },
   methods: {
     composePaths,
@@ -361,6 +364,7 @@ const controlRenderer = defineComponent({
         this.control.path,
         createDefaultValue(this.control.schema)
       )();
+      // @ts-ignore
       if (!this.appliedOptions.collapseNewItems && this.control.data?.length) {
         this.currentlyExpanded.push(this.control.data.length - 1);
       }
@@ -393,12 +397,15 @@ const controlRenderer = defineComponent({
       return this.control.schema.contains?.enum?.some(requiredItem => isEqual(item, requiredItem))
     },
     getItemLabel(element) {
+      // @ts-ignore
       if (Array.isArray(this.appliedOptions.elementLabelProp)) {
+        // @ts-ignore
         return this.appliedOptions.elementLabelProp
           .map(prop => element[prop])
           .join(" ")
       }
       else {
+        // @ts-ignore
         return element[this.appliedOptions.elementLabelProp]
       }
     }

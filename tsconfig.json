@@ -25,5 +25,8 @@
     "src/**/*.vue",
     "tests/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "vueCompilerOptions": {
+    "target": 2.7
+  }
 }

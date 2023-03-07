@@ -64,7 +64,7 @@ import {
   uiTypeIs,
   ControlProps,
 } from '@jsonforms/core'
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, ref } from 'vue'
 import {
   DispatchRenderer,
   rendererProps,
@@ -83,6 +83,7 @@ const layoutRenderer = defineComponent({
     ...rendererProps<Layout>()
   },
   setup(props: RendererProps<Layout>) {
+    const isCollapsed = ref(true);
     return {
       ...useVuetifyLayout(
         useJsonFormsLayout(props)
@@ -104,7 +105,7 @@ const layoutRenderer = defineComponent({
         } as ControlProps),
         (value) => value || undefined
       ),
-      isCollapsed: true
+      isCollapsed
     }
   },
   created() {
@@ -128,7 +129,7 @@ const layoutRenderer = defineComponent({
     },
     // We have not way of detecting if the field is required from a layout element, so we check it using the computation that was done on the label
     isRequired(): boolean {
-      return this.computedLabel === `${this.schema.title}*`
+      return this.computedLabel.valueOf() === `${this.schema.title}*`
     }
   }
 })

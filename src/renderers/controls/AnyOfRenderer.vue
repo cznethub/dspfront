@@ -119,7 +119,7 @@
         </template>
       </template>
     </fieldset>
-    <div v-if="control.schema.description" class="text--secondary text-body-1 mt-2 ml-2">{{ control.schema.description }}</div>
+    <div v-if="description" class="text--secondary text-body-1 mt-2 ml-2">{{ description }}</div>
     <div v-if="cleanedErrors" class="ml-2 mt-2 v-messages error--text">
       <v-divider v-if="isFlat" class="mb-4"></v-divider>
       {{ cleanedErrors }}
@@ -144,7 +144,7 @@ import {
   RendererProps,
   useJsonFormsAnyOfControl,
 } from '@jsonforms/vue2';
-import { defineComponent, ref } from "@vue/composition-api"
+import { defineComponent, ref } from 'vue'
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import {
   VDialog,
@@ -186,10 +186,11 @@ const controlRenderer = defineComponent({
     const control = (input.control as any).value as typeof input.control;
     const tabData: {[key: number]: any } = {} // Dictionary to store form state between tab changes
     const selectedIndex = ref(control.indexOfFittingSchema || 0);
+    const isAdded = ref(false);
 
     return {
       ...useVuetifyControl(input),
-      isAdded: false,
+      isAdded,
       selectedIndex,
       tabData,
     };
@@ -244,6 +245,7 @@ const controlRenderer = defineComponent({
     description(): string {
       // @ts-ignore
       return this.control.schema?.options?.description 
+      || this.appliedOptions.description
       || this.anyOfRenderInfos[this.selectedIndex].schema.description
       || ''
     },

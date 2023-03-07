@@ -6,7 +6,7 @@
       hide-no-data
       :label="computedLabel"
       :data-id="computedLabel.replaceAll(` `, ``)"
-      :hint="control.description"
+      :hint="description"
       :delimiters="delimeters"
       :error-messages="control.errors"
       :menu-props="{ openOnClick: false }"
@@ -55,7 +55,7 @@ import {
   not,
   rankWith,
 } from "@jsonforms/core"
-import { defineComponent } from "@vue/composition-api"
+import { defineComponent } from 'vue'
 import { rendererProps, useJsonFormsControl } from "@jsonforms/vue2"
 import { default as ControlWrapper } from '@/renderers/controls/ControlWrapper.vue'
 import { VHover } from 'vuetify/lib'
@@ -115,7 +115,10 @@ const controlRenderer = defineComponent({
     },
     placeholder(): string {
       // @ts-ignore
-      return this.control.schema.options?.placeholder || ''
+      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
   },
   methods: {

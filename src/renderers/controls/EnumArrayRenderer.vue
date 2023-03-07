@@ -9,7 +9,7 @@
       :autofocus="appliedOptions.focus"
       :placeholder="appliedOptions.placeholder"
       :label="computedLabel"
-      :hint="control.description"
+      :hint="description"
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover && !control.schema.readOnly"
@@ -29,8 +29,8 @@
       multiple
     >
       <template v-slot:message>
-        <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
-          {{ control.schema.description }}
+        <div v-if="description" class="text-subtitle-1 text--secondary">
+          {{ description }}
         </div>
         <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
           {{ cleanedErrors }}
@@ -64,9 +64,8 @@ import {
   ControlProps,
   useJsonFormsControl,
 } from '@jsonforms/vue2';
-import { defineComponent } from "@vue/composition-api"
-import { useVuetifyBasicControl } from '@jsonforms/vue2-vuetify'
-import { computeLabel } from '@jsonforms/core'
+import { defineComponent } from 'vue';
+import { useVuetifyBasicControl } from '@jsonforms/vue2-vuetify';
 
 //TODO: move into JsonForm Vue project under src/components/jsonFormsCompositions.ts
 const useJsonFormsMultiEnumControl = (props: ControlProps) => {
@@ -109,7 +108,10 @@ const controlRenderer = defineComponent({
     cleanedErrors() {
       // @ts-ignore
       return this.control.errors.replaceAll(`is a required property`, ``)
-    }
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
+    },
   },
   methods: {
     dataHasEnum(value: any) {

@@ -6,7 +6,7 @@
     :autofocus="appliedOptions.focus"
     :placeholder="placeholder"
     :label="computedLabel"
-    :hint="control.description"
+    :hint="description"
     persistent-hint
     :required="control.required"
     :error-messages="control.errors"
@@ -20,8 +20,8 @@
     class="py-3"
   >
     <template v-slot:message>
-      <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
-        {{ control.schema.description }}
+      <div v-if="description" class="text-subtitle-1 text--secondary">
+        {{ description }}
       </div>
       <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
         {{ cleanedErrors }}
@@ -37,7 +37,7 @@ import {
   rankWith,
   isBooleanControl,
 } from '@jsonforms/core';
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 import {
   rendererProps,
   useJsonFormsControl,
@@ -75,7 +75,10 @@ const controlRenderer = defineComponent({
     },
     placeholder(): string {
       // @ts-ignore
-      return this.control.schema.options?.placeholder || ''
+      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
   },
 });

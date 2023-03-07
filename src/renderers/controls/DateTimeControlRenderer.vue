@@ -15,7 +15,7 @@
         :id="control.id + '-input'"
         :data-id="computedLabel.replaceAll(` `, ``)"
         :label="computedLabel"
-        :hint="control.description"
+        :hint="description"
         :error-messages="control.errors"
         :placeholder="placeholder"
         persistent-hint
@@ -28,8 +28,8 @@
         dense
       >
         <template v-slot:message>
-          <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
-            {{ control.schema.description }}
+          <div v-if="description" class="text-subtitle-1 text--secondary">
+            {{ description }}
           </div>
           <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
             {{ cleanedErrors }}
@@ -67,7 +67,7 @@ import {
   rankWith,
   isDateTimeControl
 } from '@jsonforms/core'
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { format, parse } from 'date-fns'
 import { computeLabel } from '@jsonforms/core'
@@ -146,9 +146,12 @@ const controlRenderer = defineComponent({
         !!this.appliedOptions?.hideRequiredAsterisk
       );
     },
-    placeholder() {
+    placeholder(): string {
       // @ts-ignore
-      return this.control.schema.options?.placeholder
+      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
     cleanedErrors() {
       // @ts-ignore

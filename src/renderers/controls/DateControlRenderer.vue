@@ -16,7 +16,7 @@
         :id="control.id + '-input'"
         :data-id="computedLabel.replaceAll(` `, ``)"
         :label="computedLabel"
-        :hint="control.description"
+        :hint="description"
         :error-messages="control.errors"
         :required="control.required"
         :placeholder="placeholder"
@@ -30,8 +30,8 @@
         v-on="on"
       >
         <template v-slot:message>
-          <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
-            {{ control.schema.description }}
+          <div v-if="description" class="text-subtitle-1 text--secondary">
+            {{ description }}
           </div>
           <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
             {{ cleanedErrors }}
@@ -60,11 +60,12 @@ import {
   rankWith,
   isDateControl
 } from '@jsonforms/core'
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent, Ref, ref } from 'vue'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { format, parse } from 'date-fns'
 import { computeLabel } from '@jsonforms/core'
 import { useVanillaControl } from "@jsonforms/vue2-vanilla"
+import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 
@@ -81,12 +82,14 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>()
   },
   setup(props: RendererProps<ControlElement>) {
-    let selectedDate: any = null
+    const selectedDate: Ref<string|null> = ref(null)
+    const control = useVuetifyControl(useJsonFormsControl(props));
+    const menu = ref(false)
 
     return {
       selectedDate,
-      menu: false,
-      ...useVanillaControl(useJsonFormsControl(props))
+      menu,
+      ...control
     }
   },
   created() {
@@ -119,13 +122,6 @@ const controlRenderer = defineComponent({
       // @ts-ignore
       return this.control.schema.format || "date"
     },
-    computedLabel(): string {
-      return computeLabel(
-        this.control.label as string,
-        this.control.required,
-        !!this.appliedOptions?.hideRequiredAsterisk
-      );
-    },
     maxDate() {
       // @ts-ignore
       return this.getDateFromOption(this.control.schema.options?.max)
@@ -138,9 +134,12 @@ const controlRenderer = defineComponent({
       // @ts-ignore
       return this.getDateFromOption(this.control.schema.options?.default)
     },
-    placeholder() {
+    placeholder(): string {
       // @ts-ignore
-      return this.control.schema.options?.placeholder
+      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
     cleanedErrors() {
       // @ts-ignore

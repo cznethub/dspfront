@@ -5,7 +5,6 @@ import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
 import createPersistedState from 'vuex-persistedstate'
 import VueCookies from 'vue-cookies'
-import VueCompositionAPI from '@vue/composition-api'
 import Buefy from 'buefy'
 import VueRouter from 'vue-router'
 import Vue from 'vue'
@@ -47,7 +46,6 @@ const store = new Vuex.Store({
 const eventsHub = new Vue()
       
 Vue.use(vueFilterPrettyBytes)
-Vue.use(VueCompositionAPI)
 Vue.use(VueRouter)
 Vue.use(VueCookies)
 Vue.use(browserDetect);

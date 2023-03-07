@@ -13,8 +13,8 @@
       :renderers="control.renderers"
       :cells="control.cells"
     />
-    <div v-if="control.errors || control.schema.description">
-      <div class="text--secondary text-body-1 ml-2">{{ control.schema.description }}</div>
+    <div v-if="control.errors || description">
+      <div class="text--secondary text-body-1 ml-2">{{ description }}</div>
       <div v-if="control.errors" class="ml-2 v-messages error--text"
         :class="styles.control.error">
         {{ control.errors }}
@@ -41,6 +41,7 @@
 import {
   ControlElement,
   findUISchema,
+  Generate,
   GroupLayout,
   isObjectControl,
   JsonFormsRendererRegistryEntry,
@@ -54,8 +55,9 @@ import {
   RendererProps,
   useJsonFormsControlWithDetail,
 } from '@jsonforms/vue2';
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
-import { defineComponent } from '@vue/composition-api'
+import cloneDeep from 'lodash/cloneDeep';
+import { useNested, useVuetifyControl } from '@jsonforms/vue2-vuetify'
+import { defineComponent } from 'vue'
 
 const controlRenderer = defineComponent({
   name: 'object-renderer',
@@ -66,7 +68,13 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>(),
   },
   setup(props: RendererProps<ControlElement>) {
-    return useVuetifyControl(useJsonFormsControlWithDetail(props))
+    const control = useVuetifyControl(useJsonFormsControlWithDetail(props));
+    const nested = useNested('object');
+    return {
+      ...control,
+      input: control,
+      nested,
+    };
   },
   created() {
     // console.log(this.control)
@@ -75,26 +83,42 @@ const controlRenderer = defineComponent({
   },
   computed: {
     detailUiSchema(): UISchemaElement {
-      const result = findUISchema(
+      const uiSchemaGenerator = () => {
+        const uiSchema = Generate.uiSchema(this.control.schema, 'Group');
+        if (isEmpty(this.control.path)) {
+          uiSchema.type = 'VerticalLayout';
+        } else {
+          (uiSchema as GroupLayout).label = this.control.label;
+        }
+        return uiSchema;
+      };
+      let result = findUISchema(
         this.control.uischemas,
         this.control.schema,
         this.control.uischema.scope,
         this.control.path,
-        'Group',
+        uiSchemaGenerator,
         this.control.uischema,
         this.control.rootSchema
       );
-      if (isEmpty(this.control.path)) {
-        result.type = 'VerticalLayout'
-      } else {
-        (result as GroupLayout).label  = this.computedLabel as string
+      if (this.nested.level > 0) {
+        result = cloneDeep(result);
+        result.options = {
+          ...result.options,
+          bare: true,
+          alignLeft:
+            this.nested.level >= 4 || this.nested.parentElement === 'array',
+        };
       }
-      return result
+      return result;
     },
     isFlat() {
       // We show objects as flat by default
       // @ts-ignore
       return this.control.schema.options?.flat !== false
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
   },
 })

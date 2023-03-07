@@ -160,7 +160,7 @@
         </v-container>
       </v-card>
     </fieldset>
-    <div v-if="control.description" class="text--secondary text-body-1 ml-2">{{ control.description }}</div>
+    <div v-if="description" class="text--secondary text-body-1 ml-2">{{ description }}</div>
     <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
       {{ cleanedErrors }}
     </div>
@@ -182,7 +182,7 @@ import {
   and
 } from '@jsonforms/core';
 import startCase from 'lodash/startCase';
-import { defineComponent } from "@vue/composition-api"
+import { defineComponent } from 'vue'
 import {
   DispatchCell,
   DispatchRenderer,
@@ -210,7 +210,7 @@ import {
 } from 'vuetify/lib';
 import ValidationBadge from '@/renderers/controls/components/ValidationBadge.vue';
 import ValidationIcon from '@/renderers/controls/components/ValidationIcon.vue';
-const isEqual = require('lodash.isequal')
+import { isEqual } from 'lodash';
 
 const controlRenderer = defineComponent({
   name: 'array-control-renderer',
@@ -260,7 +260,10 @@ const controlRenderer = defineComponent({
     cleanedErrors() {
       // @ts-ignore
       return this.control.errors.replaceAll(`is a required property`, ``)
-    }
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
+    },
   },
   created() {
     // @ts-ignore

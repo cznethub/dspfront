@@ -11,7 +11,7 @@
     :error-messages="control.errors"
     :required="control.required"
     :class="styles.control.textarea"
-    :hint="control.description"
+    :hint="description"
     :value="control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
@@ -23,8 +23,8 @@
     class="py-3"
   >
     <template v-slot:message>
-      <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
-        {{ control.schema.description }}
+      <div v-if="description" class="text-subtitle-1 text--secondary">
+        {{ description }}
       </div>
       <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
         {{ cleanedErrors }}
@@ -42,10 +42,9 @@ import {
   isMultiLineControl,
   and
 } from '@jsonforms/core';
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2';
-import { useVanillaControl } from "@jsonforms/vue2-vanilla";
-import { computeLabel } from '@jsonforms/core';
+import { useVuetifyControl } from '@jsonforms/vue2-vuetify';
 
 const controlRenderer = defineComponent({
   name: 'multi-string-control-renderer',
@@ -56,7 +55,11 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>()
   },
   setup(props: RendererProps<ControlElement>) {
-    return useVanillaControl(useJsonFormsControl(props));
+    return useVuetifyControl(
+      useJsonFormsControl(props),
+      (value) => value || undefined,
+      300
+    );
   },
   created() {
     // If the value that was loaded is null, turn it into undefined
@@ -76,16 +79,12 @@ const controlRenderer = defineComponent({
     }
   },
   computed: {
-    computedLabel(): string {
-      return computeLabel(
-        this.control.label as string,
-        this.control.required,
-        !!this.appliedOptions?.hideRequiredAsterisk
-      );
-    },
     placeholder(): string {
       // @ts-ignore
-      return this.control.schema.options?.placeholder || ''
+      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
     cleanedErrors() {
       // @ts-ignore

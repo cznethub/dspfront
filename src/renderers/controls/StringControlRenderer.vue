@@ -11,7 +11,7 @@
       :autofocus="appliedOptions.focus"
       :placeholder="placeholder"
       :label="computedLabel"
-      :hint="control.description"
+      :hint="description"
       persistent-hint
       :required="control.required"
       :error-messages="control.errors"
@@ -34,8 +34,8 @@
       class="py-3"
     >
       <template v-slot:message>
-        <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
-          {{ control.schema.description }}
+        <div v-if="description" class="text-subtitle-1 text--secondary">
+          {{ description }}
         </div>
         <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
           {{ cleanedErrors }}
@@ -52,7 +52,7 @@
       :autofocus="appliedOptions.focus"
       :placeholder="placeholder"
       :label="computedLabel"
-      :hint="control.description"
+      :hint="description"
       persistent-hint
       :required="control.required"
       :error-messages="control.errors"
@@ -72,8 +72,8 @@
       outlined
     >
       <template v-slot:message>
-        <div v-if="control.schema.description" class="text-subtitle-1 text--secondary">
-          {{ control.schema.description }}
+        <div v-if="description" class="text-subtitle-1 text--secondary">
+          {{ description }}
         </div>
         <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
           {{ cleanedErrors }}
@@ -90,7 +90,7 @@ import {
   rankWith,
   isStringControl
 } from '@jsonforms/core'
-import { defineComponent } from '@vue/composition-api'
+import { defineComponent } from 'vue'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
 import isArray from 'lodash/isArray';
@@ -134,7 +134,10 @@ const controlRenderer = defineComponent({
     },
     placeholder(): string {
       // @ts-ignore
-      return this.control.schema.options?.placeholder || ''
+      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
     isReadOnly() {
       // @ts-ignore

@@ -5,11 +5,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "@vue/composition-api"
+import { defineComponent, PropType } from 'vue'
 import { ErrorObject } from 'ajv';
 import { default as ValidationBadge } from './ValidationBadge.vue';
 import { VIcon } from 'vuetify/lib';
-import { CompType } from '@jsonforms/vue2-vuetify/lib/vue'
 
 export default defineComponent({
   name: 'validation-icon',
@@ -20,7 +19,7 @@ export default defineComponent({
   props: {
     errors: {
       required: true,
-      type: Array as CompType<ErrorObject, ArrayConstructor>,
+      type: Array as PropType<ErrorObject[]>,
     },
   },
 });

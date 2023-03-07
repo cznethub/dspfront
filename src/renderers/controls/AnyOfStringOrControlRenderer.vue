@@ -6,7 +6,7 @@
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
     :label="computedLabel"
-    :hint="control.description"
+    :hint="description"
     persistent-hint
     :required="control.required"
     :error-messages="control.errors"
@@ -37,7 +37,7 @@ import {
   schemaMatches,
   JsonSchema,
 } from '@jsonforms/core';
-import { defineComponent } from "@vue/composition-api"
+import { defineComponent } from 'vue'
 import {
   rendererProps,
   useJsonFormsControl,
@@ -70,6 +70,9 @@ const controlRenderer = defineComponent({
       // made sure via the testers
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return findEnumSchema(this.control.schema.anyOf!)!.enum!;
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
     },
   },
 });
