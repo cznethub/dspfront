@@ -5,7 +5,7 @@
         <div class="has-space-bottom text-h6">Contact Us</div>
         <router-link to="/contact">Contact</router-link>
         <p>Learn more about the <a href="https://www.criticalzone.org/"
-          target="_blank">CZNet</a> and <a href="https://criticalzone.org/hub" target="_blank">CZ Hub</a></p>
+          target="_blank">CZNet</a> and <a href="https://criticalzone.org/hub" target="_blank">{{ appName }}</a></p>
         <p>Visit <a href="https://www.cuahsi.org/" target="_blank">cuahsi.org</a></p>
       </div>
 
@@ -33,14 +33,17 @@
 </template>
 
 <script lang="ts">
-  import User from '@/models/user.model'
   import { Component, Vue } from 'vue-property-decorator'
+  import { APP_NAME } from '@/constants';
+  import User from '@/models/user.model'
 
   @Component({
     name: 'cz-footer',
     components: { },
   })
   export default class CzFooter extends Vue {
+    protected appName = APP_NAME
+
     protected openLogInDialog() {
       User.openLogInDialog()
     }

@@ -1,5 +1,6 @@
 import { routes } from './routes'
 import { EnumRepositoryKeys } from './components/submissions/types'
+import { APP_NAME } from './constants'
 import VueRouter, { RawLocation } from 'vue-router'
 import User from './models/user.model'
 import HydroShare from './models/hydroshare.model'
@@ -101,12 +102,12 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
 
     // If a route with a title was found, set the document (page) title to that value.
     if(nearestWithTitle) {
-      document.title = `CZ Hub | ${nearestWithTitle.meta.title}`
+      document.title = `${APP_NAME} | ${nearestWithTitle.meta.title}`
     } else if(previousNearestWithMeta) {
       document.title = previousNearestWithMeta.meta.title
     }
     else {
-      document.title = `CZ Hub`
+      document.title = APP_NAME
     }
 
     // Remove any stale meta tags from the document using the key attribute we set below.

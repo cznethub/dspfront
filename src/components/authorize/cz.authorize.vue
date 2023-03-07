@@ -1,23 +1,33 @@
 <template>
-  <v-card class="cz-authorize">
-    <div class="v-card-media py-4 px-8">
-      <v-img :src="repoLogoSrc" :alt="repoName" width="100%" height="8rem" contain />
-    </div>
-    
-    <v-divider></v-divider>
-    <v-card-title class="justify-center">
-      <div class="text-h4 mt-2">Access {{ repoName }}</div>
-      <div class="text-body-1 my-4">Permission is needed to access this repository</div>
-    </v-card-title>
-    <v-card-text class="d-flex flex-column align-center">
-      <v-btn @click="openAuthorizePopup" color="primary" class="mb-4">
-        <i class="fas fa-key mr-2" />Authorize
-      </v-btn>
-    </v-card-text>
-    <v-divider></v-divider>
-    <v-card-text class="text-center mt-4">
-      <p class="text-subtitle">Follow the instructions on the next page to allow CZnet to access this repository.</p>
-    </v-card-text>
+  <v-card class="cz-authorize d-flex flex-column flex-md-row"
+    :class="{ 'is-medium': $vuetify.breakpoint.mdAndUp }">
+    <v-card class="d-flex flex-column darken-2" color="blue-grey" rounded="0">
+      <v-card-title class="white--text">
+        <v-icon color="white" class="mr-4">mdi-alert-circle</v-icon>
+        <div>You must have a {{ repoName }} account before proceeding</div>
+      </v-card-title>
+      <v-card-text class="white--text">If you do not have a {{ repoName }} account yet, create one in {{ repoName }} and then come back here to submit your content through the Data Submission Portal.</v-card-text>
+    </v-card>
+    <v-card elevation="0">
+      <div class="v-card-media py-4 px-8">
+        <v-img :src="repoLogoSrc" :alt="repoName" content-class="content-logo" width="100%" height="8rem" contain />
+      </div>
+      
+      <v-divider></v-divider>
+      <v-card-title class="justify-center text-center">
+        <div class="text-h4 mt-2">Access {{ repoName }}</div>
+        <div class="text-body-1 my-4">Permission is needed to access this repository</div>
+      </v-card-title>
+      <v-card-text class="d-flex flex-column align-center">
+        <v-btn @click="openAuthorizePopup" color="primary" class="mb-4">
+          <i class="fas fa-key mr-2" />Authorize
+        </v-btn>
+      </v-card-text>
+      <v-divider></v-divider>
+      <v-card-text class="text-center mt-4">
+        <p class="text-subtitle">Follow the instructions on the next page to allow CZnet to access this repository.</p>
+      </v-card-text>
+    </v-card>
   </v-card>
 </template>
 
@@ -62,6 +72,17 @@
 </script>
 
 <style lang="scss" scoped>
+  .cz-authorize.is-medium {
+    & > .v-card:first-child {
+      max-width: 14rem;
+      // text-align: right;
+
+      // .v-card-title {
+      //   justify-content: flex-end;
+      // }
+    }
+  }
+
   .v-card {
     .v-card__title {
       word-break: break-word;
@@ -74,5 +95,9 @@
         flex: 0;
       }
     }
+  }
+
+  ::v-deep .v-card-media .content-logo {
+    width: auto !important;
   }
 </style>

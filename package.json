@@ -34,7 +34,7 @@
     "vue-filter-pretty-bytes": "^0.1.6",
     "vue-json-viewer": "^2.2.22",
     "vue-router": "^3.5.2",
-    "vuetify": "^2.6.12",
+    "vuetify": "^2.6.14",
     "vuex": "^3.6.2",
     "vuex-persistedstate": "^4.1.0"
   },

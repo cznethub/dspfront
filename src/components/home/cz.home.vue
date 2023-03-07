@@ -29,7 +29,7 @@
           </div>
           <a
             class="has-text-shadow has-text-white text-h5"
-            href="https://discover.criticalzone.org/"
+            :href="discoverySiteUrl"
             >Visit our data discovery portal</a
           >
         </div>

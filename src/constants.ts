@@ -14,7 +14,7 @@ import Zenodo from "./models/zenodo.model"
   410,  // Zenodo
 ]
 export const APP_NAME = process.env.VUE_APP_NAME || 'CZ'
-export const DISCOVERY_SITE_URL = process.env.VUE_DISCOVERY_PORTAL_URL || ''
+export const DISCOVERY_SITE_URL = process.env.VUE_APP_DISCOVERY_PORTAL_URL || ''
 export const DEFAULT_TOAST_DURATION = 3500
 
 export function getRepositoryFromKey(key: string): typeof Repository | undefined {

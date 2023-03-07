@@ -239,7 +239,7 @@
       ></cz-login>
     </v-dialog>
 
-    <v-dialog v-model="authorizeDialog.isActive" width="500">
+    <v-dialog v-model="authorizeDialog.isActive" width="650">
       <cz-authorize
         @authorized="authorizeDialog.onAuthorized"
         :repo="authorizeDialog.repo"
@@ -260,7 +260,7 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { setupRouteGuards } from "./router";
 import { Subscription } from "rxjs";
-import { DEFAULT_TOAST_DURATION } from "./constants";
+import { APP_NAME, DEFAULT_TOAST_DURATION } from "./constants";
 import { RawLocation } from "vue-router";
 import { EnumRepositoryKeys } from "./components/submissions/types";
 import CzNotification, { IDialog, IToast } from "./models/notifications.model";
@@ -380,7 +380,7 @@ export default class App extends Vue {
   }
 
   async created() {
-    document.title = "CZ Hub";
+    document.title = APP_NAME;
 
     if (this.$route.name !== "submissions") {
       // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
