@@ -82,9 +82,9 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>()
   },
   setup(props: RendererProps<ControlElement>) {
-    const selectedDate: Ref<string|null> = ref(null)
+    const selectedDate: Ref<string|null> = ref(null);
     const control = useVuetifyControl(useJsonFormsControl(props));
-    const menu = ref(false)
+    const menu = ref(false);
 
     return {
       selectedDate,

@@ -67,7 +67,7 @@ import {
   rankWith,
   isDateTimeControl
 } from '@jsonforms/core'
-import { defineComponent } from 'vue'
+import { defineComponent, ref, Ref } from 'vue'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { format, parse } from 'date-fns'
 import { computeLabel } from '@jsonforms/core'
@@ -89,14 +89,15 @@ const controlRenderer = defineComponent({
     ...rendererProps<ControlElement>()
   },
   setup(props: RendererProps<ControlElement>) {
-    let selectedDate: any = null
-    let selectedTime: any = DEFAULT_TIME
+    const selectedDate: Ref<string|null> = ref(null);
+    const selectedTime: Ref<string> = ref(DEFAULT_TIME);
+    const menu = ref(false);
 
     return {
       selectedDate,
       selectedTime,
       defaultTime: DEFAULT_TIME,
-      menu: false,
+      menu,
       ...useVanillaControl(useJsonFormsControl(props))
     }
   },
