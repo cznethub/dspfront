@@ -33,8 +33,8 @@
           >
           <v-btn
             v-for="path of paths"
-            :key="path.to"
-            :to="path.to"
+            :key="path.attrs.to || path.attrs.href"
+            v-bind="path.attrs"
             :id="`navbar-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
             :elevation="0"
             active-class="is-active"
@@ -126,8 +126,8 @@
           <v-list-item
             v-for="path of paths"
             :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
-            :key="path.to"
-            :to="path.to"
+            :key="path.attrs.to || path.attrs.href"
+            v-bind="path.attrs"
             @click="showMobileNavigation = false"
             active-class="is-active"
           >
@@ -260,7 +260,7 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { setupRouteGuards } from "./router";
 import { Subscription } from "rxjs";
-import { APP_NAME, DEFAULT_TOAST_DURATION } from "./constants";
+import { APP_NAME, DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from "./constants";
 import { RawLocation } from "vue-router";
 import { EnumRepositoryKeys } from "./components/submissions/types";
 import CzNotification, { IDialog, IToast } from "./models/notifications.model";
@@ -331,14 +331,31 @@ export default class App extends Vue {
   };
   protected paths = [
     {
-      to: "/submissions",
+      attrs: { to: "/submissions" },
       label: "My Submissions",
       icon: "mdi-bookmark-multiple",
     },
-    { to: "/resources", label: "Resources", icon: "mdi-library" },
-    { to: "/submit", label: "Submit Data", icon: "mdi-book-plus" },
-    { to: "/about", label: "About", icon: "mdi-help" },
-    { to: "/contact", label: "Contact", icon: "mdi-book-open-blank-variant" },
+    {
+      attrs: { to: "/resources" },
+      label: "Resources",
+      icon: "mdi-library",
+    },
+    {
+      attrs: { to: "/submit" },
+      label: "Submit Data",
+      icon: "mdi-book-plus",
+    },
+    {
+      attrs: { href: DISCOVERY_SITE_URL },
+      label: "Discover Data",
+      icon: "mdi-card-search",
+    },
+    { attrs: { to: "/about" }, label: "About", icon: "mdi-help" },
+    {
+      attrs: { to: "/contact" },
+      label: "Contact",
+      icon: "mdi-book-open-blank-variant",
+    },
   ];
 
   protected get isLoggedIn(): boolean {
