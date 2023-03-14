@@ -1,6 +1,6 @@
 <template>
   <div class="cz-home">
-    <v-parallax class="text-center" :src="require('@/assets/img/bg-3.jpg')" height="650">
+    <v-parallax class="text-center" :src="require('@/assets/img/bg-3.jpg')" :height="isLoggedIn ? 450 : 650">
       <v-container
         class="d-flex flex-column justify-center align-center full-height pa-12"
         style="background-image: linear-gradient(rgb(66 142 218 / 52%), rgb(0 0 0 / 38%));"
@@ -27,11 +27,9 @@
           <div class="has-text-shadow has-text-white text-h6 mb-2">
             Looking for CZNet data?
           </div>
-          <a
-            class="has-text-shadow has-text-white text-h5"
-            :href="discoverySiteUrl"
-            >Visit our data discovery portal</a
-          >
+          <v-btn color="white" outlined :href="discoverySiteUrl">
+            Visit our data discovery portal
+          </v-btn>
         </div>
       </v-container>
     </v-parallax>

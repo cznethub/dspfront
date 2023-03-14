@@ -61,7 +61,7 @@ export default class Submission extends Model implements ISubmission {
   static getInsertDataFromDb(dbSubmission) {
     return {
       title: dbSubmission.title,
-      authors: dbSubmission.authors.map(a => a.name),
+      authors: dbSubmission.authors,
       repository: dbSubmission.repo_type,
       date: new Date(dbSubmission.submitted).getTime(),
       identifier: dbSubmission.identifier,
