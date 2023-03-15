@@ -1,23 +1,23 @@
 <template>
-  <div class="my-4" v-if="layout.visible" v-bind="vuetifyProps('v-container')">
+  <div class="my-4" v-if="control.visible" v-bind="vuetifyProps('v-container')">
     <v-container>
       <v-row>
         <v-col sm="12" md="5">
           <v-row
-            v-for="(element, index) in layout.uischema.elements"
+            v-for="(element, index) in control.uischema.elements"
             :data-id="`vertical-${index}`"
-            :key="`${layout.path}-${index}`"
+            :key="`${control.path}-${index}`"
             no-gutters
             v-bind="vuetifyProps(`v-row[${index}]`)"
           >
             <v-col cols="12" :class="styles.verticalLayout.item">
               <dispatch-renderer
-                :schema="layout.schema"
+                :schema="control.schema"
                 :uischema="element"
-                :path="layout.path"
-                :enabled="layout.enabled"
-                :renderers="layout.renderers"
-                :cells="layout.cells"
+                :path="control.path"
+                :enabled="control.enabled"
+                :renderers="control.renderers"
+                :cells="control.cells"
               />
             </v-col>
           </v-row>
@@ -34,19 +34,17 @@
 import {
   uiTypeIs,
   JsonFormsRendererRegistryEntry,
-  Layout,
   rankWith,
-  ControlProps,
+  ControlElement,
 } from "@jsonforms/core";
 import { defineComponent } from 'vue';
 import {
   DispatchRenderer,
   rendererProps,
-  useJsonFormsLayout,
   RendererProps,
-  useJsonFormsControl,
+  useJsonFormsControlWithDetail
 } from "@jsonforms/vue2";
-import { useVuetifyControl, useVuetifyLayout } from "@jsonforms/vue2-vuetify";
+import { useVuetifyControl,  } from "@/renderers/util/composition";
 import { VContainer, VRow, VCol } from "vuetify/lib";
 import { Loader, LoaderOptions } from "google-maps";
 const options: LoaderOptions = { libraries: ["drawing"] };
@@ -61,14 +59,15 @@ const layoutRenderer = defineComponent({
     VCol,
   },
   props: {
-    ...rendererProps<Layout>(),
+    ...rendererProps<ControlElement>(),
   },
-  setup(props: RendererProps<Layout>) {
-    let marker: any = null;
-    let rectangle: any = null;
-    let map: google.maps.Map | null = null;
-    let isEventFromMap = false;
-    let timeout = 50;
+  setup(props: RendererProps<ControlElement>) {
+    const marker: any = null;
+    const rectangle: any = null;
+    const map: google.maps.Map | null = null;
+    const isEventFromMap = false;
+    const timeout = 50;
+    const initialized = false;
     
     const rectangleOptions: google.maps.RectangleOptions = {
       fillColor: "#1976d2",
@@ -89,24 +88,8 @@ const layoutRenderer = defineComponent({
       markerOptions,
       isEventFromMap,
       timeout,
-      ...useVuetifyLayout(useJsonFormsLayout(props)),
-      // Constructed just so we can call handleChange from a layout element
-      ...useVuetifyControl(
-        useJsonFormsControl({
-          uischema: { ...props.uischema, scope: "" },
-          schema: props.schema,
-          label: "",
-          errors: "",
-          data: [],
-          id: "",
-          visible: true,
-          rootSchema: props.schema,
-          enabled: props.enabled,
-          path: props.path,
-          handleChange: () => {},
-        } as ControlProps),
-        (value) => value || undefined
-      ),
+      initialized,
+      ...useVuetifyControl(useJsonFormsControlWithDetail(props))
     };
   },
   mounted: async function () {
@@ -123,30 +106,32 @@ const layoutRenderer = defineComponent({
         else {
           // Recenter at marker
           (this.map as google.maps.Map).setCenter({
-            lat: this.layout.data.north,
-            lng: this.layout.data.east,
+            lat: this.control.data.north,
+            lng: this.control.data.east,
           });
         }
       }
     }
   },
   watch: {
-    'layout.data': function (newData, oldData) {
+    'control.data': function (newData, oldData) {
       if (this.isEventFromMap) {
         this.isEventFromMap = false
       }
       else {
-        this.loadDrawing()
-        this.isEventFromMap = false
+        if (this.initialized) {
+          this.loadDrawing()
+          this.isEventFromMap = false
+        }
       }
     }
   },
   computed: {
     mapType(): "point" | "box" {
-      return this.layout.uischema.options?.map.type || "point";
+      return this.control.uischema.options?.map.type || "point";
     },
     inputFields(): { [key: string]: string } {
-      const options = this.layout.uischema.options?.map;
+      const options = this.control.uischema.options?.map;
 
       return this.mapType === "point"
         ? { east: options.east, north: options.north }
@@ -160,21 +145,21 @@ const layoutRenderer = defineComponent({
     hasData(): boolean {
       return (
         (this.mapType === "point" &&
-          !isNaN(this.layout.data.north) && 
-          !isNaN(this.layout.data.east)) ||
+          !isNaN(this.control.data.north) && 
+          !isNaN(this.control.data.east)) ||
         (this.mapType === "box" &&
-          !isNaN(this.layout.data.northlimit) &&
-          !isNaN(this.layout.data.eastlimit) &&
-          !isNaN(this.layout.data.southlimit) &&
-          !isNaN(this.layout.data.westlimit))
+          !isNaN(this.control.data.northlimit) &&
+          !isNaN(this.control.data.eastlimit) &&
+          !isNaN(this.control.data.southlimit) &&
+          !isNaN(this.control.data.westlimit))
       );
     },
   },
   methods: {
     async initMap() {
       const google = await loader.load();
-      // @ts-ignore
 
+      // @ts-ignore
       this.map = new google.maps.Map(this.$refs.map, {
         center: { lat: 39.8097343, lng: -98.5556199 },
         zoom: 5,
@@ -239,11 +224,13 @@ const layoutRenderer = defineComponent({
           this.handleDrawing();
         }
       );
+
+      this.initialized = true;
     },
     debouncedHandleChange() {
       window.clearTimeout(this.timeout)
       this.timeout = window.setTimeout(() => {
-        this.handleChange(this.layout.path, this.layout.data)
+        this.handleChange(this.control.path, this.control.data)
       }, 150)
     },
     handleDrawing() {
@@ -253,16 +240,16 @@ const layoutRenderer = defineComponent({
         const northEast = bounds.getNorthEast();
         const southWeast = bounds.getSouthWest();
 
-        this.layout.data[this.inputFields.northlimit] = +northEast
+        this.control.data[this.inputFields.northlimit] = +northEast
           .lat()
           .toFixed(4);
-        this.layout.data[this.inputFields.eastlimit] = +northEast
+        this.control.data[this.inputFields.eastlimit] = +northEast
           .lng()
           .toFixed(4);
-        this.layout.data[this.inputFields.southlimit] = +southWeast
+        this.control.data[this.inputFields.southlimit] = +southWeast
           .lat()
           .toFixed(4);
-        this.layout.data[this.inputFields.westlimit] = +southWeast
+        this.control.data[this.inputFields.westlimit] = +southWeast
           .lng()
           .toFixed(4);
 
@@ -276,12 +263,12 @@ const layoutRenderer = defineComponent({
         const lng = position?.lng().toFixed(4);
 
         if (lat && lng) {
-          this.layout.data[this.inputFields.north] = +lat;
-          this.layout.data[this.inputFields.east] = +lng;
+          this.control.data[this.inputFields.north] = +lat;
+          this.control.data[this.inputFields.east] = +lng;
         }
 
         if (this.isEventFromMap) {
-          this.handleChange(this.layout.path, this.layout.data)
+          this.handleChange(this.control.path, this.control.data)
         }
       }
     },
@@ -312,10 +299,10 @@ const layoutRenderer = defineComponent({
           this.rectangle = new google.maps.Rectangle({
             ...this.rectangleOptions,
             bounds: {
-              north: this.layout.data.northlimit,
-              south: this.layout.data.southlimit,
-              east: this.layout.data.eastlimit,
-              west: this.layout.data.westlimit,
+              north: this.control.data.northlimit,
+              south: this.control.data.southlimit,
+              east: this.control.data.eastlimit,
+              west: this.control.data.westlimit,
             },
             map: this.map,
           });
@@ -331,7 +318,7 @@ const layoutRenderer = defineComponent({
         if (this.hasData) {
           const marker = new google.maps.Marker({
             ...this.markerOptions,
-            position: { lat: this.layout.data.north, lng: this.layout.data.east },
+            position: { lat: this.control.data.north, lng: this.control.data.east },
             map: this.map,
           });
           

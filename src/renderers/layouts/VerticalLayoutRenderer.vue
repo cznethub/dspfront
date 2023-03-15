@@ -1,7 +1,7 @@
 <template>
   <v-container
     v-if="layout.visible"
-    :class="`pa-0 ${styles.verticalLayout.root}`"
+    :class="`pa-0`"
     v-bind="vuetifyProps('v-container')"
   >
     <v-row
@@ -39,7 +39,7 @@ import {
   useJsonFormsLayout,
   RendererProps,
 } from '@jsonforms/vue2'
-import { useVuetifyLayout } from '@jsonforms/vue2-vuetify'
+import { useVuetifyLayout } from '@/renderers/util/composition';
 import { VContainer, VRow, VCol } from 'vuetify/lib'
 
 const layoutRenderer = defineComponent({

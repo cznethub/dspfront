@@ -44,7 +44,7 @@ import {
   RendererProps,
 } from '@jsonforms/vue2';
 import { default as ControlWrapper } from './ControlWrapper.vue';
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
+import { useVuetifyControl } from '@/renderers/util/composition';
 import { VCheckbox } from 'vuetify/lib';
 
 const controlRenderer = defineComponent({

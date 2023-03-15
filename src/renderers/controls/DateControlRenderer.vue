@@ -63,9 +63,7 @@ import {
 import { defineComponent, Ref, ref } from 'vue'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { format, parse } from 'date-fns'
-import { computeLabel } from '@jsonforms/core'
-import { useVanillaControl } from "@jsonforms/vue2-vanilla"
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
+import { useVuetifyControl } from '@/renderers/util/composition';
 
 const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
 

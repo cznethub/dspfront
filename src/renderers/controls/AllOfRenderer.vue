@@ -51,7 +51,7 @@ import {
   useJsonFormsAllOfControl,
 } from '@jsonforms/vue2'
 import { defineComponent } from 'vue'
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
+import { useVuetifyControl } from '@/renderers/util/composition';
 
 const controlRenderer = defineComponent({
   name: 'all-of-renderer',
@@ -63,9 +63,6 @@ const controlRenderer = defineComponent({
   },
   setup(props: RendererProps<ControlElement>) {
     return useVuetifyControl(useJsonFormsAllOfControl(props));
-  },
-  created() {
-    // console.log(this.control)
   },
   computed: {
     delegateUISchema(): UISchemaElement {
@@ -98,8 +95,8 @@ const controlRenderer = defineComponent({
       return this.control.errors.replaceAll(`is a required property`, ``)
     },
     description(): string {
-      // @ts-ignore
-      return this.control.schema?.description 
+      return this.control.description
+      || this.control.schema?.description 
       || this.appliedOptions.description
       || ''
     },

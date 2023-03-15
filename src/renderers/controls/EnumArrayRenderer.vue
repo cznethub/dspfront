@@ -65,7 +65,7 @@ import {
   useJsonFormsControl,
 } from '@jsonforms/vue2';
 import { defineComponent } from 'vue';
-import { useVuetifyBasicControl } from '@jsonforms/vue2-vuetify';
+import { useVuetifyBasicControl } from '@/renderers/util/composition';
 
 //TODO: move into JsonForm Vue project under src/components/jsonFormsCompositions.ts
 const useJsonFormsMultiEnumControl = (props: ControlProps) => {
@@ -76,7 +76,7 @@ const useJsonFormsMultiEnumControl = (props: ControlProps) => {
   );
 };
 
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
+import { useVuetifyControl } from '@/renderers/util/composition';
 
 const controlRenderer = defineComponent({
   name: 'enum-array-renderer',
@@ -100,9 +100,6 @@ const controlRenderer = defineComponent({
         useJsonFormsMultiEnumControl(props)
       )
     }
-  },
-  created() {
-    // console.log(this.control)
   },
   computed: {
     cleanedErrors() {

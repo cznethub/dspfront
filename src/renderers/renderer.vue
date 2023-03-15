@@ -27,6 +27,7 @@
   import { arrayLayoutRenderer } from './layouts/ArrayLayoutRenderer.vue'
   import { booleanControlRenderer } from './controls/BooleanControlRenderer.vue'
   import { mapLayoutRenderer } from './layouts/MapLayoutRenderer.vue'
+  import { objectRenderer } from './layouts/ObjectLayoutRenderer.vue'
 
   const controlRenderer = defineComponent({})
   export default controlRenderer
@@ -54,6 +55,7 @@
     arrayLayoutRenderer,
     integerControlRenderer,
     anyOfStringOrControlRenderer,
-    booleanControlRenderer
+    booleanControlRenderer,
+    objectRenderer
   ]
 </script>

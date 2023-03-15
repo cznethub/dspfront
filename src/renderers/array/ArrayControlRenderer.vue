@@ -191,7 +191,7 @@ import {
   RendererProps,
   useJsonFormsControl,
 } from '@jsonforms/vue2';
-import { useVuetifyArrayControl, useVuetifyControl } from '@jsonforms/vue2-vuetify'
+import { useVuetifyArrayControl, useVuetifyControl } from '@/renderers/util/composition';
 import {
   VCard,
   VCardTitle,

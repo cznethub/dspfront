@@ -41,7 +41,7 @@ import {
 import { defineComponent, ref, unref } from 'vue'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
 import { default as ControlWrapper } from './ControlWrapper.vue';
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify';
+import { useVuetifyControl } from '@/renderers/util/composition';
 
 const NUMBER_REGEX_TEST = /^[+-]?\d+([.]\d+)?([eE][+-]?\d+)?$/;
 
@@ -64,7 +64,6 @@ const controlRenderer = defineComponent({
     return { ...input, adaptValue, inputValue };
   },
   created() {
-    // console.log(this.control)
     // If the value that was loaded is null, turn it into undefined
     if (this.control.data === null) {
       this.handleChange(this.control.path, undefined)

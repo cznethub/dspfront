@@ -44,7 +44,7 @@ import {
 } from '@jsonforms/core';
 import { defineComponent } from 'vue'
 import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2';
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify';
+import { useVuetifyControl } from '@/renderers/util/composition';
 
 const controlRenderer = defineComponent({
   name: 'multi-string-control-renderer',

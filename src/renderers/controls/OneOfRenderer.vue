@@ -144,7 +144,7 @@ import {
   useJsonFormsOneOfControl,
 } from '@jsonforms/vue2';
 import { defineComponent, ref } from 'vue'
-import { useVuetifyControl } from '@jsonforms/vue2-vuetify'
+import { useVuetifyControl } from '@/renderers/util/composition';
 import {
   VDialog,
   VCard,
@@ -242,8 +242,9 @@ const controlRenderer = defineComponent({
       || ''
     },
     description(): string {
+      return this.control.description
       // @ts-ignore
-      return this.control.schema?.options?.description 
+      || this.control.schema?.options?.description 
       || this.oneOfRenderInfos[this.selectedIndex].schema.description
       || ''
     },
