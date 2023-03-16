@@ -95,6 +95,7 @@ import {
 import cloneDeep from "lodash/cloneDeep";
 import { useNested, useVuetifyControl } from "@/renderers/util/composition";
 import { defineComponent, ref } from "vue";
+import { isEqual } from "lodash";
 
 const controlRenderer = defineComponent({
   name: "object-renderer",
@@ -114,6 +115,19 @@ const controlRenderer = defineComponent({
       input: control,
       nested,
     };
+  },
+  watch: {
+    "control.data": function (newVal, oldVal) {
+      if (newVal) {
+        const filteredObj = Object.fromEntries(
+          Object.entries(newVal).filter(([_, value]) => value !== undefined)  // strip out undefined properties
+        );
+        
+        if (isEqual(filteredObj, {})) {
+          this.handleChange(this.control.path, undefined);
+        }
+      }
+    },
   },
   created() {
     this.isCollapsed = !this.control.data;
