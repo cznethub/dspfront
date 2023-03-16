@@ -1,32 +1,34 @@
 <template>
   <v-menu
-    v-model="menu"
+    ref="menu"
+    v-model="showMenu"
     :close-on-content-click="false"
-    :nudge-right="40"
+    :return-value.sync="pickerValue"
+    transition="scale-transition"
     offset-y
-    min-width="auto"
+    min-width="290px"
+    v-bind="vuetifyProps('v-menu')"
+    :disabled="!control.enabled"
   >
     <template v-slot:activator="{ on, attrs }">
       <v-text-field
-        @click:clear="onClear"
-        @change="onInput($event)"
-        :disabled="!control.enabled"
-        :hidden="control.hidden"
-        :value="dataDate"
         :id="control.id + '-input'"
-        :data-id="computedLabel.replaceAll(` `, ``)"
+        :class="styles.control.input"
+        :disabled="!control.enabled"
+        :autofocus="appliedOptions.focus"
+        :placeholder="placeholder"
         :label="computedLabel"
         :hint="description"
-        :error-messages="control.errors"
-        :required="control.required"
-        :placeholder="placeholder"
-        prepend-icon="mdi-calendar"
         persistent-hint
-        class="py-3"
+        :required="control.required"
+        :error-messages="control.errors"
+        prepend-inner-icon="mdi-calendar"
+        v-mask="mask"
+        :value="inputValue"
+        @input="onInputChange"
         outlined
-        clearable
+        class="py-3"
         v-bind="attrs"
-        dense
         v-on="on"
       >
         <template v-slot:message>
@@ -37,193 +39,482 @@
             {{ cleanedErrors }}
           </div>
         </template>
+        <template slot="append">
+          <v-icon v-if="control.enabled" tabindex="-1" @click="clear"
+            >$clear</v-icon
+          >
+        </template>
       </v-text-field>
     </template>
 
     <v-date-picker
-      v-model="selectedDate"
-      @change="onInput($event)" 
-      @input="menu = false"
-      :max="maxDate"
+      v-if="showMenu"
+      v-model="pickerValue"
+      ref="picker"
+      v-bind="vuetifyProps('v-date-picker')"
       :min="minDate"
-      :value="control.data" 
-      :disabled="!control.enabled"
-      scrollable 
-    />
+      :max="maxDate"
+      :type="pickerType"
+      @click:year="onYear"
+    >
+      <v-spacer></v-spacer>
+      <v-btn text @click="showMenu = false">
+        {{ cancelLabel }}
+      </v-btn>
+      <v-btn text color="primary" @click="okHandler">
+        {{ okLabel }}
+      </v-btn>
+    </v-date-picker>
   </v-menu>
 </template>
 
 <script lang="ts">
 import {
   ControlElement,
+  isDateControl,
   JsonFormsRendererRegistryEntry,
+  JsonSchema,
+  // JsonSchema,
   rankWith,
-  isDateControl
-} from '@jsonforms/core'
-import { defineComponent, Ref, ref } from 'vue'
-import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
-import { format, parse } from 'date-fns'
-import { useVuetifyControl } from '@/renderers/util/composition';
+} from "@jsonforms/core";
+import { VueMaskDirective as Mask } from "v-mask";
+import { defineComponent, ref } from "vue";
 
-const DEFAULT_DATE_FORMAT = 'yyyy-MM-dd'
+import {
+  rendererProps,
+  RendererProps,
+  useJsonFormsControl,
+} from "@jsonforms/vue2";
+import dayjs from "dayjs";
+import {
+  parseDateTime,
+  useTranslator,
+  useVuetifyControl,
+} from "@/renderers/util";
 
-const DATE_FORMATS = {
-  "date": "yyyy-MM-dd",
-}
+const JSON_SCHEMA_DATE_FORMATS = ["YYYY-MM-DD"];
+
+type MinMaxFormat =
+  | {
+      amount: number;
+      unit: "day" | "month" | "year";
+    }
+  | "today";
 
 const controlRenderer = defineComponent({
-  name: 'date-control-renderer',
-  components: {
-    // ControlWrapper
-  },
+  name: "date-control-renderer",
+  directives: { Mask },
   props: {
-    ...rendererProps<ControlElement>()
+    ...rendererProps<ControlElement>(),
   },
   setup(props: RendererProps<ControlElement>) {
-    const selectedDate: Ref<string|null> = ref(null);
-    const control = useVuetifyControl(useJsonFormsControl(props));
-    const menu = ref(false);
+    const t = useTranslator();
 
-    return {
-      selectedDate,
-      menu,
-      ...control
-    }
+    const showMenu = ref(false);
+    const mask = ref<((value: string) => (string | RegExp)[]) | undefined>(
+      undefined
+    );
+
+    const adaptValue = (value: any) => value || undefined;
+    const control = useVuetifyControl(useJsonFormsControl(props), adaptValue);
+    return { ...control, showMenu, mask, t, adaptValue };
   },
-  created() {
-    if (this.dataDate) {
-      const selected = parse(this.dataDate, this.defaultDateFormat, new Date())
-      this.select(selected)
-    }
+  watch: {
+    isFocused(newFocus) {
+      if (newFocus && this.applyMask) {
+        this.mask = this.maskFunction.bind(this);
+      } else {
+        this.mask = undefined;
+      }
+    },
   },
   computed: {
-    dataDate(): string {
-      return (this.control.data || this.defaultDate || '')
-    },
-    parsedDate() {
-      if (this.selectedDate) {
-        // @ts-ignore
-        return parse(this.selectedDate, this.defaultDateFormat, new Date())
-      }
-      else {
-        return null
-      }
-    },
-    defaultDateFormat() {
-      return DEFAULT_DATE_FORMAT
-    },
-    formattedDate() {
-      // @ts-ignore
-      return this.parsedDate ? format(this.parsedDate, DATE_FORMATS[this.dateFormat]) : ''
-    },
-    dateFormat(): string {
-      // @ts-ignore
-      return this.control.schema.format || "date"
-    },
-    maxDate() {
-      // @ts-ignore
-      return this.getDateFromOption(this.control.schema.options?.max)
-    },
-    minDate() {
-      // @ts-ignore
-      return this.getDateFromOption(this.control.schema.options?.min)
-    },
-    defaultDate() {
-      // @ts-ignore
-      return this.getDateFromOption(this.control.schema.options?.default)
-    },
     placeholder(): string {
-      // @ts-ignore
-      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+      return (
+        // @ts-ignore
+        this.control.schema.options?.placeholder ||
+        this.appliedOptions.placeholder ||
+        ""
+      );
     },
     description(): string {
-      return this.control.description || this.appliedOptions.description || ''
+      return this.control.description || this.appliedOptions.description || "";
     },
     cleanedErrors() {
       // @ts-ignore
-      return this.control.errors.replaceAll(`is a required property`, ``)
-    }
+      return this.control.errors.replaceAll(`is a required property`, ``);
+    },
+    applyMask(): boolean {
+      return typeof this.appliedOptions.mask == "boolean"
+        ? this.appliedOptions.mask
+        : true;
+    },
+    pickerIcon(): string {
+      if (typeof this.appliedOptions.pickerIcon === "string") {
+        return this.appliedOptions.pickerIcon;
+      }
+
+      if (this.pickerType === "year") {
+        return "mdi-alpha-y-box-outline";
+      }
+
+      if (this.pickerType === "month") {
+        return "mdi-calendar-month";
+      }
+
+      return "mdi-calendar";
+    },
+    dateFormat(): string {
+      return typeof this.appliedOptions.dateFormat == "string"
+        ? this.appliedOptions.dateFormat
+        : "YYYY-MM-DD";
+    },
+    dateSaveFormat(): string {
+      return typeof this.appliedOptions.dateSaveFormat == "string"
+        ? this.appliedOptions.dateSaveFormat
+        : "YYYY-MM-DD";
+    },
+    formats(): string[] {
+      return [
+        this.dateSaveFormat,
+        this.dateFormat,
+        ...JSON_SCHEMA_DATE_FORMATS,
+      ];
+    },
+    pickerType(): "date" | "month" | "year" {
+      if (!this.dateFormat.includes("M") && !this.dateFormat.includes("D")) {
+        return "year";
+      }
+      if (!this.dateFormat.includes("D")) {
+        return "month";
+      }
+      return "date";
+    },
+    maxDate(): string | undefined {
+      const schema = this.control.schema as JsonSchema & {
+        options: Partial<{
+          min?: MinMaxFormat;
+          max?: MinMaxFormat;
+          default?: MinMaxFormat;
+        }>;
+      };
+      if (schema.options?.max) {
+        return this.getDateFromOption(schema.options.max);
+      }
+    },
+    minDate(): string | undefined {
+      const schema = this.control.schema as JsonSchema & {
+        options: Partial<{
+          min?: MinMaxFormat;
+          max?: MinMaxFormat;
+          default?: MinMaxFormat;
+        }>;
+      };
+      if (schema.options?.min) {
+        return this.getDateFromOption(schema.options.min);
+      }
+    },
+    inputValue(): string | undefined {
+      const value = this.control.data;
+      const date = parseDateTime(
+        typeof value === "number" ? value.toString() : value,
+        this.formats
+      );
+      return date ? date.format(this.dateFormat) : value;
+    },
+    pickerValue: {
+      get(): string | undefined {
+        const value = this.control.data;
+        const date = parseDateTime(
+          typeof value === "number" ? value.toString() : value,
+          this.formats
+        );
+        // show only valid values
+        return date ? date.format("YYYY-MM-DD") : undefined;
+      },
+      set(val: string): void {
+        this.onPickerChange(val);
+      },
+    },
+    clearLabel(): string {
+      const label =
+        typeof this.appliedOptions.clearLabel == "string"
+          ? this.appliedOptions.clearLabel
+          : "Clear";
+
+      return this.t(label, label);
+    },
+    cancelLabel(): string {
+      const label =
+        typeof this.appliedOptions.cancelLabel == "string"
+          ? this.appliedOptions.cancelLabel
+          : "Cancel";
+
+      return this.t(label, label);
+    },
+    okLabel(): string {
+      const label =
+        typeof this.appliedOptions.okLabel == "string"
+          ? this.appliedOptions.okLabel
+          : "OK";
+      return this.t(label, label);
+    },
   },
   methods: {
-    onInput(newDate) {
-      try {
-         if (!this.formattedDate) {
-            this.selectedDate = null
-            this.handleChange(this.control.path, undefined)
-          }
-          else {
-            this.selectedDate = newDate
-            
-            if (this.minDate) {
-              const minDate = parse(this.minDate, this.defaultDateFormat, new Date())
-              if (this.parsedDate.getTime() < minDate.getTime()) {
-                this.selectedDate = this.minDate
-              }
-            }
-            
-            if (this.maxDate) {
-              const maxDate = parse(this.maxDate, this.defaultDateFormat, new Date())
-              if (this.parsedDate.getTime() > maxDate.getTime()) {
-                this.selectedDate = this.maxDate
-              }
-            }
-            
-            this.handleChange(this.control.path, this.formattedDate || undefined)
-          }
-      }
-      catch(e) {
-        // Let JsonForms validation handle the invalid datestring
-        this.handleChange(this.control.path, newDate)
-      }
-    },
-    getDateFromOption(option: string | { amount: number, unit: string }) {
+    getDateFromOption(option: MinMaxFormat) {
       if (option) {
-        if (typeof option === 'string' || option instanceof String) {
-          if (option === "today") {
-            const targetDate = new Date(Date.now())
-            return format(targetDate, DATE_FORMATS[this.dateFormat])
-          }
-        }
-        else if (option.unit && option.amount) {
-          const now = new Date(Date.now())
+        const now = dayjs();
 
-          if (option.unit === 'day') {
-            const targetDate = new Date(now.setDate(now.getDate() + option.amount))
-            // @ts-ignore
-            return format(targetDate, DATE_FORMATS[this.dateFormat], new Date())
+        if (typeof option === "string" || option instanceof String) {
+          if (option === "today") {
+            return now.format("YYYY-MM-DD");
           }
-          else if (option.unit === 'month') {
-            const targetDate = new Date(now.setMonth(now.getMonth() + option.amount))
-            // @ts-ignore
-            return format(targetDate, DATE_FORMATS[this.dateFormat], new Date())
-          }
-          else if (option.unit === 'year') {
-            const targetDate = new Date(now.setFullYear(now.getFullYear() + option.amount))
-            // @ts-ignore
-            return format(targetDate, DATE_FORMATS[this.dateFormat], new Date())
+        } else if (option.unit && option.amount) {
+          if (option.unit === "day") {
+            const targetDate = now.add(option.amount, "day");
+            return targetDate.format("YYYY-MM-DD");
+          } else if (option.unit === "month") {
+            const targetDate = now.add(option.amount, "month");
+            return targetDate.format("YYYY-MM-DD");
+          } else if (option.unit === "year") {
+            const targetDate = now.add(option.amount, "year");
+            return targetDate.format("YYYY-MM-DD");
           }
         }
       }
     },
-    select(dateTime: Date) {
-      const year = dateTime.getFullYear()
-      const month = (dateTime.getMonth() + 1).toString().padStart(2, '0')
-      const date = (dateTime.getDate()).toString().padStart(2, '0')
-      
-      this.selectedDate = `${year}-${month}-${date}`
-      this.handleChange(this.control.path, this.formattedDate)
+    onInputChange(value: string): void {
+      const date = parseDateTime(value, this.dateFormat);
+      let newdata: string | number = date
+        ? date.format(this.dateSaveFormat)
+        : value;
+      // if only numbers and the target is number type then convert (this will support when we want year as an integer/number)
+      if (
+        (this.control.schema.type === "integer" ||
+          this.control.schema.type === "number") &&
+        /^[\d]*$/.test(newdata)
+      ) {
+        newdata = parseInt(value, 10) || newdata;
+      }
+      if (this.adaptValue(newdata) !== this.control.data) {
+        // only invoke onChange when values are different since v-mask is also listening on input which lead to loop
+        this.onChange(newdata);
+      }
     },
-    onClear() {
-      this.selectedDate = null
-      this.handleChange(this.control.path, undefined)
-    }
-  },
-})
+    onPickerChange(value: string): void {
+      const date = parseDateTime(value, "YYYY-MM-DD");
+      let newdata: string | number = date
+        ? date.format(this.dateSaveFormat)
+        : value;
+      // check if is is only year and the target type is number or integer
+      if (
+        (this.control.schema.type === "integer" ||
+          this.control.schema.type === "number") &&
+        /^[\d]*$/.test(newdata)
+      ) {
+        newdata = parseInt(value, 10) || newdata;
+      }
+      this.onChange(newdata);
+    },
+    clear(): void {
+      this.mask = undefined;
+      this.onChange(null);
+    },
+    okHandler(): void {
+      (this.$refs.menu as any).save(this.pickerValue);
+      this.showMenu = false;
+    },
+    onYear(year: number): void {
+      if (this.pickerType === "year") {
+        this.pickerValue = `${year}`;
+      }
+    },
+    maskFunction(value: string): (string | RegExp)[] {
+      const format = this.dateFormat;
 
-export default controlRenderer
+      const parts = format.split(/([^YMD]*)(YYYY|YY|MMMM|MMM|MM|M|DD|D)/);
+
+      let index = 0;
+
+      let result: (string | RegExp)[] = [];
+      for (const part of parts) {
+        if (!part || part === "") {
+          continue;
+        }
+        if (index > value.length) {
+          break;
+        }
+        if (part == "YYYY") {
+          result.push(/[0-9]/);
+          result.push(/[0-9]/);
+          result.push(/[0-9]/);
+          result.push(/[0-9]/);
+          index += 4;
+        } else if (part == "YY") {
+          result.push(/[0-9]/);
+          result.push(/[0-9]/);
+          index += 2;
+        } else if (part == "M") {
+          result.push(/[1]/);
+          if (value.charAt(index) === "1") {
+            if (
+              value.charAt(index + 1) == "0" ||
+              value.charAt(index + 1) == "1" ||
+              value.charAt(index + 1) == "2"
+            ) {
+              result.push(/[0-2]/);
+              index += 1;
+            } else if (value.charAt(index + 1) === "") {
+              result.push(/[0-2]?/);
+            }
+          }
+          index += 1;
+        } else if (part == "MM") {
+          result.push(/[0-1]/);
+          result.push(value.charAt(index) === "0" ? /[1-9]/ : /[0-2]/);
+          index += 2;
+        } else if (part == "MMM") {
+          let increment = 0;
+          for (let position = 0; position <= 2; position++) {
+            let regex: string | undefined = undefined;
+            for (let i = 0; i <= 11; i++) {
+              const month = dayjs().month(i).format("MMM");
+              if (
+                value.charAt(index + position) === month.charAt(position) ||
+                value.charAt(index + position) === ""
+              ) {
+                if (regex === undefined) {
+                  regex = "(";
+                } else {
+                  regex += "|";
+                }
+                regex += month.charAt(position);
+              }
+            }
+            if (regex) {
+              regex += ")";
+              result.push(new RegExp(regex));
+              increment++;
+            } else {
+              break;
+            }
+          }
+          index += increment;
+        } else if (part == "MMMM") {
+          let increment = 0;
+          let maxLength = 0;
+          let months: string[] = [];
+
+          for (let i = 0; i <= 11; i++) {
+            const month = dayjs().month(i).format("MMMM");
+            months.push(month);
+            if (month.length > maxLength) {
+              maxLength = month.length;
+            }
+          }
+
+          for (let position = 0; position < maxLength; position++) {
+            let regex: string | undefined = undefined;
+            for (let i = 0; i <= 11; i++) {
+              const month = months[i];
+              if (
+                value.charAt(index + position) == month.charAt(position) ||
+                value.charAt(index + position) === ""
+              ) {
+                if (regex === undefined) {
+                  regex = "(";
+                } else {
+                  regex += "|";
+                }
+                regex += month.charAt(position);
+              }
+            }
+            if (regex) {
+              regex += ")";
+              result.push(new RegExp(regex));
+              increment++;
+            } else {
+              break;
+            }
+          }
+          index += increment;
+        } else if (part == "D") {
+          result.push(/[1-3]/);
+          if (
+            value.charAt(index) === "1" ||
+            value.charAt(index) === "2" ||
+            value.charAt(index) === "3"
+          ) {
+            if (value.charAt(index) === "3") {
+              if (
+                value.charAt(index + 1) === "0" ||
+                value.charAt(index + 1) === "1"
+              ) {
+                result.push(/[0-1]/);
+                index += 1;
+              } else if (value.charAt(index + 1) === "") {
+                result.push(/[0-1]?/);
+              }
+            } else {
+              if (
+                value.charAt(index + 1) === "0" ||
+                value.charAt(index + 1) === "1" ||
+                value.charAt(index + 1) === "2" ||
+                value.charAt(index + 1) === "3" ||
+                value.charAt(index + 1) === "4" ||
+                value.charAt(index + 1) === "5" ||
+                value.charAt(index + 1) === "6" ||
+                value.charAt(index + 1) === "7" ||
+                value.charAt(index + 1) === "8" ||
+                value.charAt(index + 1) === "9"
+              ) {
+                result.push(/[0-9]/);
+                index += 1;
+              } else if (value.charAt(index + 1) === "") {
+                result.push(/[0-9]?/);
+              }
+            }
+          }
+          index += 1;
+        } else if (part == "DD") {
+          result.push(/[0-3]/);
+          result.push(
+            value.charAt(index) === "3"
+              ? /[0-1]/
+              : value.charAt(index) === "0"
+              ? /[1-9]/
+              : /[0-9]/
+          );
+          index += 2;
+        } else {
+          result.push(part);
+          index += part.length;
+        }
+      }
+
+      return result;
+    },
+  },
+});
+
+export default controlRenderer;
 
 export const dateControlRenderer: JsonFormsRendererRegistryEntry = {
   renderer: controlRenderer,
-  tester: rankWith(3, isDateControl)
-}
+  tester: rankWith(3, isDateControl),
+};
 </script>
+
+<style lang="scss" scoped>
+.v-picker::v-deep {
+  border-radius: 0px;
+
+  .v-picker__title {
+    min-height: 102px;
+  }
+
+  .v-card__actions {
+    border-top: 1px solid #ddd;
+  }
+}
+</style>
