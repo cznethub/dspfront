@@ -28,7 +28,7 @@
             id="navbar-nav-home"
             to="/"
             :elevation="0"
-            active-class="is-active"
+            active-class="primary"
             >Home</v-btn
           >
           <v-btn
@@ -37,9 +37,14 @@
             v-bind="path.attrs"
             :id="`navbar-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
             :elevation="0"
-            active-class="is-active"
-            >{{ path.label }}</v-btn
+            active-class="primary"
+            :class="path.isActive && path.isActive() ? 'primary' : ''"
           >
+            {{ path.label }}
+            <v-icon v-if="path.isExternal" small class="ml-2" right
+              >mdi-open-in-new</v-icon
+            >
+          </v-btn>
         </v-card>
 
         <template v-if="!$vuetify.breakpoint.mdAndDown">
@@ -53,14 +58,27 @@
           <template v-else>
             <v-menu bottom left>
               <template v-slot:activator="{ on, attrs }">
-                <v-btn elevation="2" rounded v-bind="attrs" v-on="on">
+                <v-btn
+                  :color="
+                    $route.matched.some((p) => p.name === 'profile')
+                      ? 'primary'
+                      : ''
+                  "
+                  elevation="2"
+                  rounded
+                  v-bind="attrs"
+                  v-on="on"
+                >
                   <v-icon>mdi-account-circle</v-icon>
                   <v-icon>mdi-menu-down</v-icon>
                 </v-btn>
               </template>
 
               <v-list class="pa-0">
-                <v-list-item :to="{ path: '/profile' }">
+                <v-list-item
+                  :to="{ path: '/profile' }"
+                  active-class="primary white--text"
+                >
                   <v-list-item-icon class="mr-2">
                     <v-icon>mdi-account-circle</v-icon>
                   </v-list-item-icon>
@@ -117,7 +135,7 @@
             id="drawer-nav-home"
             @click="showMobileNavigation = false"
             to="/"
-            active-class="is-active"
+            active-class="primary white--text"
           >
             <v-icon class="mr-2">mdi-home</v-icon>
             <span>Home</span>
@@ -129,10 +147,14 @@
             :key="path.attrs.to || path.attrs.href"
             v-bind="path.attrs"
             @click="showMobileNavigation = false"
-            active-class="is-active"
+            active-class="primary white--text"
+            :class="path.isActive && path.isActive() ? 'primary' : ''"
           >
             <v-icon class="mr-2">{{ path.icon }}</v-icon>
             <span>{{ path.label }}</span>
+            <v-icon v-if="path.isExternal" small class="ml-2" right
+              >mdi-open-in-new</v-icon
+            >
           </v-list-item>
         </v-list-item-group>
 
@@ -260,7 +282,11 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { setupRouteGuards } from "./router";
 import { Subscription } from "rxjs";
-import { APP_NAME, DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from "./constants";
+import {
+  APP_NAME,
+  DEFAULT_TOAST_DURATION,
+  DISCOVERY_SITE_URL,
+} from "./constants";
 import { RawLocation } from "vue-router";
 import { EnumRepositoryKeys } from "./components/submissions/types";
 import CzNotification, { IDialog, IToast } from "./models/notifications.model";
@@ -344,11 +370,13 @@ export default class App extends Vue {
       attrs: { to: "/submit" },
       label: "Submit Data",
       icon: "mdi-book-plus",
+      isActive: () => this.$route.name === "register",
     },
     {
       attrs: { href: DISCOVERY_SITE_URL },
       label: "Discover Data",
       icon: "mdi-card-search",
+      isExternal: true,
     },
     { attrs: { to: "/about" }, label: "About", icon: "mdi-help" },
     {
@@ -548,11 +576,5 @@ export default class App extends Vue {
     border-radius: 0;
     height: 39px !important;
   }
-}
-
-.nav-items .v-btn.is-active,
-.mobile-nav-items .v-list-item.is-active {
-  background-color: #1976d2;
-  color: #fff;
 }
 </style>

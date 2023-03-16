@@ -37,7 +37,7 @@ export const routes: RouteConfig[] = [
     },
     children: [
       {
-        // name: 'account',
+        name: 'profile.account',
         path: 'account',
         components: {
           CzAccount
@@ -47,6 +47,7 @@ export const routes: RouteConfig[] = [
         },
       },
       {
+        name: 'profile.authorized-repositories',
         path: 'authorized-repositories',
         components: {
           CzAuthorizedRepositories
