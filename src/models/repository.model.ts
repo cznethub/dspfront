@@ -305,22 +305,22 @@ export default class Repository extends Model implements IRepository {
         let identifier = ''
         switch (this.entity) {
           case EnumRepositoryKeys.hydroshare:
-            identifier = response.data.identifier?.split('/').pop()
+            identifier = response.data.metadata.identifier?.split('/').pop()
             break
           case EnumRepositoryKeys.zenodo:
-            identifier = response.data.prereserve_doi?.recid
+            identifier = response.data.metadata.prereserve_doi?.recid
             break
           case EnumRepositoryKeys.earthchem:
-            identifier = response.data.id
+            identifier = response.data.metadata.id
             break
           case EnumRepositoryKeys.external:
-            identifier = response.data.identifier
+            identifier = response.data.metadata.identifier
             break
         }
 
         return {
           identifier,
-          formMetadata: response.data
+          formMetadata: response.data.metadata
         }
       }
     }

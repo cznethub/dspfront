@@ -102,7 +102,11 @@
         <v-btn text @click="showMenu = false">
           {{ cancelLabel }}
         </v-btn>
-        <v-btn text color="primary" @click="okHandler">
+        <v-btn
+          :disabled="!datePickerValue || !timePickerValue"
+          color="primary"
+          @click="okHandler"
+        >
           {{ okLabel }}
         </v-btn>
       </v-card-actions>

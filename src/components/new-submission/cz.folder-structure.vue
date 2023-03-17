@@ -80,7 +80,11 @@
             Cut
           </v-tooltip>
 
-          <v-tooltip v-if="!isReadOnly && !isPublished" bottom transition="fade">
+          <v-tooltip
+            v-if="!isReadOnly && !isPublished"
+            bottom
+            transition="fade"
+          >
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 @click="paste"
@@ -313,7 +317,15 @@
                         </div>
                       </v-menu>
                     </v-col>
-                    <v-col v-if="active && !item.isDisabled && canRename && !isReadOnly && !isPublished">
+                    <v-col
+                      v-if="
+                        active &&
+                        !item.isDisabled &&
+                        canRename &&
+                        !isReadOnly &&
+                        !isPublished
+                      "
+                    >
                       <template>
                         <v-btn
                           v-if="!item.isRenaming"
@@ -376,7 +388,10 @@
         </div>
       </v-card>
 
-      <div v-else-if="isReadOnly" class="pa-2 text-body-1 text--secondary">
+      <div
+        v-else-if="isReadOnly || !rootDirectory.children.length"
+        class="pa-2 text-body-1 text--secondary"
+      >
         No files have been included in this submission
       </div>
 
@@ -546,7 +561,9 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
 
   protected get canRename() {
     return (
-      !(this.isEditMode && !this.canRenameUploadedFiles) && !this.isReadOnly && !this.isPublished
+      !(this.isEditMode && !this.canRenameUploadedFiles) &&
+      !this.isReadOnly &&
+      !this.isPublished
     );
   }
 

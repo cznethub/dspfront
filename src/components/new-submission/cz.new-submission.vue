@@ -496,7 +496,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     } else {
       this.repositoryRecord = response.metadata;
       if (response.published) {
-        this.isPublished = true;
+        // External submissions are marked as published, but we can still edit them
+        this.isPublished = this.activeRepository.entity !== EnumRepositoryKeys.external;
       }
       this.wasUnauthorized = false;
     }
