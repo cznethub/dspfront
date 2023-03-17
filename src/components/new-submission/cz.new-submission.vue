@@ -496,8 +496,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     } else {
       this.repositoryRecord = response.metadata;
       if (response.published) {
-        // External submissions are marked as published, but we can still edit them
-        this.isPublished = this.activeRepository.entity !== EnumRepositoryKeys.external;
+        if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
+          this.isPublished = this.repositoryRecord.status === "published";
+        } else {
+          this.isPublished = true;
+        }
       }
       this.wasUnauthorized = false;
     }
@@ -511,12 +514,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 
       // For earthchem, check if the submission can no longer be modified
       if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
-        if (
-          this.repositoryRecord.status &&
-          this.repositoryRecord.status !== "incomplete"
-        ) {
-          this.isReadOnly = true;
-        }
+        const status = this.repositoryRecord.status;
+        this.isReadOnly =
+          status === "submitted" ||
+          status === "rejected" ||
+          status === "archived";
       }
 
       console.info("CzNewSubmission: reading existing files...");
