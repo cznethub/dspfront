@@ -98,13 +98,15 @@ export default class HydroShare extends Repository {
 
       // HydroShare replaces spaces with '_' when uploading files. We must update the name here with their changes.
       filesToUpload.map((f, index) => {
-        if (response[index].status === 'fulfilled') {
-          // @ts-ignore
-          f.name = (response[index]).value.data.file_name
+        // @ts-ignore
+        const uploadedFileName = (response[index]).value.data.file_name;
+        if (response[index].status === 'fulfilled' && uploadedFileName) {
+          f.name = uploadedFileName
           f.isUploaded = true
         }
         else {
           // Uplaod failed for this file
+          response[index].status = 'rejected';  // TODO: (bug) HydroShare erroneously sends status 'fulfilled' if upload failed because file was too big
           f.parent.children = f.parent.children.filter(file => file.name !== f.name)
         }
       })
