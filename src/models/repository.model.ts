@@ -382,7 +382,7 @@ export default class Repository extends Model implements IRepository {
       const response = await axios.get(`/api/metadata/${repository}/${identifier}`, {
         params: { "access_token": User.$state.orcidAccessToken },
       })
-      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data, repository, identifier) })
+      await Submission.insertOrUpdate({ data: Submission.getInsertData(response.data.metadata, repository, identifier) })
       CzNotification.toast({
         message: 'Your submission has been reloaded with its latest changes',
         type: 'success'
@@ -556,7 +556,7 @@ export default class Repository extends Model implements IRepository {
           `/api/json/${repository}/${identifier}`, 
           { params: { "access_token": User.$state.orcidAccessToken } 
         })
-  
+
         if (response.status === 200) {
           return response.data
         }

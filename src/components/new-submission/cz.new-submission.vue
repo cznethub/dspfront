@@ -33,6 +33,22 @@
     </v-alert>
 
     <v-alert
+      v-if="!isLoading && isPublished"
+      class="text-subtitle-1 my-8"
+      border="left"
+      colored-border
+      type="warning"
+      icon="mdi-pencil-off"
+      elevation="2"
+    >
+      This resource is published and is not editable in the Data Submission
+      Portal. If you need to modify this resource, navigate to the resource in
+      the repository where it is hosted and modify it there (if possible). You
+      can refresh the metadata for this resource by clicking the "Update Record"
+      button on the My Submissions page.
+    </v-alert>
+
+    <v-alert
       class="my-8"
       outlined
       v-if="isReadOnly"
@@ -52,6 +68,7 @@
       v-if="!isLoading && wasLoaded"
       :isEditMode="isEditMode"
       :isReadOnly="isReadOnly"
+      :isPublished="isPublished"
       :isDevMode="isDevMode"
       :isSaving="isSaving"
       :confirmText="submitText"
@@ -72,6 +89,7 @@
           v-model="uploads"
           @upload="uploadFiles($event)"
           :isReadOnly="isReadOnly"
+          :isPublished="isPublished"
           :rootDirectory.sync="rootDirectory"
           :repoMetadata="repoMetadata[repositoryKey]"
           :isEditMode="isEditMode"
@@ -82,9 +100,9 @@
           v-if="wasLoaded"
           :ajv="ajv"
           @change="onChange"
-          :disabled="isSaving"
+          :disabled="isSaving || isPublished"
           :data="data"
-          :readonly="isReadOnly"
+          :readonly="isReadOnly || isSaving || isPublished"
           :renderers="Object.freeze(renderers)"
           :schema="schema"
           :uischema="uischema"
@@ -105,6 +123,7 @@
         v-if="!isLoading && wasLoaded"
         :isEditMode="isEditMode"
         :isReadOnly="isReadOnly"
+        :isPublished="isPublished"
         :isDevMode="isDevMode"
         :isSaving="isSaving"
         :confirmText="submitText"
@@ -314,6 +333,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   protected ajv = customAjv;
   protected isReadOnly = false;
   protected wasUnauthorized = false;
+  protected isPublished = false;
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined;
@@ -429,7 +449,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     const response =
       this.$route.query.mode === "register"
         ? this.registeringSubmission
-          ? { ...this.registeringSubmission } // Load it from persistent state if we have it
+          ? { metadata: this.registeringSubmission } // Load it from persistent state if we have it
           : await Repository.readExistingSubmission(
               this.identifier,
               this.repositoryKey
@@ -474,7 +494,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
         },
       });
     } else {
-      this.repositoryRecord = response;
+      this.repositoryRecord = response.metadata;
+      if (response.published) {
+        this.isPublished = true;
+      }
       this.wasUnauthorized = false;
     }
 
@@ -568,7 +591,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   }
 
   private async _onSaveAndFinish() {
-    if (this.isReadOnly) {
+    if (this.isReadOnly || this.isPublished) {
       this.$router.push({ name: "submissions" });
       return;
     }
