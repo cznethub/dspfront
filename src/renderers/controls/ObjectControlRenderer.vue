@@ -63,14 +63,14 @@
       </div>
     </fieldset>
 
-    <div v-if="control.errors || description">
+    <div v-if="cleanedErrors || description">
       <div class="text--secondary text-body-1 ml-2">{{ description }}</div>
       <div
-        v-if="control.errors"
+        v-if="cleanedErrors"
         class="ml-2 v-messages error--text"
         :class="styles.control.error"
       >
-        {{ control.errors }}
+        {{ cleanedErrors }}
       </div>
     </div>
   </div>
@@ -166,6 +166,10 @@ const controlRenderer = defineComponent({
     },
     description(): string {
       return this.control.description || this.appliedOptions.description || "";
+    },
+    cleanedErrors() {
+      // @ts-ignore
+      return this.control.errors.replaceAll(`is a required property`, ``);
     },
     hasToggle() {
       // @ts-ignore

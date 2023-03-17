@@ -392,7 +392,7 @@
         v-else-if="isReadOnly || !rootDirectory.children.length"
         class="pa-2 text-body-1 text--secondary"
       >
-        No files have been included in this submission
+        No files have been included in this submission.
       </div>
 
       <v-alert
