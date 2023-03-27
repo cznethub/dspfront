@@ -27,7 +27,7 @@
           <div class="has-text-shadow has-text-white text-h6 mb-2">
             Looking for CZNet data?
           </div>
-          <v-btn color="white" outlined :href="discoverySiteUrl">
+          <v-btn color="white" :href="discoverySiteUrl">
             Visit our data discovery portal
           </v-btn>
         </div>
