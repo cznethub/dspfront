@@ -61,6 +61,7 @@
         >
           <v-text-field
             v-model.trim="url"
+            ref="txtIdentifier"
             :disabled="isFetching"
             :required="true"
             :rules="[isValidUrlOrIdentifier()]"
@@ -322,7 +323,7 @@
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
+import { Component, Watch } from "vue-property-decorator";
 import { repoMetadata } from "@/components/submit/constants";
 import { EnumRepositoryKeys, IRepository } from "../submissions/types";
 import { mixins } from "vue-class-component";
@@ -376,6 +377,14 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
     }
 
     return this.url; // default
+  }
+
+  @Watch('step')
+  onStepChange(currentStep, previousStep) {
+    if (currentStep === 2) {
+      // @ts-ignore
+      this.$refs.txtIdentifier?.focus()
+    }
   }
 
   created() {
