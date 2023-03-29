@@ -9,6 +9,7 @@ import Zenodo from './models/zenodo.model'
 import External from './models/external.model'
 import CzNotification from './models/notifications.model'
 import EarthChem from './models/earthchem.model'
+import { isRepositoryAuthorized } from './renderers/styles'
 
 export const router = new VueRouter({
   mode: 'history',
@@ -47,20 +48,11 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   // hasAccessTokenGuard
   (to, from?): RawLocation | null => {
     if (to.meta?.hasAccessTokenGuard) {
-      let activeRepository: typeof Repository | null = null
-      const repo = to.params.repository
-
-      switch (repo) {
-        case EnumRepositoryKeys.hydroshare: activeRepository = HydroShare; break;
-        case EnumRepositoryKeys.zenodo: activeRepository = Zenodo; break;
-        case EnumRepositoryKeys.earthchem: activeRepository = EarthChem; break;
-        case EnumRepositoryKeys.external: activeRepository = External; break;
-      }
-
-      if (activeRepository !== External && !(activeRepository?.$state.accessToken)) {
-        Repository.openAuthorizeDialog(repo, { path: to.path })
+      if (!isRepositoryAuthorized(to.params.repository, false)) {
+        Repository.openAuthorizeDialog(to.params.repository, { path: to.path })
         return from
       }
+
     }
 
     return null

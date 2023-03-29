@@ -25,3 +25,10 @@ export function getRepositoryFromKey(key: string): typeof Repository | undefined
     case EnumRepositoryKeys.external: return External
   }
 }
+
+export const supportedRepositoryModels: { [key: string]: typeof Repository } = {
+  [EnumRepositoryKeys.hydroshare]: HydroShare,
+  [EnumRepositoryKeys.earthchem]: EarthChem,
+  [EnumRepositoryKeys.zenodo]: Zenodo,
+  [EnumRepositoryKeys.external]: External,
+}
