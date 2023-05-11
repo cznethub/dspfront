@@ -14,7 +14,7 @@
     "noImplicitAny": false,
     "skipLibCheck": true,
     "baseUrl": ".",
-    "types": ["webpack-env", "node"],
+    "types": ["webpack-env", "node", "cypress"],
     "paths": {
       "@/*": ["src/*"]
     },
