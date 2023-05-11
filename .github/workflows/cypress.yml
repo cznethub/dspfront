@@ -47,12 +47,17 @@ jobs:
           name: build
           path: dist
 
-      - name: Cypress run
+      - name: Cypress run component tests
+        uses: cypress-io/github-action@v5
+        with:
+          command: npm run cypress:run-component
+
+      - name: Cypress run e2e tests
         uses: cypress-io/github-action@v5
         with:
           start: npx serve -s dist -p 8080
           wait-on: 'http://localhost:8080'
           browser: chrome
-          command: npm run cypress:run-component
+          command: npm run cypress:run-e2e
         # or install start-server-and-test and do:
-        # run: npm run test-component
+        # run: npm run test-e2e
