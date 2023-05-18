@@ -84,7 +84,7 @@ import {
   rendererProps,
   RendererProps,
   useJsonFormsControl,
-} from "@jsonforms/vue2";
+} from "@jsonforms/vue";
 import dayjs from "dayjs";
 import {
   parseDateTime,

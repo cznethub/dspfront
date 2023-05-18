@@ -57,7 +57,7 @@
           <v-icon>mdi-clock-outline</v-icon>
         </v-tab>
 
-        <v-tab-item value="date"
+        <v-window-item value="date"
           ><v-date-picker
             v-if="showMenu"
             v-model="datePickerValue"
@@ -66,8 +66,8 @@
             @input="activeTab = 'time'"
           >
           </v-date-picker>
-        </v-tab-item>
-        <v-tab-item value="time"
+        </v-window-item>
+        <v-window-item value="time"
           ><v-time-picker
             v-model="timePickerValue"
             ref="timePicker"
@@ -75,7 +75,7 @@
             :use-seconds="useSeconds"
             format="ampm"
           ></v-time-picker>
-        </v-tab-item>
+        </v-window-item>
       </v-tabs>
       <v-row no-gutters v-else>
         <v-col min-width="290px" cols="auto">
@@ -126,7 +126,7 @@ import {
   rendererProps,
   RendererProps,
   useJsonFormsControl,
-} from "@jsonforms/vue2";
+} from "@jsonforms/vue";
 import {
   parseDateTime,
   useTranslator,
@@ -194,7 +194,7 @@ const controlRenderer = defineComponent({
         : "mdi-calendar-clock";
     },
     useTabLayout(): boolean {
-      if (this.$vuetify.breakpoint.smAndDown) {
+      if (this.$vuetify.display.smAndDown) {
         return true;
       }
       return false;

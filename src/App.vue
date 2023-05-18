@@ -14,7 +14,7 @@
       >
         <router-link :to="{ path: `/` }" class="logo">
           <img
-            :src="require('@/assets/img/CZN_Logo.png')"
+            src="@/assets/img/CZN_Logo.png"
             alt="Critical Zone Network home"
           />
         </router-link>
@@ -22,7 +22,7 @@
         <v-card
           class="nav-items has-space-right d-flex"
           :elevation="2"
-          v-if="!$vuetify.breakpoint.mdAndDown"
+          v-if="!$vuetify.display.mdAndDown"
         >
           <v-btn
             id="navbar-nav-home"
@@ -47,7 +47,7 @@
           </v-btn>
         </v-card>
 
-        <template v-if="!$vuetify.breakpoint.mdAndDown">
+        <template v-if="!$vuetify.display.mdAndDown">
           <v-btn
             id="navbar-login"
             v-if="!isLoggedIn"
@@ -79,9 +79,9 @@
                   :to="{ path: '/profile' }"
                   active-class="primary white--text"
                 >
-                  <v-list-item-icon class="mr-2">
+                  <v-list-item class="mr-2">
                     <v-icon>mdi-account-circle</v-icon>
-                  </v-list-item-icon>
+                  </v-list-item>
 
                   <v-list-item-content>
                     <v-list-item-title>Account & Settings</v-list-item-title>
@@ -91,9 +91,9 @@
                 <v-divider></v-divider>
 
                 <v-list-item id="navbar-logout" @click="logOut()">
-                  <v-list-item-icon class="mr-2">
+                  <v-list-item class="mr-2">
                     <v-icon>mdi-logout</v-icon>
-                  </v-list-item-icon>
+                  </v-list-item>
 
                   <v-list-item-content>
                     <v-list-item-title>Log Out</v-list-item-title>
@@ -106,7 +106,7 @@
 
         <v-app-bar-nav-icon
           @click.stop="showMobileNavigation = true"
-          v-if="$vuetify.breakpoint.mdAndDown"
+          v-if="$vuetify.display.mdAndDown"
         />
       </v-container>
     </v-app-bar>
@@ -279,7 +279,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-facing-decorator";
 import { setupRouteGuards } from "./router";
 import { Subscription } from "rxjs";
 import {
@@ -300,6 +300,9 @@ import Submission from "./models/submission.model";
 import Repository from "./models/repository.model";
 import External from "./models/external.model";
 import EarthChem from "./models/earthchem.model";
+// import fontawesome from '@fortawesome/fontawesome'
+import { library } from '@fortawesome/fontawesome-svg-core'
+// import regular from '@fortawesome/free-regular-svg-icons'
 
 const INITIAL_DIALOG = {
   title: "",
@@ -370,7 +373,7 @@ export default class App extends Vue {
       attrs: { to: "/submit" },
       label: "Submit Data",
       icon: "mdi-book-plus",
-      isActive: () => this.$route.name === "register",
+      // isActive: () => this.$route.name === "register",
     },
     {
       attrs: { href: DISCOVERY_SITE_URL },
@@ -391,7 +394,9 @@ export default class App extends Vue {
   }
 
   protected get isSafari(): boolean {
-    return this.$browserDetect.isSafari;
+    // return this.$browserDetect.isSafari;
+    // TODO: fix browser detect
+    return false
   }
 
   mounted() {
@@ -507,7 +512,7 @@ export default class App extends Vue {
 
     // Guards are setup after checking authorization and loading access tokens
     // because they depend on user logged in status
-    setupRouteGuards();
+    // setupRouteGuards();
 
     this.isLoading = false;
   }

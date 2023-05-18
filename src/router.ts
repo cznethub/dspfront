@@ -1,7 +1,7 @@
 import { routes } from './routes'
 import { EnumRepositoryKeys } from './components/submissions/types'
 import { APP_NAME } from './constants'
-import VueRouter, { RawLocation } from 'vue-router'
+import { createRouter, createWebHistory} from 'vue-router'
 import User from './models/user.model'
 import HydroShare from './models/hydroshare.model'
 import Repository from './models/repository.model'
@@ -11,8 +11,8 @@ import CzNotification from './models/notifications.model'
 import EarthChem from './models/earthchem.model'
 import { isRepositoryAuthorized } from './renderers/styles'
 
-export const router = new VueRouter({
-  mode: 'history',
+export const router = createRouter({
+  history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
     document.getElementsByTagName('html')[0]?.scrollTo({ left: 0, top: 0})

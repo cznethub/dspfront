@@ -91,7 +91,7 @@ import {
   rendererProps,
   RendererProps,
   useJsonFormsControlWithDetail,
-} from "@jsonforms/vue2";
+} from "@jsonforms/vue";
 import cloneDeep from "lodash/cloneDeep";
 import { useNested, useVuetifyControl } from "@/renderers/util/composition";
 import { defineComponent, ref } from "vue";

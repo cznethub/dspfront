@@ -91,7 +91,7 @@ import {
   isStringControl
 } from '@jsonforms/core'
 import { defineComponent } from 'vue'
-import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
+import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue'
 import { useVuetifyControl } from '@/renderers/util/composition';
 import isArray from 'lodash/isArray';
 import every from 'lodash/every';

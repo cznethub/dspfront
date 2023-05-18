@@ -1,6 +1,6 @@
 <template>
   <v-card class="cz-authorize d-flex flex-column flex-md-row"
-    :class="{ 'is-medium': $vuetify.breakpoint.mdAndUp }">
+    :class="{ 'is-medium': $vuetify.display.mdAndUp }">
     <v-card class="d-flex flex-column darken-2" color="blue-grey" rounded="0">
       <v-card-title class="white--text">
         <v-icon color="white" class="mr-4">mdi-alert-circle</v-icon>
@@ -32,8 +32,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator'
-  import { mixins } from 'vue-class-component'
+  import { Component, Prop, Vue } from 'vue-facing-decorator'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import { getRepositoryFromKey } from '@/constants'
   import Repository from '@/models/repository.model'
@@ -41,8 +40,9 @@
   @Component({
     name: 'cz-authorize',
     components: { },
+    mixins: [ActiveRepositoryMixin]
   })
-  export default class CzAuthorize extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  export default class CzAuthorize extends Vue {
     @Prop() repo!: string
 
     protected get repository() {

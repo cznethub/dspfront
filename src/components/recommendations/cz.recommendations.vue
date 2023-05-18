@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-facing-decorator'
 
   @Component({
     name: 'cz-recommendations',

@@ -1,6 +1,5 @@
-import Vue from 'vue'
 import Repository from '@/models/repository.model'
-import { Component } from 'vue-property-decorator'
+import { Component, Vue } from 'vue-facing-decorator'
 import { EnumRepositoryKeys, IRepository } from '@/components/submissions/types'
 import { Subscription } from "rxjs"
 import { getRepositoryFromKey } from '@/constants'

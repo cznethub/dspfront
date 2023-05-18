@@ -158,7 +158,7 @@
         <v-card-text class="files-container" style="height: 15rem">
           <v-row class="flex-grow-1">
             <v-col
-              :cols="$vuetify.breakpoint.smAndUp ? 9 : 11"
+              :cols="$vuetify.display.smAndUp ? 9 : 11"
               v-click-outside="{ handler: onClickOutside, include }"
             >
               <v-treeview
@@ -344,7 +344,7 @@
                 </template>
               </v-treeview>
             </v-col>
-            <v-col cols="3" v-if="$vuetify.breakpoint.smAndUp"></v-col>
+            <v-col cols="3" v-if="$vuetify.display.smAndUp"></v-col>
           </v-row>
         </v-card-text>
         <v-divider></v-divider>
@@ -438,9 +438,8 @@
 
 <script lang="ts">
 import CzNotification from "@/models/notifications.model";
-import { Component, Watch, Prop } from "vue-property-decorator";
+import { Component, Watch, Prop, Vue } from "vue-facing-decorator";
 import { IFolder, IFile } from "@/components/new-submission/types";
-import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
 import { IRepository } from "../submissions/types";
 
@@ -448,10 +447,9 @@ import { IRepository } from "../submissions/types";
   name: "cz-folder-structure",
   components: {},
   filters: {},
+  mixins: [ActiveRepositoryMixin]
 })
-export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
+export default class CzFolderStructure extends Vue {
   @Prop({ default: false }) repoMetadata!: IRepository;
   @Prop({ default: false }) isEditMode!: boolean;
   @Prop({ default: false }) isReadOnly!: boolean;

@@ -261,12 +261,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Ref } from "vue-property-decorator";
-import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2";
+import { Component, Ref , Vue} from "vue-facing-decorator";
+import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue";
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core";
 import { CzRenderers } from "@/renderers/renderer.vue";
 import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types";
-import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
 import { repoMetadata } from "../submit/constants";
 import { IFile, IFolder } from "@/components/new-submission/types";
@@ -287,7 +286,7 @@ const renderers = [
   // ...vanillaRenderers,
   ...CzRenderers,
 ];
-const sprintf = require("sprintf-js").sprintf;
+// const sprintf = require("sprintf-js").sprintf;
 const customAjv = createAjv({ allErrors: true });
 ajvErrors(customAjv);
 
@@ -299,10 +298,9 @@ ajvErrors(customAjv);
     CzFolderStructure,
     CzNewSubmissionActions,
   },
+  mixins: [ActiveRepositoryMixin]
 })
-export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
+export default class CzNewSubmission extends Vue {
   @Ref("form") jsonForm!: typeof JsonForms;
   @Ref("folderStructure") folderStructure!: InstanceType<
     typeof CzFolderStructure

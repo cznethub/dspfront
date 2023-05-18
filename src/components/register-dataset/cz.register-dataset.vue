@@ -110,7 +110,7 @@
           <div class="table-item">
             <table
               class="text-body-1"
-              :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+              :class="{ 'is-xs-small': $vuetify.display.xs }"
             >
               <tr>
                 <td colspan="2" class="text-h6 title">
@@ -125,7 +125,7 @@
           >
             <table
               class="text-body-1"
-              :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+              :class="{ 'is-xs-small': $vuetify.display.xs }"
             >
               <tr>
                 <th class="pr-4 body-2 text-right">
@@ -182,7 +182,7 @@
             >
               <table
                 class="text-body-1"
-                :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+                :class="{ 'is-xs-small': $vuetify.display.xs }"
               >
                 <tr>
                   <td colspan="2" class="text-h6 title">
@@ -323,10 +323,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch } from "vue-property-decorator";
+import { Component, Watch, Vue } from "vue-facing-decorator";
 import { repoMetadata } from "@/components/submit/constants";
 import { EnumRepositoryKeys, IRepository } from "../submissions/types";
-import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
 import Repository from "@/models/repository.model";
 import Submission from "@/models/submission.model";
@@ -336,10 +335,9 @@ import CzNotification from "@/models/notifications.model";
 @Component({
   name: "cz-register-dataset",
   components: {},
+  mixins: [ActiveRepositoryMixin]
 })
-export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
+export default class CzRegisterDataset extends Vue {
   protected url = "";
   protected step = 1;
   protected selectedRepository: IRepository | null = null;

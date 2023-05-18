@@ -2,7 +2,7 @@
   <div class="cz-submit">
     <template v-if="isInSubmitLandingPage">
       <div class="banner text-center"
-        :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.35), rgba(28, 37, 65, 0.3)), url(' + require('@/assets/img/bg-1.jpg') + ')' }">
+        :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.35), rgba(28, 37, 65, 0.3)), url(' + '/src/assets/img/bg-1.jpg' + ')' }">
         <div>
           <div class="has-text-white text-h2 has-text-shadow">Submit Data</div>
           <div class="has-text-white mt-4 has-space-bottom text-h4 has-text-shadow">Not sure which repository to use?</div>
@@ -34,10 +34,9 @@
 </template>
 
 <script lang="ts">
-  import { Component, Ref } from 'vue-property-decorator'
+  import { Component, Ref, Vue } from 'vue-facing-decorator'
   import { repoMetadata } from '@/components/submit/constants'
   import { IRepository } from '../submissions/types'
-  import { mixins } from 'vue-class-component'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import CzRepositorySubmitCard from '@/components/submit/cz.repository-submit-card.vue'
   import CzRegisterDatasetDialog from '@/components/register-dataset/cz.register-dataset-dialog.vue'
@@ -45,8 +44,9 @@
   @Component({
     name: 'cz-submit',
     components: { CzRepositorySubmitCard, CzRegisterDatasetDialog },
+    mixins: [ActiveRepositoryMixin]
   })
-  export default class CzSubmit extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  export default class CzSubmit extends Vue {
     @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<typeof CzRegisterDatasetDialog>
 
     protected get repoCollection(): IRepository[] {

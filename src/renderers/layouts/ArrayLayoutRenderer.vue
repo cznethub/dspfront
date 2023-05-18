@@ -36,7 +36,7 @@
               :key="`${control.path}-${index}`"
               :class="styles.arrayList.item"
             >
-              <v-expansion-panel-header :class="styles.arrayList.itemHeader">
+              <v-expansion-panel-title :class="styles.arrayList.itemHeader">
                 <v-container py-0>
                   <v-row>
                     <v-col v-if="!hideAvatar" align-self="center" px-0 class="flex-grow-0">
@@ -64,7 +64,7 @@
                             text
                             elevation="0"
                             small
-                            class="v-expansion-panel-header__icon"
+                            class="v-expansion-panel-title__icon"
                             aria-label="Move up"
                             :disabled="index <= 0 || !control.enabled"
                             :class="styles.arrayList.itemMoveUp"
@@ -89,7 +89,7 @@
                             text
                             elevation="0"
                             small
-                            class="v-expansion-panel-header__icon"
+                            class="v-expansion-panel-title__icon"
                             aria-label="Move down"
                             :disabled="
                               index >= control.data.length - 1 ||
@@ -113,7 +113,7 @@
                             text
                             elevation="0"
                             small
-                            class="v-expansion-panel-header__icon"
+                            class="v-expansion-panel-title__icon"
                             aria-label="Delete"
                             :class="styles.arrayList.itemDelete"
                             :disabled="
@@ -133,8 +133,8 @@
                     </v-col>
                   </v-row>
                 </v-container>
-              </v-expansion-panel-header>
-              <v-expansion-panel-content :class="styles.arrayList.itemContent" class="pa-0 pt-4">
+              </v-expansion-panel-title>
+              <v-expansion-panel-text :class="styles.arrayList.itemContent" class="pa-0 pt-4">
                 <dispatch-renderer
                   :schema="control.schema"
                   :uischema="foundUISchema"
@@ -143,7 +143,7 @@
                   :renderers="control.renderers"
                   :cells="control.cells"
                 />
-              </v-expansion-panel-content>
+              </v-expansion-panel-text>
             </v-expansion-panel>
           </v-expansion-panels>
         </v-row>
@@ -209,7 +209,7 @@ import {
   useJsonFormsArrayControl,
   RendererProps,
   useJsonFormsControl,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue';
 import { useNested, useVuetifyArrayControl, useVuetifyControl } from '@/renderers/util/composition';
 import {
   VCard,
@@ -229,9 +229,9 @@ import {
   VSpacer,
   VExpansionPanels,
   VExpansionPanel,
-  VExpansionPanelHeader,
-  VExpansionPanelContent,
-} from 'vuetify/lib';
+  VExpansionPanelTitle,
+  VExpansionPanelText,
+} from 'vuetify/components';
 import ValidationBadge from '@/renderers/controls/components/ValidationBadge.vue';
 import ValidationIcon from '@/renderers/controls/components/ValidationIcon.vue';
 import { ErrorObject } from 'ajv';
@@ -258,8 +258,8 @@ const controlRenderer = defineComponent({
     VSpacer,
     VExpansionPanels,
     VExpansionPanel,
-    VExpansionPanelHeader,
-    VExpansionPanelContent,
+    VExpansionPanelTitle,
+    VExpansionPanelText,
     VContainer,
     ValidationIcon,
     ValidationBadge,

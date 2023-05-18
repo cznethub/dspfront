@@ -8,8 +8,8 @@
 
     <v-stepper v-model="currentStepIndex" flat outlined>
       <v-stepper-header>
-        <template v-for="(step, index) in steps">
-          <v-stepper-step :key="`${index}-step`"
+        <template v-for="(step, index) in steps" :key="`${index}-step`">
+          <v-stepper-step
             :complete="currentStepIndex > index" :step="index" editable edit-icon="mdi-check">
             <div>{{ step.next || 'Recommendations' }}</div>
             <v-chip v-if="step.selectedOption" class="mt-2" color="success">{{ step.selectedOption.label }}</v-chip>
@@ -88,16 +88,16 @@
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-facing-decorator'
   import { EnumRepositoryKeys, IRepository } from '../submissions/types'
   import { repoMetadata } from '@/components/submit/constants'
-  import { mixins } from 'vue-class-component'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import { EnumDataTemplateType } from '@/components/recommendations/types'
   import { guideUrls } from '@/components/recommendations/constants'
   import CzRecommendationCard from '@/components/recommendations/cz.recommendation-card.vue'
 
-  const mappings: CzStep = require('@/components/recommendations/mapping.json')
+  // const mappings: CzStep = require('@/components/recommendations/mapping.json')
+  import * as mappings from './mapping.json'
 
   interface CzStep {
     next?: string,  // The question that must be answered to continue
@@ -113,8 +113,9 @@
   @Component({
     name: 'cz-recommendations-questionnaire',
     components: { CzRecommendationCard },
+    mixins: [ActiveRepositoryMixin]
   })
-  export default class CzRecommendationsQuestionnaire extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  export default class CzRecommendationsQuestionnaire extends Vue {
     protected currentStepIndex = 0
     protected steps: CzStep[] = [mappings]
     protected selectedOption: CzStep | null = null

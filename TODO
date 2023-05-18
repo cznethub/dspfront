@@ -1,0 +1,12 @@
+TODO
+vuex orm -> pinia
+replace vue-facing-decorator -> composables
+re-enable sprintf
+fontawesome
+fix broken asset links --- bg-3.jpg on home, about page
+browserDetect
+enable routerGuards
+
+https://vuetifyjs.com/en/getting-started/upgrade-guide/
+v-list-item-group has been removed, just add value to list items to make them selectable and bind 
+v-list-item-content has been removed, lists use CSS grid for layout now instead.

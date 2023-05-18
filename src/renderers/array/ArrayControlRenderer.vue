@@ -190,7 +190,7 @@ import {
   useJsonFormsArrayControl,
   RendererProps,
   useJsonFormsControl,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue';
 import { useVuetifyArrayControl, useVuetifyControl } from '@/renderers/util/composition';
 import {
   VCard,
@@ -207,7 +207,7 @@ import {
   VAvatar,
   VSpacer,
   VSimpleTable,
-} from 'vuetify/lib';
+} from 'vuetify/components';
 import ValidationBadge from '@/renderers/controls/components/ValidationBadge.vue';
 import ValidationIcon from '@/renderers/controls/components/ValidationIcon.vue';
 import { isEqual } from 'lodash';

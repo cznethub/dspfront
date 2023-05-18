@@ -33,7 +33,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-facing-decorator'
   import { APP_NAME } from '@/constants';
   import User from '@/models/user.model'
 

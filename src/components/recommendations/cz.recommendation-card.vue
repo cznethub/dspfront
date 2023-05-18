@@ -34,16 +34,16 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop } from 'vue-property-decorator'
+  import { Component, Prop, Vue } from 'vue-facing-decorator'
   import { IRepository } from '../submissions/types'
-  import { mixins } from 'vue-class-component'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
   @Component({
     name: 'cz-recommendation-card',
     components: { },
+    mixins: [ActiveRepositoryMixin]
   })
-  export default class CzRecommendationCard extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  export default class CzRecommendationCard extends Vue {
     @Prop({ required: true }) repo!: IRepository
     @Prop() hideLogo!: boolean
   }

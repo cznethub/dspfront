@@ -33,7 +33,7 @@ import {
   rendererProps,
   RendererProps,
   useJsonFormsLayout
-} from "@jsonforms/vue2";
+} from "@jsonforms/vue";
 import { useVuetifyLayout } from "@/renderers/util/composition";
 
 const layoutRenderer = defineComponent({

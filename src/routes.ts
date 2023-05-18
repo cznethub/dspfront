@@ -170,7 +170,9 @@ export const routes: RouteConfig[] = [
     },
   },
   {
-    path: '*',
+    // https://router.vuejs.org/guide/migration/#removed-star-or-catch-all-routes
+    name: 'not-found',
+    path: '/:pathMatch(.*)*',
     redirect: '/',
   },
 ]

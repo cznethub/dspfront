@@ -90,7 +90,7 @@
 
 <script lang="ts">
 import { ErrorObject } from "ajv";
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop } from "vue-facing-decorator";
 
 @Component({
   name: "cz-new-submission-actions",
