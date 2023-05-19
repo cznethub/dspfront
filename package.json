@@ -5,16 +5,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
-    "preview": "vite preview",
-    "serve": "vue-cli-service serve --mode development",
-    "lint": "vue-cli-service lint",
-    "build-prod": "vue-cli-service build --mode=production",
-    "serve-prod": "vue-cli-service serve --mode=production",
-    "cypress:open": "cypress open",
-    "cypress:run-component": "cypress run --component",
-    "cypress:run-e2e": "cypress run --e2e",
-    "test-component": "start-server-and-test serve http-get://localhost:8080 cypress:run-component",
-    "test-e2e": "start-server-and-test serve http-get://localhost:8080 cypress:run-e2e"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@dword-design/buefy": "^0.1.0",
@@ -34,7 +25,6 @@
     "deepmerge": "^4.2.2",
     "google-maps": "^4.3.3",
     "lodash": "^4.17.21",
-    "pinia": "^2.1.1",
     "pretty-bytes": "^6.1.0",
     "rxjs": "^7.5.5",
     "sprintf-js": "^1.1.2",
@@ -52,23 +42,15 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.17.10",
     "@typescript-eslint/eslint-plugin": "^5.59.6",
     "@typescript-eslint/parser": "^5.59.6",
     "@vitejs/plugin-vue": "^4.1.0",
-    "@vue/cli-plugin-babel": "^4.5.17",
-    "@vue/cli-plugin-typescript": "^4.5.17",
-    "@vue/cli-service": "^4.5.17",
-    "babel-loader": "^8.2.5",
-    "cypress": "^12.12.0",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jsdoc": "^44.2.4",
     "eslint-plugin-prefer-arrow": "^1.2.3",
     "eslint-plugin-react": "^7.32.2",
-    "html-webpack-plugin": "^5.5.0",
-    "imagemin-webpack-plugin": "^2.4.2",
     "node-sass": "*",
     "sass": "^1.51.0",
     "sass-loader": "^10.2.1",
@@ -78,9 +60,6 @@
     "vite": "^4.3.2",
     "vue-cli-plugin-vuetify": "^2.4.8",
     "vue-template-compiler": "^2.7.14",
-    "vue-tsc": "^1.4.2",
-    "webpack": "*",
-    "webpack-image-resize-loader": "^4.1.0",
-    "webpack-image-srcset-loader": "^5.0.4"
+    "vue-tsc": "^1.4.2"
   }
 }
