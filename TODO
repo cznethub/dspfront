@@ -3,7 +3,6 @@ vuex orm -> pinia
 replace vue-facing-decorator -> composables
 re-enable sprintf
 fontawesome
-fix broken asset links --- bg-3.jpg on home, about page
 browserDetect
 enable routerGuards
 

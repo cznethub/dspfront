@@ -14,7 +14,7 @@
       >
         <router-link :to="{ path: `/` }" class="logo">
           <img
-            src="@/assets/img/CZN_Logo.png"
+            src="/img/CZN_Logo.png"
             alt="Critical Zone Network home"
           />
         </router-link>

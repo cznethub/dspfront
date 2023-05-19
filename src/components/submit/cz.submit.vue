@@ -2,7 +2,7 @@
   <div class="cz-submit">
     <template v-if="isInSubmitLandingPage">
       <div class="banner text-center"
-        :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.35), rgba(28, 37, 65, 0.3)), url(' + '/src/assets/img/bg-1.jpg' + ')' }">
+        :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.35), rgba(28, 37, 65, 0.3)), url(' + '/img/bg-1.jpg' + ')' }">
         <div>
           <div class="has-text-white text-h2 has-text-shadow">Submit Data</div>
           <div class="has-text-white mt-4 has-space-bottom text-h4 has-text-shadow">Not sure which repository to use?</div>

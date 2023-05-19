@@ -1,6 +1,6 @@
 <template>
   <div class="cz-home">
-    <v-parallax class="text-center" src='/src/assets/img/bg-3.jpg' :height="isLoggedIn ? 450 : 650">
+    <v-parallax class="text-center" src='/img/bg-3.jpg' :height="isLoggedIn ? 450 : 650">
       <v-container
         class="d-flex flex-column justify-center align-center full-height pa-12"
         style="background-image: linear-gradient(rgb(66 142 218 / 52%), rgb(0 0 0 / 38%));"
@@ -165,7 +165,7 @@
           style="max-width: 100%"
         >
           <img
-            src='@/assets/img/fair.png'
+            src='/img/fair.png'
             alt="FAIR"
             style="max-width: 100%"
           />
