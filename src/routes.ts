@@ -1,4 +1,4 @@
-import { RouteConfig } from "vue-router"
+import { RouteRecordRaw } from "vue-router"
 
 import CzFooter from '@/components/base/cz.footer.vue'
 import CzHome from '@/components/home/cz.home.vue'
@@ -15,7 +15,7 @@ import CzSubmissions from '@/components/submissions/cz.submissions.vue'
 import CzNewSubmission from '@/components/new-submission/cz.new-submission.vue'
 import CzRegisterDataset from '@/components/register-dataset/cz.register-dataset.vue'
 
-export const routes: RouteConfig[] = [
+export const routes: RouteRecordRaw[] = [
   {
     name: 'home',
     path: '/',

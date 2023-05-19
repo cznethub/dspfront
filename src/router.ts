@@ -1,4 +1,5 @@
 import { routes } from './routes'
+import { RouteLocationRaw } from 'vue-router'
 import { EnumRepositoryKeys } from './components/submissions/types'
 import { APP_NAME } from './constants'
 import { createRouter, createWebHistory} from 'vue-router'
@@ -20,9 +21,9 @@ export const router = createRouter({
 })
 
 /** Guards are executed in the order they appear in this array */
-const guards: ((to, from?, next?) => RawLocation | null)[] = [
+const guards: ((to, from?, next?) => RouteLocationRaw | null)[] = [
   // hasNextRouteGuard
-  (to, from?): RawLocation | null =>  {
+  (to, from?): RouteLocationRaw | null =>  {
     const nextRoute = User.$state.next
     if (nextRoute) {
       // Consume the redirect
@@ -36,7 +37,7 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   },
 
   // hasLoggedInGuard
-  (to, from?, next?): RawLocation | null => {
+  (to, from?, next?): RouteLocationRaw | null => {
     if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
       User.openLogInDialog({ path: to.path })
       return from
@@ -46,7 +47,7 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   },
 
   // hasAccessTokenGuard
-  (to, from?): RawLocation | null => {
+  (to, from?): RouteLocationRaw | null => {
     if (to.meta?.hasAccessTokenGuard) {
       if (!isRepositoryAuthorized(to.params.repository, false)) {
         Repository.openAuthorizeDialog(to.params.repository, { path: to.path })
@@ -59,7 +60,7 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   },
 
   // hasUnsavedChangesGuard
-  (to, from?, next?): RawLocation | null => {
+  (to, from?, next?): RouteLocationRaw | null => {
     if (from && from.meta?.hasUnsavedChangesGuard && User.$state.hasUnsavedChanges) {
       CzNotification.openDialog({
         title: 'You have unsaved changes',
@@ -134,7 +135,7 @@ export function setupRouteGuards() {
     next()
   })
 
-  guards.map((fn: (to, from?, next?) => RawLocation | null) => {
+  guards.map((fn: (to, from?, next?) => RouteLocationRaw | null) => {
     router.beforeEach((to, from, next) => {
       const activatedRouteGuard = fn(to, from, next)
       if (activatedRouteGuard) {
@@ -161,7 +162,7 @@ export function saveNextRoute() {
 
 // Call this manually immediately after guards are setup to check guards on the page that loaded on app start.
 function checkGuardsOnce() {
-  let activatedGuardRoute: RawLocation | null = null
+  let activatedGuardRoute: RouteLocationRaw | null = null
 
   for (let i = 0; i < guards.length; i++) {
     const r = guards[i](router.currentRoute)

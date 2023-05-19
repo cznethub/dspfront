@@ -287,7 +287,7 @@ import {
   DEFAULT_TOAST_DURATION,
   DISCOVERY_SITE_URL,
 } from "./constants";
-import { RawLocation } from "vue-router";
+import { RouteLocationRaw } from "vue-router";
 import { EnumRepositoryKeys } from "./components/submissions/types";
 import CzNotification, { IDialog, IToast } from "./models/notifications.model";
 import CzFooter from "@/components/base/cz.footer.vue";
@@ -448,7 +448,7 @@ export default class App extends Vue {
     });
 
     this.onOpenLogInDialog = User.logInDialog$.subscribe(
-      (redirectTo: RawLocation | undefined) => {
+      (redirectTo: RouteLocationRaw | undefined) => {
         this.logInDialog.isActive = true;
 
         this.logInDialog.onLoggedIn = () => {
@@ -463,7 +463,7 @@ export default class App extends Vue {
     this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe(
       (params: {
         repository: string;
-        redirectTo?: RawLocation | undefined;
+        redirectTo?: RouteLocationRaw | undefined;
       }) => {
         this.authorizeDialog.repo = params.repository;
         this.authorizeDialog.isActive = true;

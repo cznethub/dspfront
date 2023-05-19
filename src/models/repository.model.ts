@@ -2,7 +2,7 @@ import { Model } from '@vuex-orm/core'
 import { EnumRepositoryKeys, IRepository, IRepositoryUrls } from '@/components/submissions/types'
 import { repoMetadata } from "@/components/submit/constants"
 import { Subject } from 'rxjs'
-import { RawLocation } from 'vue-router'
+import { RouteLocationRaw } from 'vue-router'
 import { IFile, IFolder } from '@/components/new-submission/types'
 import { DELETED_RESOURCE_STATUS_CODES } from '@/constants'
 import axios from "axios"
@@ -14,7 +14,7 @@ export default class Repository extends Model implements IRepository {
   static entity = 'repository'
   static primaryKey = 'key'
   static isAuthorizeListenerSet = false
-  static authorizeDialog$ = new Subject<{ repository: string, redirectTo?: RawLocation | undefined }>()
+  static authorizeDialog$ = new Subject<{ repository: string, redirectTo?: RouteLocationRaw | undefined }>()
   static authorized$ = new Subject<EnumRepositoryKeys>()
   public readonly key!: EnumRepositoryKeys
   public readonly name!: string
@@ -112,7 +112,7 @@ export default class Repository extends Model implements IRepository {
     await this.fetchAccessToken()
   }
 
-  static openAuthorizeDialog(repository: string, redirectTo?: RawLocation) {
+  static openAuthorizeDialog(repository: string, redirectTo?: RouteLocationRaw) {
     this.authorizeDialog$.next({ repository, redirectTo })
   }
 

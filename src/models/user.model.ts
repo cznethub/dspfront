@@ -1,7 +1,7 @@
 import { router } from '@/router'
 import { Model } from '@vuex-orm/core'
 import { Subject } from 'rxjs'
-import { RawLocation } from 'vue-router'
+import { RouteLocationRaw } from 'vue-router'
 import axios from "axios"
 import CzNotification from './notifications.model'
 import Submission from './submission.model'
@@ -23,7 +23,7 @@ export interface IUserState {
 export default class User extends Model {
   static entity = 'users'
   static isLoginListenerSet = false
-  static logInDialog$ = new Subject<RawLocation | undefined>()
+  static logInDialog$ = new Subject<RouteLocationRaw | undefined>()
   static loggedIn$ = new Subject<void>()
   
   static fields () {
@@ -53,7 +53,7 @@ export default class User extends Model {
     }
   }
 
-  static openLogInDialog(redirectTo?: RawLocation) {
+  static openLogInDialog(redirectTo?: RouteLocationRaw) {
     this.logInDialog$.next(redirectTo)
   }
 
