@@ -4,7 +4,7 @@
       <template v-slot:prepend>
         <v-list-item two-line>
           <v-list-item-avatar>
-            <v-icon left>fab fa-orcid</v-icon>
+            <v-icon left class="fab fa-orcid"></v-icon>
           </v-list-item-avatar>
 
           <v-list-item-content>

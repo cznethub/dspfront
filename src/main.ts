@@ -11,6 +11,7 @@ import { router } from './router'
 import { createApp } from 'vue'
 import App from './App.vue'
 import vuetify from '@/plugins/vuetify'
+// import browserDetect from "vue-browser-detect-plugin"
 // import IdleVue from 'idle-vue'
 
 import { orm } from '@/models/orm'
@@ -47,6 +48,8 @@ app.use(store)
 
 app.use(router)
 app.use(VueCookies)
+// TODO: fix browserDetect
+// app.use(browserDetect)
 app.use(Buefy, {
   defaultIconPack: 'fas',
   defaultContainerElement: '#content',

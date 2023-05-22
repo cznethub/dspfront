@@ -338,7 +338,7 @@
                       </template>
                     </v-col>
                     <v-col v-if="item.isDisabled">
-                      <v-icon small>fas fa-circle-notch fa-spin</v-icon>
+                      <v-icon class="fas fa-circle-notch fa-spin" small></v-icon>
                     </v-col>
                   </v-row>
                 </template>
