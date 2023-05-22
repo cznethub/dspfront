@@ -9,7 +9,6 @@ import {
 import { itemsPerPageArray } from '@/components/submissions/constants'
 import { getRepositoryFromKey } from '@/constants'
 
-// import {sprintf} from 'sprintf-js'
 import {sprintf} from 'sprintf-js'
 
 export interface ISubmisionState {
