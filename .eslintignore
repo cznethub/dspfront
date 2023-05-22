@@ -1,3 +1,4 @@
 node_modules
 vite.config.ts
 vue.config.js
+.eslintrc.js
