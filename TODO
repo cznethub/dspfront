@@ -1,11 +1,8 @@
 TODO
+npx eslint --ext .vue src
+https://vuetifyjs.com/en/getting-started/upgrade-guide/
+browserDetect
+routerGuards
+--------------
 vuex orm -> pinia
 replace vue-facing-decorator -> composables
-re-enable sprintf
-fontawesome
-browserDetect
-enable routerGuards
-
-https://vuetifyjs.com/en/getting-started/upgrade-guide/
-v-list-item-group has been removed, just add value to list items to make them selectable and bind 
-v-list-item-content has been removed, lists use CSS grid for layout now instead.

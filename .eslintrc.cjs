@@ -8,7 +8,7 @@ module.exports = {
     'eslint:recommended',
     '@vue/eslint-config-typescript',
     '@vue/eslint-config-prettier/skip-formatting',
-    "plugin:vuetify/base"
+    'plugin:vuetify/base'
   ],
   overrides: [
     {

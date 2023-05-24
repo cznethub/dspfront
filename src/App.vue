@@ -56,7 +56,7 @@
             >Log In</v-btn
           >
           <template v-else>
-            <v-menu location="bottom" location="left">
+            <v-menu location="bottom left">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   :color="

@@ -273,7 +273,7 @@
                       v-if="showFileWarnings(item)"
                       class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary align-center"
                     >
-                      <v-menu open-on-hover location="bottom" location="left" offset-y>
+                      <v-menu open-on-hover location="bottom left" offset-y>
                         <template v-slot:activator="{ on, attrs }">
                           <div v-bind="attrs" v-on="on">
                             <v-icon
@@ -368,8 +368,7 @@
           <v-menu
             v-if="isTotalUploadSizeTooBig"
             open-on-hover
-            location="top"
-            location="right"
+            location="top right"
             offset-y
           >
             <template v-slot:activator="{ on, attrs }">
