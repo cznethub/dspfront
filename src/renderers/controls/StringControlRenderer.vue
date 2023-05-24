@@ -23,21 +23,21 @@
           ? control.schema.maxLength
           : undefined
       "
-      :value="control.data"
+      :model-value="control.data"
       :items="suggestions"
       hide-details="auto"
       hide-no-data
       v-bind="vuetifyProps('v-combobox')"
-      @input="beforeChange"
+      @update:model-value="beforeChange"
       dense
-      outlined
+      variant="outlined"
       class="py-3"
     >
       <template v-slot:message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
-        <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
           {{ cleanedErrors }}
         </div>
       </template>
@@ -56,7 +56,7 @@
       persistent-hint
       :required="control.required"
       :error-messages="control.errors"
-      :value="control.data"
+      :model-value="control.data"
       :maxlength="
         appliedOptions.restrict ? control.schema.maxLength : undefined
       "
@@ -66,16 +66,16 @@
           : undefined
       "
       v-bind="vuetifyProps('v-text-field')"
-      @input="beforeChange"
+      @update:model-value="beforeChange"
       class="py-3"
-      dense
-      outlined
+      density="compact"
+      variant="outlined"
     >
       <template v-slot:message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
-        <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
           {{ cleanedErrors }}
         </div>
       </template>

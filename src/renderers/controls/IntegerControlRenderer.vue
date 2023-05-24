@@ -1,6 +1,6 @@
 <template>
   <v-text-field
-    outlined
+    variant="outlined"
     type="number"
     @change.native="beforeChange($event)"
     :step="step"
@@ -13,16 +13,16 @@
     :hint="description"
     :required="control.required"
     :error-messages="control.errors"
-    :value="control.data"
+    :model-value="control.data"
     persistent-hint
-    dense
+    density="compact"
     class="py-3"
   >
     <template v-slot:message>
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
-      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+      <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
         {{ cleanedErrors }}
       </div>
     </template>

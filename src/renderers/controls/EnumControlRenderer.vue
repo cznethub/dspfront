@@ -1,7 +1,7 @@
 <template>
   <v-hover v-if="!isHidden" v-slot="{ hover }">
     <v-select
-      @change="onChange"
+      @update:model-value="onChange"
       @focus="isFocused = true"
       @blur="isFocused = false"
       :id="control.id + '-input'"
@@ -14,22 +14,22 @@
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover && !control.schema.readOnly"
-      :value="control.data"
+      :model-value="control.data"
       :items="control.options"
       :readonly="control.schema.readOnly"
       persistent-hint
       hide-details="auto"
       class="py-3"
-      item-text="label"
+      item-title="label"
       item-value="value"
-      outlined
+      variant="outlined"
       dense
     >
       <template v-slot:message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
-        <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
           {{ cleanedErrors }}
         </div>
       </template>

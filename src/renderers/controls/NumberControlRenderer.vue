@@ -6,7 +6,7 @@
     :id="control.id + '-input'"
     :data-id="computedLabel.replaceAll(` `, ``)"
     :class="styles.control.input"
-    :value="control.data"
+    :model-value="control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
@@ -14,17 +14,17 @@
     :max="control.schema.exclusiveMaximum"
     :min="control.schema.exclusiveMinumum"
     :error-messages="control.errors"
-    @input="onInputChange"
+    @update:model-value="onInputChange"
     class="py-3"
     persistent-hint
-    dense
-    outlined
+    density="compact"
+    variant="outlined"
   >
     <template v-slot:message>
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
-      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+      <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
         {{ cleanedErrors }}
       </div>
     </template>

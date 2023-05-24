@@ -3,7 +3,7 @@
   <v-hover v-slot="{ hover }">
     <v-autocomplete
       v-if="hasAutoComplete"
-      @change="onChange"
+      @update:model-value="onChange"
       :id="control.id + '-input'"
       :class="styles.control.input"
       :disabled="!control.enabled"
@@ -14,20 +14,20 @@
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover"
-      :value="control.data"
+      :model-value="control.data"
       :items="sortedOptions"
-      item-text="label"
+      item-title="label"
       item-value="value"
       persistent-hint
       class="py-3"
       hide-details="auto"
-      outlined
+      variant="outlined"
       dense
     />
 
     <v-select
       v-else
-      @change="onChange"
+      @update:model-value="onChange"
       :id="control.id + '-input'"
       :class="styles.control.input"
       :disabled="!control.enabled"
@@ -38,14 +38,14 @@
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover"
-      :value="control.data"
+      :model-value="control.data"
       :items="customOptions"
-      item-text="label"
+      item-title="label"
       item-value="value"
       persistent-hint
       class="py-3"
       hide-details="auto"
-      outlined
+      variant="outlined"
       dense
     />
   </v-hover>

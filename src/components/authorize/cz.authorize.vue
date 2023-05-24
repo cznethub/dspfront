@@ -2,11 +2,11 @@
   <v-card class="cz-authorize d-flex flex-column flex-md-row"
     :class="{ 'is-medium': $vuetify.display.mdAndUp }">
     <v-card class="d-flex flex-column darken-2" color="blue-grey" rounded="0">
-      <v-card-title class="white--text">
+      <v-card-title class="text-white">
         <v-icon color="white" class="mr-4">mdi-alert-circle</v-icon>
         <div>You must have a {{ repoName }} account before proceeding</div>
       </v-card-title>
-      <v-card-text class="white--text">If you do not have a {{ repoName }} account yet, create one in {{ repoName }} and then come back here to submit your content through the Data Submission Portal.</v-card-text>
+      <v-card-text class="text-white">If you do not have a {{ repoName }} account yet, create one in {{ repoName }} and then come back here to submit your content through the Data Submission Portal.</v-card-text>
     </v-card>
     <v-card elevation="0">
       <div class="v-card-media py-4 px-8">

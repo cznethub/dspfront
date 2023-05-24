@@ -22,9 +22,9 @@
       <v-stepper-items>
         <v-stepper-content v-for="(step, index) in steps" :key="`${index}-content`" :step="index">
           <template v-if="step.options">
-            <v-card class="mb-12 pa-4" outlined min-height="300px">
+            <v-card class="mb-12 pa-4" variant="outlined" min-height="300px">
               <div class="text-heading-5">{{ step.next }}</div>
-              <v-radio-group v-model="step.selectedOption" @change="onOptionChanged">
+              <v-radio-group v-model="step.selectedOption" @update:model-value="onOptionChanged">
                 <v-radio
                   v-for="(option, index) of step.options" :key="index"
                   :label="option.label"
@@ -38,17 +38,17 @@
           </template>
 
           <template v-if="step.finish">
-            <v-alert class="my-8" outlined
+            <v-alert class="my-8" variant="outlined"
               type="warning"
-              color="warning darken-2"
+              color="warning-darken-2"
               prominent
-              border="left">
+              border="start">
               <div class="text-body-1">
                 If you are a CZ Net data manager or investigator and you choose to submit data to a repository other than HydroShare, EarthChem, or Zenodo, please use the <a @click="submitTo(externalRepoMetadata)">Register Dataset</a> form to provide metadata about those datasets. If you submit to HydroShare, EarthChem or Zenodo through the Data Submission Portal, we will automatically harvest your metadata for you to support CZ Net data discovery services.
               </div>
             </v-alert>
 
-            <v-alert v-if="step.finish.linkToGuide" class="my-8" border="left" colored-border type="info" elevation="2">
+            <v-alert v-if="step.finish.linkToGuide" class="my-8" border="start" colored-border type="info" elevation="2">
               <div class="text-body-1">View guidance and best practices for "{{ enumDataTemplateType[step.finish.linkToGuide] }}" data <a :href="guideUrls[step.finish.linkToGuide]" target="_blank">here</a>.</div>
             </v-alert>
 

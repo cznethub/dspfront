@@ -10,18 +10,18 @@
         <span class="repo-name">{{ repo.name }}</span>
         <template v-if="getAccessToken(repo.key)">
           <div>
-            <v-chip small color="green" outlined class="pl-0">
-              <v-icon left class="ml-0">mdi-check-circle</v-icon>
+            <v-chip small color="green" variant="outlined" class="pl-0">
+              <v-icon start class="ml-0">mdi-check-circle</v-icon>
               Authorized
             </v-chip>
           </div>
           <div class="text-right">
-            <v-btn @click="openRevokeDialog(repo.key)" small><v-icon small class="mr-1">mdi-cancel</v-icon> Revoke</v-btn>
+            <v-btn @click="openRevokeDialog(repo.key)" size="small"><v-icon size="small" class="mr-1">mdi-cancel</v-icon> Revoke</v-btn>
           </div>
         </template>
         <template v-else>
           <div>
-            <v-chip small color="red" outlined>Unauthorized</v-chip>
+            <v-chip small color="red" variant="outlined">Unauthorized</v-chip>
           </div>
           <div class="text-right">
             <v-btn @click="openAuthorizePopup(repo.key)" color="primary">
@@ -36,11 +36,11 @@
           <v-text-field
             @click:append="onCopy(repo.key)"
             :label="repo.name + ' access token'"
-            :value="getAccessToken(repo.key)"
-            outlined
+            :model-value="getAccessToken(repo.key)"
+            variant="outlined"
             readonly
             append-icon="mdi-content-copy"
-            dense
+            density="compact"
             hide-details=""
           ></v-text-field>
         </v-card-text>

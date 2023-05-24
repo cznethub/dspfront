@@ -10,7 +10,7 @@
         {{ computedLabel }}
       </legend>
 
-      <v-tooltip bottom transition="fade">
+      <v-tooltip location="bottom" transition="fade">
         <template v-slot:activator="{ on: onTooltip }">
           <v-btn icon color="primary"
             @click="addButtonClick()" 
@@ -34,7 +34,7 @@
       <v-card v-if="control.visible && !noData" :class="styles.arrayList.root" elevation="0">
         <v-container justify-space-around align-content-center>
           <v-row justify="center">
-            <v-simple-table class="array-container flex">
+            <v-table class="array-container flex">
               <thead v-if="control.schema.type === 'object'">
                 <tr>
                   <th
@@ -88,15 +88,15 @@
                         : 'fixed-cell-small'
                     "
                   >
-                    <v-tooltip bottom>
+                    <v-tooltip location="bottom">
                       <template v-slot:activator="{ on: onTooltip }">
                         <v-btn
                           v-on="onTooltip"
                           v-if="appliedOptions.showSortButtons"
                           fab
-                          text
+                          variant="text"
                           elevation="0"
-                          small
+                          size="small"
                           aria-label="Move up"
                           :disabled="index <= 0 || !control.enabled"
                           :class="styles.arrayList.itemMoveUp"
@@ -107,15 +107,15 @@
                       </template>
                       Move Up
                     </v-tooltip>
-                    <v-tooltip bottom>
+                    <v-tooltip location="bottom">
                       <template v-slot:activator="{ on: onTooltip }">
                         <v-btn
                           v-on="onTooltip"
                           v-if="appliedOptions.showSortButtons"
                           fab
-                          text
+                          variant="text"
                           elevation="0"
-                          small
+                          size="small"
                           aria-label="Move down"
                           :disabled="
                             index >= control.data.length - 1 || !control.enabled
@@ -128,14 +128,14 @@
                       </template>
                       Move Down
                     </v-tooltip>
-                    <v-tooltip bottom>
+                    <v-tooltip location="bottom">
                       <template v-slot:activator="{ on: onTooltip }">
                         <v-btn
                           v-on="onTooltip"
                           fab
-                          text
+                          variant="text"
                           elevation="0"
-                          small
+                          size="small"
                           aria-label="Delete"
                           :class="styles.arrayList.itemDelete"
                           :disabled="
@@ -155,13 +155,13 @@
                   </td>
                 </tr>
               </tbody>
-            </v-simple-table>
+            </v-table>
           </v-row>
         </v-container>
       </v-card>
     </fieldset>
     <div v-if="description" class="text--secondary text-body-1 ml-2">{{ description }}</div>
-    <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+    <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
       {{ cleanedErrors }}
     </div>
   </div>

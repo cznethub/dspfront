@@ -4,9 +4,9 @@
       <v-card 
         :id="repo.name.replaceAll(` `, ``) + `-card`"
         :disabled="repo.isDisabled"
-        :outlined="!repo.isSupported"
+        :variant="!repo.isSupported && 'outlined'"
       >
-        <v-list-item three-line class="flex-column flex-md-row">
+        <v-list-item lines="three" class="flex-column flex-md-row">
           <v-list-item-content>
             <v-list-item-title class="text-h5 mb-1">{{ repo.name }}</v-list-item-title>
 
@@ -24,9 +24,9 @@
         <v-divider></v-divider>
 
         <v-card-actions class="d-flex flex-column flex-md-row flex-wrap-wrap">
-          <v-btn v-if="repo.isSupported" :disabled="repo.isComingSoon" text color="primary" @click="submitTo(repo)">Submit to {{ repo.name }}</v-btn>
-          <v-btn text :href="repo.url" target="_blank"><v-icon left>mdi-open-in-new</v-icon>Visit {{ repo.name }}</v-btn>
-          <v-btn v-if="repo.isSupported" text :href="repo.supportUrl" target="_blank"><v-icon left>mdi-open-in-new</v-icon>Learn more about {{ repo.name }}</v-btn>
+          <v-btn v-if="repo.isSupported" :disabled="repo.isComingSoon" variant="text" color="primary" @click="submitTo(repo)">Submit to {{ repo.name }}</v-btn>
+          <v-btn variant="text" :href="repo.url" target="_blank"><v-icon start>mdi-open-in-new</v-icon>Visit {{ repo.name }}</v-btn>
+          <v-btn v-if="repo.isSupported" variant="text" :href="repo.supportUrl" target="_blank"><v-icon start>mdi-open-in-new</v-icon>Learn more about {{ repo.name }}</v-btn>
         </v-card-actions>
       </v-card>
     </template>

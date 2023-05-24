@@ -13,9 +13,9 @@
               id="my_submissions_search"
               class="ma-1 my-2 my-sm-0"
               v-model="filters.searchStr"
-              dense
+              density="compact"
               clearable
-              outlined
+              variant="outlined"
               hide-details
               prepend-inner-icon="mdi-magnify"
               label="Search..."
@@ -26,14 +26,14 @@
               :items="repoOptions"
               class="ma-1 my-2 my-sm-0"
               small-chips
-              deletable-chips
+              closable-chips
               clearable
               label="Repository"
               hide-details
               chips
               multiple
               dense
-              outlined
+              variant="outlined"
             >
               <template v-slot:item="data">
                 <v-list-item-action>
@@ -67,10 +67,10 @@
               </v-btn>
             </template>
 
-            <v-card color="blue-grey lighten-4">
+            <v-card color="blue-grey-lighten-4">
               <v-card-text>
                 <template :key="repo.name" v-for="repo of supportedRepoMetadata">
-                  <v-tooltip left transition="fade">
+                  <v-tooltip location="left" transition="fade">
                     <template v-slot:activator="{ on, attrs }">
                       <v-btn
                         class="mx-0 my-4"
@@ -87,7 +87,7 @@
                   </v-tooltip>
                 </template>
 
-                <v-tooltip left transition="fade">
+                <v-tooltip location="left" transition="fade">
                   <template v-slot:activator="{ on, attrs }">
                     <v-btn
                       class="mx-0 my-4"
@@ -128,8 +128,8 @@
             <v-data-iterator
               @current-items="currentItems = $event"
               :items="filteredSubmissions"
-              :items-per-page.sync="itemsPerPage"
-              :page.sync="page"
+              v-model:items-per-page="itemsPerPage"
+              v-model:page="page"
               :search="filters.searchStr"
               :sort-by="
                 sortBy.key ||
@@ -159,10 +159,10 @@
                         id="sort-by"
                         :items="sortOptions"
                         v-model="sortBy"
-                        item-text="label"
+                        item-title="label"
                         return-object
                         class="mr-1 sort-control my-md-0 my-2"
-                        outlined
+                        variant="outlined"
                         dense
                         hide-details="auto"
                         label="Sort by"
@@ -172,10 +172,10 @@
                         id="sort-order"
                         :items="sortDirectionOptions"
                         v-model="sortDirection"
-                        item-text="label"
+                        item-title="label"
                         return-object
                         class="sort-control my-md-0 my-2"
-                        outlined
+                        variant="outlined"
                         dense
                         hide-details="auto"
                         label="Order"
@@ -204,27 +204,27 @@
                           <td
                             colspan="2"
                             :id="`sub-${index}-title`"
-                            class="text-h6 title"
+                            class="text-h6 text-h6"
                           >
                             {{ item.title }}
                           </td>
                         </tr>
                         <tr v-if="item.authors.length">
-                          <th class="pr-4 body-2">Authors:</th>
+                          <th class="pr-4 text-body-2">Authors:</th>
                           <td>{{ item.authors.join(" | ") }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">Submission Repository:</th>
+                          <th class="pr-4 text-body-2">Submission Repository:</th>
                           <td>{{ getRepositoryName(item) }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">Submission Date:</th>
+                          <th class="pr-4 text-body-2">Submission Date:</th>
                           <td :id="`sub-${index}-date`">
                             {{ getDateInLocalTime(item.date) }}
                           </td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">Identifier:</th>
+                          <th class="pr-4 text-body-2">Identifier:</th>
                           <td>{{ item.identifier }}</td>
                         </tr>
                         <tr
@@ -233,21 +233,21 @@
                             item.repository === enumRepositoryKeys.earthchem
                           "
                         >
-                          <th class="pr-4 body-2">Status:</th>
+                          <th class="pr-4 text-body-2">Status:</th>
 
                           <td>
                             <v-chip
                               v-if="item.metadata.status !== 'incomplete'"
                               color="orange"
                               small
-                              outlined
+                              variant="outlined"
                             >
-                              <v-icon left small>mdi-lock</v-icon>
+                              <v-icon start size="small">mdi-lock</v-icon>
                               {{ item.metadata.status }}
                             </v-chip>
 
-                            <v-chip v-else small outlined>
-                              <v-icon left small>mdi-pencil</v-icon>
+                            <v-chip v-else small variant="outlined">
+                              <v-icon start size="small">mdi-pencil</v-icon>
                               {{ item.metadata.status }}
                             </v-chip>
                           </td>
@@ -260,7 +260,7 @@
                         :id="`sub-${index}-view`"
                         :href="item.url"
                         target="_blank"
-                        color="blue-grey lighten-4"
+                        color="blue-grey-lighten-4"
                         rounded
                       >
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In
@@ -326,12 +326,12 @@
               <template v-slot:footer>
                 <div class="footer d-flex justify-space-between align-center">
                   <div>
-                    <span class="grey--text text-body-2 mr-1"
+                    <span class="text-grey text-body-2 mr-1"
                       >Items per page</span
                     >
                     <v-menu offset-y>
                       <template v-slot:activator="{ on, attrs }">
-                        <v-btn text v-bind="attrs" v-on="on">
+                        <v-btn variant="text" v-bind="attrs" v-on="on">
                           {{ itemsPerPage }}
                           <v-icon>mdi-chevron-down</v-icon>
                         </v-btn>
@@ -353,13 +353,13 @@
                     class="d-flex flex-sm-row flex-column align-center justify-center"
                     style="gap: 0.5rem"
                   >
-                    <span class="grey--text text-body-2 text-center">
+                    <span class="text-grey text-body-2 text-center">
                       Page {{ page }} of {{ numberOfPages }}
                     </span>
                     <div>
                       <v-btn
                         class="mr-2"
-                        small
+                        size="small"
                         fab
                         @click="formerPage"
                         :disabled="page <= 1"
@@ -367,7 +367,7 @@
                         <v-icon>mdi-chevron-left</v-icon>
                       </v-btn>
                       <v-btn
-                        small
+                        size="small"
                         fab
                         @click="nextPage"
                         :disabled="page >= numberOfPages"
@@ -436,7 +436,7 @@
           <v-btn
             class="dialog-cancel"
             @click="isDeleteDialogActive = false"
-            text
+            variant="text"
           >
             Cancel
           </v-btn>
@@ -447,8 +447,8 @@
               isDeleteDialogActive = false;
               onDeleteSubmission();
             "
-            color="red darken-1"
-            text
+            color="red-darken-1"
+            variant="text"
           >
             Delete
           </v-btn>

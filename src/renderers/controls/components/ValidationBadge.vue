@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-tooltip bottom v-if="errors.length > 0">
+    <v-tooltip location="bottom" v-if="errors.length > 0">
       <template v-slot:activator="{ on: onTooltip }">
         <v-badge
           :color="color"

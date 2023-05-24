@@ -20,7 +20,7 @@
 
     <p class="text-body-1">
       <a href="https://orcid.org/" target="_blank">Register for and learn more about ORCIDs</a>
-      <v-icon class="ml-2" small>mdi-open-in-new</v-icon>
+      <v-icon class="ml-2" size="small">mdi-open-in-new</v-icon>
     </p>
 
     <div class="text-h6 mb-3 mt-6">Choosing a Repository</div>

@@ -2,7 +2,7 @@
   <v-hover v-slot="{ hover }">
     <v-combobox
       v-model="tags"
-      @input="onTagsChange"
+      @update:model-value="onTagsChange"
       hide-no-data
       :label="computedLabel"
       :data-id="computedLabel.replaceAll(` `, ``)"
@@ -14,7 +14,7 @@
       small-chips
       multiple
       no-filter
-      outlined
+      variant="outlined"
       dense
       :id="control.id + '-input'"
       :class="styles.control.input"
@@ -24,9 +24,9 @@
       persistent-hint
       :required="control.required"
       :clearable="hover"
-      :value="control.data"
+      :model-value="control.data"
       :items="control.options"
-      item-text="label"
+      item-title="label"
       item-value="value"
       @focus="isFocused = true"
       @blur="isFocused = false"
@@ -35,7 +35,7 @@
         <v-chip
           v-bind="attrs"
           :disabled="!control.enabled"
-          :close="!isRequired(item)"
+          :closable="!isRequired(item)"
           small
           @click:close="remove(item)"
         >

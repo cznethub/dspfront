@@ -1,7 +1,7 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-select
-      @change="beforeChange"
+      @update:model-value="beforeChange"
       :id="control.id + '-input'"
       :data-id="computedLabel.replaceAll(` `, ``)"
       :class="styles.control.input"
@@ -13,26 +13,26 @@
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover && !control.schema.readOnly"
-      :value="control.data"
+      :model-value="control.data"
       :items="control.options"
       :readonly="control.schema.readOnly"
       hide-details="auto"
       dense
       chips
       small-chips
-      deletable-chips
+      closable-chips
       persistent-hint
       class="py-3"
-      item-text="label"
+      item-title="label"
       item-value="value"
-      outlined
+      variant="outlined"
       multiple
     >
       <template v-slot:message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
-        <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
           {{ cleanedErrors }}
         </div>
       </template>

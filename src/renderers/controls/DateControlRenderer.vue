@@ -3,7 +3,7 @@
     ref="menu"
     v-model="showMenu"
     :close-on-content-click="false"
-    :return-value.sync="pickerValue"
+    v-model:return-value="pickerValue"
     transition="scale-transition"
     offset-y
     min-width="290px"
@@ -24,9 +24,9 @@
         :error-messages="control.errors"
         prepend-inner-icon="mdi-calendar"
         v-mask="mask"
-        :value="inputValue"
-        @input="onInputChange"
-        outlined
+        :model-value="inputValue"
+        @update:model-value="onInputChange"
+        variant="outlined"
         class="py-3"
         v-bind="attrs"
         v-on="on"
@@ -35,11 +35,11 @@
           <div v-if="description" class="text-subtitle-1 text--secondary">
             {{ description }}
           </div>
-          <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+          <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
             {{ cleanedErrors }}
           </div>
         </template>
-        <template slot="append">
+        <template v-slot:append>
           <v-icon v-if="control.enabled" tabindex="-1" @click="clear"
             >$clear</v-icon
           >
@@ -58,7 +58,7 @@
       @click:year="onYear"
     >
       <v-spacer></v-spacer>
-      <v-btn text @click="showMenu = false">
+      <v-btn variant="text" @click="showMenu = false">
         {{ cancelLabel }}
       </v-btn>
       <v-btn :disabled="!pickerValue" color="primary" @click="okHandler">

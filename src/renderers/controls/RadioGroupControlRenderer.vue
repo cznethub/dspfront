@@ -13,11 +13,11 @@
         :autofocus="appliedOptions.focus"
         :placeholder="appliedOptions.placeholder"
         :required="control.required"
-        :value="control.data"
+        :model-value="control.data"
         hide-details="auto"
         persistent-hint
         row
-        @change="onChange"
+        @update:model-value="onChange"
         @focus="isFocused = true"
         @blur="isFocused = false"
       >
@@ -30,7 +30,7 @@
       </v-radio-group>
     </fieldset>
     <div v-if="description" class="text--secondary text-body-1 ml-2">{{ description }}</div>
-    <div v-if="control.errors" class="ml-2 v-messages error--text">
+    <div v-if="control.errors" class="ml-2 v-messages text-error">
       {{ control.errors }}
     </div>
   </div>

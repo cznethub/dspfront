@@ -1,18 +1,18 @@
 <template>
   <v-card class="mb-8">
     <v-sheet
-      class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included flex-wrap"
+      class="pa-4 d-flex align-center has-bg-light-gray bg-primary-lighten-4 files-container--included flex-wrap"
     >
       <v-tooltip
         v-if="repoMetadata.hasFolderStructure && !isReadOnly && !isPublished"
-        bottom
+        location="bottom"
         transition="fade"
       >
         <template v-slot:activator="{ on, attrs }">
           <v-btn
             @click="newFolder"
             class="mr-4"
-            small
+            size="small"
             icon
             v-on="on"
             v-bind="attrs"
@@ -26,14 +26,14 @@
 
       <template v-if="!isReadOnly && !isPublished">
         <template>
-          <v-tooltip bottom transition="fade">
+          <v-tooltip location="bottom" transition="fade">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 @click="selectAll"
                 :disabled="!rootDirectory.children.length"
                 class="mr-1"
                 icon
-                small
+                size="small"
                 v-on="on"
                 v-bind="attrs"
               >
@@ -45,12 +45,12 @@
         </template>
 
         <template>
-          <v-tooltip bottom transition="fade">
+          <v-tooltip location="bottom" transition="fade">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 @click="unselectAll"
                 icon
-                small
+                size="small"
                 :disabled="!selected.length"
                 v-on="on"
                 v-bind="attrs"
@@ -64,14 +64,14 @@
         </template>
 
         <template v-if="repoMetadata.hasFolderStructure">
-          <v-tooltip bottom transition="fade">
+          <v-tooltip location="bottom" transition="fade">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 @click="cut"
                 :disabled="!canCut"
                 class="mr-1"
                 icon
-                small
+                size="small"
                 v-on="on"
                 v-bind="attrs"
                 ><v-icon>mdi-content-cut</v-icon></v-btn
@@ -82,7 +82,7 @@
 
           <v-tooltip
             v-if="!isReadOnly && !isPublished"
-            bottom
+            location="bottom"
             transition="fade"
           >
             <template v-slot:activator="{ on, attrs }">
@@ -90,7 +90,7 @@
                 @click="paste"
                 :disabled="!canPaste"
                 icon
-                small
+                size="small"
                 v-on="on"
                 v-bind="attrs"
               >
@@ -103,12 +103,12 @@
         </template>
 
         <template>
-          <v-tooltip bottom transition="fade">
+          <v-tooltip location="bottom" transition="fade">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 @click="deleteSelected"
                 icon
-                small
+                size="small"
                 :disabled="isDeleting || !selected.length"
                 v-on="on"
                 v-bind="attrs"
@@ -134,7 +134,7 @@
       <v-spacer></v-spacer>
 
       <template v-if="rootDirectory.children.length && !isEditMode">
-        <v-btn @click="empty" small depressed class="primary lighten-2">
+        <v-btn @click="empty" size="small" variant="flat" class="bg-primary-lighten-2">
           Discard All
         </v-btn>
       </template>
@@ -144,7 +144,7 @@
       <v-alert
         v-if="isEditMode && !isReadOnly && !isPublished"
         class="text-subtitle-1"
-        border="left"
+        border="start"
         colored-border
         type="info"
         elevation="1"
@@ -154,7 +154,7 @@
         click the Save Changes button for your changes to be effective.
       </v-alert>
 
-      <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
+      <v-card flat variant="outlined" v-if="rootDirectory.children.length" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem">
           <v-row class="flex-grow-1">
             <v-col
@@ -164,8 +164,8 @@
               <v-treeview
                 item-disabled="isDisabled"
                 :items="rootDirectory.children"
-                :open.sync="open"
-                :active.sync="selected"
+                v-model:open="open"
+                v-model:active="selected"
                 return-object
                 multiple-active
                 transition
@@ -206,10 +206,10 @@
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
                     @click:append="item.isRenaming = false"
-                    :value="item.name"
+                    :model-value="item.name"
                     v-click-outside="onClickOutside"
                     append-icon="mdi-cancel"
-                    dense
+                    density="compact"
                     hide-details="auto"
                     autofocus
                   >
@@ -250,7 +250,7 @@
                       v-if="!isFolder(item) && item.isUploaded"
                       class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 align-center"
                     >
-                      <v-icon class="text--disabled" small
+                      <v-icon class="text--disabled" size="small"
                         >mdi-cloud-check</v-icon
                       >
                     </v-col>
@@ -262,10 +262,10 @@
                         color="info"
                         @click="$emit('upload', [item])"
                         :disabled="item.isDisabled"
-                        small
-                        depressed
+                        size="small"
+                        variant="flat"
                       >
-                        <v-icon left>mdi-cloud-upload</v-icon>
+                        <v-icon start>mdi-cloud-upload</v-icon>
                         Retry
                       </v-btn>
                     </v-col>
@@ -273,7 +273,7 @@
                       v-if="showFileWarnings(item)"
                       class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary align-center"
                     >
-                      <v-menu open-on-hover bottom left offset-y>
+                      <v-menu open-on-hover location="bottom" location="left" offset-y>
                         <template v-slot:activator="{ on, attrs }">
                           <div v-bind="attrs" v-on="on">
                             <v-icon
@@ -331,14 +331,14 @@
                           v-if="!item.isRenaming"
                           @click.stop="renameItem(item)"
                           fab
-                          small
-                          text
+                          size="small"
+                          variant="text"
                           ><v-icon>mdi-pencil-outline</v-icon></v-btn
                         >
                       </template>
                     </v-col>
                     <v-col v-if="item.isDisabled">
-                      <v-icon class="fas fa-circle-notch fa-spin" small></v-icon>
+                      <v-icon class="fas fa-circle-notch fa-spin" size="small"></v-icon>
                     </v-col>
                   </v-row>
                 </template>
@@ -368,8 +368,8 @@
           <v-menu
             v-if="isTotalUploadSizeTooBig"
             open-on-hover
-            top
-            right
+            location="top"
+            location="right"
             offset-y
           >
             <template v-slot:activator="{ on, attrs }">
@@ -398,7 +398,7 @@
       <v-alert
         v-if="hasTooManyFiles"
         class="text-subtitle-1"
-        border="left"
+        border="start"
         colored-border
         type="error"
         elevation="1"
@@ -420,7 +420,7 @@
           class="has-bg-light-gray"
         >
           <v-alert
-            class="ma-4 has-cursor-pointer transparent"
+            class="ma-4 has-cursor-pointer bg-transparent"
             type="info"
             prominent
             colored-border

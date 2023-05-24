@@ -3,7 +3,7 @@
     <v-app-bar
       ref="appBar"
       id="app-bar"
-      color="blue-grey lighten-4"
+      color="blue-grey-lighten-4"
       elevate-on-scroll
       fixed
       app
@@ -28,7 +28,7 @@
             id="navbar-nav-home"
             to="/"
             :elevation="0"
-            active-class="primary"
+            selected-class="primary"
             >Home</v-btn
           >
           <v-btn
@@ -37,11 +37,11 @@
             v-bind="path.attrs"
             :id="`navbar-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
             :elevation="0"
-            active-class="primary"
+            selected-class="primary"
             :class="path.isActive && path.isActive() ? 'primary' : ''"
           >
             {{ path.label }}
-            <v-icon v-if="path.isExternal" small class="ml-2" right
+            <v-icon v-if="path.isExternal" size="small" class="ml-2" end
               >mdi-open-in-new</v-icon
             >
           </v-btn>
@@ -56,7 +56,7 @@
             >Log In</v-btn
           >
           <template v-else>
-            <v-menu bottom left>
+            <v-menu location="bottom" location="left">
               <template v-slot:activator="{ on, attrs }">
                 <v-btn
                   :color="
@@ -129,7 +129,7 @@
       temporary
       app
     >
-      <v-list nav dense class="nav-items">
+      <v-list nav density="compact" class="nav-items">
         <v-list-item-group class="text-body-1">
           <v-list-item
             id="drawer-nav-home"
@@ -152,7 +152,7 @@
           >
             <v-icon class="mr-2">{{ path.icon }}</v-icon>
             <span>{{ path.label }}</span>
-            <v-icon v-if="path.isExternal" small class="ml-2" right
+            <v-icon v-if="path.isExternal" size="small" class="ml-2" end
               >mdi-open-in-new</v-icon
             >
           </v-list-item>
@@ -222,7 +222,7 @@
               dialog.isActive = false;
               dialog.onCancel();
             "
-            text
+            variant="text"
           >
             {{ dialog.cancelText }}
           </v-btn>
@@ -233,8 +233,8 @@
               dialog.isActive = false;
               dialog.onSecondaryAction();
             "
-            color="green darken-1"
-            text
+            color="green-darken-1"
+            variant="text"
           >
             {{ dialog.secondaryActionText }}
           </v-btn>
@@ -245,8 +245,8 @@
               dialog.isActive = false;
               dialog.onConfirm();
             "
-            color="green darken-1"
-            text
+            color="green-darken-1"
+            variant="text"
           >
             {{ dialog.confirmText }}
           </v-btn>

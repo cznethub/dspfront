@@ -2,7 +2,7 @@
   <v-textarea
     :id="control.id + '-input'"
     :data-id="computedLabel.replaceAll(` `, ``)"
-    @input.native="beforeChange"
+    @update:model-value.native="beforeChange"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined
             ? control.schema.maxLength
@@ -12,21 +12,21 @@
     :required="control.required"
     :class="styles.control.textarea"
     :hint="description"
-    :value="control.data"
+    :model-value="control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="placeholder"
     :label="computedLabel"
     persistent-hint
-    outlined
-    dense
+    variant="outlined"
+    density="compact"
     class="py-3"
   >
     <template v-slot:message>
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
-      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+      <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
         {{ cleanedErrors }}
       </div>
     </template>

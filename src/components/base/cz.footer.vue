@@ -1,5 +1,5 @@
 <template>
-  <v-container flat class="cz-footer text--secondary d-flex flex-column align-center full-width body-2">
+  <v-container flat class="cz-footer text--secondary d-flex flex-column align-center full-width text-body-2">
     <div class="d-lg-flex justify-space-between full-width">
       <div class="has-space-bottom-2x">
         <div class="has-space-bottom text-h6">Contact Us</div>

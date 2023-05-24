@@ -3,7 +3,7 @@
     ref="menu"
     v-model="showMenu"
     :close-on-content-click="false"
-    :return-value.sync="pickerValue"
+    v-model:return-value="pickerValue"
     transition="scale-transition"
     offset-y
     :min-width="useTabLayout ? '290px' : '580px'"
@@ -25,21 +25,21 @@
         v-bind="attrs"
         :prepend-inner-icon="pickerIcon"
         v-mask="mask"
-        :value="inputValue"
-        @input="onInputChange"
+        :model-value="inputValue"
+        @update:model-value="onInputChange"
         v-on="on"
-        outlined
+        variant="outlined"
         class="py-3"
       >
         <template v-slot:message>
           <div v-if="description" class="text-subtitle-1 text--secondary">
             {{ description }}
           </div>
-          <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+          <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
             {{ cleanedErrors }}
           </div>
         </template>
-        <template slot="append">
+        <template v-slot:append>
           <v-icon v-if="control.enabled" tabindex="-1" @click="clear"
             >$clear</v-icon
           >
@@ -49,11 +49,11 @@
 
     <v-card v-if="showMenu">
       <v-tabs v-if="useTabLayout" v-model="activeTab">
-        <v-tab key="date" href="#date" class="primary--text">
+        <v-tab key="date" href="#date" class="text-primary">
           <v-icon>mdi-calendar</v-icon>
         </v-tab>
         <v-spacer></v-spacer>
-        <v-tab key="time" href="#time" class="primary--text">
+        <v-tab key="time" href="#time" class="text-primary">
           <v-icon>mdi-clock-outline</v-icon>
         </v-tab>
 
@@ -99,7 +99,7 @@
       </v-row>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn text @click="showMenu = false">
+        <v-btn variant="text" @click="showMenu = false">
           {{ cancelLabel }}
         </v-btn>
         <v-btn

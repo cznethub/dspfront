@@ -17,7 +17,7 @@
         {{ computedLabel }}
       </legend>
 
-      <v-tooltip v-if="hasToggle" bottom transition="fade">
+      <v-tooltip v-if="hasToggle" location="bottom" transition="fade">
         <template v-slot:activator="{ on: onTooltip }">
           <!-- ADD BUTTON -->
           <v-btn
@@ -67,7 +67,7 @@
       <div class="text--secondary text-body-1 ml-2">{{ description }}</div>
       <div
         v-if="cleanedErrors"
-        class="ml-2 v-messages error--text"
+        class="ml-2 v-messages text-error"
         :class="styles.control.error"
       >
         {{ cleanedErrors }}

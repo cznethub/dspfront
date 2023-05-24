@@ -7,8 +7,8 @@
 
     <v-text-field
       label="ORCID access token"
-      :value="token"
-      outlined
+      :model-value="token"
+      variant="outlined"
       readonly
       append-icon="mdi-content-copy"
       @click:append="onCopy"

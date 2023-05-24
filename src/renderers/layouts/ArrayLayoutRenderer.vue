@@ -8,7 +8,7 @@
         {{ computedLabel }}
       </legend>
 
-      <v-tooltip bottom transition="fade">
+      <v-tooltip location="bottom" transition="fade">
         <template v-slot:activator="{ on: onTooltip }">
           <v-btn icon color="primary"
             @click="addButtonClick()" 
@@ -41,7 +41,7 @@
                   <v-row>
                     <v-col v-if="!hideAvatar" align-self="center" px-0 class="flex-grow-0">
                       <v-chip aria-label="Index" color="primary">
-                        <span class="primary--text text--lighten-5">{{ index + 1 }}</span>
+                        <span class="text-primary-lighten-5">{{ index + 1 }}</span>
                       </v-chip>
                     </v-col>
 
@@ -56,14 +56,14 @@
                       class="flex-grow-0"
                       v-if="appliedOptions.showSortButtons"
                     >
-                      <v-tooltip bottom>
+                      <v-tooltip location="bottom">
                         <template v-slot:activator="{ on: onTooltip }">
                           <v-btn
                             v-on="onTooltip"
                             fab
-                            text
+                            variant="text"
                             elevation="0"
-                            small
+                            size="small"
                             class="v-expansion-panel-title__icon"
                             aria-label="Move up"
                             :disabled="index <= 0 || !control.enabled"
@@ -81,14 +81,14 @@
                       class="flex-grow-0"
                       v-if="appliedOptions.showSortButtons"
                     >
-                      <v-tooltip bottom>
+                      <v-tooltip location="bottom">
                         <template v-slot:activator="{ on: onTooltip }">
                           <v-btn
                             v-on="onTooltip"
                             fab
-                            text
+                            variant="text"
                             elevation="0"
-                            small
+                            size="small"
                             class="v-expansion-panel-title__icon"
                             aria-label="Move down"
                             :disabled="
@@ -105,14 +105,14 @@
                       </v-tooltip>
                     </v-col>
                     <v-col align-self="center" class="flex-grow-0">
-                      <v-tooltip bottom>
+                      <v-tooltip location="bottom">
                         <template v-slot:activator="{ on: onTooltip }">
                           <v-btn
                             v-on="onTooltip"
                             fab
-                            text
+                            variant="text"
                             elevation="0"
-                            small
+                            size="small"
                             class="v-expansion-panel-title__icon"
                             aria-label="Delete"
                             :class="styles.arrayList.itemDelete"
@@ -149,7 +149,7 @@
         </v-row>
       </v-container>
       <v-dialog
-        :value="suggestToDelete !== null"
+        :model-value="suggestToDelete !== null"
         max-width="600"
         @keydown.esc="suggestToDelete = null"
         @click:outside="suggestToDelete = null"
@@ -164,9 +164,9 @@
           <v-card-actions>
             <v-spacer></v-spacer>
 
-            <v-btn text @click="suggestToDelete = null"> Cancel </v-btn>
+            <v-btn variant="text" @click="suggestToDelete = null"> Cancel </v-btn>
             <v-btn
-              text
+              variant="text"
               ref="confirm"
               @click="
                 removeItemsClick([suggestToDelete]);
@@ -180,7 +180,7 @@
       </v-dialog>
     </fieldset>
     <div v-if="description" class="text--secondary text-body-1 ml-2">{{ description }}</div>
-    <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+    <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
       {{ cleanedErrors }}
     </div>
   </div>

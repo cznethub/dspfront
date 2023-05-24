@@ -26,7 +26,7 @@
       </template>
     </fieldset>
     <div v-if="description" class="text--secondary text-body-1 mt-2 ml-2">{{ description }}</div>
-    <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+    <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
       <v-divider v-if="isFlat" class="mb-4"></v-divider>
       {{ cleanedErrors }}
     </div>

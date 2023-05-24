@@ -6,7 +6,7 @@
       id="instructions"
       v-if="!isLoading && wasLoaded"
       class="text-subtitle-1 my-8"
-      border="left"
+      border="start"
       colored-border
       type="info"
       elevation="2"
@@ -35,7 +35,7 @@
     <v-alert
       v-if="!isLoading && isPublished"
       class="text-subtitle-1 my-8"
-      border="left"
+      border="start"
       colored-border
       type="warning"
       icon="mdi-pencil-off"
@@ -50,12 +50,12 @@
 
     <v-alert
       class="my-8"
-      outlined
+      variant="outlined"
       v-if="isReadOnly"
       icon="mdi-lock"
       type="warning"
       prominent
-      border="left"
+      border="start"
     >
       <div class="text-body-1">
         This submission has been submitted for review and can no longer be
@@ -90,7 +90,7 @@
           @upload="uploadFiles($event)"
           :isReadOnly="isReadOnly"
           :isPublished="isPublished"
-          :rootDirectory.sync="rootDirectory"
+          v-model:rootDirectory="rootDirectory"
           :repoMetadata="repoMetadata[repositoryKey]"
           :isEditMode="isEditMode"
           :identifier="identifier"
@@ -144,7 +144,7 @@
       <template v-if="wasUnauthorized">
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
           elevation="2"
@@ -170,7 +170,7 @@
       <template v-else-if="!isLoggedIn">
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
           elevation="2"
@@ -198,7 +198,7 @@
       <template v-else>
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="error"
           elevation="2"
@@ -232,15 +232,15 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text @click="showUISchema = false">Close</v-btn>
+          <v-btn variant="text" @click="showUISchema = false">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <v-dialog
-      :value="isSaving"
+      :model-value="isSaving"
       no-click-animation
-      hide-overlay
+      :scrim="false"
       persistent
       width="300"
       attach="#cz-new-submission"

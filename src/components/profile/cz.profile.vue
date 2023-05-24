@@ -1,10 +1,10 @@
 <template>
   <div class="cz-profile">
-    <v-navigation-drawer permanent :mini-variant="$vuetify.display.mdAndDown" class="flex-shrink-0">
+    <v-navigation-drawer permanent :rail="$vuetify.display.mdAndDown" class="flex-shrink-0">
       <template v-slot:prepend>
-        <v-list-item two-line>
+        <v-list-item lines="two">
           <v-list-item-avatar>
-            <v-icon left class="fab fa-orcid"></v-icon>
+            <v-icon start class="fab fa-orcid"></v-icon>
           </v-list-item-avatar>
 
           <v-list-item-content>
@@ -16,7 +16,7 @@
 
       <v-divider/>
 
-      <v-list dense>
+      <v-list density="compact">
         <v-list-item link :to="{ path: '/profile/account' }" active-class="active">
           <v-list-item>
             <v-icon>mdi-account-circle</v-icon>

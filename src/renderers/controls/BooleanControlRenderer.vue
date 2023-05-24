@@ -11,10 +11,10 @@
     :required="control.required"
     :error-messages="control.errors"
     :indeterminate="control.data === undefined"
-    :input-value="control.data"
+    :model-value="control.data"
     :value="control.data"
     v-bind="vuetifyProps('v-checkbox')"
-    @change="onChange"
+    @update:model-value="onChange"
     @focus="isFocused = true"
     @blur="isFocused = false"
     class="py-3"
@@ -23,7 +23,7 @@
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
-      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+      <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
         {{ cleanedErrors }}
       </div>
     </template>

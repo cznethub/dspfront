@@ -13,7 +13,7 @@
           class="v-label">{{ computedLabel }}</legend>
 
         <div v-if="hasToggle">
-          <v-tooltip v-if="!isAdded" bottom transition="fade">
+          <v-tooltip v-if="!isAdded" location="bottom" transition="fade">
             <template v-slot:activator="{ on: onTooltip }">
               <v-btn icon color="primary"
                 @click="showForm()"
@@ -29,7 +29,7 @@
             {{ `Add ${control.schema.title}` }}
           </v-tooltip>
 
-          <v-tooltip v-else bottom transition="fade">
+          <v-tooltip v-else location="bottom" transition="fade">
             <template v-slot:activator="{ on: onTooltip }">
               <v-btn icon color="error"
                 @click="removeForm()" 
@@ -57,7 +57,7 @@
         <template v-if="!isDropDown">
           <v-tabs v-model="selectedIndex">
             <v-tab
-              @change="handleTabChange"
+              @group:selected="handleTabChange"
               :key="`${control.path}-${oneOfIndex}`"
               v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
             >
@@ -86,10 +86,10 @@
 
         <template v-else>
           <v-select
-            @change="handleSelect"
+            @update:model-value="handleSelect"
             :items="oneOfRenderInfos"
             :label="title"
-            :value="oneOfRenderInfos[selectedIndex]"
+            :model-value="oneOfRenderInfos[selectedIndex]"
             :data-id="computedLabel.replaceAll(` `, ``)"
             :hint="description"
             :required="control.required"
@@ -99,8 +99,8 @@
             :readonly="control.schema.readOnly"
             class="py-4"
             hide-details="auto"
-            item-text="label"
-            outlined
+            item-title="label"
+            variant="outlined"
             dense
             persistent-hint
           >{{ currentLabel }}</v-select>
@@ -119,7 +119,7 @@
       </template>
     </fieldset>
     <div v-if="description" class="text--secondary text-body-1 mt-2 ml-2">{{ description }}</div>
-    <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+    <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
       <v-divider v-if="isFlat" class="mb-4"></v-divider>
       {{ cleanedErrors }}
     </div>

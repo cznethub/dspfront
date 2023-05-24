@@ -18,7 +18,7 @@
         class="submission-cancel my-2 my-sm-0"
         >{{ isPublished ? "Back" : "Cancel" }}</v-btn
       >
-      <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
+      <v-menu :disabled="!errors.length" open-on-hover location="bottom" location="left" offset-y>
         <template v-slot:activator="{ on, attrs }">
           <div
             v-bind="attrs"
