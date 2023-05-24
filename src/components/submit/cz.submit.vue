@@ -1,7 +1,8 @@
 <template>
   <div class="cz-submit">
     <template v-if="isInSubmitLandingPage">
-      <div class="banner text-center"
+      <div
+class="banner text-center"
         :style="{ 'background-image': 'linear-gradient(180deg, rgba(30, 36, 58, 0.35), rgba(28, 37, 65, 0.3)), url(' + '/img/bg-1.jpg' + ')' }">
         <div>
           <div class="has-text-white text-h2 has-text-shadow">Submit Data</div>
@@ -15,10 +16,12 @@
 
         <div class="mb-4">
           <div class="repositories justify-space-around px-4">
-            <cz-repository-submit-card v-for="repo of supportedRepoMetadata"
-              @click.native="submitTo(repo)"
-              :repo="repo" :key="repo.key" />
-            <cz-repository-submit-card :repo="externalRepoMetadata"
+            <cz-repository-submit-card
+v-for="repo of supportedRepoMetadata"
+              :key="repo.key"
+              :repo="repo" @click.native="submitTo(repo)" />
+            <cz-repository-submit-card
+:repo="externalRepoMetadata"
               @click.native="openRegisterDatasetDialog" />
           </div>
         </div>

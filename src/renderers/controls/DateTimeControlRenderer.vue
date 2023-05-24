@@ -2,17 +2,18 @@
   <v-menu
     ref="menu"
     v-model="showMenu"
-    :close-on-content-click="false"
     v-model:return-value="pickerValue"
+    :close-on-content-click="false"
     transition="scale-transition"
     offset-y
     :min-width="useTabLayout ? '290px' : '580px'"
     v-bind="vuetifyProps('v-menu')"
     :disabled="!control.enabled"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <v-text-field
         :id="control.id + '-input'"
+        v-mask="mask"
         :class="styles.control.input"
         :disabled="!control.enabled"
         :autofocus="appliedOptions.focus"
@@ -24,14 +25,13 @@
         :error-messages="control.errors"
         v-bind="attrs"
         :prepend-inner-icon="pickerIcon"
-        v-mask="mask"
         :model-value="inputValue"
-        @update:model-value="onInputChange"
-        v-on="on"
         variant="outlined"
         class="py-3"
+        @update:model-value="onInputChange"
+        v-on="on"
       >
-        <template v-slot:message>
+        <template #message>
           <div v-if="description" class="text-subtitle-1 text--secondary">
             {{ description }}
           </div>
@@ -39,7 +39,7 @@
             {{ cleanedErrors }}
           </div>
         </template>
-        <template v-slot:append>
+        <template #append>
           <v-icon v-if="control.enabled" tabindex="-1" @click="clear"
             >$clear</v-icon
           >
@@ -60,8 +60,8 @@
         <v-window-item value="date"
           ><v-date-picker
             v-if="showMenu"
-            v-model="datePickerValue"
             ref="datePicker"
+            v-model="datePickerValue"
             v-bind="vuetifyProps('v-date-picker')"
             @input="activeTab = 'time'"
           >
@@ -69,28 +69,28 @@
         </v-window-item>
         <v-window-item value="time"
           ><v-time-picker
-            v-model="timePickerValue"
             ref="timePicker"
+            v-model="timePickerValue"
             v-bind="vuetifyProps('v-time-picker')"
             :use-seconds="useSeconds"
             format="ampm"
           ></v-time-picker>
         </v-window-item>
       </v-tabs>
-      <v-row no-gutters v-else>
+      <v-row v-else no-gutters>
         <v-col min-width="290px" cols="auto">
           <v-date-picker
             v-if="showMenu"
-            v-model="datePickerValue"
             ref="datePicker"
+            v-model="datePickerValue"
             v-bind="vuetifyProps('v-date-picker')"
           >
           </v-date-picker>
         </v-col>
         <v-col min-width="290px" cols="auto">
           <v-time-picker
-            v-model="timePickerValue"
             ref="timePicker"
+            v-model="timePickerValue"
             v-bind="vuetifyProps('v-time-picker')"
             :use-seconds="useSeconds"
             format="ampm"
@@ -143,7 +143,7 @@ const JSON_SCHEMA_DATE_TIME_FORMATS = [
 ];
 
 const controlRenderer = defineComponent({
-  name: "datetime-control-renderer",
+  name: "DatetimeControlRenderer",
   directives: { Mask },
   props: {
     ...rendererProps<ControlElement>(),
@@ -159,21 +159,6 @@ const controlRenderer = defineComponent({
 
     const control = useVuetifyControl(useJsonFormsControl(props), adaptValue);
     return { ...control, showMenu, mask, t, adaptValue, activeTab };
-  },
-  watch: {
-    showMenu(show) {
-      if (!show) {
-        // menu is closing then reset the activeTab
-        this.activeTab = "date";
-      }
-    },
-    isFocused(newFocus) {
-      if (newFocus && this.applyMask) {
-        this.mask = this.maskFunction.bind(this);
-      } else {
-        this.mask = undefined;
-      }
-    },
   },
   computed: {
     description(): string {
@@ -289,6 +274,21 @@ const controlRenderer = defineComponent({
           ? this.appliedOptions.okLabel
           : "OK";
       return this.t(label, label);
+    },
+  },
+  watch: {
+    showMenu(show) {
+      if (!show) {
+        // menu is closing then reset the activeTab
+        this.activeTab = "date";
+      }
+    },
+    isFocused(newFocus) {
+      if (newFocus && this.applyMask) {
+        this.mask = this.maskFunction.bind(this);
+      } else {
+        this.mask = undefined;
+      }
     },
   },
   methods: {

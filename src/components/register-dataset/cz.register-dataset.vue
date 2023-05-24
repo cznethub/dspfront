@@ -60,8 +60,8 @@
           @submit.prevent
         >
           <v-text-field
-            v-model.trim="url"
             ref="txtIdentifier"
+            v-model.trim="url"
             :disabled="isFetching"
             :required="true"
             :rules="[isValidUrlOrIdentifier()]"
@@ -85,12 +85,12 @@
           <v-btn
             color="primary"
             class="mr-4"
-            @click="onReadDataset"
             :disabled="!canReadDataset"
+            @click="onReadDataset"
           >
             Continue
           </v-btn>
-          <v-btn color="default" @click="step--" :disabled="isFetching" variant="text">
+          <v-btn color="default" :disabled="isFetching" variant="text" @click="step--">
             Back
           </v-btn>
         </v-form>
@@ -246,8 +246,8 @@
               v-if="isPublished"
               color="primary"
               class="mr-4"
-              @click="registerSubmissionAsIs"
               :disabled="isFetching || !isValid || !url || isRegistering"
+              @click="registerSubmissionAsIs"
             >
               {{ isRegistering ? "Registering..." : "Register Dataset" }}
             </v-btn>
@@ -256,13 +256,13 @@
               v-else
               color="primary"
               class="mr-4"
-              @click="goToEditSubmission"
               :disabled="isFetching || !isValid || !url"
+              @click="goToEditSubmission"
             >
               Continue & Edit...
             </v-btn>
 
-            <v-btn color="default" @click="step--" :disabled="isFetching" variant="text">
+            <v-btn color="default" :disabled="isFetching" variant="text" @click="step--">
               Back
             </v-btn>
           </div>
@@ -283,8 +283,8 @@
               >
               <v-col class="flex-grow-0">
                 <v-btn
-                  @click="openAuthorizePopup(selectedRepository.key)"
                   color="primary"
+                  @click="openAuthorizePopup(selectedRepository.key)"
                 >
                   <i class="fas fa-key mr-2" />Authorize
                 </v-btn>
@@ -310,9 +310,9 @@
           <v-btn
             color="default"
             class="mb-2"
-            @click="step--"
             :disabled="isFetching"
             variant="text"
+            @click="step--"
           >
             Back
           </v-btn>

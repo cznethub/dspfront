@@ -20,7 +20,7 @@
             >
               Ready to Submit Data?
             </div>
-            <v-btn @click="openLogInDialog()" rounded>Log In</v-btn>
+            <v-btn rounded @click="openLogInDialog()">Log In</v-btn>
           </div>
         </template>
         <div class="mt-16">

@@ -6,8 +6,8 @@
   >
     <v-row
       v-for="(element, index) in layout.uischema.elements"
-      :data-id="`vertical-${index}`"
       :key="`${layout.path}-${index}`"
+      :data-id="`vertical-${index}`"
       no-gutters
       v-bind="vuetifyProps(`v-row[${index}]`)"
     >
@@ -43,7 +43,7 @@ import { useVuetifyLayout } from '@/renderers/util/composition';
 import { VContainer, VRow, VCol } from 'vuetify/components'
 
 const layoutRenderer = defineComponent({
-  name: 'vertical-layout-renderer',
+  name: 'VerticalLayoutRenderer',
   components: {
     DispatchRenderer,
     VContainer,

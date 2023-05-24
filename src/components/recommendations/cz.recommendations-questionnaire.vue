@@ -34,11 +34,12 @@
               </v-radio-group>
             </v-card>
 
-            <v-btn color="primary" @click="nextStep(step.selectedOption)" :disabled="!step.selectedOption">Continue</v-btn>
+            <v-btn color="primary" :disabled="!step.selectedOption" @click="nextStep(step.selectedOption)">Continue</v-btn>
           </template>
 
           <template v-if="step.finish">
-            <v-alert class="my-8" variant="outlined"
+            <v-alert
+class="my-8" variant="outlined"
               type="warning"
               color="warning-darken-2"
               prominent
@@ -55,11 +56,12 @@
             <div class="text-heading-5 mb-8">Recommended Repositories:</div>
             <template v-if="getRepoMetadataFromKeys(step.finish.prefer).length">
               <div class="repositories justify-space-around px-1">
-                <cz-recommendation-card v-for="preferred in getRepoMetadataFromKeys(step.finish.prefer)"
-                  :repo="preferred" :key="preferred.key" :hideLogo="false" class="mb-4" />
+                <cz-recommendation-card
+v-for="preferred in getRepoMetadataFromKeys(step.finish.prefer)"
+                  :key="preferred.key" :repo="preferred" :hide-logo="false" class="mb-4" />
               </div>
             </template>
-            <div class="text-subtitle-1 text--secondary" v-else>We have nothing specific to recommend for this query.</div>
+            <div v-else class="text-subtitle-1 text--secondary">We have nothing specific to recommend for this query.</div>
 
             <div v-if="step.finish.consider && getRepoMetadataFromKeys(step.finish.consider).length">
               <div class="text-heading-5 my-8">Also consider:</div>

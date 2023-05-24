@@ -11,7 +11,7 @@ import { default as ValidationBadge } from './ValidationBadge.vue';
 import { VIcon } from 'vuetify/components';
 
 export default defineComponent({
-  name: 'validation-icon',
+  name: 'ValidationIcon',
   components: {
     ValidationBadge,
     VIcon,

@@ -1,5 +1,6 @@
 <template>
-  <v-card class="cz-authorize d-flex flex-column flex-md-row"
+  <v-card
+class="cz-authorize d-flex flex-column flex-md-row"
     :class="{ 'is-medium': $vuetify.display.mdAndUp }">
     <v-card class="d-flex flex-column darken-2" color="blue-grey" rounded="0">
       <v-card-title class="text-white">
@@ -19,7 +20,7 @@
         <div class="text-body-1 my-4">Permission is needed to access this repository</div>
       </v-card-title>
       <v-card-text class="d-flex flex-column align-center">
-        <v-btn @click="openAuthorizePopup" color="primary" class="mb-4">
+        <v-btn color="primary" class="mb-4" @click="openAuthorizePopup">
           <i class="fas fa-key mr-2" />Authorize
         </v-btn>
       </v-card-text>

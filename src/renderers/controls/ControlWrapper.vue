@@ -1,5 +1,5 @@
 <template>
-  <div v-if="visible" :class="styles.control.root" :id="id" :data-id="computedLabel.replaceAll(` `, ``)">
+  <div v-if="visible" :id="id" :class="styles.control.root" :data-id="computedLabel.replaceAll(` `, ``)">
     <div :class="styles.control.wrapper">
       <slot></slot>
     </div>
@@ -12,7 +12,7 @@ import { defineComponent, PropType } from 'vue';
 import { Styles } from "@jsonforms/vue-vanilla";
 
 export default defineComponent({
-  name: 'control-wrapper',
+  name: 'ControlWrapper',
   props: {
     id: {
       required: true as true,

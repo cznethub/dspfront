@@ -1,16 +1,16 @@
 <template>
   <div>
-    <v-tooltip location="bottom" v-if="errors.length > 0">
-      <template v-slot:activator="{ on: onTooltip }">
+    <v-tooltip v-if="errors.length > 0" location="bottom">
+      <template #activator="{ on: onTooltip }">
         <v-badge
           :color="color"
           :bordered="bordered"
           :inline="inline"
-          :offsetX="offsetX"
-          :offsetY="offsetY"
+          :offset-x="offsetX"
+          :offset-y="offsetY"
           :overlap="overlap"
         >
-          <template v-slot:badge>
+          <template #badge>
             {{ errors.length }}
           </template>
           <div v-on="onTooltip"><slot></slot></div>
@@ -41,7 +41,7 @@ import { ErrorObject } from 'ajv';
 // } from '@jsonforms/core';
 
 export default defineComponent({
-  name: 'validation-badge',
+  name: 'ValidationBadge',
   components: {
     VBadge,
     VTooltip,

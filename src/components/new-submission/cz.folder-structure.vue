@@ -8,14 +8,14 @@
         location="bottom"
         transition="fade"
       >
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
           <v-btn
-            @click="newFolder"
             class="mr-4"
             size="small"
             icon
-            v-on="on"
             v-bind="attrs"
+            @click="newFolder"
+            v-on="on"
             ><v-icon>mdi-folder</v-icon></v-btn
           >
         </template>
@@ -27,15 +27,15 @@
       <template v-if="!isReadOnly && !isPublished">
         <template>
           <v-tooltip location="bottom" transition="fade">
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="selectAll"
                 :disabled="!rootDirectory.children.length"
                 class="mr-1"
                 icon
                 size="small"
-                v-on="on"
                 v-bind="attrs"
+                @click="selectAll"
+                v-on="on"
               >
                 <v-icon>mdi-checkbox-marked-outline</v-icon>
               </v-btn>
@@ -46,14 +46,14 @@
 
         <template>
           <v-tooltip location="bottom" transition="fade">
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="unselectAll"
                 icon
                 size="small"
                 :disabled="!selected.length"
-                v-on="on"
                 v-bind="attrs"
+                @click="unselectAll"
+                v-on="on"
               >
                 <v-icon>mdi-checkbox-blank-off-outline</v-icon>
               </v-btn>
@@ -65,15 +65,15 @@
 
         <template v-if="repoMetadata.hasFolderStructure">
           <v-tooltip location="bottom" transition="fade">
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="cut"
                 :disabled="!canCut"
                 class="mr-1"
                 icon
                 size="small"
-                v-on="on"
                 v-bind="attrs"
+                @click="cut"
+                v-on="on"
                 ><v-icon>mdi-content-cut</v-icon></v-btn
               >
             </template>
@@ -85,14 +85,14 @@
             location="bottom"
             transition="fade"
           >
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="paste"
                 :disabled="!canPaste"
                 icon
                 size="small"
-                v-on="on"
                 v-bind="attrs"
+                @click="paste"
+                v-on="on"
               >
                 <v-icon>mdi-content-paste</v-icon>
               </v-btn>
@@ -104,14 +104,14 @@
 
         <template>
           <v-tooltip location="bottom" transition="fade">
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="deleteSelected"
                 icon
                 size="small"
                 :disabled="isDeleting || !selected.length"
-                v-on="on"
                 v-bind="attrs"
+                @click="deleteSelected"
+                v-on="on"
               >
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
@@ -134,7 +134,7 @@
       <v-spacer></v-spacer>
 
       <template v-if="rootDirectory.children.length && !isEditMode">
-        <v-btn @click="empty" size="small" variant="flat" class="bg-primary-lighten-2">
+        <v-btn size="small" variant="flat" class="bg-primary-lighten-2" @click="empty">
           Discard All
         </v-btn>
       </template>
@@ -154,18 +154,19 @@
         click the Save Changes button for your changes to be effective.
       </v-alert>
 
-      <v-card flat variant="outlined" v-if="rootDirectory.children.length" class="mb-4">
+      <v-card v-if="rootDirectory.children.length" flat variant="outlined" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem">
           <v-row class="flex-grow-1">
             <v-col
-              :cols="$vuetify.display.smAndUp ? 9 : 11"
               v-click-outside="{ handler: onClickOutside, include }"
+              :cols="$vuetify.display.smAndUp ? 9 : 11"
             >
               <v-treeview
-                item-disabled="isDisabled"
-                :items="rootDirectory.children"
+                :key="redraw"
                 v-model:open="open"
                 v-model:active="selected"
+                item-disabled="isDisabled"
+                :items="rootDirectory.children"
                 return-object
                 multiple-active
                 transition
@@ -173,32 +174,37 @@
                 dense
                 open-on-click
                 class="files-container--included"
-                :key="redraw"
               >
-                <template v-slot:prepend="{ item, open }">
+                <template #prepend="{ item, open }">
                   <v-icon
                     v-if="item.children"
+                    :disabled="item.isDisabled"
+                    :color="item.isCutting ? 'grey' : ''"
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact="onItemCtrlClick(item)"
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
-                    :disabled="item.isDisabled"
-                    :color="item.isCutting ? 'grey' : ''"
                   >
                     {{ open ? "mdi-folder-open" : "mdi-folder" }}
                   </v-icon>
                   <v-icon
                     v-else
-                    @click.ctrl.exact="onItemCtrlClick(item)"
                     :disabled="item.isDisabled"
                     :color="item.isCutting ? 'grey' : ''"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
                   >
                     {{ files[item.name.split(".").pop()] || files["default"] }}
                   </v-icon>
                 </template>
-                <template v-slot:label="{ item }">
+                <template #label="{ item }">
                   <v-text-field
                     v-if="item.isRenaming"
+                    v-click-outside="onClickOutside"
+                    :model-value="item.name"
+                    append-icon="mdi-cancel"
+                    density="compact"
+                    hide-details="auto"
+                    autofocus
                     @change="onRenamed(item, $event)"
                     @keydown.enter="item.isRenaming = false"
                     @click.exact="onItemClick(item)"
@@ -206,22 +212,16 @@
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
                     @click:append="item.isRenaming = false"
-                    :model-value="item.name"
-                    v-click-outside="onClickOutside"
-                    append-icon="mdi-cancel"
-                    density="compact"
-                    hide-details="auto"
-                    autofocus
                   >
                   </v-text-field>
                   <v-row
                     v-else
+                    :class="{ 'text--secondary': item.isCutting }"
+                    class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column"
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact="onItemCtrlClick(item)"
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
-                    :class="{ 'text--secondary': item.isCutting }"
-                    class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column"
                   >
                     <v-col
                       class="d-flex flex-column flex-sm-row align-start align-sm-center"
@@ -244,7 +244,7 @@
                     </v-col>
                   </v-row>
                 </template>
-                <template v-slot:append="{ item, active }">
+                <template #append="{ item, active }">
                   <v-row v-if="!item.isRenaming">
                     <v-col
                       v-if="!isFolder(item) && item.isUploaded"
@@ -260,10 +260,10 @@
                     >
                       <v-btn
                         color="info"
-                        @click="$emit('upload', [item])"
                         :disabled="item.isDisabled"
                         size="small"
                         variant="flat"
+                        @click="$emit('upload', [item])"
                       >
                         <v-icon start>mdi-cloud-upload</v-icon>
                         Retry
@@ -274,7 +274,7 @@
                       class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary align-center"
                     >
                       <v-menu open-on-hover location="bottom left" offset-y>
-                        <template v-slot:activator="{ on, attrs }">
+                        <template #activator="{ on, attrs }">
                           <div v-bind="attrs" v-on="on">
                             <v-icon
                               :color="
@@ -329,10 +329,10 @@
                       <template>
                         <v-btn
                           v-if="!item.isRenaming"
-                          @click.stop="renameItem(item)"
                           fab
                           size="small"
                           variant="text"
+                          @click.stop="renameItem(item)"
                           ><v-icon>mdi-pencil-outline</v-icon></v-btn
                         >
                       </template>
@@ -344,12 +344,12 @@
                 </template>
               </v-treeview>
             </v-col>
-            <v-col cols="3" v-if="$vuetify.display.smAndUp"></v-col>
+            <v-col v-if="$vuetify.display.smAndUp" cols="3"></v-col>
           </v-row>
         </v-card-text>
         <v-divider></v-divider>
 
-        <div class="py-2 px-4" v-if="rootDirectory.children.length">
+        <div v-if="rootDirectory.children.length" class="py-2 px-4">
           <span
             >{{ allItems.length }} file{{
               allItems.length > 1 ? "s" : ""
@@ -371,7 +371,7 @@
             location="top right"
             offset-y
           >
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <div class="ml-4 d-inline-block" v-bind="attrs" v-on="on">
                 <v-icon color="error">mdi-alert-circle</v-icon>
               </div>
@@ -411,11 +411,11 @@
         class="upload-drop-area files-container--included"
       >
         <b-upload
+          v-model="dropFiles"
           type="file"
           multiple
           drag-drop
           expanded
-          v-model="dropFiles"
           class="has-bg-light-gray"
         >
           <v-alert

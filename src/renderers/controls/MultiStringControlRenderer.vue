@@ -2,7 +2,6 @@
   <v-textarea
     :id="control.id + '-input'"
     :data-id="computedLabel.replaceAll(` `, ``)"
-    @update:model-value.native="beforeChange"
     :maxlength="appliedOptions.restrict ? control.schema.maxLength : undefined"
     :counter="control.schema.maxLength !== undefined
             ? control.schema.maxLength
@@ -21,8 +20,9 @@
     variant="outlined"
     density="compact"
     class="py-3"
+    @update:model-value.native="beforeChange"
   >
-    <template v-slot:message>
+    <template #message>
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
@@ -47,7 +47,7 @@ import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vu
 import { useVuetifyControl } from '@/renderers/util/composition';
 
 const controlRenderer = defineComponent({
-  name: 'multi-string-control-renderer',
+  name: 'MultiStringControlRenderer',
   components: {
     // ControlWrapper
   },
@@ -60,23 +60,6 @@ const controlRenderer = defineComponent({
       (value) => value || undefined,
       300
     );
-  },
-  created() {
-    // If the value that was loaded is null, turn it into undefined
-    if (this.control.data === null) {
-      this.handleChange(this.control.path, undefined)
-    }
-
-    // If no value loaded but there is a default, populate it
-    if (!this.control.data && this.control.schema.default) {
-      this.control.data = this.control.schema.default
-      this.handleChange(this.control.path, this.control.data)
-    }
-
-    // If a value was loaded, check if HTML needs to be stripped
-    if (this.control.data && this.stripHTML) {
-      this.handleChange(this.control.path, this.strip(this.control.data))
-    }
   },
   computed: {
     placeholder(): string {
@@ -93,6 +76,23 @@ const controlRenderer = defineComponent({
     stripHTML(): string {
       // @ts-ignore
       return !!this.control.schema.options?.stripHTML
+    }
+  },
+  created() {
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
+
+    // If no value loaded but there is a default, populate it
+    if (!this.control.data && this.control.schema.default) {
+      this.control.data = this.control.schema.default
+      this.handleChange(this.control.path, this.control.data)
+    }
+
+    // If a value was loaded, check if HTML needs to be stripped
+    if (this.control.data && this.stripHTML) {
+      this.handleChange(this.control.path, this.strip(this.control.data))
     }
   },
   methods: {

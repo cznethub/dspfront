@@ -1,6 +1,7 @@
 <template>
   <div class="my-4">
-    <fieldset v-if="control.visible"
+    <fieldset
+v-if="control.visible"
       :class="{
         ...styles.control.root, 
         'cz-fieldset': !isFlat,
@@ -8,19 +9,21 @@
       }">
 
       <template v-if="!isFlat">
-        <legend v-if="control.schema.title" 
-          @click="showForm()" :class="{ 'v-label--active': isAdded || !hasToggle }"
-          class="v-label">{{ computedLabel }}</legend>
+        <legend
+v-if="control.schema.title" 
+          :class="{ 'v-label--active': isAdded || !hasToggle }" class="v-label"
+          @click="showForm()">{{ computedLabel }}</legend>
 
         <div v-if="hasToggle">
           <v-tooltip v-if="!isAdded" location="bottom" transition="fade">
-            <template v-slot:activator="{ on: onTooltip }">
-              <v-btn icon color="primary"
-                @click="showForm()"
+            <template #activator="{ on: onTooltip }">
+              <v-btn
+icon color="primary"
                 :disabled="!control.enabled"
                 :class="styles.arrayList.addButton"
-                class="btn-add" 
-                :aria-label="`Add to ${control.schema.title}`"
+                class="btn-add"
+                :aria-label="`Add to ${control.schema.title}`" 
+                @click="showForm()"
                 v-on="onTooltip"
               >
                 <v-icon>mdi-plus</v-icon>
@@ -30,13 +33,14 @@
           </v-tooltip>
 
           <v-tooltip v-else location="bottom" transition="fade">
-            <template v-slot:activator="{ on: onTooltip }">
-              <v-btn icon color="error"
-                @click="removeForm()" 
-                :disabled="!control.enabled"
+            <template #activator="{ on: onTooltip }">
+              <v-btn
+icon color="error"
+                :disabled="!control.enabled" 
                 :class="styles.arrayList.addButton"
-                class="btn-add" 
-                aria-label="Remove"
+                class="btn-add"
+                aria-label="Remove" 
+                @click="removeForm()"
                 v-on="onTooltip"
               >
                 <v-icon>mdi-minus</v-icon>
@@ -51,15 +55,15 @@
         <combinator-properties
           :schema="control.schema"
           :path="path"
-          combinatorKeyword="oneOf"
+          combinator-keyword="oneOf"
         />
 
         <template v-if="!isDropDown">
           <v-tabs v-model="selectedIndex">
             <v-tab
-              @group:selected="handleTabChange"
-              :key="`${control.path}-${oneOfIndex}`"
               v-for="(oneOfRenderInfo, oneOfIndex) in oneOfRenderInfos"
+              :key="`${control.path}-${oneOfIndex}`"
+              @group:selected="handleTabChange"
             >
               {{ oneOfRenderInfo.label }}
             </v-tab>
@@ -86,7 +90,6 @@
 
         <template v-else>
           <v-select
-            @update:model-value="handleSelect"
             :items="oneOfRenderInfos"
             :label="title"
             :model-value="oneOfRenderInfos[selectedIndex]"
@@ -103,6 +106,7 @@
             variant="outlined"
             dense
             persistent-hint
+            @update:model-value="handleSelect"
           >{{ currentLabel }}</v-select>
 
           <dispatch-renderer
@@ -161,7 +165,7 @@ import {
 import CombinatorProperties from '@/renderers/components/CombinatorProperties.vue'
 
 const controlRenderer = defineComponent({
-  name: 'one-of-renderer',
+  name: 'OneOfRenderer',
   components: {
     DispatchRenderer,
     CombinatorProperties,
@@ -193,16 +197,6 @@ const controlRenderer = defineComponent({
       selectedIndex,
       tabData,
     };
-  },
-  created() {
-    if (this.control.data || true) {
-      this.isAdded = true
-    }
-  },
-  mounted() {
-    // indexOfFittingSchema is only populated after mounted hook
-    this.selectedIndex = this.control.indexOfFittingSchema || 0
-    this.annotateFittingSchema()  // Watchers are not setup yet, so we call it manually
   },
   computed: {
     oneOfRenderInfos(): CombinatorSubSchemaRenderInfo[] {
@@ -262,6 +256,16 @@ const controlRenderer = defineComponent({
     selectedIndex(newIndex, oldIndex) {
       this.annotateFittingSchema()
     }
+  },
+  created() {
+    if (this.control.data || true) {
+      this.isAdded = true
+    }
+  },
+  mounted() {
+    // indexOfFittingSchema is only populated after mounted hook
+    this.selectedIndex = this.control.indexOfFittingSchema || 0
+    this.annotateFittingSchema()  // Watchers are not setup yet, so we call it manually
   },
   methods: {
     handleTabChange(): void {

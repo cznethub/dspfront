@@ -7,27 +7,27 @@
     >
       <legend
         v-if="computedLabel"
-        @click="control.enabled ? (isCollapsed = false) : null"
         class="v-label"
         :class="
           styles.group.label +
           (!isCollapsed || !hasToggle ? ' v-label--active' : '')
         "
+        @click="control.enabled ? (isCollapsed = false) : null"
       >
         {{ computedLabel }}
       </legend>
 
       <v-tooltip v-if="hasToggle" location="bottom" transition="fade">
-        <template v-slot:activator="{ on: onTooltip }">
+        <template #activator="{ on: onTooltip }">
           <!-- ADD BUTTON -->
           <v-btn
             v-if="isCollapsed"
             icon
             color="primary"
-            @click="isCollapsed = false"
             :aria-label="`Add ${control.schema.title}`"
             :disabled="!control.enabled"
             class="btn-add"
+            @click="isCollapsed = false"
             v-on="onTooltip"
           >
             <v-icon>mdi-plus</v-icon>
@@ -38,10 +38,10 @@
             v-else
             icon
             color="error"
-            @click="collapse"
             :aria-label="`Remove ${control.schema.title}`"
             :disabled="!control.enabled"
             class="btn-add"
+            @click="collapse"
             v-on="onTooltip"
           >
             <v-icon>mdi-minus</v-icon>
@@ -98,7 +98,7 @@ import { defineComponent, ref } from "vue";
 import { isEqual } from "lodash";
 
 const controlRenderer = defineComponent({
-  name: "object-renderer",
+  name: "ObjectRenderer",
   components: {
     DispatchRenderer,
   },
@@ -115,28 +115,6 @@ const controlRenderer = defineComponent({
       input: control,
       nested,
     };
-  },
-  watch: {
-    "control.data": function (newVal, oldVal) {
-      if (newVal) {
-        const filteredObj = Object.fromEntries(
-          Object.entries(newVal).filter(([_, value]) => value !== undefined)  // strip out undefined properties
-        );
-        
-        if (isEqual(filteredObj, {})) {
-          this.handleChange(this.control.path, undefined);
-        }
-      }
-    },
-  },
-  created() {
-    this.isCollapsed = !this.control.data;
-  },
-  methods: {
-    collapse() {
-      this.handleChange(this.control.path, undefined);
-      this.isCollapsed = true;
-    },
   },
   computed: {
     detailUiSchema(): UISchemaElement {
@@ -174,6 +152,28 @@ const controlRenderer = defineComponent({
     hasToggle() {
       // @ts-ignore
       return !this.control.required;
+    },
+  },
+  watch: {
+    "control.data": function (newVal, oldVal) {
+      if (newVal) {
+        const filteredObj = Object.fromEntries(
+          Object.entries(newVal).filter(([_, value]) => value !== undefined)  // strip out undefined properties
+        );
+        
+        if (isEqual(filteredObj, {})) {
+          this.handleChange(this.control.path, undefined);
+        }
+      }
+    },
+  },
+  created() {
+    this.isCollapsed = !this.control.data;
+  },
+  methods: {
+    collapse() {
+      this.handleChange(this.control.path, undefined);
+      this.isCollapsed = true;
     },
   },
 });

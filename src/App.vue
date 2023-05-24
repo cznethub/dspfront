@@ -1,8 +1,8 @@
 <template>
   <v-app app>
     <v-app-bar
-      ref="appBar"
       id="app-bar"
+      ref="appBar"
       color="blue-grey-lighten-4"
       elevate-on-scroll
       fixed
@@ -20,9 +20,9 @@
         </router-link>
         <div class="spacer"></div>
         <v-card
+          v-if="!$vuetify.display.mdAndDown"
           class="nav-items has-space-right d-flex"
           :elevation="2"
-          v-if="!$vuetify.display.mdAndDown"
         >
           <v-btn
             id="navbar-nav-home"
@@ -33,9 +33,9 @@
           >
           <v-btn
             v-for="path of paths"
-            :key="path.attrs.to || path.attrs.href"
             v-bind="path.attrs"
             :id="`navbar-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
+            :key="path.attrs.to || path.attrs.href"
             :elevation="0"
             selected-class="primary"
             :class="path.isActive && path.isActive() ? 'primary' : ''"
@@ -49,15 +49,15 @@
 
         <template v-if="!$vuetify.display.mdAndDown">
           <v-btn
-            id="navbar-login"
             v-if="!isLoggedIn"
-            @click="openLogInDialog()"
+            id="navbar-login"
             rounded
+            @click="openLogInDialog()"
             >Log In</v-btn
           >
           <template v-else>
             <v-menu location="bottom left">
-              <template v-slot:activator="{ on, attrs }">
+              <template #activator="{ on, attrs }">
                 <v-btn
                   :color="
                     $route.matched.some((p) => p.name === 'profile')
@@ -105,8 +105,8 @@
         </template>
 
         <v-app-bar-nav-icon
-          @click.stop="showMobileNavigation = true"
           v-if="$vuetify.display.mdAndDown"
+          @click.stop="showMobileNavigation = true"
         />
       </v-container>
     </v-app-bar>
@@ -124,8 +124,8 @@
     </v-footer>
 
     <v-navigation-drawer
-      class="mobile-nav-items"
       v-model="showMobileNavigation"
+      class="mobile-nav-items"
       temporary
       app
     >
@@ -133,9 +133,9 @@
         <v-list-item-group class="text-body-1">
           <v-list-item
             id="drawer-nav-home"
-            @click="showMobileNavigation = false"
             to="/"
             active-class="primary white--text"
+            @click="showMobileNavigation = false"
           >
             <v-icon class="mr-2">mdi-home</v-icon>
             <span>Home</span>
@@ -146,9 +146,9 @@
             :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
             :key="path.attrs.to || path.attrs.href"
             v-bind="path.attrs"
-            @click="showMobileNavigation = false"
             active-class="primary white--text"
             :class="path.isActive && path.isActive() ? 'primary' : ''"
+            @click="showMobileNavigation = false"
           >
             <v-icon class="mr-2">{{ path.icon }}</v-icon>
             <span>{{ path.label }}</span>
@@ -162,8 +162,8 @@
 
         <v-list-item-group class="text-body-1">
           <v-list-item
-            id="drawer-nav-login"
             v-if="!isLoggedIn"
+            id="drawer-nav-login"
             @click="
               openLogInDialog();
               showMobileNavigation = false;
@@ -195,11 +195,11 @@
     >
       <span>{{ snackbar.message }}</span>
 
-      <template v-slot:action="{ attrs }">
+      <template #action="{ attrs }">
         <v-btn
-          @click="snackbar.isActive = false"
           v-bind="attrs"
           :color="snackbarColors[snackbar.type].actionButton"
+          @click="snackbar.isActive = false"
           >Dismiss</v-btn
         >
       </template>
@@ -218,35 +218,35 @@
           <v-spacer></v-spacer>
           <v-btn
             class="dialog-cancel"
+            variant="text"
             @click="
               dialog.isActive = false;
               dialog.onCancel();
             "
-            variant="text"
           >
             {{ dialog.cancelText }}
           </v-btn>
 
           <v-btn
             v-if="dialog.onSecondaryAction"
+            color="green-darken-1"
+            variant="text"
             @click="
               dialog.isActive = false;
               dialog.onSecondaryAction();
             "
-            color="green-darken-1"
-            variant="text"
           >
             {{ dialog.secondaryActionText }}
           </v-btn>
 
           <v-btn
             class="dialog-confirm"
+            color="green-darken-1"
+            variant="text"
             @click="
               dialog.isActive = false;
               dialog.onConfirm();
             "
-            color="green-darken-1"
-            variant="text"
           >
             {{ dialog.confirmText }}
           </v-btn>
@@ -263,8 +263,8 @@
 
     <v-dialog v-model="authorizeDialog.isActive" width="650">
       <cz-authorize
-        @authorized="authorizeDialog.onAuthorized"
         :repo="authorizeDialog.repo"
+        @authorized="authorizeDialog.onAuthorized"
       ></cz-authorize>
     </v-dialog>
     <link

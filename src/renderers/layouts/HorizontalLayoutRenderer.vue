@@ -6,8 +6,8 @@
     <v-row class="flex-column flex-md-row">
       <v-col
         v-for="(element, index) in layout.uischema.elements"
-        :data-id="`horizontal-${index}`"
         :key="`${layout.path}-${index}`"
+        :data-id="`horizontal-${index}`"
         :class="styles.horizontalLayout.item"
       >
         <dispatch-renderer
@@ -40,7 +40,7 @@ import {
 import { useVuetifyLayout } from '@/renderers/util/composition';
 import { VContainer, VRow, VCol } from 'vuetify/components'
 const layoutRenderer = defineComponent({
-  name: 'horizontal-layout-renderer',
+  name: 'HorizontalLayoutRenderer',
   components: {
     DispatchRenderer,
     VContainer,

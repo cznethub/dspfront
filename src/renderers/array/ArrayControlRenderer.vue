@@ -1,30 +1,33 @@
 <template>
   <div class="py-4">
-    <fieldset v-if="control.visible" class="cz-fieldset" 
+    <fieldset
+v-if="control.visible" class="cz-fieldset" 
       :class="{'is-invalid': control.childErrors.length }" 
       :data-id="computedLabel.replaceAll(` `, ``)"
     >
-      <legend v-if="computedLabel"
-        @click="noData && control.enabled ? addButtonClick() : null"
-        class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
+      <legend
+v-if="computedLabel"
+        class="v-label"
+        :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')" @click="noData && control.enabled ? addButtonClick() : null">
         {{ computedLabel }}
       </legend>
 
       <v-tooltip location="bottom" transition="fade">
-        <template v-slot:activator="{ on: onTooltip }">
-          <v-btn icon color="primary"
-            @click="addButtonClick()" 
-            :class="styles.arrayList.addButton"
-            class="btn-add" 
-            :aria-label="`Add to ${control.label}`"
-            v-on="onTooltip"
+        <template #activator="{ on: onTooltip }">
+          <v-btn
+icon color="primary"
+            :class="styles.arrayList.addButton" 
+            class="btn-add"
+            :aria-label="`Add to ${control.label}`" 
             :disabled="
               !control.enabled ||
               (appliedOptions.restrict &&
                 arraySchema !== undefined &&
                 arraySchema.maxItems !== undefined &&
                 control.data.length >= arraySchema.maxItems)
-            ">
+            "
+            @click="addButtonClick()"
+            v-on="onTooltip">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </template>
@@ -89,9 +92,8 @@
                     "
                   >
                     <v-tooltip location="bottom">
-                      <template v-slot:activator="{ on: onTooltip }">
+                      <template #activator="{ on: onTooltip }">
                         <v-btn
-                          v-on="onTooltip"
                           v-if="appliedOptions.showSortButtons"
                           fab
                           variant="text"
@@ -100,6 +102,7 @@
                           aria-label="Move up"
                           :disabled="index <= 0 || !control.enabled"
                           :class="styles.arrayList.itemMoveUp"
+                          v-on="onTooltip"
                           @click.native="moveUpClick($event, index)"
                         >
                           <v-icon class="notranslate">mdi-arrow-up</v-icon>
@@ -108,9 +111,8 @@
                       Move Up
                     </v-tooltip>
                     <v-tooltip location="bottom">
-                      <template v-slot:activator="{ on: onTooltip }">
+                      <template #activator="{ on: onTooltip }">
                         <v-btn
-                          v-on="onTooltip"
                           v-if="appliedOptions.showSortButtons"
                           fab
                           variant="text"
@@ -121,6 +123,7 @@
                             index >= control.data.length - 1 || !control.enabled
                           "
                           :class="styles.arrayList.itemMoveDown"
+                          v-on="onTooltip"
                           @click.native="moveDownClick($event, index)"
                         >
                           <v-icon class="notranslate">mdi-arrow-down</v-icon>
@@ -129,9 +132,8 @@
                       Move Down
                     </v-tooltip>
                     <v-tooltip location="bottom">
-                      <template v-slot:activator="{ on: onTooltip }">
+                      <template #activator="{ on: onTooltip }">
                         <v-btn
-                          v-on="onTooltip"
                           fab
                           variant="text"
                           elevation="0"
@@ -145,6 +147,7 @@
                               arraySchema.minItems !== undefined &&
                               control.data.length <= arraySchema.minItems)
                           "
+                          v-on="onTooltip"
                           @click.native="removeItemsClick($event, [index])"
                         >
                           <v-icon class="notranslate">mdi-delete</v-icon>
@@ -213,7 +216,7 @@ import ValidationIcon from '@/renderers/controls/components/ValidationIcon.vue';
 import { isEqual } from 'lodash';
 
 const controlRenderer = defineComponent({
-  name: 'array-control-renderer',
+  name: 'ArrayControlRenderer',
   components: {
     DispatchCell,
     DispatchRenderer,

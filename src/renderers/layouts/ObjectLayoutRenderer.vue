@@ -2,8 +2,8 @@
   <div>
     <div
       v-for="(element, index) in layout.uischema.elements"
-      :data-id="`group-${index}`"
       :key="`${layout.path}-${index}`"
+      :data-id="`group-${index}`"
       :class="styles.group.item"
     >
       <dispatch-renderer
@@ -37,7 +37,7 @@ import {
 import { useVuetifyLayout } from "@/renderers/util/composition";
 
 const layoutRenderer = defineComponent({
-  name: "group-renderer",
+  name: "GroupRenderer",
   components: {
     DispatchRenderer,
   },

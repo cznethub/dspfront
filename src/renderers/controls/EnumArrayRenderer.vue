@@ -1,7 +1,6 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-select
-      @update:model-value="beforeChange"
       :id="control.id + '-input'"
       :data-id="computedLabel.replaceAll(` `, ``)"
       :class="styles.control.input"
@@ -27,8 +26,9 @@
       item-value="value"
       variant="outlined"
       multiple
+      @update:model-value="beforeChange"
     >
-      <template v-slot:message>
+      <template #message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
@@ -79,7 +79,7 @@ const useJsonFormsMultiEnumControl = (props: ControlProps) => {
 import { useVuetifyControl } from '@/renderers/util/composition';
 
 const controlRenderer = defineComponent({
-  name: 'enum-array-renderer',
+  name: 'EnumArrayRenderer',
   components: {
     DispatchRenderer,
     VCheckbox,

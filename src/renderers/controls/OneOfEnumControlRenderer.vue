@@ -3,7 +3,6 @@
   <v-hover v-slot="{ hover }">
     <v-autocomplete
       v-if="hasAutoComplete"
-      @update:model-value="onChange"
       :id="control.id + '-input'"
       :class="styles.control.input"
       :disabled="!control.enabled"
@@ -23,11 +22,11 @@
       hide-details="auto"
       variant="outlined"
       dense
+      @update:model-value="onChange"
     />
 
     <v-select
       v-else
-      @update:model-value="onChange"
       :id="control.id + '-input'"
       :class="styles.control.input"
       :disabled="!control.enabled"
@@ -47,6 +46,7 @@
       hide-details="auto"
       variant="outlined"
       dense
+      @update:model-value="onChange"
     />
   </v-hover>
 </template>
@@ -70,7 +70,7 @@ import { useVuetifyControl } from '@/renderers/util/composition';
 import { VSelect, VHover } from 'vuetify/components';
 
 const controlRenderer = defineComponent({
-  name: 'oneof-enum-control-renderer',
+  name: 'OneofEnumControlRenderer',
   components: {
     ControlWrapper,
     VSelect,
@@ -86,11 +86,6 @@ const controlRenderer = defineComponent({
       useJsonFormsOneOfEnumControl(props),
       (value) => value || undefined
     )
-  },
-  created() {
-    if (!this.control.data && this.control.schema.default) {
-      this.handleChange(this.control.path, this.control.schema.default)
-    }
   },
   computed: {
     hasAutoComplete() {
@@ -122,6 +117,11 @@ const controlRenderer = defineComponent({
           divider: schemaOptions[index].divider,
         }
       })
+    }
+  },
+  created() {
+    if (!this.control.data && this.control.schema.default) {
+      this.handleChange(this.control.path, this.control.schema.default)
     }
   }
 });

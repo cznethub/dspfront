@@ -28,12 +28,12 @@
       hide-details="auto"
       hide-no-data
       v-bind="vuetifyProps('v-combobox')"
-      @update:model-value="beforeChange"
       dense
       variant="outlined"
       class="py-3"
+      @update:model-value="beforeChange"
     >
-      <template v-slot:message>
+      <template #message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
@@ -66,12 +66,12 @@
           : undefined
       "
       v-bind="vuetifyProps('v-text-field')"
-      @update:model-value="beforeChange"
       class="py-3"
       density="compact"
       variant="outlined"
+      @update:model-value="beforeChange"
     >
-      <template v-slot:message>
+      <template #message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
@@ -98,7 +98,7 @@ import every from 'lodash/every';
 import isString from 'lodash/isString';
 
 const controlRenderer = defineComponent({
-  name: 'string-control-renderer',
+  name: 'StringControlRenderer',
   props: {
     ...rendererProps<ControlElement>(),
   },
@@ -108,16 +108,6 @@ const controlRenderer = defineComponent({
       (value) => value || undefined,
       300
     );
-  },
-  created() {
-    // If the value that was loaded is null, turn it into undefined
-    if (this.control.data === null) {
-      this.handleChange(this.control.path, undefined)
-    }
-    
-    if (!this.control.data && this.control.schema.default) {
-      this.handleChange(this.control.path, this.control.schema.default)
-    }
   },
   computed: {
     suggestions(): string[] | undefined {
@@ -146,6 +136,16 @@ const controlRenderer = defineComponent({
     cleanedErrors() {
       // @ts-ignore
       return this.control.errors.replaceAll(`is a required property`, ``)
+    }
+  },
+  created() {
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
+    
+    if (!this.control.data && this.control.schema.default) {
+      this.handleChange(this.control.path, this.control.schema.default)
     }
   },
   methods: {

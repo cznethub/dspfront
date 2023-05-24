@@ -14,12 +14,12 @@
     :model-value="control.data"
     :value="control.data"
     v-bind="vuetifyProps('v-checkbox')"
+    class="py-3"
     @update:model-value="onChange"
     @focus="isFocused = true"
     @blur="isFocused = false"
-    class="py-3"
   >
-    <template v-slot:message>
+    <template #message>
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
@@ -48,7 +48,7 @@ import { useVuetifyControl } from '@/renderers/util/composition';
 import { VCheckbox } from 'vuetify/components';
 
 const controlRenderer = defineComponent({
-  name: 'boolean-control-renderer',
+  name: 'BooleanControlRenderer',
   components: {
     VCheckbox,
     ControlWrapper,
@@ -62,12 +62,6 @@ const controlRenderer = defineComponent({
       (newValue) => newValue || false
     );
   },
-  created() {
-    if (!this.control.data && this.control.schema.default !== undefined) {
-      this.control.data = this.control.schema.default
-      this.handleChange(this.control.path, this.control.data)
-    }
-  },
   computed: {
     cleanedErrors() {
       // @ts-ignore
@@ -80,6 +74,12 @@ const controlRenderer = defineComponent({
     description(): string {
       return this.control.description || this.appliedOptions.description || ''
     },
+  },
+  created() {
+    if (!this.control.data && this.control.schema.default !== undefined) {
+      this.control.data = this.control.schema.default
+      this.handleChange(this.control.path, this.control.data)
+    }
   },
 });
 

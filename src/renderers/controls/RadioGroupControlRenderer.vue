@@ -1,12 +1,13 @@
 <template>
   <div class="py-3">
     <fieldset class="cz-fieldset">
-      <legend v-if="computedLabel"
+      <legend
+v-if="computedLabel"
         class="v-label v-label--active">{{ computedLabel }}</legend>
 
       <v-radio-group
-        class="mt-0"
         :id="control.id + '-input'"
+        class="mt-0"
         :data-id="computedLabel.replaceAll(` `, ``)"
         :class="styles.control.input"
         :disabled="!control.enabled"
@@ -57,7 +58,7 @@ import { useVuetifyControl } from '@/renderers/util/composition';
 import { defineComponent } from 'vue'
 
 const controlRenderer = defineComponent({
-  name: 'radio-group-control-renderer',
+  name: 'RadioGroupControlRenderer',
   components: {
     ControlWrapper,
     VRadioGroup,

@@ -1,27 +1,30 @@
 <template>
   <div class="py-4" :data-id="computedLabel.replaceAll(` `, ``)">
-    <fieldset v-if="control.visible" class="cz-fieldset"
+    <fieldset
+v-if="control.visible" class="cz-fieldset"
       :class="{'is-invalid': control.childErrors.length, ...styles.arrayList.root }" elevation="0">
-      <legend v-if="computedLabel"
-        @click="noData && control.enabled ? addButtonClick() : null"
-        class="v-label" :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')">
+      <legend
+v-if="computedLabel"
+        class="v-label"
+        :class="styles.arrayList.label + (!noData ? ' v-label--active' : '')" @click="noData && control.enabled ? addButtonClick() : null">
         {{ computedLabel }}
       </legend>
 
       <v-tooltip location="bottom" transition="fade">
-        <template v-slot:activator="{ on: onTooltip }">
-          <v-btn icon color="primary"
-            @click="addButtonClick()" 
-            :class="styles.arrayList.addButton"
-            class="btn-add" 
-            :aria-label="`Add to ${control.label}`"
-            v-on="onTooltip"
+        <template #activator="{ on: onTooltip }">
+          <v-btn
+icon color="primary"
+            :class="styles.arrayList.addButton" 
+            class="btn-add"
+            :aria-label="`Add to ${control.label}`" 
             :disabled="
               !control.enabled ||
               (appliedOptions.restrict &&
                 maxItems !== undefined && control.data &&
                 control.data.length >= maxItems)
-            ">
+            "
+            @click="addButtonClick()"
+            v-on="onTooltip">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </template>
@@ -30,7 +33,7 @@
 
       <v-container v-if="!noData" class="pt-8" justify-space-around align-content-center>
         <v-row justify="center">
-          <v-expansion-panels focusable v-model="currentlyExpanded" multiple>
+          <v-expansion-panels v-model="currentlyExpanded" focusable multiple>
             <v-expansion-panel
               v-for="(element, index) in control.data"
               :key="`${control.path}-${index}`"
@@ -52,14 +55,13 @@
                     <v-spacer></v-spacer>
 
                     <v-col
+                      v-if="appliedOptions.showSortButtons"
                       align-self="center"
                       class="flex-grow-0"
-                      v-if="appliedOptions.showSortButtons"
                     >
                       <v-tooltip location="bottom">
-                        <template v-slot:activator="{ on: onTooltip }">
+                        <template #activator="{ on: onTooltip }">
                           <v-btn
-                            v-on="onTooltip"
                             fab
                             variant="text"
                             elevation="0"
@@ -68,6 +70,7 @@
                             aria-label="Move up"
                             :disabled="index <= 0 || !control.enabled"
                             :class="styles.arrayList.itemMoveUp"
+                            v-on="onTooltip"
                             @click.native="moveUpClick($event, index)"
                           >
                             <v-icon class="notranslate">mdi-arrow-up</v-icon>
@@ -77,14 +80,13 @@
                       </v-tooltip>
                     </v-col>
                     <v-col
+                      v-if="appliedOptions.showSortButtons"
                       align-self="center"
                       class="flex-grow-0"
-                      v-if="appliedOptions.showSortButtons"
                     >
                       <v-tooltip location="bottom">
-                        <template v-slot:activator="{ on: onTooltip }">
+                        <template #activator="{ on: onTooltip }">
                           <v-btn
-                            v-on="onTooltip"
                             fab
                             variant="text"
                             elevation="0"
@@ -96,6 +98,7 @@
                               !control.enabled
                             "
                             :class="styles.arrayList.itemMoveDown"
+                            v-on="onTooltip"
                             @click.native="moveDownClick($event, index)"
                           >
                             <v-icon class="notranslate">mdi-arrow-down</v-icon>
@@ -106,9 +109,8 @@
                     </v-col>
                     <v-col align-self="center" class="flex-grow-0">
                       <v-tooltip location="bottom">
-                        <template v-slot:activator="{ on: onTooltip }">
+                        <template #activator="{ on: onTooltip }">
                           <v-btn
-                            v-on="onTooltip"
                             fab
                             variant="text"
                             elevation="0"
@@ -123,6 +125,7 @@
                                 minItems !== undefined &&
                                 control.data.length <= minItems)
                             "
+                            v-on="onTooltip"
                             @click.stop.native="suggestToDelete = index"
                           >
                             <v-icon class="notranslate">mdi-delete</v-icon>
@@ -166,8 +169,8 @@
 
             <v-btn variant="text" @click="suggestToDelete = null"> Cancel </v-btn>
             <v-btn
-              variant="text"
               ref="confirm"
+              variant="text"
               @click="
                 removeItemsClick([suggestToDelete]);
                 suggestToDelete = null;
@@ -239,7 +242,7 @@ import { ref } from 'vue';
 import { isEqual } from 'lodash';
 
 const controlRenderer = defineComponent({
-  name: 'array-layout-renderer',
+  name: 'ArrayLayoutRenderer',
   components: {
     DispatchRenderer,
     VCard,
@@ -282,38 +285,6 @@ const controlRenderer = defineComponent({
     useNested('array');
     return { ...control, currentlyExpanded, suggestToDelete };
   },
-  created() {
-    // @ts-ignore
-    const requiredItems = this.control.schema.contains?.enum || []
-
-    requiredItems.map(item => {
-      if (!this.control.data) {
-        this.handleChange(this.control.path, undefined)
-      }
-      // We most use isEqual to compare objects instead of Arra.includes
-      const isIncluded = this.control.data?.some(existingItem => isEqual(item, existingItem))
-      if (!isIncluded) {
-        this.addItem(
-          this.control.path,
-          item
-        )()
-      }
-    })
-
-    if (this.control.schema.default && !this.control.data) {
-      this.control.schema.default.map(item => {
-        this.addItem(
-          this.control.path,
-          item
-        )()
-      })
-    }
-
-    // Expand existing items
-    if (this.control.data) {
-      this.currentlyExpanded = this.control.data.map((item, index) => index)
-    }
-  },
   computed: {
     noData(): boolean {
       return !this.control.data || this.control.data.length === 0
@@ -355,6 +326,38 @@ const controlRenderer = defineComponent({
     description(): string {
       return this.control.description || this.appliedOptions.description || ''
     },
+  },
+  created() {
+    // @ts-ignore
+    const requiredItems = this.control.schema.contains?.enum || []
+
+    requiredItems.map(item => {
+      if (!this.control.data) {
+        this.handleChange(this.control.path, undefined)
+      }
+      // We most use isEqual to compare objects instead of Arra.includes
+      const isIncluded = this.control.data?.some(existingItem => isEqual(item, existingItem))
+      if (!isIncluded) {
+        this.addItem(
+          this.control.path,
+          item
+        )()
+      }
+    })
+
+    if (this.control.schema.default && !this.control.data) {
+      this.control.schema.default.map(item => {
+        this.addItem(
+          this.control.path,
+          item
+        )()
+      })
+    }
+
+    // Expand existing items
+    if (this.control.data) {
+      this.currentlyExpanded = this.control.data.map((item, index) => index)
+    }
   },
   methods: {
     composePaths,

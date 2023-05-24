@@ -1,10 +1,9 @@
 <template>
   <v-text-field
+    :id="control.id + '-input'"
     variant="outlined"
     type="number"
-    @change.native="beforeChange($event)"
     :step="step"
-    :id="control.id + '-input'"
     :class="styles.control.input"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
@@ -17,8 +16,9 @@
     persistent-hint
     density="compact"
     class="py-3"
+    @change.native="beforeChange($event)"
   >
-    <template v-slot:message>
+    <template #message>
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
@@ -47,7 +47,7 @@ import { useVuetifyControl } from '@/renderers/util/composition';
 import { VTextField } from 'vuetify/components';
 
 const controlRenderer = defineComponent({
-  name: 'integer-control-renderer',
+  name: 'IntegerControlRenderer',
   components: {
     ControlWrapper,
     VTextField,

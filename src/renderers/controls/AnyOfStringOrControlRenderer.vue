@@ -48,7 +48,7 @@ import { useVuetifyControl } from '@/renderers/util/composition';
 import { VHover, VCombobox } from 'vuetify/components';
 
 const controlRenderer = defineComponent({
-  name: 'anyof-string-or-enum-control-renderer',
+  name: 'AnyofStringOrEnumControlRenderer',
   components: {
     ControlWrapper,
     VHover,

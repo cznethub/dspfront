@@ -16,7 +16,7 @@
             </v-chip>
           </div>
           <div class="text-right">
-            <v-btn @click="openRevokeDialog(repo.key)" size="small"><v-icon size="small" class="mr-1">mdi-cancel</v-icon> Revoke</v-btn>
+            <v-btn size="small" @click="openRevokeDialog(repo.key)"><v-icon size="small" class="mr-1">mdi-cancel</v-icon> Revoke</v-btn>
           </div>
         </template>
         <template v-else>
@@ -24,7 +24,7 @@
             <v-chip small color="red" variant="outlined">Unauthorized</v-chip>
           </div>
           <div class="text-right">
-            <v-btn @click="openAuthorizePopup(repo.key)" color="primary">
+            <v-btn color="primary" @click="openAuthorizePopup(repo.key)">
               <i class="fas fa-key mr-2" />Authorize
             </v-btn>
           </div>
@@ -34,7 +34,6 @@
         <v-divider></v-divider>
         <v-card-text >
           <v-text-field
-            @click:append="onCopy(repo.key)"
             :label="repo.name + ' access token'"
             :model-value="getAccessToken(repo.key)"
             variant="outlined"
@@ -42,6 +41,7 @@
             append-icon="mdi-content-copy"
             density="compact"
             hide-details=""
+            @click:append="onCopy(repo.key)"
           ></v-text-field>
         </v-card-text>
       </template>

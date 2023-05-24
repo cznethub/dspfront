@@ -1,9 +1,6 @@
 <template>
   <v-hover v-if="!isHidden" v-slot="{ hover }">
     <v-select
-      @update:model-value="onChange"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
       :id="control.id + '-input'"
       :data-id="computedLabel.replaceAll(` `, ``)"
       :disabled="!control.enabled || control.schema.readOnly"
@@ -24,8 +21,11 @@
       item-value="value"
       variant="outlined"
       dense
+      @update:model-value="onChange"
+      @focus="isFocused = true"
+      @blur="isFocused = false"
     >
-      <template v-slot:message>
+      <template #message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
@@ -55,7 +55,7 @@ import { useVuetifyControl } from '@/renderers/util/composition';
 import { VSelect, VHover } from 'vuetify/components'
 
 const controlRenderer = defineComponent({
-  name: 'enum-control-renderer',
+  name: 'EnumControlRenderer',
   components: {
     ControlWrapper,
     VSelect,
@@ -63,11 +63,6 @@ const controlRenderer = defineComponent({
   },
   props: {
     ...rendererProps<ControlElement>(),
-  },
-  created() {
-    if (this.control && !this.control.data) {
-      this.handleChange(this.control.path, this.control.schema.default)
-    }
   },
   setup(props: RendererProps<ControlElement>) {
     return useVuetifyControl(
@@ -87,6 +82,11 @@ const controlRenderer = defineComponent({
     description(): string {
       return this.control.description || this.appliedOptions.description || ''
     },
+  },
+  created() {
+    if (this.control && !this.control.data) {
+      this.handleChange(this.control.path, this.control.schema.default)
+    }
   }
 })
 

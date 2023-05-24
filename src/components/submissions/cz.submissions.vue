@@ -11,8 +11,8 @@
           >
             <v-text-field
               id="my_submissions_search"
-              class="ma-1 my-2 my-sm-0"
               v-model="filters.searchStr"
+              class="ma-1 my-2 my-sm-0"
               density="compact"
               clearable
               variant="outlined"
@@ -35,7 +35,7 @@
               dense
               variant="outlined"
             >
-              <template v-slot:item="data">
+              <template #item="data">
                 <v-list-item-action>
                   <v-icon v-if="data.attrs.inputValue"
                     >mdi-checkbox-marked</v-icon
@@ -60,7 +60,7 @@
             origin="center"
             direction="bottom"
           >
-            <template v-slot:activator>
+            <template #activator>
               <v-btn color="primary" rounded block>
                 <v-icon>mdi-plus</v-icon>
                 New Submission
@@ -69,16 +69,16 @@
 
             <v-card color="blue-grey-lighten-4">
               <v-card-text>
-                <template :key="repo.name" v-for="repo of supportedRepoMetadata">
+                <template v-for="repo of supportedRepoMetadata" :key="repo.name">
                   <v-tooltip location="left" transition="fade">
-                    <template v-slot:activator="{ on, attrs }">
+                    <template #activator="{ on, attrs }">
                       <v-btn
-                        class="mx-0 my-4"
                         v-if="!repo.isDisabled"
-                        @click="submitTo(repo)"
-                        v-on="on"
+                        class="mx-0 my-4"
                         v-bind="attrs"
                         block
+                        @click="submitTo(repo)"
+                        v-on="on"
                       >
                         {{ repo.name }}
                       </v-btn>
@@ -88,14 +88,14 @@
                 </template>
 
                 <v-tooltip location="left" transition="fade">
-                  <template v-slot:activator="{ on, attrs }">
+                  <template #activator="{ on, attrs }">
                     <v-btn
-                      class="mx-0 my-4"
                       v-if="!externalRepoMetadata.isDisabled"
-                      @click="openRegisterDatasetDialog"
-                      v-on="on"
+                      class="mx-0 my-4"
                       v-bind="attrs"
                       block
+                      @click="openRegisterDatasetDialog"
+                      v-on="on"
                     >
                       {{ externalRepoMetadata.name }}
                     </v-btn>
@@ -126,10 +126,9 @@
         <v-card>
           <div v-if="!isFetching">
             <v-data-iterator
-              @current-items="currentItems = $event"
-              :items="filteredSubmissions"
               v-model:items-per-page="itemsPerPage"
               v-model:page="page"
+              :items="filteredSubmissions"
               :search="filters.searchStr"
               :sort-by="
                 sortBy.key ||
@@ -140,8 +139,9 @@
               :sort-desc="sortDesc"
               item-key="identifier"
               hide-default-footer
+              @current-items="currentItems = $event"
             >
-              <template v-slot:header>
+              <template #header>
                 <div elevation="0" class="has-bg-light-gray pa-4">
                   <div
                     class="d-flex justify-space-between full-width flex-column flex-md-row"
@@ -149,16 +149,16 @@
                     <v-btn
                       class="mb-md-0 mb-4"
                       rounded
-                      @click="exportSubmissions"
                       :disabled="!filteredSubmissions.length"
+                      @click="exportSubmissions"
                       >Export Submissions</v-btn
                     >
                     <v-spacer></v-spacer>
                     <div class="sort-controls d-flex flex-column flex-sm-row">
                       <v-select
                         id="sort-by"
-                        :items="sortOptions"
                         v-model="sortBy"
+                        :items="sortOptions"
                         item-title="label"
                         return-object
                         class="mr-1 sort-control my-md-0 my-2"
@@ -170,8 +170,8 @@
 
                       <v-select
                         id="sort-order"
-                        :items="sortDirectionOptions"
                         v-model="sortDirection"
+                        :items="sortDirectionOptions"
                         item-title="label"
                         return-object
                         class="sort-control my-md-0 my-2"
@@ -185,11 +185,11 @@
                 </div>
               </template>
 
-              <template v-slot:default="{ items }">
+              <template #default="{ items }">
                 <v-divider />
                 <div
-                  :id="`submission-${index}`"
                   v-for="(item, index) in items"
+                  :id="`submission-${index}`"
                   :key="item.identifier"
                 >
                   <div
@@ -202,8 +202,8 @@
                       >
                         <tr>
                           <td
-                            colspan="2"
                             :id="`sub-${index}-title`"
+                            colspan="2"
                             class="text-h6 text-h6"
                           >
                             {{ item.title }}
@@ -268,19 +268,19 @@
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-edit`"
-                        @click="goToEditSubmission(item)"
                         rounded
+                        @click="goToEditSubmission(item)"
                       >
                         <v-icon class="mr-1">mdi-pencil</v-icon> Edit
                       </v-btn>
                       <v-btn
-                        :id="`sub-${index}-update`"
                         v-if="!repoMetadata[item.repository].isExternal"
-                        @click="onUpdateRecord(item)"
+                        :id="`sub-${index}-update`"
                         :disabled="
                           isUpdating[`${item.repository}-${item.identifier}`]
                         "
                         rounded
+                        @click="onUpdateRecord(item)"
                       >
                         <v-icon
                           v-if="
@@ -293,14 +293,14 @@
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-delete`"
+                        :disabled="isDeleteButtonDisabled(item)"
+                        rounded
                         @click="
                           onDelete(
                             item,
                             repoMetadata[item.repository].isExternal
                           )
                         "
-                        :disabled="isDeleteButtonDisabled(item)"
-                        rounded
                       >
                         <v-icon
                           v-if="
@@ -323,14 +323,14 @@
                 </div>
               </template>
 
-              <template v-slot:footer>
+              <template #footer>
                 <div class="footer d-flex justify-space-between align-center">
                   <div>
                     <span class="text-grey text-body-2 mr-1"
                       >Items per page</span
                     >
                     <v-menu offset-y>
-                      <template v-slot:activator="{ on, attrs }">
+                      <template #activator="{ on, attrs }">
                         <v-btn variant="text" v-bind="attrs" v-on="on">
                           {{ itemsPerPage }}
                           <v-icon>mdi-chevron-down</v-icon>
@@ -361,16 +361,16 @@
                         class="mr-2"
                         size="small"
                         fab
-                        @click="formerPage"
                         :disabled="page <= 1"
+                        @click="formerPage"
                       >
                         <v-icon>mdi-chevron-left</v-icon>
                       </v-btn>
                       <v-btn
                         size="small"
                         fab
-                        @click="nextPage"
                         :disabled="page >= numberOfPages"
+                        @click="nextPage"
                       >
                         <v-icon>mdi-chevron-right</v-icon>
                       </v-btn>
@@ -379,14 +379,14 @@
                 </div>
               </template>
 
-              <template v-slot:no-data>
+              <template #no-data>
                 <div class="text-subtitle-1 text--secondary ma-4">
                   You don't have any submissions that match the selected
                   criteria.
                 </div>
               </template>
 
-              <template v-slot:no-results>
+              <template #no-results>
                 <div class="text-subtitle-1 text--secondary ma-4">
                   You don't have any submissions that match the selected
                   criteria.
@@ -435,20 +435,20 @@
           <v-spacer></v-spacer>
           <v-btn
             class="dialog-cancel"
-            @click="isDeleteDialogActive = false"
             variant="text"
+            @click="isDeleteDialogActive = false"
           >
             Cancel
           </v-btn>
 
           <v-btn
             class="dialog-confirm"
+            color="red-darken-1"
+            variant="text"
             @click="
               isDeleteDialogActive = false;
               onDeleteSubmission();
             "
-            color="red-darken-1"
-            variant="text"
           >
             Delete
           </v-btn>

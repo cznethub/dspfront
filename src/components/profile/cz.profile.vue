@@ -1,7 +1,7 @@
 <template>
   <div class="cz-profile">
     <v-navigation-drawer permanent :rail="$vuetify.display.mdAndDown" class="flex-shrink-0">
-      <template v-slot:prepend>
+      <template #prepend>
         <v-list-item lines="two">
           <v-list-item-avatar>
             <v-icon start class="fab fa-orcid"></v-icon>

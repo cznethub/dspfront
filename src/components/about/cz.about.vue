@@ -1,6 +1,7 @@
 <template>
   <v-container class="cz-about d-flex full-height pa-0">
-    <div id="panel-left" class="flex-grow-1 hidden-sm-and-down"
+    <div
+id="panel-left" class="flex-grow-1 hidden-sm-and-down"
       :style="{ 'background-image': 'linear-gradient(rgb(0 52 82 / 31%), rgba(0, 0, 0, 0)), url(' + '/img/bg-4.png' + ')' }">
     </div>
     <v-container id="panel-right" class="pa-8">

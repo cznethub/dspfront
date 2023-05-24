@@ -9,11 +9,13 @@
         What repository is the resource in?
       </v-card-subtitle>
 
-      <v-card-text class="choice-container pb-8 gap-1"
+      <v-card-text
+class="choice-container pb-8 gap-1"
         :class="{ 'is-xs-small': $vuetify.display.xs }">
         <v-hover>
-          <template v-slot:default="{ hover }">
-            <v-card class="transition-swing"
+          <template #default="{ hover }">
+            <v-card
+class="transition-swing"
               :to="{ path: 'register' }"
               :class="`elevation-${ hover ? 2 : 0 }`" variant="outlined">
               <v-card-text class="d-flex align-items-center gap-1">
@@ -28,8 +30,9 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
-            <v-card class="transition-swing"
+          <template #default="{ hover }">
+            <v-card
+class="transition-swing"
               :class="`elevation-${ hover ? 2 : 0 }`" variant="outlined" role="button" ripple>
               <v-card-text
                 class="d-flex align-items-center gap-1"

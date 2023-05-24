@@ -2,17 +2,18 @@
   <v-menu
     ref="menu"
     v-model="showMenu"
-    :close-on-content-click="false"
     v-model:return-value="pickerValue"
+    :close-on-content-click="false"
     transition="scale-transition"
     offset-y
     min-width="290px"
     v-bind="vuetifyProps('v-menu')"
     :disabled="!control.enabled"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <v-text-field
         :id="control.id + '-input'"
+        v-mask="mask"
         :class="styles.control.input"
         :disabled="!control.enabled"
         :autofocus="appliedOptions.focus"
@@ -23,15 +24,14 @@
         :required="control.required"
         :error-messages="control.errors"
         prepend-inner-icon="mdi-calendar"
-        v-mask="mask"
         :model-value="inputValue"
-        @update:model-value="onInputChange"
         variant="outlined"
         class="py-3"
         v-bind="attrs"
+        @update:model-value="onInputChange"
         v-on="on"
       >
-        <template v-slot:message>
+        <template #message>
           <div v-if="description" class="text-subtitle-1 text--secondary">
             {{ description }}
           </div>
@@ -39,7 +39,7 @@
             {{ cleanedErrors }}
           </div>
         </template>
-        <template v-slot:append>
+        <template #append>
           <v-icon v-if="control.enabled" tabindex="-1" @click="clear"
             >$clear</v-icon
           >
@@ -49,8 +49,8 @@
 
     <v-date-picker
       v-if="showMenu"
-      v-model="pickerValue"
       ref="picker"
+      v-model="pickerValue"
       v-bind="vuetifyProps('v-date-picker')"
       :min="minDate"
       :max="maxDate"
@@ -102,7 +102,7 @@ type MinMaxFormat =
   | "today";
 
 const controlRenderer = defineComponent({
-  name: "date-control-renderer",
+  name: "DateControlRenderer",
   directives: { Mask },
   props: {
     ...rendererProps<ControlElement>(),
@@ -118,15 +118,6 @@ const controlRenderer = defineComponent({
     const adaptValue = (value: any) => value || undefined;
     const control = useVuetifyControl(useJsonFormsControl(props), adaptValue);
     return { ...control, showMenu, mask, t, adaptValue };
-  },
-  watch: {
-    isFocused(newFocus) {
-      if (newFocus && this.applyMask) {
-        this.mask = this.maskFunction.bind(this);
-      } else {
-        this.mask = undefined;
-      }
-    },
   },
   computed: {
     placeholder(): string {
@@ -258,6 +249,15 @@ const controlRenderer = defineComponent({
           ? this.appliedOptions.okLabel
           : "OK";
       return this.t(label, label);
+    },
+  },
+  watch: {
+    isFocused(newFocus) {
+      if (newFocus && this.applyMask) {
+        this.mask = this.maskFunction.bind(this);
+      } else {
+        this.mask = undefined;
+      }
     },
   },
   methods: {

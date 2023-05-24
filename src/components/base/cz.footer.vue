@@ -4,7 +4,8 @@
       <div class="has-space-bottom-2x">
         <div class="has-space-bottom text-h6">Contact Us</div>
         <router-link to="/contact">Contact</router-link>
-        <p>Learn more about the <a href="https://www.criticalzone.org/"
+        <p>Learn more about the <a
+href="https://www.criticalzone.org/"
           target="_blank">CZNet</a> and <a href="https://criticalzone.org/hub" target="_blank">{{ appName }}</a></p>
         <p>Visit <a href="https://www.cuahsi.org/" target="_blank">cuahsi.org</a></p>
       </div>

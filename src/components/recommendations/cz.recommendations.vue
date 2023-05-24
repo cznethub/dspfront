@@ -9,7 +9,7 @@
     <v-container>
       <div id="options-grid">
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ hover }">
             <v-card :class="`elevation-${ hover ? 12 : 2 } has-cursor-pointer transition-swing`">
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
@@ -21,7 +21,7 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ hover }">
             <v-card :class="`elevation-${ hover ? 12 : 2 } has-cursor-pointer transition-swing`">
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
@@ -33,7 +33,7 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ hover }">
             <v-card :class="`elevation-${ hover ? 12 : 2 } has-cursor-pointer transition-swing`">
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
@@ -45,7 +45,7 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ hover }">
             <v-card :class="`elevation-${ hover ? 12 : 2 } has-cursor-pointer transition-swing`">
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
