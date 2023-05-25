@@ -7,18 +7,18 @@
         :variant="!repo.isSupported && 'outlined'"
       >
         <v-list-item lines="three" class="flex-column flex-md-row">
-          <v-list-item-content>
+          <v-list-item>
             <v-list-item-title class="text-h5 mb-1">{{ repo.name }}</v-list-item-title>
 
             <div>
               <div class="text-subtitle-1 text--secondary">{{ repo.description }}</div>
               <v-chip v-if="repo.isComingSoon" class="mt-2">CzNet support coming soon...</v-chip>
             </div>
-          </v-list-item-content>
+          </v-list-item>
 
-          <v-list-item-avatar v-if="!hideLogo" tile width="300">
+          <v-list-item v-if="!hideLogo" tile width="300">
             <div class="repo-logo" :style="{'background-image':`url(${repo.logoSrc})`}"></div>
-          </v-list-item-avatar>
+          </v-list-item>
         </v-list-item>
 
         <v-divider></v-divider>

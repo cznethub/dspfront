@@ -83,9 +83,7 @@
                     <v-icon>mdi-account-circle</v-icon>
                   </v-list-item>
 
-                  <v-list-item-content>
-                    <v-list-item-title>Account & Settings</v-list-item-title>
-                  </v-list-item-content>
+                  <v-list-item-title>Account & Settings</v-list-item-title>
                 </v-list-item>
 
                 <v-divider></v-divider>
@@ -95,9 +93,7 @@
                     <v-icon>mdi-logout</v-icon>
                   </v-list-item>
 
-                  <v-list-item-content>
-                    <v-list-item-title>Log Out</v-list-item-title>
-                  </v-list-item-content>
+                  <v-list-item-title>Log Out</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -130,61 +126,57 @@
       app
     >
       <v-list nav density="compact" class="nav-items">
-        <v-list-item-group class="text-body-1">
-          <v-list-item
-            id="drawer-nav-home"
-            to="/"
-            active-class="primary white--text"
-            @click="showMobileNavigation = false"
-          >
-            <v-icon class="mr-2">mdi-home</v-icon>
-            <span>Home</span>
-          </v-list-item>
+        <v-list-item
+          id="drawer-nav-home"
+          to="/"
+          active-class="primary white--text"
+          @click="showMobileNavigation = false"
+        >
+          <v-icon class="mr-2">mdi-home</v-icon>
+          <span>Home</span>
+        </v-list-item>
 
-          <v-list-item
-            v-for="path of paths"
-            :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
-            :key="path.attrs.to || path.attrs.href"
-            v-bind="path.attrs"
-            active-class="primary white--text"
-            :class="path.isActive && path.isActive() ? 'primary' : ''"
-            @click="showMobileNavigation = false"
+        <v-list-item
+          v-for="path of paths"
+          :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
+          :key="path.attrs.to || path.attrs.href"
+          v-bind="path.attrs"
+          active-class="primary white--text"
+          :class="path.isActive && path.isActive() ? 'primary' : ''"
+          @click="showMobileNavigation = false"
+        >
+          <v-icon class="mr-2">{{ path.icon }}</v-icon>
+          <span>{{ path.label }}</span>
+          <v-icon v-if="path.isExternal" size="small" class="ml-2" end
+            >mdi-open-in-new</v-icon
           >
-            <v-icon class="mr-2">{{ path.icon }}</v-icon>
-            <span>{{ path.label }}</span>
-            <v-icon v-if="path.isExternal" size="small" class="ml-2" end
-              >mdi-open-in-new</v-icon
-            >
-          </v-list-item>
-        </v-list-item-group>
+        </v-list-item>
 
         <v-divider class="my-4"></v-divider>
 
-        <v-list-item-group class="text-body-1">
-          <v-list-item
-            v-if="!isLoggedIn"
-            id="drawer-nav-login"
-            @click="
-              openLogInDialog();
-              showMobileNavigation = false;
-            "
-          >
-            <v-icon class="mr-2">mdi-login</v-icon>
-            <span>Log In</span>
+        <v-list-item
+          v-if="!isLoggedIn"
+          id="drawer-nav-login"
+          @click="
+            openLogInDialog();
+            showMobileNavigation = false;
+          "
+        >
+          <v-icon class="mr-2">mdi-login</v-icon>
+          <span>Log In</span>
+        </v-list-item>
+
+        <template v-else>
+          <v-list-item :to="{ path: '/profile' }">
+            <v-icon class="mr-2">mdi-account-circle</v-icon>
+            <span>Account & Settings</span>
           </v-list-item>
 
-          <template v-else>
-            <v-list-item :to="{ path: '/profile' }">
-              <v-icon class="mr-2">mdi-account-circle</v-icon>
-              <span>Account & Settings</span>
-            </v-list-item>
-
-            <v-list-item id="drawer-nav-logout" @click="logOut()">
-              <v-icon class="mr-2">mdi-logout</v-icon>
-              <span>Log Out</span>
-            </v-list-item>
-          </template>
-        </v-list-item-group>
+          <v-list-item id="drawer-nav-logout" @click="logOut()">
+            <v-icon class="mr-2">mdi-logout</v-icon>
+            <span>Log Out</span>
+          </v-list-item>
+        </template>
       </v-list>
     </v-navigation-drawer>
 

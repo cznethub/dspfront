@@ -3,14 +3,14 @@
     <v-navigation-drawer permanent :rail="$vuetify.display.mdAndDown" class="flex-shrink-0">
       <template #prepend>
         <v-list-item lines="two">
-          <v-list-item-avatar>
+          <v-list-item>
             <v-icon start class="fab fa-orcid"></v-icon>
-          </v-list-item-avatar>
+          </v-list-item>
 
-          <v-list-item-content>
+          <v-list-item>
             <!-- <v-list-item-title>email address here</v-list-item-title> -->
             <v-list-item-subtitle>Logged In</v-list-item-subtitle>
-          </v-list-item-content>
+          </v-list-item>
         </v-list-item>
       </template>
 
@@ -22,9 +22,9 @@
             <v-icon>mdi-account-circle</v-icon>
           </v-list-item>
 
-          <v-list-item-content>
+          <v-list-item>
             <v-list-item-title>Account</v-list-item-title>
-          </v-list-item-content>
+          </v-list-item>
         </v-list-item>
 
         <v-list-item link :to="{ path: '/profile/authorized-repositories' }" active-class="active">
@@ -32,9 +32,9 @@
             <v-icon>mdi-key</v-icon>
           </v-list-item>
 
-          <v-list-item-content>
+          <v-list-item>
             <v-list-item-title>Authorized Repositories</v-list-item-title>
-          </v-list-item-content>
+          </v-list-item>
         </v-list-item>
 
         <v-list-item id="drawer-nav-logout" @click="logOut()">
@@ -42,9 +42,9 @@
             <v-icon>mdi-logout</v-icon>
           </v-list-item>
 
-          <v-list-item-content>
+          <v-list-item>
             <v-list-item-title>Log Out</v-list-item-title>
-          </v-list-item-content>
+          </v-list-item>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

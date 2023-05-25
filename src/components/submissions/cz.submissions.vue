@@ -42,14 +42,14 @@
                   >
                   <v-icon v-else>mdi-checkbox-blank-outline</v-icon>
                 </v-list-item-action>
-                <v-list-item-content>
+                <v-list-item>
                   <v-list-item-title>
                     {{
                       repoMetadata[data.item].dropdownName ||
                       repoMetadata[data.item].name
                     }}
                   </v-list-item-title>
-                </v-list-item-content>
+                </v-list-item>
               </template>
             </v-select>
           </div>
