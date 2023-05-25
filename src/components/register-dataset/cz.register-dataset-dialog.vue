@@ -9,15 +9,17 @@
         What repository is the resource in?
       </v-card-subtitle>
 
-      <v-card-text class="choice-container pb-8 gap-1"
-        :class="{ 'is-xs-small': $vuetify.breakpoint.xs }">
+      <v-card-text
+class="choice-container pb-8 gap-1"
+        :class="{ 'is-xs-small': $vuetify.display.xs }">
         <v-hover>
-          <template v-slot:default="{ hover }">
-            <v-card class="transition-swing"
+          <template #default="{ hover }">
+            <v-card
+class="transition-swing"
               :to="{ path: 'register' }"
-              :class="`elevation-${ hover ? 2 : 0 }`" outlined>
+              :class="`elevation-${ hover ? 2 : 0 }`" variant="outlined">
               <v-card-text class="d-flex align-items-center gap-1">
-                <v-icon large color="#87AAAA">mdi-book-plus</v-icon>
+                <v-icon size="large" color="#87AAAA">mdi-book-plus</v-icon>
                 <div>
                   <div class="text-overline mb-2 has-text-black">SUPPORTED REPOSITORY</div>
                   <div class="text-body-1">Register an existing dataset from HydroShare, EarthChem, or Zenodo</div>
@@ -28,13 +30,14 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
-            <v-card class="transition-swing"
-              :class="`elevation-${ hover ? 2 : 0 }`" outlined role="button" ripple>
+          <template #default="{ hover }">
+            <v-card
+class="transition-swing"
+              :class="`elevation-${ hover ? 2 : 0 }`" variant="outlined" role="button" ripple>
               <v-card-text
                 class="d-flex align-items-center gap-1"
                 @click="close(); submitTo(externalRepoMetadata)">
-                <v-icon large color="#C37B89">mdi-link-plus</v-icon>
+                <v-icon size="large" color="#C37B89">mdi-link-plus</v-icon>
                 <div>
                   <div class="text-overline mb-2 has-text-black">OTHER</div>
                   <div class="text-body-1">Register a dataset from a different repository</div>
@@ -56,17 +59,17 @@
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
+import { Component, Vue } from "vue-facing-decorator";
 import { repoMetadata } from '@/components/submit/constants'
 import { IRepository } from '../submissions/types'
-import { mixins } from 'vue-class-component'
 import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
 
 @Component({
   name: "cz-register-dataset-dialog",
   components: {},
+  mixins: [ActiveRepositoryMixin]
 })
-export default class CzRegisterDatasetDialog extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+export default class CzRegisterDatasetDialog extends Vue {
   public active = false
 
   protected get repoCollection(): IRepository[] {

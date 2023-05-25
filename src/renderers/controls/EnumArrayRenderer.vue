@@ -1,7 +1,6 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-select
-      @change="beforeChange"
       :id="control.id + '-input'"
       :data-id="computedLabel.replaceAll(` `, ``)"
       :class="styles.control.input"
@@ -13,26 +12,27 @@
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover && !control.schema.readOnly"
-      :value="control.data"
+      :model-value="control.data"
       :items="control.options"
       :readonly="control.schema.readOnly"
       hide-details="auto"
       dense
       chips
       small-chips
-      deletable-chips
+      closable-chips
       persistent-hint
       class="py-3"
-      item-text="label"
+      item-title="label"
       item-value="value"
-      outlined
+      variant="outlined"
       multiple
+      @update:model-value="beforeChange"
     >
-      <template v-slot:message>
+      <template #message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
-        <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
           {{ cleanedErrors }}
         </div>
       </template>
@@ -55,7 +55,7 @@ import {
   uiTypeIs,
   composePaths,
 } from '@jsonforms/core';
-import { VCheckbox, VContainer, VRow, VCol } from 'vuetify/lib';
+import { VCheckbox, VContainer, VRow, VCol } from 'vuetify/components';
 import {
   DispatchRenderer,
   rendererProps,
@@ -63,7 +63,7 @@ import {
   useControl,
   ControlProps,
   useJsonFormsControl,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue';
 import { defineComponent } from 'vue';
 import { useVuetifyBasicControl } from '@/renderers/util/composition';
 
@@ -79,7 +79,7 @@ const useJsonFormsMultiEnumControl = (props: ControlProps) => {
 import { useVuetifyControl } from '@/renderers/util/composition';
 
 const controlRenderer = defineComponent({
-  name: 'enum-array-renderer',
+  name: 'EnumArrayRenderer',
   components: {
     DispatchRenderer,
     VCheckbox,

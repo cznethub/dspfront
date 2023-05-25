@@ -1,9 +1,6 @@
 <template>
   <v-hover v-if="!isHidden" v-slot="{ hover }">
     <v-select
-      @change="onChange"
-      @focus="isFocused = true"
-      @blur="isFocused = false"
       :id="control.id + '-input'"
       :data-id="computedLabel.replaceAll(` `, ``)"
       :disabled="!control.enabled || control.schema.readOnly"
@@ -14,22 +11,25 @@
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover && !control.schema.readOnly"
-      :value="control.data"
+      :model-value="control.data"
       :items="control.options"
       :readonly="control.schema.readOnly"
       persistent-hint
       hide-details="auto"
       class="py-3"
-      item-text="label"
+      item-title="label"
       item-value="value"
-      outlined
+      variant="outlined"
       dense
+      @update:model-value="onChange"
+      @focus="isFocused = true"
+      @blur="isFocused = false"
     >
-      <template v-slot:message>
+      <template #message>
         <div v-if="description" class="text-subtitle-1 text--secondary">
           {{ description }}
         </div>
-        <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+        <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
           {{ cleanedErrors }}
         </div>
       </template>
@@ -49,13 +49,13 @@ import {
   rendererProps,
   useJsonFormsEnumControl,
   RendererProps,
-} from '@jsonforms/vue2'
+} from '@jsonforms/vue'
 import { default as ControlWrapper } from './ControlWrapper.vue'
 import { useVuetifyControl } from '@/renderers/util/composition';
-import { VSelect, VHover } from 'vuetify/lib'
+import { VSelect, VHover } from 'vuetify/components'
 
 const controlRenderer = defineComponent({
-  name: 'enum-control-renderer',
+  name: 'EnumControlRenderer',
   components: {
     ControlWrapper,
     VSelect,
@@ -63,11 +63,6 @@ const controlRenderer = defineComponent({
   },
   props: {
     ...rendererProps<ControlElement>(),
-  },
-  created() {
-    if (this.control && !this.control.data) {
-      this.handleChange(this.control.path, this.control.schema.default)
-    }
   },
   setup(props: RendererProps<ControlElement>) {
     return useVuetifyControl(
@@ -87,6 +82,11 @@ const controlRenderer = defineComponent({
     description(): string {
       return this.control.description || this.appliedOptions.description || ''
     },
+  },
+  created() {
+    if (this.control && !this.control.data) {
+      this.handleChange(this.control.path, this.control.schema.default)
+    }
   }
 })
 

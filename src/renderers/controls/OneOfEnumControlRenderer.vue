@@ -3,7 +3,6 @@
   <v-hover v-slot="{ hover }">
     <v-autocomplete
       v-if="hasAutoComplete"
-      @change="onChange"
       :id="control.id + '-input'"
       :class="styles.control.input"
       :disabled="!control.enabled"
@@ -14,20 +13,20 @@
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover"
-      :value="control.data"
+      :model-value="control.data"
       :items="sortedOptions"
-      item-text="label"
+      item-title="label"
       item-value="value"
       persistent-hint
       class="py-3"
       hide-details="auto"
-      outlined
+      variant="outlined"
       dense
+      @update:model-value="onChange"
     />
 
     <v-select
       v-else
-      @change="onChange"
       :id="control.id + '-input'"
       :class="styles.control.input"
       :disabled="!control.enabled"
@@ -38,15 +37,16 @@
       :required="control.required"
       :error-messages="control.errors"
       :clearable="hover"
-      :value="control.data"
+      :model-value="control.data"
       :items="customOptions"
-      item-text="label"
+      item-title="label"
       item-value="value"
       persistent-hint
       class="py-3"
       hide-details="auto"
-      outlined
+      variant="outlined"
       dense
+      @update:model-value="onChange"
     />
   </v-hover>
 </template>
@@ -64,13 +64,13 @@ import {
   rendererProps,
   useJsonFormsOneOfEnumControl,
   RendererProps,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue';
 import { default as ControlWrapper } from './ControlWrapper.vue';
 import { useVuetifyControl } from '@/renderers/util/composition';
-import { VSelect, VHover } from 'vuetify/lib';
+import { VSelect, VHover } from 'vuetify/components';
 
 const controlRenderer = defineComponent({
-  name: 'oneof-enum-control-renderer',
+  name: 'OneofEnumControlRenderer',
   components: {
     ControlWrapper,
     VSelect,
@@ -86,11 +86,6 @@ const controlRenderer = defineComponent({
       useJsonFormsOneOfEnumControl(props),
       (value) => value || undefined
     )
-  },
-  created() {
-    if (!this.control.data && this.control.schema.default) {
-      this.handleChange(this.control.path, this.control.schema.default)
-    }
   },
   computed: {
     hasAutoComplete() {
@@ -122,6 +117,11 @@ const controlRenderer = defineComponent({
           divider: schemaOptions[index].divider,
         }
       })
+    }
+  },
+  created() {
+    if (!this.control.data && this.control.schema.default) {
+      this.handleChange(this.control.path, this.control.schema.default)
     }
   }
 });

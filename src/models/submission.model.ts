@@ -9,7 +9,7 @@ import {
 import { itemsPerPageArray } from '@/components/submissions/constants'
 import { getRepositoryFromKey } from '@/constants'
 
-const sprintf = require("sprintf-js").sprintf
+import {sprintf} from 'sprintf-js'
 
 export interface ISubmisionState {
   sortBy: { key: string, label: string },

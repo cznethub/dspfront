@@ -7,8 +7,8 @@
 
     <v-text-field
       label="ORCID access token"
-      :value="token"
-      outlined
+      :model-value="token"
+      variant="outlined"
       readonly
       append-icon="mdi-content-copy"
       @click:append="onCopy"
@@ -17,7 +17,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-facing-decorator'
   import CzNotification from '@/models/notifications.model'
   import User from '@/models/user.model'
 

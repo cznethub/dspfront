@@ -1,21 +1,21 @@
 <template>
   <v-card class="mb-8">
     <v-sheet
-      class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included flex-wrap"
+      class="pa-4 d-flex align-center has-bg-light-gray bg-primary-lighten-4 files-container--included flex-wrap"
     >
       <v-tooltip
         v-if="repoMetadata.hasFolderStructure && !isReadOnly && !isPublished"
-        bottom
+        location="bottom"
         transition="fade"
       >
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
           <v-btn
-            @click="newFolder"
             class="mr-4"
-            small
+            size="small"
             icon
-            v-on="on"
             v-bind="attrs"
+            @click="newFolder"
+            v-on="on"
             ><v-icon>mdi-folder</v-icon></v-btn
           >
         </template>
@@ -26,16 +26,16 @@
 
       <template v-if="!isReadOnly && !isPublished">
         <template>
-          <v-tooltip bottom transition="fade">
-            <template v-slot:activator="{ on, attrs }">
+          <v-tooltip location="bottom" transition="fade">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="selectAll"
                 :disabled="!rootDirectory.children.length"
                 class="mr-1"
                 icon
-                small
-                v-on="on"
+                size="small"
                 v-bind="attrs"
+                @click="selectAll"
+                v-on="on"
               >
                 <v-icon>mdi-checkbox-marked-outline</v-icon>
               </v-btn>
@@ -45,15 +45,15 @@
         </template>
 
         <template>
-          <v-tooltip bottom transition="fade">
-            <template v-slot:activator="{ on, attrs }">
+          <v-tooltip location="bottom" transition="fade">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="unselectAll"
                 icon
-                small
+                size="small"
                 :disabled="!selected.length"
-                v-on="on"
                 v-bind="attrs"
+                @click="unselectAll"
+                v-on="on"
               >
                 <v-icon>mdi-checkbox-blank-off-outline</v-icon>
               </v-btn>
@@ -64,16 +64,16 @@
         </template>
 
         <template v-if="repoMetadata.hasFolderStructure">
-          <v-tooltip bottom transition="fade">
-            <template v-slot:activator="{ on, attrs }">
+          <v-tooltip location="bottom" transition="fade">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="cut"
                 :disabled="!canCut"
                 class="mr-1"
                 icon
-                small
-                v-on="on"
+                size="small"
                 v-bind="attrs"
+                @click="cut"
+                v-on="on"
                 ><v-icon>mdi-content-cut</v-icon></v-btn
               >
             </template>
@@ -82,17 +82,17 @@
 
           <v-tooltip
             v-if="!isReadOnly && !isPublished"
-            bottom
+            location="bottom"
             transition="fade"
           >
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="paste"
                 :disabled="!canPaste"
                 icon
-                small
-                v-on="on"
+                size="small"
                 v-bind="attrs"
+                @click="paste"
+                v-on="on"
               >
                 <v-icon>mdi-content-paste</v-icon>
               </v-btn>
@@ -103,15 +103,15 @@
         </template>
 
         <template>
-          <v-tooltip bottom transition="fade">
-            <template v-slot:activator="{ on, attrs }">
+          <v-tooltip location="bottom" transition="fade">
+            <template #activator="{ on, attrs }">
               <v-btn
-                @click="deleteSelected"
                 icon
-                small
+                size="small"
                 :disabled="isDeleting || !selected.length"
-                v-on="on"
                 v-bind="attrs"
+                @click="deleteSelected"
+                v-on="on"
               >
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
@@ -134,7 +134,7 @@
       <v-spacer></v-spacer>
 
       <template v-if="rootDirectory.children.length && !isEditMode">
-        <v-btn @click="empty" small depressed class="primary lighten-2">
+        <v-btn size="small" variant="flat" class="bg-primary-lighten-2" @click="empty">
           Discard All
         </v-btn>
       </template>
@@ -144,7 +144,7 @@
       <v-alert
         v-if="isEditMode && !isReadOnly && !isPublished"
         class="text-subtitle-1"
-        border="left"
+        border="start"
         colored-border
         type="info"
         elevation="1"
@@ -154,18 +154,19 @@
         click the Save Changes button for your changes to be effective.
       </v-alert>
 
-      <v-card flat outlined v-if="rootDirectory.children.length" class="mb-4">
+      <v-card v-if="rootDirectory.children.length" flat variant="outlined" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem">
           <v-row class="flex-grow-1">
             <v-col
-              :cols="$vuetify.breakpoint.smAndUp ? 9 : 11"
               v-click-outside="{ handler: onClickOutside, include }"
+              :cols="$vuetify.display.smAndUp ? 9 : 11"
             >
               <v-treeview
+                :key="redraw"
+                v-model:open="open"
+                v-model:active="selected"
                 item-disabled="isDisabled"
                 :items="rootDirectory.children"
-                :open.sync="open"
-                :active.sync="selected"
                 return-object
                 multiple-active
                 transition
@@ -173,32 +174,37 @@
                 dense
                 open-on-click
                 class="files-container--included"
-                :key="redraw"
               >
-                <template v-slot:prepend="{ item, open }">
+                <template #prepend="{ item, open }">
                   <v-icon
                     v-if="item.children"
+                    :disabled="item.isDisabled"
+                    :color="item.isCutting ? 'grey' : ''"
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact="onItemCtrlClick(item)"
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
-                    :disabled="item.isDisabled"
-                    :color="item.isCutting ? 'grey' : ''"
                   >
                     {{ open ? "mdi-folder-open" : "mdi-folder" }}
                   </v-icon>
                   <v-icon
                     v-else
-                    @click.ctrl.exact="onItemCtrlClick(item)"
                     :disabled="item.isDisabled"
                     :color="item.isCutting ? 'grey' : ''"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
                   >
                     {{ files[item.name.split(".").pop()] || files["default"] }}
                   </v-icon>
                 </template>
-                <template v-slot:label="{ item }">
+                <template #label="{ item }">
                   <v-text-field
                     v-if="item.isRenaming"
+                    v-click-outside="onClickOutside"
+                    :model-value="item.name"
+                    append-icon="mdi-cancel"
+                    density="compact"
+                    hide-details="auto"
+                    autofocus
                     @change="onRenamed(item, $event)"
                     @keydown.enter="item.isRenaming = false"
                     @click.exact="onItemClick(item)"
@@ -206,22 +212,16 @@
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
                     @click:append="item.isRenaming = false"
-                    :value="item.name"
-                    v-click-outside="onClickOutside"
-                    append-icon="mdi-cancel"
-                    dense
-                    hide-details="auto"
-                    autofocus
                   >
                   </v-text-field>
                   <v-row
                     v-else
+                    :class="{ 'text--secondary': item.isCutting }"
+                    class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column"
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact="onItemCtrlClick(item)"
                     @click.meta.exact="onItemCtrlClick(item)"
                     @click.shift.exact="onItemShiftClick(item)"
-                    :class="{ 'text--secondary': item.isCutting }"
-                    class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column"
                   >
                     <v-col
                       class="d-flex flex-column flex-sm-row align-start align-sm-center"
@@ -244,13 +244,13 @@
                     </v-col>
                   </v-row>
                 </template>
-                <template v-slot:append="{ item, active }">
+                <template #append="{ item, active }">
                   <v-row v-if="!item.isRenaming">
                     <v-col
                       v-if="!isFolder(item) && item.isUploaded"
                       class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 align-center"
                     >
-                      <v-icon class="text--disabled" small
+                      <v-icon class="text--disabled" size="small"
                         >mdi-cloud-check</v-icon
                       >
                     </v-col>
@@ -260,12 +260,12 @@
                     >
                       <v-btn
                         color="info"
-                        @click="$emit('upload', [item])"
                         :disabled="item.isDisabled"
-                        small
-                        depressed
+                        size="small"
+                        variant="flat"
+                        @click="$emit('upload', [item])"
                       >
-                        <v-icon left>mdi-cloud-upload</v-icon>
+                        <v-icon start>mdi-cloud-upload</v-icon>
                         Retry
                       </v-btn>
                     </v-col>
@@ -273,8 +273,8 @@
                       v-if="showFileWarnings(item)"
                       class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary align-center"
                     >
-                      <v-menu open-on-hover bottom left offset-y>
-                        <template v-slot:activator="{ on, attrs }">
+                      <v-menu open-on-hover location="bottom left" offset-y>
+                        <template #activator="{ on, attrs }">
                           <div v-bind="attrs" v-on="on">
                             <v-icon
                               :color="
@@ -329,27 +329,27 @@
                       <template>
                         <v-btn
                           v-if="!item.isRenaming"
-                          @click.stop="renameItem(item)"
                           fab
-                          small
-                          text
+                          size="small"
+                          variant="text"
+                          @click.stop="renameItem(item)"
                           ><v-icon>mdi-pencil-outline</v-icon></v-btn
                         >
                       </template>
                     </v-col>
                     <v-col v-if="item.isDisabled">
-                      <v-icon small>fas fa-circle-notch fa-spin</v-icon>
+                      <v-icon class="fas fa-circle-notch fa-spin" size="small"></v-icon>
                     </v-col>
                   </v-row>
                 </template>
               </v-treeview>
             </v-col>
-            <v-col cols="3" v-if="$vuetify.breakpoint.smAndUp"></v-col>
+            <v-col v-if="$vuetify.display.smAndUp" cols="3"></v-col>
           </v-row>
         </v-card-text>
         <v-divider></v-divider>
 
-        <div class="py-2 px-4" v-if="rootDirectory.children.length">
+        <div v-if="rootDirectory.children.length" class="py-2 px-4">
           <span
             >{{ allItems.length }} file{{
               allItems.length > 1 ? "s" : ""
@@ -368,11 +368,10 @@
           <v-menu
             v-if="isTotalUploadSizeTooBig"
             open-on-hover
-            top
-            right
+            location="top right"
             offset-y
           >
-            <template v-slot:activator="{ on, attrs }">
+            <template #activator="{ on, attrs }">
               <div class="ml-4 d-inline-block" v-bind="attrs" v-on="on">
                 <v-icon color="error">mdi-alert-circle</v-icon>
               </div>
@@ -398,7 +397,7 @@
       <v-alert
         v-if="hasTooManyFiles"
         class="text-subtitle-1"
-        border="left"
+        border="start"
         colored-border
         type="error"
         elevation="1"
@@ -412,15 +411,15 @@
         class="upload-drop-area files-container--included"
       >
         <b-upload
+          v-model="dropFiles"
           type="file"
           multiple
           drag-drop
           expanded
-          v-model="dropFiles"
           class="has-bg-light-gray"
         >
           <v-alert
-            class="ma-4 has-cursor-pointer transparent"
+            class="ma-4 has-cursor-pointer bg-transparent"
             type="info"
             prominent
             colored-border
@@ -438,9 +437,8 @@
 
 <script lang="ts">
 import CzNotification from "@/models/notifications.model";
-import { Component, Watch, Prop } from "vue-property-decorator";
+import { Component, Watch, Prop, Vue } from "vue-facing-decorator";
 import { IFolder, IFile } from "@/components/new-submission/types";
-import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
 import { IRepository } from "../submissions/types";
 
@@ -448,10 +446,9 @@ import { IRepository } from "../submissions/types";
   name: "cz-folder-structure",
   components: {},
   filters: {},
+  mixins: [ActiveRepositoryMixin]
 })
-export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
+export default class CzFolderStructure extends Vue {
   @Prop({ default: false }) repoMetadata!: IRepository;
   @Prop({ default: false }) isEditMode!: boolean;
   @Prop({ default: false }) isReadOnly!: boolean;

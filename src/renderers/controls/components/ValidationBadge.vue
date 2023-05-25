@@ -1,16 +1,16 @@
 <template>
   <div>
-    <v-tooltip bottom v-if="errors.length > 0">
-      <template v-slot:activator="{ on: onTooltip }">
+    <v-tooltip v-if="errors.length > 0" location="bottom">
+      <template #activator="{ on: onTooltip }">
         <v-badge
           :color="color"
           :bordered="bordered"
           :inline="inline"
-          :offsetX="offsetX"
-          :offsetY="offsetY"
+          :offset-x="offsetX"
+          :offset-y="offsetY"
           :overlap="overlap"
         >
-          <template v-slot:badge>
+          <template #badge>
             {{ errors.length }}
           </template>
           <div v-on="onTooltip"><slot></slot></div>
@@ -31,7 +31,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue'
-import { VBadge, VTooltip } from 'vuetify/lib';
+import { VBadge, VTooltip } from 'vuetify/components';
 import { ErrorObject } from 'ajv';
 // import findIndex from 'lodash/findIndex';
 // import {
@@ -41,7 +41,7 @@ import { ErrorObject } from 'ajv';
 // } from '@jsonforms/core';
 
 export default defineComponent({
-  name: 'validation-badge',
+  name: 'ValidationBadge',
   components: {
     VBadge,
     VTooltip,

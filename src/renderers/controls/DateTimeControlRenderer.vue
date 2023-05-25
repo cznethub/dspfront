@@ -2,17 +2,18 @@
   <v-menu
     ref="menu"
     v-model="showMenu"
+    v-model:return-value="pickerValue"
     :close-on-content-click="false"
-    :return-value.sync="pickerValue"
     transition="scale-transition"
     offset-y
     :min-width="useTabLayout ? '290px' : '580px'"
     v-bind="vuetifyProps('v-menu')"
     :disabled="!control.enabled"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <v-text-field
         :id="control.id + '-input'"
+        v-mask="mask"
         :class="styles.control.input"
         :disabled="!control.enabled"
         :autofocus="appliedOptions.focus"
@@ -24,22 +25,21 @@
         :error-messages="control.errors"
         v-bind="attrs"
         :prepend-inner-icon="pickerIcon"
-        v-mask="mask"
-        :value="inputValue"
-        @input="onInputChange"
-        v-on="on"
-        outlined
+        :model-value="inputValue"
+        variant="outlined"
         class="py-3"
+        @update:model-value="onInputChange"
+        v-on="on"
       >
-        <template v-slot:message>
+        <template #message>
           <div v-if="description" class="text-subtitle-1 text--secondary">
             {{ description }}
           </div>
-          <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+          <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
             {{ cleanedErrors }}
           </div>
         </template>
-        <template slot="append">
+        <template #append>
           <v-icon v-if="control.enabled" tabindex="-1" @click="clear"
             >$clear</v-icon
           >
@@ -49,48 +49,48 @@
 
     <v-card v-if="showMenu">
       <v-tabs v-if="useTabLayout" v-model="activeTab">
-        <v-tab key="date" href="#date" class="primary--text">
+        <v-tab key="date" href="#date" class="text-primary">
           <v-icon>mdi-calendar</v-icon>
         </v-tab>
         <v-spacer></v-spacer>
-        <v-tab key="time" href="#time" class="primary--text">
+        <v-tab key="time" href="#time" class="text-primary">
           <v-icon>mdi-clock-outline</v-icon>
         </v-tab>
 
-        <v-tab-item value="date"
+        <v-window-item value="date"
           ><v-date-picker
             v-if="showMenu"
-            v-model="datePickerValue"
             ref="datePicker"
+            v-model="datePickerValue"
             v-bind="vuetifyProps('v-date-picker')"
             @input="activeTab = 'time'"
           >
           </v-date-picker>
-        </v-tab-item>
-        <v-tab-item value="time"
+        </v-window-item>
+        <v-window-item value="time"
           ><v-time-picker
-            v-model="timePickerValue"
             ref="timePicker"
+            v-model="timePickerValue"
             v-bind="vuetifyProps('v-time-picker')"
             :use-seconds="useSeconds"
             format="ampm"
           ></v-time-picker>
-        </v-tab-item>
+        </v-window-item>
       </v-tabs>
-      <v-row no-gutters v-else>
+      <v-row v-else no-gutters>
         <v-col min-width="290px" cols="auto">
           <v-date-picker
             v-if="showMenu"
-            v-model="datePickerValue"
             ref="datePicker"
+            v-model="datePickerValue"
             v-bind="vuetifyProps('v-date-picker')"
           >
           </v-date-picker>
         </v-col>
         <v-col min-width="290px" cols="auto">
           <v-time-picker
-            v-model="timePickerValue"
             ref="timePicker"
+            v-model="timePickerValue"
             v-bind="vuetifyProps('v-time-picker')"
             :use-seconds="useSeconds"
             format="ampm"
@@ -99,7 +99,7 @@
       </v-row>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn text @click="showMenu = false">
+        <v-btn variant="text" @click="showMenu = false">
           {{ cancelLabel }}
         </v-btn>
         <v-btn
@@ -126,7 +126,7 @@ import {
   rendererProps,
   RendererProps,
   useJsonFormsControl,
-} from "@jsonforms/vue2";
+} from "@jsonforms/vue";
 import {
   parseDateTime,
   useTranslator,
@@ -143,7 +143,7 @@ const JSON_SCHEMA_DATE_TIME_FORMATS = [
 ];
 
 const controlRenderer = defineComponent({
-  name: "datetime-control-renderer",
+  name: "DatetimeControlRenderer",
   directives: { Mask },
   props: {
     ...rendererProps<ControlElement>(),
@@ -159,21 +159,6 @@ const controlRenderer = defineComponent({
 
     const control = useVuetifyControl(useJsonFormsControl(props), adaptValue);
     return { ...control, showMenu, mask, t, adaptValue, activeTab };
-  },
-  watch: {
-    showMenu(show) {
-      if (!show) {
-        // menu is closing then reset the activeTab
-        this.activeTab = "date";
-      }
-    },
-    isFocused(newFocus) {
-      if (newFocus && this.applyMask) {
-        this.mask = this.maskFunction.bind(this);
-      } else {
-        this.mask = undefined;
-      }
-    },
   },
   computed: {
     description(): string {
@@ -194,7 +179,7 @@ const controlRenderer = defineComponent({
         : "mdi-calendar-clock";
     },
     useTabLayout(): boolean {
-      if (this.$vuetify.breakpoint.smAndDown) {
+      if (this.$vuetify.display.smAndDown) {
         return true;
       }
       return false;
@@ -289,6 +274,21 @@ const controlRenderer = defineComponent({
           ? this.appliedOptions.okLabel
           : "OK";
       return this.t(label, label);
+    },
+  },
+  watch: {
+    showMenu(show) {
+      if (!show) {
+        // menu is closing then reset the activeTab
+        this.activeTab = "date";
+      }
+    },
+    isFocused(newFocus) {
+      if (newFocus && this.applyMask) {
+        this.mask = this.maskFunction.bind(this);
+      } else {
+        this.mask = undefined;
+      }
     },
   },
   methods: {

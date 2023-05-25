@@ -1,9 +1,9 @@
 <template>
   <v-app app>
     <v-app-bar
-      ref="appBar"
       id="app-bar"
-      color="blue-grey lighten-4"
+      ref="appBar"
+      color="blue-grey-lighten-4"
       elevate-on-scroll
       fixed
       app
@@ -14,50 +14,50 @@
       >
         <router-link :to="{ path: `/` }" class="logo">
           <img
-            :src="require('@/assets/img/CZN_Logo.png')"
+            src="/img/CZN_Logo.png"
             alt="Critical Zone Network home"
           />
         </router-link>
         <div class="spacer"></div>
         <v-card
+          v-if="!$vuetify.display.mdAndDown"
           class="nav-items has-space-right d-flex"
           :elevation="2"
-          v-if="!$vuetify.breakpoint.mdAndDown"
         >
           <v-btn
             id="navbar-nav-home"
             to="/"
             :elevation="0"
-            active-class="primary"
+            selected-class="primary"
             >Home</v-btn
           >
           <v-btn
             v-for="path of paths"
-            :key="path.attrs.to || path.attrs.href"
             v-bind="path.attrs"
             :id="`navbar-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
+            :key="path.attrs.to || path.attrs.href"
             :elevation="0"
-            active-class="primary"
+            selected-class="primary"
             :class="path.isActive && path.isActive() ? 'primary' : ''"
           >
             {{ path.label }}
-            <v-icon v-if="path.isExternal" small class="ml-2" right
+            <v-icon v-if="path.isExternal" size="small" class="ml-2" end
               >mdi-open-in-new</v-icon
             >
           </v-btn>
         </v-card>
 
-        <template v-if="!$vuetify.breakpoint.mdAndDown">
+        <template v-if="!$vuetify.display.mdAndDown">
           <v-btn
-            id="navbar-login"
             v-if="!isLoggedIn"
-            @click="openLogInDialog()"
+            id="navbar-login"
             rounded
+            @click="openLogInDialog()"
             >Log In</v-btn
           >
           <template v-else>
-            <v-menu bottom left>
-              <template v-slot:activator="{ on, attrs }">
+            <v-menu location="bottom left">
+              <template #activator="{ on, attrs }">
                 <v-btn
                   :color="
                     $route.matched.some((p) => p.name === 'profile')
@@ -79,25 +79,21 @@
                   :to="{ path: '/profile' }"
                   active-class="primary white--text"
                 >
-                  <v-list-item-icon class="mr-2">
+                  <v-list-item class="mr-2">
                     <v-icon>mdi-account-circle</v-icon>
-                  </v-list-item-icon>
+                  </v-list-item>
 
-                  <v-list-item-content>
-                    <v-list-item-title>Account & Settings</v-list-item-title>
-                  </v-list-item-content>
+                  <v-list-item-title>Account & Settings</v-list-item-title>
                 </v-list-item>
 
                 <v-divider></v-divider>
 
                 <v-list-item id="navbar-logout" @click="logOut()">
-                  <v-list-item-icon class="mr-2">
+                  <v-list-item class="mr-2">
                     <v-icon>mdi-logout</v-icon>
-                  </v-list-item-icon>
+                  </v-list-item>
 
-                  <v-list-item-content>
-                    <v-list-item-title>Log Out</v-list-item-title>
-                  </v-list-item-content>
+                  <v-list-item-title>Log Out</v-list-item-title>
                 </v-list-item>
               </v-list>
             </v-menu>
@@ -105,8 +101,8 @@
         </template>
 
         <v-app-bar-nav-icon
+          v-if="$vuetify.display.mdAndDown"
           @click.stop="showMobileNavigation = true"
-          v-if="$vuetify.breakpoint.mdAndDown"
         />
       </v-container>
     </v-app-bar>
@@ -124,67 +120,63 @@
     </v-footer>
 
     <v-navigation-drawer
-      class="mobile-nav-items"
       v-model="showMobileNavigation"
+      class="mobile-nav-items"
       temporary
       app
     >
-      <v-list nav dense class="nav-items">
-        <v-list-item-group class="text-body-1">
-          <v-list-item
-            id="drawer-nav-home"
-            @click="showMobileNavigation = false"
-            to="/"
-            active-class="primary white--text"
-          >
-            <v-icon class="mr-2">mdi-home</v-icon>
-            <span>Home</span>
-          </v-list-item>
+      <v-list nav density="compact" class="nav-items">
+        <v-list-item
+          id="drawer-nav-home"
+          to="/"
+          active-class="primary white--text"
+          @click="showMobileNavigation = false"
+        >
+          <v-icon class="mr-2">mdi-home</v-icon>
+          <span>Home</span>
+        </v-list-item>
 
-          <v-list-item
-            v-for="path of paths"
-            :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
-            :key="path.attrs.to || path.attrs.href"
-            v-bind="path.attrs"
-            @click="showMobileNavigation = false"
-            active-class="primary white--text"
-            :class="path.isActive && path.isActive() ? 'primary' : ''"
+        <v-list-item
+          v-for="path of paths"
+          :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
+          :key="path.attrs.to || path.attrs.href"
+          v-bind="path.attrs"
+          active-class="primary white--text"
+          :class="path.isActive && path.isActive() ? 'primary' : ''"
+          @click="showMobileNavigation = false"
+        >
+          <v-icon class="mr-2">{{ path.icon }}</v-icon>
+          <span>{{ path.label }}</span>
+          <v-icon v-if="path.isExternal" size="small" class="ml-2" end
+            >mdi-open-in-new</v-icon
           >
-            <v-icon class="mr-2">{{ path.icon }}</v-icon>
-            <span>{{ path.label }}</span>
-            <v-icon v-if="path.isExternal" small class="ml-2" right
-              >mdi-open-in-new</v-icon
-            >
-          </v-list-item>
-        </v-list-item-group>
+        </v-list-item>
 
         <v-divider class="my-4"></v-divider>
 
-        <v-list-item-group class="text-body-1">
-          <v-list-item
-            id="drawer-nav-login"
-            v-if="!isLoggedIn"
-            @click="
-              openLogInDialog();
-              showMobileNavigation = false;
-            "
-          >
-            <v-icon class="mr-2">mdi-login</v-icon>
-            <span>Log In</span>
+        <v-list-item
+          v-if="!isLoggedIn"
+          id="drawer-nav-login"
+          @click="
+            openLogInDialog();
+            showMobileNavigation = false;
+          "
+        >
+          <v-icon class="mr-2">mdi-login</v-icon>
+          <span>Log In</span>
+        </v-list-item>
+
+        <template v-else>
+          <v-list-item :to="{ path: '/profile' }">
+            <v-icon class="mr-2">mdi-account-circle</v-icon>
+            <span>Account & Settings</span>
           </v-list-item>
 
-          <template v-else>
-            <v-list-item :to="{ path: '/profile' }">
-              <v-icon class="mr-2">mdi-account-circle</v-icon>
-              <span>Account & Settings</span>
-            </v-list-item>
-
-            <v-list-item id="drawer-nav-logout" @click="logOut()">
-              <v-icon class="mr-2">mdi-logout</v-icon>
-              <span>Log Out</span>
-            </v-list-item>
-          </template>
-        </v-list-item-group>
+          <v-list-item id="drawer-nav-logout" @click="logOut()">
+            <v-icon class="mr-2">mdi-logout</v-icon>
+            <span>Log Out</span>
+          </v-list-item>
+        </template>
       </v-list>
     </v-navigation-drawer>
 
@@ -195,11 +187,11 @@
     >
       <span>{{ snackbar.message }}</span>
 
-      <template v-slot:action="{ attrs }">
+      <template #action="{ attrs }">
         <v-btn
-          @click="snackbar.isActive = false"
           v-bind="attrs"
           :color="snackbarColors[snackbar.type].actionButton"
+          @click="snackbar.isActive = false"
           >Dismiss</v-btn
         >
       </template>
@@ -218,35 +210,35 @@
           <v-spacer></v-spacer>
           <v-btn
             class="dialog-cancel"
+            variant="text"
             @click="
               dialog.isActive = false;
               dialog.onCancel();
             "
-            text
           >
             {{ dialog.cancelText }}
           </v-btn>
 
           <v-btn
             v-if="dialog.onSecondaryAction"
+            color="green-darken-1"
+            variant="text"
             @click="
               dialog.isActive = false;
               dialog.onSecondaryAction();
             "
-            color="green darken-1"
-            text
           >
             {{ dialog.secondaryActionText }}
           </v-btn>
 
           <v-btn
             class="dialog-confirm"
+            color="green-darken-1"
+            variant="text"
             @click="
               dialog.isActive = false;
               dialog.onConfirm();
             "
-            color="green darken-1"
-            text
           >
             {{ dialog.confirmText }}
           </v-btn>
@@ -263,8 +255,8 @@
 
     <v-dialog v-model="authorizeDialog.isActive" width="650">
       <cz-authorize
-        @authorized="authorizeDialog.onAuthorized"
         :repo="authorizeDialog.repo"
+        @authorized="authorizeDialog.onAuthorized"
       ></cz-authorize>
     </v-dialog>
     <link
@@ -279,7 +271,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from "vue-property-decorator";
+import { Component, Vue, Watch } from "vue-facing-decorator";
 import { setupRouteGuards } from "./router";
 import { Subscription } from "rxjs";
 import {
@@ -287,7 +279,7 @@ import {
   DEFAULT_TOAST_DURATION,
   DISCOVERY_SITE_URL,
 } from "./constants";
-import { RawLocation } from "vue-router";
+import { RouteLocationRaw } from "vue-router";
 import { EnumRepositoryKeys } from "./components/submissions/types";
 import CzNotification, { IDialog, IToast } from "./models/notifications.model";
 import CzFooter from "@/components/base/cz.footer.vue";
@@ -370,7 +362,7 @@ export default class App extends Vue {
       attrs: { to: "/submit" },
       label: "Submit Data",
       icon: "mdi-book-plus",
-      isActive: () => this.$route.name === "register",
+      // isActive: () => this.$route.name === "register",
     },
     {
       attrs: { href: DISCOVERY_SITE_URL },
@@ -391,7 +383,9 @@ export default class App extends Vue {
   }
 
   protected get isSafari(): boolean {
-    return this.$browserDetect.isSafari;
+    // return this.$browserDetect.isSafari;
+    // TODO: fix browser detect
+    return false
   }
 
   mounted() {
@@ -443,7 +437,7 @@ export default class App extends Vue {
     });
 
     this.onOpenLogInDialog = User.logInDialog$.subscribe(
-      (redirectTo: RawLocation | undefined) => {
+      (redirectTo: RouteLocationRaw | undefined) => {
         this.logInDialog.isActive = true;
 
         this.logInDialog.onLoggedIn = () => {
@@ -458,7 +452,7 @@ export default class App extends Vue {
     this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe(
       (params: {
         repository: string;
-        redirectTo?: RawLocation | undefined;
+        redirectTo?: RouteLocationRaw | undefined;
       }) => {
         this.authorizeDialog.repo = params.repository;
         this.authorizeDialog.isActive = true;
@@ -507,7 +501,7 @@ export default class App extends Vue {
 
     // Guards are setup after checking authorization and loading access tokens
     // because they depend on user logged in status
-    setupRouteGuards();
+    // setupRouteGuards();
 
     this.isLoading = false;
   }

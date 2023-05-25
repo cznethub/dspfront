@@ -1,10 +1,9 @@
 <template>
   <v-text-field
-    outlined
-    type="number"
-    @change.native="beforeChange($event)"
-    :step="step"
     :id="control.id + '-input'"
+    variant="outlined"
+    type="number"
+    :step="step"
     :class="styles.control.input"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
@@ -13,16 +12,17 @@
     :hint="description"
     :required="control.required"
     :error-messages="control.errors"
-    :value="control.data"
+    :model-value="control.data"
     persistent-hint
-    dense
+    density="compact"
     class="py-3"
+    @change.native="beforeChange($event)"
   >
-    <template v-slot:message>
+    <template #message>
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
-      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+      <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
         {{ cleanedErrors }}
       </div>
     </template>
@@ -41,13 +41,13 @@ import {
   rendererProps,
   useJsonFormsControl,
   RendererProps,
-} from '@jsonforms/vue2';
+} from '@jsonforms/vue';
 import { default as ControlWrapper } from './ControlWrapper.vue';
 import { useVuetifyControl } from '@/renderers/util/composition';
-import { VTextField } from 'vuetify/lib';
+import { VTextField } from 'vuetify/components';
 
 const controlRenderer = defineComponent({
-  name: 'integer-control-renderer',
+  name: 'IntegerControlRenderer',
   components: {
     ControlWrapper,
     VTextField,

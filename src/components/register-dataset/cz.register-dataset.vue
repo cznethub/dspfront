@@ -3,7 +3,7 @@
     <div class="text-h4">Register Dataset</div>
     <v-divider class="has-space-bottom" />
 
-    <v-alert border="left" colored-border type="info" elevation="1">
+    <v-alert border="start" colored-border type="info" elevation="1">
       You should only use this form to register existing datasets from
       HydroShare, EarthChem, or Zenodo that were not submitted through the Data
       Submission Portal
@@ -60,8 +60,8 @@
           @submit.prevent
         >
           <v-text-field
-            v-model.trim="url"
             ref="txtIdentifier"
+            v-model.trim="url"
             :disabled="isFetching"
             :required="true"
             :rules="[isValidUrlOrIdentifier()]"
@@ -71,7 +71,7 @@
             type="url"
             hide-details="auto"
             persistent-hint
-            outlined
+            variant="outlined"
             @keypress.enter="onReadDataset"
           >
           </v-text-field>
@@ -85,12 +85,12 @@
           <v-btn
             color="primary"
             class="mr-4"
-            @click="onReadDataset"
             :disabled="!canReadDataset"
+            @click="onReadDataset"
           >
             Continue
           </v-btn>
-          <v-btn color="default" @click="step--" :disabled="isFetching" text>
+          <v-btn color="default" :disabled="isFetching" variant="text" @click="step--">
             Back
           </v-btn>
         </v-form>
@@ -106,14 +106,14 @@
       </v-stepper-step>
 
       <v-stepper-content step="3">
-        <v-card v-if="isFetching" elevation="2" outlined>
+        <v-card v-if="isFetching" elevation="2" variant="outlined">
           <div class="table-item">
             <table
               class="text-body-1"
-              :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+              :class="{ 'is-xs-small': $vuetify.display.xs }"
             >
               <tr>
-                <td colspan="2" class="text-h6 title">
+                <td colspan="2" class="text-h6 text-h6">
                   <v-skeleton-loader type="heading" />
                 </td>
               </tr>
@@ -125,28 +125,28 @@
           >
             <table
               class="text-body-1"
-              :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+              :class="{ 'is-xs-small': $vuetify.display.xs }"
             >
               <tr>
-                <th class="pr-4 body-2 text-right">
+                <th class="pr-4 text-body-2 text-right">
                   <v-skeleton-loader type="text" />
                 </th>
                 <td><v-skeleton-loader type="text" /></td>
               </tr>
               <tr>
-                <th class="pr-4 body-2 text-right">
+                <th class="pr-4 text-body-2 text-right">
                   <v-skeleton-loader type="text" />
                 </th>
                 <td><v-skeleton-loader type="text" /></td>
               </tr>
               <tr>
-                <th class="pr-4 body-2 text-right">
+                <th class="pr-4 text-body-2 text-right">
                   <v-skeleton-loader type="text" />
                 </th>
                 <td><v-skeleton-loader type="text" /></td>
               </tr>
               <tr>
-                <th class="pr-4 body-2 text-right">
+                <th class="pr-4 text-body-2 text-right">
                   <v-skeleton-loader type="text" />
                 </th>
                 <td><v-skeleton-loader type="text" /></td>
@@ -163,7 +163,7 @@
           <v-alert
             v-if="isPublished"
             class="text-subtitle-1 my-8 mr-1"
-            border="left"
+            border="start"
             colored-border
             type="warning"
             icon="mdi-pencil-off"
@@ -176,51 +176,51 @@
             button on the My Submissions page.
           </v-alert>
 
-          <v-card elevation="2" outlined class="mb-6">
+          <v-card elevation="2" variant="outlined" class="mb-6">
             <div
               class="table-item d-flex justify-space-between flex-column flex-md-row"
             >
               <table
                 class="text-body-1"
-                :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+                :class="{ 'is-xs-small': $vuetify.display.xs }"
               >
                 <tr>
-                  <td colspan="2" class="text-h6 title">
+                  <td colspan="2" class="text-h6 text-h6">
                     {{ submission.title }}
                   </td>
                 </tr>
                 <tr v-if="submission.authors.length">
-                  <th class="pr-4 body-2">Authors:</th>
+                  <th class="pr-4 text-body-2">Authors:</th>
                   <td>{{ submission.authors.join(" | ") }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2">Submission Repository:</th>
+                  <th class="pr-4 text-body-2">Submission Repository:</th>
                   <td>{{ selectedRepository.name }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2">Submission Date:</th>
+                  <th class="pr-4 text-body-2">Submission Date:</th>
                   <td>{{ getDateInLocalTime(submission.date) }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2">Identifier:</th>
+                  <th class="pr-4 text-body-2">Identifier:</th>
                   <td>{{ submission.identifier }}</td>
                 </tr>
                 <tr v-if="submission.metadata && submission.metadata.status">
-                  <th class="pr-4 body-2">Status:</th>
+                  <th class="pr-4 text-body-2">Status:</th>
 
                   <td>
                     <v-chip
                       v-if="submission.metadata.status !== 'incomplete'"
                       color="orange"
                       small
-                      outlined
+                      variant="outlined"
                     >
-                      <v-icon left small>mdi-lock</v-icon>
+                      <v-icon start size="small">mdi-lock</v-icon>
                       {{ submission.metadata.status }}
                     </v-chip>
 
-                    <v-chip v-else small outlined>
-                      <v-icon left small>mdi-pencil</v-icon>
+                    <v-chip v-else small variant="outlined">
+                      <v-icon start size="small">mdi-pencil</v-icon>
                       {{ submission.metadata.status }}
                     </v-chip>
                   </td>
@@ -231,7 +231,7 @@
                 <v-btn
                   :href="submission.url"
                   target="_blank"
-                  color="blue-grey lighten-4"
+                  color="blue-grey-lighten-4"
                   rounded
                 >
                   <v-icon class="mr-1">mdi-open-in-new</v-icon> View In
@@ -246,8 +246,8 @@
               v-if="isPublished"
               color="primary"
               class="mr-4"
-              @click="registerSubmissionAsIs"
               :disabled="isFetching || !isValid || !url || isRegistering"
+              @click="registerSubmissionAsIs"
             >
               {{ isRegistering ? "Registering..." : "Register Dataset" }}
             </v-btn>
@@ -256,13 +256,13 @@
               v-else
               color="primary"
               class="mr-4"
-              @click="goToEditSubmission"
               :disabled="isFetching || !isValid || !url"
+              @click="goToEditSubmission"
             >
               Continue & Edit...
             </v-btn>
 
-            <v-btn color="default" @click="step--" :disabled="isFetching" text>
+            <v-btn color="default" :disabled="isFetching" variant="text" @click="step--">
               Back
             </v-btn>
           </div>
@@ -271,7 +271,7 @@
         <template v-else-if="wasUnauthorized">
           <v-alert
             class="text-subtitle-1 ma-1"
-            border="left"
+            border="start"
             colored-border
             type="info"
             elevation="2"
@@ -283,8 +283,8 @@
               >
               <v-col class="flex-grow-0">
                 <v-btn
-                  @click="openAuthorizePopup(selectedRepository.key)"
                   color="primary"
+                  @click="openAuthorizePopup(selectedRepository.key)"
                 >
                   <i class="fas fa-key mr-2" />Authorize
                 </v-btn>
@@ -296,7 +296,7 @@
         <template v-else>
           <v-alert
             class="text-subtitle-1 ma-2"
-            border="left"
+            border="start"
             colored-border
             type="warning"
             elevation="2"
@@ -310,9 +310,9 @@
           <v-btn
             color="default"
             class="mb-2"
-            @click="step--"
             :disabled="isFetching"
-            text
+            variant="text"
+            @click="step--"
           >
             Back
           </v-btn>
@@ -323,10 +323,9 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch } from "vue-property-decorator";
+import { Component, Watch, Vue } from "vue-facing-decorator";
 import { repoMetadata } from "@/components/submit/constants";
 import { EnumRepositoryKeys, IRepository } from "../submissions/types";
-import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
 import Repository from "@/models/repository.model";
 import Submission from "@/models/submission.model";
@@ -336,10 +335,9 @@ import CzNotification from "@/models/notifications.model";
 @Component({
   name: "cz-register-dataset",
   components: {},
+  mixins: [ActiveRepositoryMixin]
 })
-export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
+export default class CzRegisterDataset extends Vue {
   protected url = "";
   protected step = 1;
   protected selectedRepository: IRepository | null = null;

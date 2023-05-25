@@ -1,12 +1,12 @@
 <template>
   <v-text-field
+    :id="control.id + '-input'"
     type="number"
     :label="computedLabel"
     :step="step"
-    :id="control.id + '-input'"
     :data-id="computedLabel.replaceAll(` `, ``)"
     :class="styles.control.input"
-    :value="control.data"
+    :model-value="control.data"
     :disabled="!control.enabled"
     :autofocus="appliedOptions.focus"
     :placeholder="appliedOptions.placeholder"
@@ -14,17 +14,17 @@
     :max="control.schema.exclusiveMaximum"
     :min="control.schema.exclusiveMinumum"
     :error-messages="control.errors"
-    @input="onInputChange"
     class="py-3"
     persistent-hint
-    dense
-    outlined
+    density="compact"
+    variant="outlined"
+    @update:model-value="onInputChange"
   >
-    <template v-slot:message>
+    <template #message>
       <div v-if="description" class="text-subtitle-1 text--secondary">
         {{ description }}
       </div>
-      <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+      <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
         {{ cleanedErrors }}
       </div>
     </template>
@@ -39,14 +39,14 @@ import {
   isNumberControl
 } from '@jsonforms/core';
 import { defineComponent, ref, unref } from 'vue'
-import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue2'
+import { rendererProps, useJsonFormsControl, RendererProps } from '@jsonforms/vue'
 import { default as ControlWrapper } from './ControlWrapper.vue';
 import { useVuetifyControl } from '@/renderers/util/composition';
 
 const NUMBER_REGEX_TEST = /^[+-]?\d+([.]\d+)?([eE][+-]?\d+)?$/;
 
 const controlRenderer = defineComponent({
-  name: 'number-control-renderer',
+  name: 'NumberControlRenderer',
   components: {
     ControlWrapper
   },
@@ -63,12 +63,6 @@ const controlRenderer = defineComponent({
     const inputValue = ref((unref(input.control).data as string) || '');
     return { ...input, adaptValue, inputValue };
   },
-  created() {
-    // If the value that was loaded is null, turn it into undefined
-    if (this.control.data === null) {
-      this.handleChange(this.control.path, undefined)
-    }
-  },
   computed: {
     step(): number {
       const options: any = this.appliedOptions;
@@ -81,6 +75,12 @@ const controlRenderer = defineComponent({
     description(): string {
       return this.control.description || this.appliedOptions.description || ''
     },
+  },
+  created() {
+    // If the value that was loaded is null, turn it into undefined
+    if (this.control.data === null) {
+      this.handleChange(this.control.path, undefined)
+    }
   },
   methods: {
     // beforeChange(event) {

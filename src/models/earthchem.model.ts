@@ -5,7 +5,7 @@ import axios from "axios"
 import Repository from './repository.model'
 import CzNotification from './notifications.model'
 
-const sprintf = require("sprintf-js").sprintf
+import {sprintf} from 'sprintf-js'
 
 export default class EarthChem extends Repository {
   static entity = EnumRepositoryKeys.earthchem

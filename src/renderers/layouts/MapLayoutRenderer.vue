@@ -1,12 +1,12 @@
 <template>
-  <div class="my-4" v-if="control.visible" v-bind="vuetifyProps('v-container')">
+  <div v-if="control.visible" class="my-4" v-bind="vuetifyProps('v-container')">
     <v-container>
       <v-row>
         <v-col sm="12" md="5">
           <v-row
             v-for="(element, index) in control.uischema.elements"
-            :data-id="`vertical-${index}`"
             :key="`${control.path}-${index}`"
+            :data-id="`vertical-${index}`"
             no-gutters
             v-bind="vuetifyProps(`v-row[${index}]`)"
           >
@@ -43,15 +43,15 @@ import {
   rendererProps,
   RendererProps,
   useJsonFormsControlWithDetail
-} from "@jsonforms/vue2";
+} from "@jsonforms/vue";
 import { useVuetifyControl,  } from "@/renderers/util/composition";
-import { VContainer, VRow, VCol } from "vuetify/lib";
+import { VContainer, VRow, VCol } from "vuetify/components";
 import { Loader, LoaderOptions } from "google-maps";
 const options: LoaderOptions = { libraries: ["drawing"] };
 const loader = new Loader(process.env.VUE_APP_GOOGLE_MAPS_API_KEY, options);
 
 const layoutRenderer = defineComponent({
-  name: "map-layout-renderer",
+  name: "MapLayoutRenderer",
   components: {
     DispatchRenderer,
     VContainer,
@@ -92,40 +92,6 @@ const layoutRenderer = defineComponent({
       ...useVuetifyControl(useJsonFormsControlWithDetail(props))
     };
   },
-  mounted: async function () {
-    await this.initMap();
-
-    if (this.hasData) {
-      this.loadDrawing();
-
-      if (this.map) {
-        if (this.mapType === 'box') {
-          // Zoom and center to rectangle
-          (this.map as google.maps.Map).fitBounds(this.rectangle.bounds)
-        }
-        else {
-          // Recenter at marker
-          (this.map as google.maps.Map).setCenter({
-            lat: this.control.data.north,
-            lng: this.control.data.east,
-          });
-        }
-      }
-    }
-  },
-  watch: {
-    'control.data': function (newData, oldData) {
-      if (this.isEventFromMap) {
-        this.isEventFromMap = false
-      }
-      else {
-        if (this.initialized) {
-          this.loadDrawing()
-          this.isEventFromMap = false
-        }
-      }
-    }
-  },
   computed: {
     mapType(): "point" | "box" {
       return this.control.uischema.options?.map.type || "point";
@@ -154,6 +120,40 @@ const layoutRenderer = defineComponent({
           !isNaN(this.control.data.westlimit))
       );
     },
+  },
+  watch: {
+    'control.data': function (newData, oldData) {
+      if (this.isEventFromMap) {
+        this.isEventFromMap = false
+      }
+      else {
+        if (this.initialized) {
+          this.loadDrawing()
+          this.isEventFromMap = false
+        }
+      }
+    }
+  },
+  mounted: async function () {
+    await this.initMap();
+
+    if (this.hasData) {
+      this.loadDrawing();
+
+      if (this.map) {
+        if (this.mapType === 'box') {
+          // Zoom and center to rectangle
+          (this.map as google.maps.Map).fitBounds(this.rectangle.bounds)
+        }
+        else {
+          // Recenter at marker
+          (this.map as google.maps.Map).setCenter({
+            lat: this.control.data.north,
+            lng: this.control.data.east,
+          });
+        }
+      }
+    }
   },
   methods: {
     async initMap() {

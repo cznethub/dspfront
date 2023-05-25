@@ -27,7 +27,8 @@
 
       <div class="mb-2 d-flex justify-center">
         <div id="data-templates" class="d-inline-flex flex-column">
-          <div v-for="(tmp, index) of dataTemplates" :key="index"
+          <div
+v-for="(tmp, index) of dataTemplates" :key="index"
             class="d-flex align-center flex-md-row flex-column my-4 my-md-0">
             <div class="d-flex justify-center align-center flex-shrink-0" style="width: 256px; height: 128px;">
               <v-icon :class="tmp.iconClass" :style="{ 'color': tmp.iconColor }">{{ tmp.icon }}</v-icon>
@@ -55,7 +56,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Vue } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-facing-decorator'
   import { guideUrls } from '@/components/recommendations/constants'
 
   interface IDataTemplate {

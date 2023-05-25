@@ -11,11 +11,11 @@
           >
             <v-text-field
               id="my_submissions_search"
-              class="ma-1 my-2 my-sm-0"
               v-model="filters.searchStr"
-              dense
+              class="ma-1 my-2 my-sm-0"
+              density="compact"
               clearable
-              outlined
+              variant="outlined"
               hide-details
               prepend-inner-icon="mdi-magnify"
               label="Search..."
@@ -26,30 +26,30 @@
               :items="repoOptions"
               class="ma-1 my-2 my-sm-0"
               small-chips
-              deletable-chips
+              closable-chips
               clearable
               label="Repository"
               hide-details
               chips
               multiple
               dense
-              outlined
+              variant="outlined"
             >
-              <template v-slot:item="data">
+              <template #item="data">
                 <v-list-item-action>
                   <v-icon v-if="data.attrs.inputValue"
                     >mdi-checkbox-marked</v-icon
                   >
                   <v-icon v-else>mdi-checkbox-blank-outline</v-icon>
                 </v-list-item-action>
-                <v-list-item-content>
+                <v-list-item>
                   <v-list-item-title>
                     {{
                       repoMetadata[data.item].dropdownName ||
                       repoMetadata[data.item].name
                     }}
                   </v-list-item-title>
-                </v-list-item-content>
+                </v-list-item>
               </template>
             </v-select>
           </div>
@@ -60,25 +60,25 @@
             origin="center"
             direction="bottom"
           >
-            <template v-slot:activator>
+            <template #activator>
               <v-btn color="primary" rounded block>
                 <v-icon>mdi-plus</v-icon>
                 New Submission
               </v-btn>
             </template>
 
-            <v-card color="blue-grey lighten-4">
+            <v-card color="blue-grey-lighten-4">
               <v-card-text>
-                <template v-for="repo of supportedRepoMetadata">
-                  <v-tooltip :key="repo.name" left transition="fade">
-                    <template v-slot:activator="{ on, attrs }">
+                <template v-for="repo of supportedRepoMetadata" :key="repo.name">
+                  <v-tooltip location="left" transition="fade">
+                    <template #activator="{ on, attrs }">
                       <v-btn
-                        class="mx-0 my-4"
                         v-if="!repo.isDisabled"
-                        @click="submitTo(repo)"
-                        v-on="on"
+                        class="mx-0 my-4"
                         v-bind="attrs"
                         block
+                        @click="submitTo(repo)"
+                        v-on="on"
                       >
                         {{ repo.name }}
                       </v-btn>
@@ -87,15 +87,15 @@
                   </v-tooltip>
                 </template>
 
-                <v-tooltip left transition="fade">
-                  <template v-slot:activator="{ on, attrs }">
+                <v-tooltip location="left" transition="fade">
+                  <template #activator="{ on, attrs }">
                     <v-btn
-                      class="mx-0 my-4"
                       v-if="!externalRepoMetadata.isDisabled"
-                      @click="openRegisterDatasetDialog"
-                      v-on="on"
+                      class="mx-0 my-4"
                       v-bind="attrs"
                       block
+                      @click="openRegisterDatasetDialog"
+                      v-on="on"
                     >
                       {{ externalRepoMetadata.name }}
                     </v-btn>
@@ -126,10 +126,9 @@
         <v-card>
           <div v-if="!isFetching">
             <v-data-iterator
-              @current-items="currentItems = $event"
+              v-model:items-per-page="itemsPerPage"
+              v-model:page="page"
               :items="filteredSubmissions"
-              :items-per-page.sync="itemsPerPage"
-              :page.sync="page"
               :search="filters.searchStr"
               :sort-by="
                 sortBy.key ||
@@ -140,8 +139,9 @@
               :sort-desc="sortDesc"
               item-key="identifier"
               hide-default-footer
+              @current-items="currentItems = $event"
             >
-              <template v-slot:header>
+              <template #header>
                 <div elevation="0" class="has-bg-light-gray pa-4">
                   <div
                     class="d-flex justify-space-between full-width flex-column flex-md-row"
@@ -149,20 +149,20 @@
                     <v-btn
                       class="mb-md-0 mb-4"
                       rounded
-                      @click="exportSubmissions"
                       :disabled="!filteredSubmissions.length"
+                      @click="exportSubmissions"
                       >Export Submissions</v-btn
                     >
                     <v-spacer></v-spacer>
                     <div class="sort-controls d-flex flex-column flex-sm-row">
                       <v-select
                         id="sort-by"
-                        :items="sortOptions"
                         v-model="sortBy"
-                        item-text="label"
+                        :items="sortOptions"
+                        item-title="label"
                         return-object
                         class="mr-1 sort-control my-md-0 my-2"
-                        outlined
+                        variant="outlined"
                         dense
                         hide-details="auto"
                         label="Sort by"
@@ -170,12 +170,12 @@
 
                       <v-select
                         id="sort-order"
-                        :items="sortDirectionOptions"
                         v-model="sortDirection"
-                        item-text="label"
+                        :items="sortDirectionOptions"
+                        item-title="label"
                         return-object
                         class="sort-control my-md-0 my-2"
-                        outlined
+                        variant="outlined"
                         dense
                         hide-details="auto"
                         label="Order"
@@ -185,11 +185,11 @@
                 </div>
               </template>
 
-              <template v-slot:default="{ items }">
+              <template #default="{ items }">
                 <v-divider />
                 <div
-                  :id="`submission-${index}`"
                   v-for="(item, index) in items"
+                  :id="`submission-${index}`"
                   :key="item.identifier"
                 >
                   <div
@@ -198,33 +198,33 @@
                     <div class="flex-grow-1 mr-4">
                       <table
                         class="text-body-1"
-                        :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+                        :class="{ 'is-xs-small': $vuetify.display.xs }"
                       >
                         <tr>
                           <td
-                            colspan="2"
                             :id="`sub-${index}-title`"
-                            class="text-h6 title"
+                            colspan="2"
+                            class="text-h6 text-h6"
                           >
                             {{ item.title }}
                           </td>
                         </tr>
                         <tr v-if="item.authors.length">
-                          <th class="pr-4 body-2">Authors:</th>
+                          <th class="pr-4 text-body-2">Authors:</th>
                           <td>{{ item.authors.join(" | ") }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">Submission Repository:</th>
+                          <th class="pr-4 text-body-2">Submission Repository:</th>
                           <td>{{ getRepositoryName(item) }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">Submission Date:</th>
+                          <th class="pr-4 text-body-2">Submission Date:</th>
                           <td :id="`sub-${index}-date`">
                             {{ getDateInLocalTime(item.date) }}
                           </td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">Identifier:</th>
+                          <th class="pr-4 text-body-2">Identifier:</th>
                           <td>{{ item.identifier }}</td>
                         </tr>
                         <tr
@@ -233,21 +233,21 @@
                             item.repository === enumRepositoryKeys.earthchem
                           "
                         >
-                          <th class="pr-4 body-2">Status:</th>
+                          <th class="pr-4 text-body-2">Status:</th>
 
                           <td>
                             <v-chip
                               v-if="item.metadata.status !== 'incomplete'"
                               color="orange"
                               small
-                              outlined
+                              variant="outlined"
                             >
-                              <v-icon left small>mdi-lock</v-icon>
+                              <v-icon start size="small">mdi-lock</v-icon>
                               {{ item.metadata.status }}
                             </v-chip>
 
-                            <v-chip v-else small outlined>
-                              <v-icon left small>mdi-pencil</v-icon>
+                            <v-chip v-else small variant="outlined">
+                              <v-icon start size="small">mdi-pencil</v-icon>
                               {{ item.metadata.status }}
                             </v-chip>
                           </td>
@@ -260,7 +260,7 @@
                         :id="`sub-${index}-view`"
                         :href="item.url"
                         target="_blank"
-                        color="blue-grey lighten-4"
+                        color="blue-grey-lighten-4"
                         rounded
                       >
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In
@@ -268,19 +268,19 @@
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-edit`"
-                        @click="goToEditSubmission(item)"
                         rounded
+                        @click="goToEditSubmission(item)"
                       >
                         <v-icon class="mr-1">mdi-pencil</v-icon> Edit
                       </v-btn>
                       <v-btn
-                        :id="`sub-${index}-update`"
                         v-if="!repoMetadata[item.repository].isExternal"
-                        @click="onUpdateRecord(item)"
+                        :id="`sub-${index}-update`"
                         :disabled="
                           isUpdating[`${item.repository}-${item.identifier}`]
                         "
                         rounded
+                        @click="onUpdateRecord(item)"
                       >
                         <v-icon
                           v-if="
@@ -293,14 +293,14 @@
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-delete`"
+                        :disabled="isDeleteButtonDisabled(item)"
+                        rounded
                         @click="
                           onDelete(
                             item,
                             repoMetadata[item.repository].isExternal
                           )
                         "
-                        :disabled="isDeleteButtonDisabled(item)"
-                        rounded
                       >
                         <v-icon
                           v-if="
@@ -323,15 +323,15 @@
                 </div>
               </template>
 
-              <template v-slot:footer>
+              <template #footer>
                 <div class="footer d-flex justify-space-between align-center">
                   <div>
-                    <span class="grey--text text-body-2 mr-1"
+                    <span class="text-grey text-body-2 mr-1"
                       >Items per page</span
                     >
                     <v-menu offset-y>
-                      <template v-slot:activator="{ on, attrs }">
-                        <v-btn text v-bind="attrs" v-on="on">
+                      <template #activator="{ on, attrs }">
+                        <v-btn variant="text" v-bind="attrs" v-on="on">
                           {{ itemsPerPage }}
                           <v-icon>mdi-chevron-down</v-icon>
                         </v-btn>
@@ -353,24 +353,24 @@
                     class="d-flex flex-sm-row flex-column align-center justify-center"
                     style="gap: 0.5rem"
                   >
-                    <span class="grey--text text-body-2 text-center">
+                    <span class="text-grey text-body-2 text-center">
                       Page {{ page }} of {{ numberOfPages }}
                     </span>
                     <div>
                       <v-btn
                         class="mr-2"
-                        small
+                        size="small"
                         fab
-                        @click="formerPage"
                         :disabled="page <= 1"
+                        @click="formerPage"
                       >
                         <v-icon>mdi-chevron-left</v-icon>
                       </v-btn>
                       <v-btn
-                        small
+                        size="small"
                         fab
-                        @click="nextPage"
                         :disabled="page >= numberOfPages"
+                        @click="nextPage"
                       >
                         <v-icon>mdi-chevron-right</v-icon>
                       </v-btn>
@@ -379,14 +379,14 @@
                 </div>
               </template>
 
-              <template v-slot:no-data>
+              <template #no-data>
                 <div class="text-subtitle-1 text--secondary ma-4">
                   You don't have any submissions that match the selected
                   criteria.
                 </div>
               </template>
 
-              <template v-slot:no-results>
+              <template #no-results>
                 <div class="text-subtitle-1 text--secondary ma-4">
                   You don't have any submissions that match the selected
                   criteria.
@@ -435,20 +435,20 @@
           <v-spacer></v-spacer>
           <v-btn
             class="dialog-cancel"
+            variant="text"
             @click="isDeleteDialogActive = false"
-            text
           >
             Cancel
           </v-btn>
 
           <v-btn
             class="dialog-confirm"
+            color="red-darken-1"
+            variant="text"
             @click="
               isDeleteDialogActive = false;
               onDeleteSubmission();
             "
-            color="red darken-1"
-            text
           >
             Delete
           </v-btn>
@@ -461,7 +461,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Ref } from "vue-property-decorator";
+import { Component, Ref, Vue } from "vue-facing-decorator";
 import {
   ISubmission,
   EnumSubmissionSorts,
@@ -470,7 +470,6 @@ import {
   EnumRepositoryKeys,
 } from "@/components/submissions/types";
 import { repoMetadata } from "@/components/submit/constants";
-import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
 import { Subscription } from "rxjs";
 import {
@@ -488,10 +487,9 @@ import { isRepositoryAuthorized } from "@/renderers/styles";
 @Component({
   name: "cz-submissions",
   components: { CzRegisterDatasetDialog },
+  mixins: [ActiveRepositoryMixin]
 })
-export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
+export default class CzSubmissions extends Vue {
   @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<
     typeof CzRegisterDatasetDialog
   >;

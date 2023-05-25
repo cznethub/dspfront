@@ -1,7 +1,8 @@
 import { routes } from './routes'
+import { RouteLocationRaw } from 'vue-router'
 import { EnumRepositoryKeys } from './components/submissions/types'
 import { APP_NAME } from './constants'
-import VueRouter, { RawLocation } from 'vue-router'
+import { createRouter, createWebHistory} from 'vue-router'
 import User from './models/user.model'
 import HydroShare from './models/hydroshare.model'
 import Repository from './models/repository.model'
@@ -11,8 +12,8 @@ import CzNotification from './models/notifications.model'
 import EarthChem from './models/earthchem.model'
 import { isRepositoryAuthorized } from './renderers/styles'
 
-export const router = new VueRouter({
-  mode: 'history',
+export const router = createRouter({
+  history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
     document.getElementsByTagName('html')[0]?.scrollTo({ left: 0, top: 0})
@@ -20,9 +21,9 @@ export const router = new VueRouter({
 })
 
 /** Guards are executed in the order they appear in this array */
-const guards: ((to, from?, next?) => RawLocation | null)[] = [
+const guards: ((to, from?, next?) => RouteLocationRaw | null)[] = [
   // hasNextRouteGuard
-  (to, from?): RawLocation | null =>  {
+  (to, from?): RouteLocationRaw | null =>  {
     const nextRoute = User.$state.next
     if (nextRoute) {
       // Consume the redirect
@@ -36,7 +37,7 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   },
 
   // hasLoggedInGuard
-  (to, from?, next?): RawLocation | null => {
+  (to, from?, next?): RouteLocationRaw | null => {
     if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
       User.openLogInDialog({ path: to.path })
       return from
@@ -46,7 +47,7 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   },
 
   // hasAccessTokenGuard
-  (to, from?): RawLocation | null => {
+  (to, from?): RouteLocationRaw | null => {
     if (to.meta?.hasAccessTokenGuard) {
       if (!isRepositoryAuthorized(to.params.repository, false)) {
         Repository.openAuthorizeDialog(to.params.repository, { path: to.path })
@@ -59,7 +60,7 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   },
 
   // hasUnsavedChangesGuard
-  (to, from?, next?): RawLocation | null => {
+  (to, from?, next?): RouteLocationRaw | null => {
     if (from && from.meta?.hasUnsavedChangesGuard && User.$state.hasUnsavedChanges) {
       CzNotification.openDialog({
         title: 'You have unsaved changes',
@@ -134,7 +135,7 @@ export function setupRouteGuards() {
     next()
   })
 
-  guards.map((fn: (to, from?, next?) => RawLocation | null) => {
+  guards.map((fn: (to, from?, next?) => RouteLocationRaw | null) => {
     router.beforeEach((to, from, next) => {
       const activatedRouteGuard = fn(to, from, next)
       if (activatedRouteGuard) {
@@ -161,7 +162,7 @@ export function saveNextRoute() {
 
 // Call this manually immediately after guards are setup to check guards on the page that loaded on app start.
 function checkGuardsOnce() {
-  let activatedGuardRoute: RawLocation | null = null
+  let activatedGuardRoute: RouteLocationRaw | null = null
 
   for (let i = 0; i < guards.length; i++) {
     const r = guards[i](router.currentRoute)

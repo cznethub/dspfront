@@ -1,7 +1,7 @@
 <template>
   <div class="cz-repository-submit-card">
     <v-hover :key="repo.key">
-      <template v-slot:default="{ hover }">
+      <template #default="{ hover }">
         <v-card 
           :id="repo.name.replaceAll(` `, ``) + `-card`"
           :disabled="repo.isDisabled"
@@ -38,7 +38,7 @@
 </template>
 
 <script lang="ts">
-  import { Component, Prop, Vue } from 'vue-property-decorator'
+  import { Component, Prop, Vue } from 'vue-facing-decorator'
   import { IRepository } from '../submissions/types'
 
   @Component({

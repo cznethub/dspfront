@@ -6,24 +6,24 @@
     >
       <v-btn
         v-if="isDevMode"
-        @click="$emit('show-ui-schema')"
         class="my-1 my-sm-0"
         rounded
+        @click="$emit('show-ui-schema')"
         >UI Schema</v-btn
       >
       <v-btn
         v-if="isEditMode"
-        @click="$emit('cancel')"
         rounded
         class="submission-cancel my-2 my-sm-0"
+        @click="$emit('cancel')"
         >{{ isPublished ? "Back" : "Cancel" }}</v-btn
       >
-      <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
-        <template v-slot:activator="{ on, attrs }">
+      <v-menu :disabled="!errors.length" open-on-hover location="bottom left" offset-y>
+        <template #activator="{ on, attrs }">
           <div
             v-bind="attrs"
-            v-on="on"
             class="d-flex form-controls flex-column flex-sm-row"
+            v-on="on"
           >
             <template v-if="!isPublished">
               <v-badge
@@ -34,7 +34,6 @@
                 overlap
               >
                 <v-btn
-                  @click="$emit('save')"
                   color="primary"
                   class="submission-save my-1 my-sm-0"
                   :disabled="
@@ -45,6 +44,7 @@
                   "
                   rounded
                   block
+                  @click="$emit('save')"
                 >
                   {{ isSaving ? "Saving..." : confirmText }}
                 </v-btn>
@@ -58,12 +58,12 @@
                 overlap
               >
                 <v-btn
-                  @click="$emit('save-and-finish')"
                   class="ml-sm-2 my-1 my-sm-0 submission-finish"
                   color="primary"
                   :disabled="isSaving || !!errors.length || isReadOnly"
                   rounded
                   block
+                  @click="$emit('save-and-finish')"
                 >
                   Finish
                 </v-btn>
@@ -90,7 +90,7 @@
 
 <script lang="ts">
 import { ErrorObject } from "ajv";
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop } from "vue-facing-decorator";
 
 @Component({
   name: "cz-new-submission-actions",

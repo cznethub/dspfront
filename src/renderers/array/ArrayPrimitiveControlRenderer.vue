@@ -1,8 +1,8 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-combobox
+      :id="control.id + '-input'"
       v-model="tags"
-      @input="onTagsChange"
       hide-no-data
       :label="computedLabel"
       :data-id="computedLabel.replaceAll(` `, ``)"
@@ -14,9 +14,8 @@
       small-chips
       multiple
       no-filter
-      outlined
+      variant="outlined"
       dense
-      :id="control.id + '-input'"
       :class="styles.control.input"
       :disabled="!control.enabled"
       :autofocus="appliedOptions.focus"
@@ -24,18 +23,19 @@
       persistent-hint
       :required="control.required"
       :clearable="hover"
-      :value="control.data"
+      :model-value="control.data"
       :items="control.options"
-      item-text="label"
+      item-title="label"
       item-value="value"
+      @update:model-value="onTagsChange"
       @focus="isFocused = true"
       @blur="isFocused = false"
     >
-      <template v-slot:selection="{ attrs, item }">
+      <template #selection="{ attrs, item }">
         <v-chip
           v-bind="attrs"
           :disabled="!control.enabled"
-          :close="!isRequired(item)"
+          :closable="!isRequired(item)"
           small
           @click:close="remove(item)"
         >
@@ -56,13 +56,13 @@ import {
   rankWith,
 } from "@jsonforms/core"
 import { defineComponent } from 'vue'
-import { rendererProps, useJsonFormsControl } from "@jsonforms/vue2"
+import { rendererProps, useJsonFormsControl } from "@jsonforms/vue"
 import { default as ControlWrapper } from '@/renderers/controls/ControlWrapper.vue'
-import { VHover } from 'vuetify/lib'
+import { VHover } from 'vuetify/components'
 import { useVuetifyControl } from '@/renderers/util/composition';
 
 const controlRenderer = defineComponent({
-  name: "control-renderer",
+  name: "ControlRenderer",
   components: {
     ControlWrapper,
     VHover
@@ -80,6 +80,19 @@ const controlRenderer = defineComponent({
         (value) => value || undefined
       )
     };
+  },
+  computed: {
+    delimeters() {
+      // @ts-ignore
+      return this.control.schema.options?.delimeter === false ? undefined : [',']
+    },
+    placeholder(): string {
+      // @ts-ignore
+      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
+    },
+    description(): string {
+      return this.control.description || this.appliedOptions.description || ''
+    },
   },
   created() {
     // If no initial value, load default
@@ -107,19 +120,6 @@ const controlRenderer = defineComponent({
       this.tags = [...new Set([...requiredValues, ...existingValues])]
       this.onChange(this.tags)
     }
-  },
-  computed: {
-    delimeters() {
-      // @ts-ignore
-      return this.control.schema.options?.delimeter === false ? undefined : [',']
-    },
-    placeholder(): string {
-      // @ts-ignore
-      return this.control.schema.options?.placeholder || this.appliedOptions.placeholder || ''
-    },
-    description(): string {
-      return this.control.description || this.appliedOptions.description || ''
-    },
   },
   methods: {
     onTagsChange() {

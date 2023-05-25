@@ -1,6 +1,6 @@
 <template>
   <div class="cz-home">
-    <v-parallax class="text-center" :src="require('@/assets/img/bg-3.jpg')" :height="isLoggedIn ? 450 : 650">
+    <v-parallax class="text-center" src='/img/bg-3.jpg' :height="isLoggedIn ? 450 : 650">
       <v-container
         class="d-flex flex-column justify-center align-center full-height pa-12"
         style="background-image: linear-gradient(rgb(66 142 218 / 52%), rgb(0 0 0 / 38%));"
@@ -20,7 +20,7 @@
             >
               Ready to Submit Data?
             </div>
-            <v-btn @click="openLogInDialog()" rounded>Log In</v-btn>
+            <v-btn rounded @click="openLogInDialog()">Log In</v-btn>
           </div>
         </template>
         <div class="mt-16">
@@ -165,7 +165,7 @@
           style="max-width: 100%"
         >
           <img
-            :src="require('@/assets/img/fair.png')"
+            src='/img/fair.png'
             alt="FAIR"
             style="max-width: 100%"
           />
@@ -202,7 +202,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Vue } from "vue-facing-decorator";
 import { repoMetadata } from "../submit/constants";
 import { DISCOVERY_SITE_URL } from "@/constants";
 import User from "@/models/user.model";

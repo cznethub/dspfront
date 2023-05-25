@@ -3,10 +3,10 @@
     <h1 class="text-h4">{{ formTitle }}</h1>
     <v-divider class="mb-4"></v-divider>
     <v-alert
-      id="instructions"
       v-if="!isLoading && wasLoaded"
+      id="instructions"
       class="text-subtitle-1 my-8"
-      border="left"
+      border="start"
       colored-border
       type="info"
       elevation="2"
@@ -35,7 +35,7 @@
     <v-alert
       v-if="!isLoading && isPublished"
       class="text-subtitle-1 my-8"
-      border="left"
+      border="start"
       colored-border
       type="warning"
       icon="mdi-pencil-off"
@@ -49,13 +49,13 @@
     </v-alert>
 
     <v-alert
-      class="my-8"
-      outlined
       v-if="isReadOnly"
+      class="my-8"
+      variant="outlined"
       icon="mdi-lock"
       type="warning"
       prominent
-      border="left"
+      border="start"
     >
       <div class="text-body-1">
         This submission has been submitted for review and can no longer be
@@ -64,16 +64,16 @@
     </v-alert>
 
     <cz-new-submission-actions
-      id="cz-new-submission-actions-top"
       v-if="!isLoading && wasLoaded"
-      :isEditMode="isEditMode"
-      :isReadOnly="isReadOnly"
-      :isPublished="isPublished"
-      :isDevMode="isDevMode"
-      :isSaving="isSaving"
-      :confirmText="submitText"
+      id="cz-new-submission-actions-top"
+      :is-edit-mode="isEditMode"
+      :is-read-only="isReadOnly"
+      :is-published="isPublished"
+      :is-dev-mode="isDevMode"
+      :is-saving="isSaving"
+      :confirm-text="submitText"
       :errors="errors"
-      :hasUnsavedChanges="hasUnsavedChanges"
+      :has-unsaved-changes="hasUnsavedChanges"
       @show-ui-schema="onShowUISchema"
       @save-and-finish="onSaveAndFinish"
       @save="onSave"
@@ -83,30 +83,30 @@
     <div>
       <div v-if="!isLoading">
         <cz-folder-structure
-          id="cz-folder-structure"
           v-if="!isExternal && wasLoaded"
+          id="cz-folder-structure"
           ref="folderStructure"
           v-model="uploads"
-          @upload="uploadFiles($event)"
-          :isReadOnly="isReadOnly"
-          :isPublished="isPublished"
-          :rootDirectory.sync="rootDirectory"
-          :repoMetadata="repoMetadata[repositoryKey]"
-          :isEditMode="isEditMode"
+          v-model:rootDirectory="rootDirectory"
+          :is-read-only="isReadOnly"
+          :is-published="isPublished"
+          :repo-metadata="repoMetadata[repositoryKey]"
+          :is-edit-mode="isEditMode"
           :identifier="identifier"
+          @upload="uploadFiles($event)"
         />
 
         <json-forms
           v-if="wasLoaded"
+          ref="form"
           :ajv="ajv"
-          @change="onChange"
           :disabled="isSaving || isPublished"
           :data="data"
           :readonly="isReadOnly || isSaving || isPublished"
           :renderers="Object.freeze(renderers)"
           :schema="schema"
           :uischema="uischema"
-          ref="form"
+          @change="onChange"
         />
       </div>
 
@@ -119,16 +119,16 @@
       </div>
 
       <cz-new-submission-actions
-        id="cz-new-submission-actions-bottom"
         v-if="!isLoading && wasLoaded"
-        :isEditMode="isEditMode"
-        :isReadOnly="isReadOnly"
-        :isPublished="isPublished"
-        :isDevMode="isDevMode"
-        :isSaving="isSaving"
-        :confirmText="submitText"
+        id="cz-new-submission-actions-bottom"
+        :is-edit-mode="isEditMode"
+        :is-read-only="isReadOnly"
+        :is-published="isPublished"
+        :is-dev-mode="isDevMode"
+        :is-saving="isSaving"
+        :confirm-text="submitText"
         :errors="errors"
-        :hasUnsavedChanges="hasUnsavedChanges"
+        :has-unsaved-changes="hasUnsavedChanges"
         @show-ui-schema="onShowUISchema"
         @save-and-finish="onSaveAndFinish"
         @save="onSave"
@@ -144,7 +144,7 @@
       <template v-if="wasUnauthorized">
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
           elevation="2"
@@ -156,9 +156,9 @@
             >
             <v-col class="flex-grow-0">
               <v-btn
-                @click="openAuthorizePopup(repositoryKey)"
                 color="primary"
                 class="mb-4"
+                @click="openAuthorizePopup(repositoryKey)"
               >
                 <i class="fas fa-key mr-2" />Authorize
               </v-btn>
@@ -170,7 +170,7 @@
       <template v-else-if="!isLoggedIn">
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
           elevation="2"
@@ -180,8 +180,8 @@
               >You need to log in to access this submission.</v-col
             >
             <v-col class="flex-grow-0">
-              <v-btn id="orcid_login_continue" @click="onLogIn" color="primary">
-                <v-icon class="mr-2">fab fa-orcid</v-icon>
+              <v-btn id="orcid_login_continue" color="primary" @click="onLogIn">
+                <v-icon class="fab fa-orcid mr-2"></v-icon>
                 <span>Log In Using ORCID</span>
               </v-btn>
             </v-col>
@@ -198,7 +198,7 @@
       <template v-else>
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="error"
           elevation="2"
@@ -215,7 +215,7 @@
       </template>
     </template>
 
-    <v-dialog id="show-ui-schema" v-if="isDevMode" v-model="showUISchema">
+    <v-dialog v-if="isDevMode" id="show-ui-schema" v-model="showUISchema">
       <v-card>
         <v-card-title> UI Schema </v-card-title>
         <v-card-text>
@@ -232,15 +232,15 @@
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn text @click="showUISchema = false">Close</v-btn>
+          <v-btn variant="text" @click="showUISchema = false">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
 
     <v-dialog
-      :value="isSaving"
+      :model-value="isSaving"
       no-click-animation
-      hide-overlay
+      :scrim="false"
       persistent
       width="300"
       attach="#cz-new-submission"
@@ -256,17 +256,16 @@
         </v-card-text>
       </v-card>
     </v-dialog>
-    <v-overlay class="backdrop" absolute v-if="isSaving" />
+    <v-overlay v-if="isSaving" class="backdrop" absolute />
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Ref } from "vue-property-decorator";
-import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2";
+import { Component, Ref , Vue} from "vue-facing-decorator";
+import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue";
 import { JsonFormsRendererRegistryEntry } from "@jsonforms/core";
 import { CzRenderers } from "@/renderers/renderer.vue";
 import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types";
-import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
 import { repoMetadata } from "../submit/constants";
 import { IFile, IFolder } from "@/components/new-submission/types";
@@ -287,7 +286,7 @@ const renderers = [
   // ...vanillaRenderers,
   ...CzRenderers,
 ];
-const sprintf = require("sprintf-js").sprintf;
+import {sprintf} from 'sprintf-js'
 const customAjv = createAjv({ allErrors: true });
 ajvErrors(customAjv);
 
@@ -299,10 +298,9 @@ ajvErrors(customAjv);
     CzFolderStructure,
     CzNewSubmissionActions,
   },
+  mixins: [ActiveRepositoryMixin]
 })
-export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
+export default class CzNewSubmission extends Vue {
   @Ref("form") jsonForm!: typeof JsonForms;
   @Ref("folderStructure") folderStructure!: InstanceType<
     typeof CzFolderStructure

@@ -1,10 +1,4 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify/lib/framework'
+import 'vuetify/styles'
+import { createVuetify } from 'vuetify'
 
-Vue.use(Vuetify)
-
-const opts = {
-  
-}
-
-export default new Vuetify(opts)
+export default createVuetify()

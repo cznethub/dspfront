@@ -1,0 +1,8 @@
+TODO
+npx eslint --ext .vue src
+https://vuetifyjs.com/en/getting-started/upgrade-guide/
+browserDetect
+routerGuards
+--------------
+vuex orm -> pinia
+replace vue-facing-decorator -> composables

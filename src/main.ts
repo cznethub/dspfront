@@ -1,20 +1,19 @@
-import '@jsonforms/vue2-vanilla/vanilla.css';
+import '@jsonforms/vue-vanilla/vanilla.css';
 import '@/assets/css/global.scss'
 
 import Vuex from 'vuex'
 import VuexORM from '@vuex-orm/core'
 import createPersistedState from 'vuex-persistedstate'
 import VueCookies from 'vue-cookies'
-import Buefy from 'buefy'
-import VueRouter from 'vue-router'
-import Vue from 'vue'
-import App from './App.vue'
-import vueFilterPrettyBytes from 'vue-filter-pretty-bytes'
-import vuetify from '@/plugins/vuetify'
-import browserDetect from "vue-browser-detect-plugin"
-import IdleVue from 'idle-vue'
-
+import Buefy from '@dword-design/buefy'
 import { router } from './router'
+// import Vue from 'vue'
+import { createApp } from 'vue'
+import App from './App.vue'
+import vuetify from '@/plugins/vuetify'
+// import browserDetect from "vue-browser-detect-plugin"
+// import IdleVue from 'idle-vue'
+
 import { orm } from '@/models/orm'
 import { persistedPaths } from './models/persistedPaths'
 import { APP_NAME } from './constants'
@@ -28,9 +27,12 @@ import { APP_NAME } from './constants'
       //     }
       //   }
       // }
-      
-Vue.config.productionTip = false
-Vue.use(Vuex)
+const app = createApp(App)
+// app.config.productionTip = false
+
+app.use(router)
+
+app.use(vuetify)
 
 // Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({
@@ -42,15 +44,13 @@ const store = new Vuex.Store({
     })
   ]
 })
+app.use(store)
 
-const eventsHub = new Vue()
-      
-Vue.use(vueFilterPrettyBytes)
-Vue.use(VueRouter)
-Vue.use(VueCookies)
-Vue.use(browserDetect);
-Vue.use(IdleVue, { eventEmitter: eventsHub, idleTime: 60000, store })
-Vue.use(Buefy, {
+app.use(router)
+app.use(VueCookies)
+// TODO: fix browserDetect
+// app.use(browserDetect)
+app.use(Buefy, {
   defaultIconPack: 'fas',
   defaultContainerElement: '#content',
   defaultNotificationPosition: 'is-top',
@@ -58,9 +58,13 @@ Vue.use(Buefy, {
   defaultNoticeQueue: false,
 })
 
-new Vue({
-  router,
-  store,
-  vuetify,
-  render: (h) => h(App),
-}).$mount('#app')
+// new Vue({
+//   router,
+//   // store,
+//   vuetify,
+//   render: (h) => h(App),
+// }).$mount('#app')
+
+app.mount('#app')
+
+export default app

@@ -20,8 +20,8 @@
 
     <div
       v-for="(element, index) in layout.uischema.elements"
-      :data-id="`group-${index}`"
       :key="`${layout.path}-${index}`"
+      :data-id="`group-${index}`"
       :class="styles.group.item"
     >
       <dispatch-renderer
@@ -52,11 +52,11 @@ import {
   rendererProps,
   RendererProps,
   useJsonFormsLayout
-} from "@jsonforms/vue2";
+} from "@jsonforms/vue";
 import { useVuetifyLayout } from "@/renderers/util/composition";
 
 const layoutRenderer = defineComponent({
-  name: "group-renderer",
+  name: "GroupRenderer",
   components: {
     DispatchRenderer,
   },

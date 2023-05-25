@@ -6,25 +6,25 @@
     <p class="text-body-1 mb-4">The Data Submission Portal needs your permission to access and interact with the repositories below.</p>
 
     <v-card v-for="repo of supportedRepositories" :key="repo.key" class="mb-6">
-      <v-card-title :class="{'is-small': $vuetify.breakpoint.mdAndDown }">
+      <v-card-title :class="{'is-small': $vuetify.display.mdAndDown }">
         <span class="repo-name">{{ repo.name }}</span>
         <template v-if="getAccessToken(repo.key)">
           <div>
-            <v-chip small color="green" outlined class="pl-0">
-              <v-icon left class="ml-0">mdi-check-circle</v-icon>
+            <v-chip small color="green" variant="outlined" class="pl-0">
+              <v-icon start class="ml-0">mdi-check-circle</v-icon>
               Authorized
             </v-chip>
           </div>
           <div class="text-right">
-            <v-btn @click="openRevokeDialog(repo.key)" small><v-icon small class="mr-1">mdi-cancel</v-icon> Revoke</v-btn>
+            <v-btn size="small" @click="openRevokeDialog(repo.key)"><v-icon size="small" class="mr-1">mdi-cancel</v-icon> Revoke</v-btn>
           </div>
         </template>
         <template v-else>
           <div>
-            <v-chip small color="red" outlined>Unauthorized</v-chip>
+            <v-chip small color="red" variant="outlined">Unauthorized</v-chip>
           </div>
           <div class="text-right">
-            <v-btn @click="openAuthorizePopup(repo.key)" color="primary">
+            <v-btn color="primary" @click="openAuthorizePopup(repo.key)">
               <i class="fas fa-key mr-2" />Authorize
             </v-btn>
           </div>
@@ -34,14 +34,14 @@
         <v-divider></v-divider>
         <v-card-text >
           <v-text-field
-            @click:append="onCopy(repo.key)"
             :label="repo.name + ' access token'"
-            :value="getAccessToken(repo.key)"
-            outlined
+            :model-value="getAccessToken(repo.key)"
+            variant="outlined"
             readonly
             append-icon="mdi-content-copy"
-            dense
+            density="compact"
             hide-details=""
+            @click:append="onCopy(repo.key)"
           ></v-text-field>
         </v-card-text>
       </template>
@@ -50,9 +50,8 @@
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator'
+  import { Component, Vue } from 'vue-facing-decorator'
   import { repoMetadata } from '@/components/submit/constants'
-  import { mixins } from 'vue-class-component'
   import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
   import { IRepository } from '../submissions/types'
   import { getRepositoryFromKey } from '@/constants'
@@ -62,8 +61,9 @@
   @Component({
     name: 'cz-authorized-repositories',
     components: { },
+    mixins: [ActiveRepositoryMixin]
   })
-  export default class CzAuthorizedRepositories extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
+  export default class CzAuthorizedRepositories extends Vue {
     protected repoMetadata = repoMetadata
 
     protected get supportedRepositories(): IRepository[] {

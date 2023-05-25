@@ -2,17 +2,18 @@
   <v-menu
     ref="menu"
     v-model="showMenu"
+    v-model:return-value="pickerValue"
     :close-on-content-click="false"
-    :return-value.sync="pickerValue"
     transition="scale-transition"
     offset-y
     min-width="290px"
     v-bind="vuetifyProps('v-menu')"
     :disabled="!control.enabled"
   >
-    <template v-slot:activator="{ on, attrs }">
+    <template #activator="{ on, attrs }">
       <v-text-field
         :id="control.id + '-input'"
+        v-mask="mask"
         :class="styles.control.input"
         :disabled="!control.enabled"
         :autofocus="appliedOptions.focus"
@@ -23,23 +24,22 @@
         :required="control.required"
         :error-messages="control.errors"
         prepend-inner-icon="mdi-calendar"
-        v-mask="mask"
-        :value="inputValue"
-        @input="onInputChange"
-        outlined
+        :model-value="inputValue"
+        variant="outlined"
         class="py-3"
         v-bind="attrs"
+        @update:model-value="onInputChange"
         v-on="on"
       >
-        <template v-slot:message>
+        <template #message>
           <div v-if="description" class="text-subtitle-1 text--secondary">
             {{ description }}
           </div>
-          <div v-if="cleanedErrors" class="ml-2 v-messages error--text">
+          <div v-if="cleanedErrors" class="ml-2 v-messages text-error">
             {{ cleanedErrors }}
           </div>
         </template>
-        <template slot="append">
+        <template #append>
           <v-icon v-if="control.enabled" tabindex="-1" @click="clear"
             >$clear</v-icon
           >
@@ -49,8 +49,8 @@
 
     <v-date-picker
       v-if="showMenu"
-      v-model="pickerValue"
       ref="picker"
+      v-model="pickerValue"
       v-bind="vuetifyProps('v-date-picker')"
       :min="minDate"
       :max="maxDate"
@@ -58,7 +58,7 @@
       @click:year="onYear"
     >
       <v-spacer></v-spacer>
-      <v-btn text @click="showMenu = false">
+      <v-btn variant="text" @click="showMenu = false">
         {{ cancelLabel }}
       </v-btn>
       <v-btn :disabled="!pickerValue" color="primary" @click="okHandler">
@@ -84,7 +84,7 @@ import {
   rendererProps,
   RendererProps,
   useJsonFormsControl,
-} from "@jsonforms/vue2";
+} from "@jsonforms/vue";
 import dayjs from "dayjs";
 import {
   parseDateTime,
@@ -102,7 +102,7 @@ type MinMaxFormat =
   | "today";
 
 const controlRenderer = defineComponent({
-  name: "date-control-renderer",
+  name: "DateControlRenderer",
   directives: { Mask },
   props: {
     ...rendererProps<ControlElement>(),
@@ -118,15 +118,6 @@ const controlRenderer = defineComponent({
     const adaptValue = (value: any) => value || undefined;
     const control = useVuetifyControl(useJsonFormsControl(props), adaptValue);
     return { ...control, showMenu, mask, t, adaptValue };
-  },
-  watch: {
-    isFocused(newFocus) {
-      if (newFocus && this.applyMask) {
-        this.mask = this.maskFunction.bind(this);
-      } else {
-        this.mask = undefined;
-      }
-    },
   },
   computed: {
     placeholder(): string {
@@ -258,6 +249,15 @@ const controlRenderer = defineComponent({
           ? this.appliedOptions.okLabel
           : "OK";
       return this.t(label, label);
+    },
+  },
+  watch: {
+    isFocused(newFocus) {
+      if (newFocus && this.applyMask) {
+        this.mask = this.maskFunction.bind(this);
+      } else {
+        this.mask = undefined;
+      }
     },
   },
   methods: {
