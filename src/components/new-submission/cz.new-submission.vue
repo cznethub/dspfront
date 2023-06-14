@@ -506,6 +506,14 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
         }
       }
       this.wasUnauthorized = false;
+      if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare) {
+        if (this.repositoryRecord.hasOwnProperty("type")) {
+          this.allowFileUpload = this.repositoryRecord.type === "CompositeResource" && !this.isPublished;
+        }
+        else {
+          this.allowFileUpload = !this.isPublished;
+        }
+      }
     }
 
     if (this.repositoryRecord) {
