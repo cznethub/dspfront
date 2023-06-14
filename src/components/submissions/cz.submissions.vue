@@ -229,6 +229,14 @@
                         </tr>
                         <tr
                           v-if="
+                            item.repository === enumRepositoryKeys.hydroshare
+                          "
+                        >
+                          <th class="pr-4 body-2">Type:</th>
+                           <td>{{ getResourceType(item) }}</td>
+                        </tr>
+                        <tr
+                          v-if="
                             item.metadata.status &&
                             item.repository === enumRepositoryKeys.earthchem
                           "
@@ -269,6 +277,7 @@
                       <v-btn
                         :id="`sub-${index}-edit`"
                         @click="goToEditSubmission(item)"
+                        :disabled="isEditButtonDisabled(item)"
                         rounded
                       >
                         <v-icon class="mr-1">mdi-pencil</v-icon> Edit
@@ -745,6 +754,13 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     return this.isDeleting[`${item.repository}-${item.identifier}`];
   }
 
+  protected isEditButtonDisabled(item) {
+    if (item.repository === EnumRepositoryKeys.hydroshare) {
+      return item.metadata.type === "CollectionResource";
+    }
+    return false;
+  }
+
   protected onDelete(submission: ISubmission, isExternal: boolean) {
     this.deleteDialogData = { submission, isExternal };
     this.alsoDeleteInRepository = false; // we want it unchecked initially
@@ -808,6 +824,17 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
       : "";
   }
 
+  protected getResourceType(item: ISubmission) {
+    // For hydroshare submissions, get the resource type
+    if (item.repository === EnumRepositoryKeys.hydroshare) {
+      if(item.metadata.type === "CollectionResource") {
+        return "Collection";
+      }
+      else
+        return "Resource";
+    }
+    return "";
+  }
   /** Use this function to load the correct sort option in case we have mutaded the entries to override the labels */
   private _loadSortDirection() {
     const selectedOption = this.sortDirectionOptions.find(

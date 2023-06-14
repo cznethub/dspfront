@@ -4,7 +4,7 @@
       class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included flex-wrap"
     >
       <v-tooltip
-        v-if="repoMetadata.hasFolderStructure && !isReadOnly && !isPublished"
+        v-if="repoMetadata.hasFolderStructure && !isReadOnly && !isPublished && allowFileUpload"
         bottom
         transition="fade"
       >
@@ -24,7 +24,7 @@
 
       <div v-else class="text-subtitle-1 mr-4">Files</div>
 
-      <template v-if="!isReadOnly && !isPublished">
+      <template v-if="!isReadOnly && !isPublished && allowFileUpload">
         <template>
           <v-tooltip bottom transition="fade">
             <template v-slot:activator="{ on, attrs }">
@@ -142,7 +142,7 @@
 
     <v-card-text style="min-height: 10rem">
       <v-alert
-        v-if="isEditMode && !isReadOnly && !isPublished"
+        v-if="isEditMode && !isReadOnly && !isPublished && allowFileUpload"
         class="text-subtitle-1"
         border="left"
         colored-border
@@ -408,7 +408,7 @@
       </v-alert>
 
       <div
-        v-if="!isReadOnly && !isPublished"
+        v-if="!isReadOnly && !isPublished && allowFileUpload"
         class="upload-drop-area files-container--included"
       >
         <b-upload
@@ -456,6 +456,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
   @Prop({ default: false }) isEditMode!: boolean;
   @Prop({ default: false }) isReadOnly!: boolean;
   @Prop({ default: false }) isPublished!: boolean;
+  @Prop({ default: true }) allowFileUpload!: boolean;
   @Prop() identifier!: string; // Use if isEditMode is true
   @Prop({ required: true }) rootDirectory!: IFolder;
   protected redraw = 0;

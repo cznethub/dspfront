@@ -205,6 +205,10 @@
                   <th class="pr-4 body-2">Identifier:</th>
                   <td>{{ submission.identifier }}</td>
                 </tr>
+                <tr v-if="selectedRepository.name == 'HydroShare'">
+                  <th class="pr-4 body-2">Type:</th>
+                  <td>{{ resourceType }}</td>
+                </tr>
                 <tr v-if="submission.metadata && submission.metadata.status">
                   <th class="pr-4 body-2">Status:</th>
 
@@ -350,6 +354,8 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
   protected wasUnauthorized = false;
   protected isPublished = false;
   protected isRegistering = false;
+  protected allowFileUpload = true;
+  protected resourceType = "";
 
   protected get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
@@ -463,6 +469,8 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
     this.isFetching = true;
     this.wasUnauthorized = false;
     this.isPublished = false;
+    this.allowFileUpload = true;
+    this.resourceType = "";
 
     try {
       if (this.selectedRepository) {
@@ -486,6 +494,13 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
           // For earthchem submissions we need to set the community to a constant
           if (this.submission.repository === EnumRepositoryKeys.earthchem) {
             this.apiSubmission.community = "CZNet";
+          }
+          if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
+            this.allowFileUpload = this.apiSubmission.type === "CompositeResource" && !this.isPublished;
+            this.resourceType = this.apiSubmission.type === "CompositeResource" ? "Resource" : "Collection";
+          }
+          else {
+            this.allowFileUpload = !this.isPublished;
           }
         } else if (response === 403) {
           // Repository was unauthorized

@@ -69,6 +69,7 @@
       :isEditMode="isEditMode"
       :isReadOnly="isReadOnly"
       :isPublished="isPublished"
+      :allowFileUpload="allowFileUpload"
       :isDevMode="isDevMode"
       :isSaving="isSaving"
       :confirmText="submitText"
@@ -90,6 +91,7 @@
           @upload="uploadFiles($event)"
           :isReadOnly="isReadOnly"
           :isPublished="isPublished"
+          :allowFileUpload="allowFileUpload"
           :rootDirectory.sync="rootDirectory"
           :repoMetadata="repoMetadata[repositoryKey]"
           :isEditMode="isEditMode"
@@ -334,6 +336,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   protected isReadOnly = false;
   protected wasUnauthorized = false;
   protected isPublished = false;
+  protected allowFileUpload = true;
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined;
