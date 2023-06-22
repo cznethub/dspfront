@@ -708,10 +708,15 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...");
-      wasSaved = await this.activeRepository?.updateSubmission(
-        this.identifier,
-        this.data
-      );
+      try {
+        wasSaved = await this.activeRepository?.updateSubmission(
+          this.identifier,
+          this.data
+        );
+      } catch (e) {
+        this.isSaving = false;
+        return false;
+      }
     }
 
     if (!this.isEditMode) {
