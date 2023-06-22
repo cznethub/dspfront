@@ -338,6 +338,13 @@ export default class Repository extends Model implements IRepository {
 
         Repository.openAuthorizeDialog(this.entity)
       }
+      else if (e.response?.status === 400) {
+        CzNotification.toast({
+          message: e.response?.data,
+          type: 'error'
+        })
+        console.error(`${repository}: failed to create submission.`, e.response)
+      }
       else {
         CzNotification.toast({
           message: 'Failed to create submission',
@@ -367,8 +374,15 @@ export default class Repository extends Model implements IRepository {
       return response.status === 200
     }
     catch(e: any) {
+      if (e.response?.status === 400) {
+        CzNotification.toast({
+          message: e.response?.data,
+          type: 'error'
+        })
+        console.error(`${this.entity}: failed to update submission.`, e.response)
+      }
       console.log(e)
-      return false
+      throw(e)
     }
   }
 
