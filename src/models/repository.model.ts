@@ -339,8 +339,12 @@ export default class Repository extends Model implements IRepository {
         Repository.openAuthorizeDialog(this.entity)
       }
       else if (e.response?.status === 400) {
+        let errMessage = e.response?.data
+        if (errMessage.includes('end date must be greater or equal to start date')) {
+           errMessage = 'Invalid temporal coverage. End date must be greater or equal to start date.'
+        }
         CzNotification.toast({
-          message: e.response?.data,
+          message: errMessage,
           type: 'error'
         })
         console.error(`${repository}: failed to create submission.`, e.response)
@@ -375,8 +379,12 @@ export default class Repository extends Model implements IRepository {
     }
     catch(e: any) {
       if (e.response?.status === 400) {
+        let errMessage = e.response?.data
+        if (errMessage.includes('end date must be greater or equal to start date')) {
+           errMessage = 'Invalid temporal coverage. End date must be greater or equal to start date.'
+        }
         CzNotification.toast({
-          message: e.response?.data,
+          message: errMessage,
           type: 'error'
         })
         console.error(`${this.entity}: failed to update submission.`, e.response)
