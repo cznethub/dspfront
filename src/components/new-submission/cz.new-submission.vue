@@ -708,10 +708,25 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
       }
     } else {
       console.info("CzNewSubmission: Saving to existing record...");
-      wasSaved = await this.activeRepository?.updateSubmission(
-        this.identifier,
-        this.data
-      );
+      try {
+        // Try to update so that CZNet keyword is added
+        wasSaved = await this.activeRepository?.updateSubmission(
+          this.identifier,
+          this.data
+        );
+      } catch (e) {
+        // TODO: check if register mode, and do not update
+        if (this.$route.query.mode === "register") {
+          // If we were trying to register, register without updating
+          wasSaved = await this.activeRepository.registerSubmission(
+            this.identifier,
+            this.repositoryKey
+          );
+        } else {
+          this.isSaving = false;
+          return false;
+        }
+      }
     }
 
     if (!this.isEditMode) {
