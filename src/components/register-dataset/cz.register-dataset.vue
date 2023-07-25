@@ -169,11 +169,12 @@
             icon="mdi-pencil-off"
             elevation="2"
           >
-            This resource is published and is not editable in the Data Submission
-            Portal. If you need to modify this resource once registered, navigate to the resource in
-            the repository where it is hosted and modify it there (if possible). You
-            can refresh the metadata for this resource by clicking the "Update Record"
-            button on the My Submissions page.
+            This resource is published and is not editable in the Data
+            Submission Portal. If you need to modify this resource once
+            registered, navigate to the resource in the repository where it is
+            hosted and modify it there (if possible). You can refresh the
+            metadata for this resource by clicking the "Update Record" button on
+            the My Submissions page.
           </v-alert>
 
           <v-card elevation="2" outlined class="mb-6">
@@ -189,7 +190,7 @@
                     {{ submission.title }}
                   </td>
                 </tr>
-                <tr v-if="submission.authors.length">
+                <tr v-if="submission.authors && submission.authors.length">
                   <th class="pr-4 body-2">Authors:</th>
                   <td>{{ submission.authors.join(" | ") }}</td>
                 </tr>
@@ -379,11 +380,11 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
     return this.url; // default
   }
 
-  @Watch('step')
+  @Watch("step")
   onStepChange(currentStep, previousStep) {
     if (currentStep === 2) {
       // @ts-ignore
-      this.$refs.txtIdentifier?.focus()
+      this.$refs.txtIdentifier?.focus();
     }
   }
 
@@ -431,11 +432,10 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
       this.$router.push({
         name: "submissions",
       });
-    }
-    catch(e) {
+    } catch (e) {
       this.isRegistering = false;
       CzNotification.toast({
-        message: 'Failed to register dataset',
+        message: "Failed to register dataset",
         type: "error",
       });
     }
@@ -487,21 +487,22 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
           if (this.submission.repository === EnumRepositoryKeys.earthchem) {
             this.apiSubmission.community = "CZNet";
           }
-        } else if (response === 403) {
-          // Repository was unauthorized
+        }
+        // Repository was unauthorized
+        else if (response === 401) {
           this.wasUnauthorized = true;
 
           // Try again when user has authorized the repository
           this.authorizedSubject = Repository.authorized$.subscribe(
-            async (repositoryKey: EnumRepositoryKeys) => {
+            async (_repositoryKey: EnumRepositoryKeys) => {
               await this._readDataset();
             }
           );
         }
       }
-      this.isFetching = false;
     } catch (e) {
       console.log(e);
+    } finally {
       this.isFetching = false;
     }
   }
