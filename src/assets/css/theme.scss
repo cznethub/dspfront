@@ -79,30 +79,6 @@ section {
   transform: scaleX(-1);
 }
 
-.has-space-bottom {
-  margin-bottom: 1.5rem !important;
-}
-
-.has-space-bottom-2x {
-  margin-bottom: 3rem !important;
-}
-
-.has-space-top {
-  margin-top: 1.5rem !important;
-}
-
-.has-space-top-2x {
-  margin-top: 3rem !important;
-}
-
-.has-space-right {
-  margin-right: 1.5rem;
-}
-
-.has-space-left {
-  margin-left: 1.5rem;
-}
-
 .has-bg-light-gray {
   background-color: #f7f6f6 !important;
 }
@@ -113,72 +89,6 @@ section {
 
 p {
   max-width: 70rem;
-}
-
-.cz-object {
-  &.is-invalid {
-    & > fieldset > legend {
-      color: #ff5252;
-    }
-  }
-}
-
-// https://stackoverflow.com/a/27660473/3288102
-fieldset, .cz-fieldset {
-  min-width: 0;
-}
-
-.cz-fieldset {
-  background-color: #fff;
-  color: rgba(0,0,0,.87);
-  border: thin solid rgba(0,0,0,.12);
-  border-color: rgb(158, 158, 158);
-  border-radius: 4px;
-  padding: 1rem;
-  position: relative;
-  min-height: 2rem;
-
-  &.is-invalid {
-    & > legend, 
-    & > fieldset > legend {
-      color: #ff5252;
-    }
-  }
-
-  &:hover {
-    border-color: rgba(0, 0, 0, 0.6);;
-  }
-
-  & > legend {
-    font-size: 16px;
-    letter-spacing: .0125em;
-    word-break: break-all;
-    color: rgba(0, 0, 0, 0.6);
-    background: #FFF;
-    font-weight: normal;
-    padding: 0 0.25rem;
-    position: absolute;
-    left: 0.5rem;
-    top: 0.5rem;
-
-    &.v-label--active {
-      position: absolute;
-      cursor: default;
-      transform: translateY(-1.4rem) scale(1) !important;
-    }
-
-    &:not(.v-label--active) {
-      width: calc(100% - 5rem);
-      cursor: text;
-    }
-  }
-
-  .btn-add {
-    position: absolute;
-    top: -0.2rem;
-    right: 0;
-    z-index: 1;
-  }
 }
 
 .f-gap-2 {

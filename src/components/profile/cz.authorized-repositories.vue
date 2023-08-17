@@ -3,10 +3,13 @@
     <div class="text-h4">Authorized Repositories</div>
     <v-divider class="mb-4"></v-divider>
 
-    <p class="text-body-1 mb-4">The Data Submission Portal needs your permission to access and interact with the repositories below.</p>
+    <p class="text-body-1 mb-4">
+      The Data Submission Portal needs your permission to access and interact
+      with the repositories below.
+    </p>
 
     <v-card v-for="repo of supportedRepositories" :key="repo.key" class="mb-6">
-      <v-card-title :class="{'is-small': $vuetify.breakpoint.mdAndDown }">
+      <v-card-title :class="{ 'is-small': $vuetify.breakpoint.mdAndDown }">
         <span class="repo-name">{{ repo.name }}</span>
         <template v-if="getAccessToken(repo.key)">
           <div>
@@ -16,7 +19,9 @@
             </v-chip>
           </div>
           <div class="text-right">
-            <v-btn @click="openRevokeDialog(repo.key)" small><v-icon small class="mr-1">mdi-cancel</v-icon> Revoke</v-btn>
+            <v-btn @click="openRevokeDialog(repo.key)" small
+              ><v-icon small class="mr-1">mdi-cancel</v-icon> Revoke</v-btn
+            >
           </div>
         </template>
         <template v-else>
@@ -32,7 +37,7 @@
       </v-card-title>
       <template v-if="getAccessToken(repo.key)">
         <v-divider></v-divider>
-        <v-card-text >
+        <v-card-text>
           <v-text-field
             @click:append="onCopy(repo.key)"
             :label="repo.name + ' access token'"
@@ -50,67 +55,74 @@
 </template>
 
 <script lang="ts">
-  import { Component } from 'vue-property-decorator'
-  import { repoMetadata } from '@/components/submit/constants'
-  import { mixins } from 'vue-class-component'
-  import { ActiveRepositoryMixin } from '@/mixins/activeRepository.mixin'
-  import { IRepository } from '../submissions/types'
-  import { getRepositoryFromKey } from '@/constants'
-  import CzNotification from '@/models/notifications.model'
-  import Repository from '@/models/repository.model'
+import { Component } from "vue-property-decorator";
+import { repoMetadata } from "@/components/submit/constants";
+import { mixins } from "vue-class-component";
+import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
+import { IRepository } from "../submissions/types";
+import { getRepositoryFromKey } from "@/constants";
+import { Notifications } from "@cznethub/cznet-vue-core";
+import Repository from "@/models/repository.model";
 
-  @Component({
-    name: 'cz-authorized-repositories',
-    components: { },
-  })
-  export default class CzAuthorizedRepositories extends mixins<ActiveRepositoryMixin>(ActiveRepositoryMixin) {
-    protected repoMetadata = repoMetadata
+@Component({
+  name: "cz-authorized-repositories",
+  components: {},
+})
+export default class CzAuthorizedRepositories extends mixins<ActiveRepositoryMixin>(
+  ActiveRepositoryMixin
+) {
+  protected repoMetadata = repoMetadata;
 
-    protected get supportedRepositories(): IRepository[] {
-      return Object.keys(repoMetadata)
-        .map(key => repoMetadata[key])
-        .filter(repo => !repo.isExternal && repo.isSupported)
-    }
-
-    protected getAccessToken(repositoryKey: string): string {
-      return getRepositoryFromKey(repositoryKey)?.$state.accessToken
-    }
-
-    protected onCopy(repositoryKey: string) {
-      navigator.clipboard.writeText(this.getAccessToken(repositoryKey))
-      CzNotification.toast({ message: 'Copied to clipboard', type: 'info' })
-    }
-
-    protected async openAuthorizePopup(repositoryKey: string) {
-      Repository.authorize(getRepositoryFromKey(repositoryKey) as typeof Repository, () => {
-        CzNotification.toast({
-          message: 'Access to this repository has been authorized',
-          type: 'success'
-        })
-      })
-    }
-
-    protected openRevokeDialog(repositoryKey: string) {
-      Repository.openRevokeDialog(getRepositoryFromKey(repositoryKey) as typeof Repository)
-    }
+  protected get supportedRepositories(): IRepository[] {
+    return Object.keys(repoMetadata)
+      .map((key) => repoMetadata[key])
+      .filter((repo) => !repo.isExternal && repo.isSupported);
   }
+
+  protected getAccessToken(repositoryKey: string): string {
+    return getRepositoryFromKey(repositoryKey)?.$state.accessToken;
+  }
+
+  protected onCopy(repositoryKey: string) {
+    navigator.clipboard.writeText(this.getAccessToken(repositoryKey));
+    Notifications.toast({ message: "Copied to clipboard", type: "info" });
+  }
+
+  protected async openAuthorizePopup(repositoryKey: string) {
+    Repository.authorize(
+      getRepositoryFromKey(repositoryKey) as typeof Repository,
+      () => {
+        Notifications.toast({
+          message: "Access to this repository has been authorized",
+          type: "success",
+        });
+      }
+    );
+  }
+
+  protected openRevokeDialog(repositoryKey: string) {
+    Repository.openRevokeDialog(
+      getRepositoryFromKey(repositoryKey) as typeof Repository
+    );
+  }
+}
 </script>
 
 <style lang="scss" scoped>
-  .v-card {
-    max-width: 40rem;
-  }
+.v-card {
+  max-width: 40rem;
+}
 
-  .v-card__title {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
+.v-card__title {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
 
-    &.is-small {
-      display: flex;
-      flex-direction: column;
-    }
+  &.is-small {
+    display: flex;
+    flex-direction: column;
   }
+}
 </style>
