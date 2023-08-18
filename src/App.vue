@@ -269,7 +269,7 @@ export default class App extends Vue {
   protected onOpenAuthorizeDialog!: Subscription;
   protected showMobileNavigation = false;
   protected loggedInSubject = new Subscription();
-  protected authorizedSubject = new Subscription();
+  // protected authorizedSubject = new Subscription();
   protected isAppBarExtended = true;
   protected snackbarColors = {
     success: { snackbar: "primary", actionButton: "primary darken-2" },
@@ -384,7 +384,7 @@ export default class App extends Vue {
 
         this.logInDialog.onLoggedIn = () => {
           if (redirectTo) {
-            this.$router.push(redirectTo);
+            this.$router.push(redirectTo).catch(() => {});
           }
           this.logInDialog.isActive = false;
         };
@@ -407,7 +407,7 @@ export default class App extends Vue {
             } else if (params.repository === EnumRepositoryKeys.earthchem) {
               await EarthChem.init();
             }
-            this.$router.push(params.redirectTo);
+            this.$router.push(params.redirectTo).catch(() => {});
           }
           this.authorizeDialog.isActive = false;
         };

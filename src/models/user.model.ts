@@ -2,8 +2,9 @@ import { router } from "@/router";
 import { Model } from "@vuex-orm/core";
 import { Subject } from "rxjs";
 import { RawLocation } from "vue-router";
-import axios from "axios";
+import { API_BASE, APP_URL } from "@/constants";
 import { Notifications } from "@cznethub/cznet-vue-core";
+import axios from "axios";
 import Submission from "./submission.model";
 
 export interface ICzCurrentUserState {
@@ -59,42 +60,39 @@ export default class User extends Model {
 
   static async logIn(callback?: () => any) {
     window.open(
-      `${window.location.origin}/api/login?window_close=True`,
+      `${API_BASE}/login?window_close=True`,
       "_blank",
       "location=1,status=1,scrollbars=1, width=800,height=800"
     );
 
     if (!this.isLoginListenerSet) {
       this.isLoginListenerSet = true; // Prevents registering the listener more than once
-      window.addEventListener(
-        "message",
-        async (message) => {
-          console.info(`User: listening to login window...`);
-          if (message.data.token) {
-            Notifications.toast({
-              message: "You have logged in!",
-              type: "success",
-            });
-            await User.commit((state) => {
-              state.isLoggedIn = true;
-              state.orcid = message.data.orcid;
-              state.orcidAccessToken = message.data.token;
-            });
-            document.cookie = `Authorization=Bearer ${message.data.token}; expires=${message.data.expiresIn}; path=/`;
-            this.isLoginListenerSet = false;
-            this.loggedIn$.next();
-            if (callback) {
-              callback();
-            }
-          } else {
-            Notifications.toast({
-              message: "Failed to Log In",
-              type: "error",
-            });
-          }
-        },
-        { once: true }
-      );
+      console.info(`User: listening to login window...`);
+
+      window.addEventListener("message", async (event: MessageEvent) => {
+        if (event.origin !== APP_URL || !event.data.hasOwnProperty("token")) {
+          return;
+        }
+        if (event.data.token) {
+          Notifications.toast({
+            message: "You have logged in!",
+            type: "success",
+          });
+          await User.commit((state) => {
+            state.isLoggedIn = true;
+            state.orcid = event.data.orcid;
+            state.orcidAccessToken = event.data.token;
+          });
+          document.cookie = `Authorization=Bearer ${event.data.token}; expires=${event.data.expiresIn}; path=/`;
+          this.loggedIn$.next();
+          callback?.();
+        } else {
+          Notifications.toast({
+            message: "Failed to Log In",
+            type: "error",
+          });
+        }
+      });
     }
   }
 

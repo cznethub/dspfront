@@ -43,7 +43,10 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   // hasAccessTokenGuard
   (to, from?): RawLocation | null => {
     if (to.meta?.hasAccessTokenGuard) {
-      if (!isRepositoryAuthorized(to.params.repository, false)) {
+      if (
+        !isRepositoryAuthorized(to.params.repository, false) &&
+        User.$state.isLoggedIn
+      ) {
         Repository.openAuthorizeDialog(to.params.repository, { path: to.path });
         return from;
       }

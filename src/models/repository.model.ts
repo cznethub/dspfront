@@ -8,7 +8,7 @@ import { repoMetadata } from "@/components/submit/constants";
 import { Subject } from "rxjs";
 import { RawLocation } from "vue-router";
 import { IFile, IFolder } from "@/components/new-submission/types";
-import { DELETED_RESOURCE_STATUS_CODES } from "@/constants";
+import { APP_URL, DELETED_RESOURCE_STATUS_CODES } from "@/constants";
 import axios from "axios";
 import Submission from "./submission.model";
 import { Notifications } from "@cznethub/cznet-vue-core";
@@ -17,7 +17,7 @@ import User from "./user.model";
 export default class Repository extends Model implements IRepository {
   static entity = "repository";
   static primaryKey = "key";
-  static isAuthorizeListenerSet = false;
+  static controller = new AbortController();
   static authorizeDialog$ = new Subject<{
     repository: string;
     redirectTo?: RawLocation | undefined;
@@ -129,6 +129,35 @@ export default class Repository extends Model implements IRepository {
     activeRepository: typeof Repository,
     callback?: () => any
   ) {
+    const handleMessage = async (event: MessageEvent) => {
+      if (
+        event.origin !== APP_URL ||
+        !event.data.hasOwnProperty("token") ||
+        !event.data.hasOwnProperty("repository")
+      ) {
+        return;
+      }
+
+      // We must get `repository` using the key in the response, because `activeRepository` is only populated the first time the window is instantiated
+      // const repository = getRepositoryFromKey(
+      //   event.data.repository as EnumRepositoryKeys
+      // );
+
+      if (activeRepository && event.data?.token) {
+        activeRepository.commit((state) => {
+          state.accessToken = event.data.token.access_token || "";
+        });
+
+        callback?.();
+        this.authorized$.next(activeRepository.entity as EnumRepositoryKeys);
+      } else {
+        Notifications.toast({
+          message: "Failed to authorize repository",
+          type: "error",
+        });
+      }
+    };
+
     const authorizeUrl = activeRepository?.get()?.urls?.authorizeUrl;
 
     if (!authorizeUrl) {
@@ -140,42 +169,18 @@ export default class Repository extends Model implements IRepository {
     }
 
     window.open(
-      `${window.location.origin}${authorizeUrl}`,
+      `${APP_URL}${authorizeUrl}`,
       "_blank",
       "location=1,status=1,scrollbars=1, width=800,height=800"
     );
 
-    if (!this.isAuthorizeListenerSet) {
-      window.addEventListener(
-        "message",
-        async (message) => {
-          console.info(
-            `${activeRepository.entity}: listening to authorization window...`
-          );
-
-          if (message.data?.token) {
-            activeRepository.commit((state) => {
-              state.accessToken = message.data.token.access_token || "";
-            });
-
-            if (callback) {
-              callback();
-            }
-            this.authorized$.next(
-              activeRepository.entity as EnumRepositoryKeys
-            );
-          } else {
-            Notifications.toast({
-              message: "Failed to authorize repository",
-              type: "error",
-            });
-          }
-          this.isAuthorizeListenerSet = false;
-        },
-        { once: true }
-      );
-      this.isAuthorizeListenerSet = true;
-    }
+    // We need to re-instantiate the listener so that it uses the new values in this function
+    this.controller.abort();
+    this.controller = new AbortController();
+    window.addEventListener("message", handleMessage, {
+      signal: this.controller.signal, // Used to remove the listener
+    });
+    console.info(`Listening to authorization window...`);
   }
 
   static openRevokeDialog(repository: typeof Repository) {

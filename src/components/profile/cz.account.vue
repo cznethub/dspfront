@@ -10,7 +10,7 @@
     </p>
 
     <v-text-field
-      label="ORCID access token"
+      label="Access token"
       :value="token"
       outlined
       readonly

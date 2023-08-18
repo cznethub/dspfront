@@ -390,7 +390,7 @@
 
       <div
         v-else-if="isReadOnly || !rootDirectory.children.length"
-        class="pa-2 text-body-1 text--secondary"
+        class="pa-2 text-body-1 text--secondary mb-2"
       >
         No files have been included in this submission.
       </div>
