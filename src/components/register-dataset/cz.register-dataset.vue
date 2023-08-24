@@ -1,7 +1,7 @@
 <template>
   <v-container class="cz-register-dataset">
     <div class="text-h4">Register Dataset</div>
-    <v-divider class="has-space-bottom" />
+    <v-divider class="mb-2" />
 
     <v-alert border="left" colored-border type="info" elevation="1">
       You should only use this form to register existing datasets from
@@ -169,11 +169,12 @@
             icon="mdi-pencil-off"
             elevation="2"
           >
-            This resource is published and is not editable in the Data Submission
-            Portal. If you need to modify this resource once registered, navigate to the resource in
-            the repository where it is hosted and modify it there (if possible). You
-            can refresh the metadata for this resource by clicking the "Update Record"
-            button on the My Submissions page.
+            This resource is published and is not editable in the Data
+            Submission Portal. If you need to modify this resource once
+            registered, navigate to the resource in the repository where it is
+            hosted and modify it there (if possible). You can refresh the
+            metadata for this resource by clicking the "Update Record" button on
+            the My Submissions page.
           </v-alert>
 
           <v-card elevation="2" outlined class="mb-6">
@@ -189,7 +190,7 @@
                     {{ submission.title }}
                   </td>
                 </tr>
-                <tr v-if="submission.authors.length">
+                <tr v-if="submission.authors && submission.authors.length">
                   <th class="pr-4 body-2">Authors:</th>
                   <td>{{ submission.authors.join(" | ") }}</td>
                 </tr>
@@ -332,10 +333,10 @@ import { repoMetadata } from "@/components/submit/constants";
 import { EnumRepositoryKeys, IRepository } from "../submissions/types";
 import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
+import { Notifications } from "@cznethub/cznet-vue-core";
 import Repository from "@/models/repository.model";
 import Submission from "@/models/submission.model";
 import User from "@/models/user.model";
-import CzNotification from "@/models/notifications.model";
 
 @Component({
   name: "cz-register-dataset",
@@ -385,11 +386,11 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
     return this.url; // default
   }
 
-  @Watch('step')
+  @Watch("step")
   onStepChange(currentStep, previousStep) {
     if (currentStep === 2) {
       // @ts-ignore
-      this.$refs.txtIdentifier?.focus()
+      this.$refs.txtIdentifier?.focus();
     }
   }
 
@@ -430,18 +431,17 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
       );
 
       this.isRegistering = false;
-      CzNotification.toast({
+      Notifications.toast({
         message: "Your dataset has been registered!",
         type: "success",
       });
       this.$router.push({
         name: "submissions",
       });
-    }
-    catch(e) {
+    } catch (e) {
       this.isRegistering = false;
-      CzNotification.toast({
-        message: 'Failed to register dataset',
+      Notifications.toast({
+        message: "Failed to register dataset",
         type: "error",
       });
     }
@@ -496,27 +496,32 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
             this.apiSubmission.community = "CZNet";
           }
           if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
-            this.allowFileUpload = this.apiSubmission.type === "CompositeResource" && !this.isPublished;
-            this.resourceType = this.apiSubmission.type === "CompositeResource" ? "Resource" : "Collection";
-          }
-          else {
+            this.allowFileUpload =
+              this.apiSubmission.type === "CompositeResource" &&
+              !this.isPublished;
+            this.resourceType =
+              this.apiSubmission.type === "CompositeResource"
+                ? "Resource"
+                : "Collection";
+          } else {
             this.allowFileUpload = !this.isPublished;
           }
-        } else if (response === 403) {
-          // Repository was unauthorized
+        }
+        // Repository was unauthorized
+        else if (response === 401) {
           this.wasUnauthorized = true;
 
           // Try again when user has authorized the repository
           this.authorizedSubject = Repository.authorized$.subscribe(
-            async (repositoryKey: EnumRepositoryKeys) => {
+            async (_repositoryKey: EnumRepositoryKeys) => {
               await this._readDataset();
             }
           );
         }
       }
-      this.isFetching = false;
     } catch (e) {
       console.log(e);
+    } finally {
       this.isFetching = false;
     }
   }

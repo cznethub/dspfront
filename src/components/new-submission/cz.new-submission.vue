@@ -24,8 +24,8 @@
 
         <v-img
           class="my-4 flex-grow-0 ml-md-4 ml-0"
-          :src="activeRepository.get().logoSrc"
-          :alt="activeRepository.get().name"
+          :src="activeRepository.get()?.logoSrc"
+          :alt="activeRepository.get()?.name"
           width="350px"
           contain
         />
@@ -75,7 +75,6 @@
       :confirmText="submitText"
       :errors="errors"
       :hasUnsavedChanges="hasUnsavedChanges"
-      @show-ui-schema="onShowUISchema"
       @save-and-finish="onSaveAndFinish"
       @save="onSave"
       @cancel="goToSubmissions"
@@ -98,18 +97,18 @@
           :identifier="identifier"
         />
 
-        <json-forms
-          v-if="wasLoaded"
-          :ajv="ajv"
-          @change="onChange"
-          :disabled="isSaving || isPublished"
-          :data="data"
-          :readonly="isReadOnly || isSaving || isPublished"
-          :renderers="Object.freeze(renderers)"
-          :schema="schema"
-          :uischema="uischema"
-          ref="form"
-        />
+        <template v-if="wasLoaded">
+          <cz-form
+            :schema="schema"
+            :uischema="uiSchema"
+            :errors.sync="errors"
+            :isValid.sync="isValid"
+            :data.sync="data"
+            :config="config"
+            @update:data="onDataChange"
+            ref="form"
+          />
+        </template>
       </div>
 
       <div v-else class="d-flex justify-center mt-8">
@@ -131,7 +130,6 @@
         :confirmText="submitText"
         :errors="errors"
         :hasUnsavedChanges="hasUnsavedChanges"
-        @show-ui-schema="onShowUISchema"
         @save-and-finish="onSaveAndFinish"
         @save="onSave"
         @cancel="goToSubmissions"
@@ -217,28 +215,6 @@
       </template>
     </template>
 
-    <v-dialog id="show-ui-schema" v-if="isDevMode" v-model="showUISchema">
-      <v-card>
-        <v-card-title> UI Schema </v-card-title>
-        <v-card-text>
-          <div class="schema-wrapper">
-            <json-viewer
-              :value="usedUISchema"
-              :expand-depth="5"
-              copyable
-              expanded
-              sort
-            />
-          </div>
-        </v-card-text>
-        <v-divider></v-divider>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn text @click="showUISchema = false">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
     <v-dialog
       :value="isSaving"
       no-click-animation
@@ -264,9 +240,6 @@
 
 <script lang="ts">
 import { Component, Ref } from "vue-property-decorator";
-import { JsonForms, JsonFormsChangeEvent } from "@jsonforms/vue2";
-import { JsonFormsRendererRegistryEntry } from "@jsonforms/core";
-import { CzRenderers } from "@/renderers/renderer.vue";
 import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types";
 import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
@@ -274,38 +247,28 @@ import { repoMetadata } from "../submit/constants";
 import { IFile, IFolder } from "@/components/new-submission/types";
 import { ErrorObject } from "ajv";
 import { Subscription } from "rxjs";
-import { createAjv } from "@jsonforms/core";
+import { Notifications, CzForm } from "@cznethub/cznet-vue-core";
 import { DELETED_RESOURCE_STATUS_CODES } from "@/constants";
-import JsonViewer from "vue-json-viewer";
 import Repository from "@/models/repository.model";
-import CzNotification from "@/models/notifications.model";
 import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue";
 import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue";
 import User from "@/models/user.model";
-import ajvErrors from "ajv-errors";
 import Submission from "@/models/submission.model";
-
-const renderers = [
-  // ...vanillaRenderers,
-  ...CzRenderers,
-];
 const sprintf = require("sprintf-js").sprintf;
-const customAjv = createAjv({ allErrors: true });
-ajvErrors(customAjv);
+
+const initialData = {};
 
 @Component({
   name: "cz-new-submission",
   components: {
-    JsonForms,
-    JsonViewer,
     CzFolderStructure,
     CzNewSubmissionActions,
+    CzForm,
   },
 })
 export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   ActiveRepositoryMixin
 ) {
-  @Ref("form") jsonForm!: typeof JsonForms;
   @Ref("folderStructure") folderStructure!: InstanceType<
     typeof CzFolderStructure
   >;
@@ -317,14 +280,13 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     key: "",
     path: "",
   };
+  protected isValid = false;
   protected isLoading = false;
   protected isLoadingInitialFiles = false;
   protected isSaving = false;
   protected identifier = "";
-  protected data: any = {};
+  protected data: any = initialData;
   protected links: any = {};
-  protected renderers: JsonFormsRendererRegistryEntry[] = renderers;
-  protected showUISchema = false;
   protected usedUISchema = {};
   protected repoMetadata = repoMetadata;
   protected uploads: (IFile | IFolder)[] = [];
@@ -332,11 +294,29 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   protected repositoryRecord: any = null;
   protected loggedInSubject = new Subscription();
   protected timesChanged = 0;
-  protected ajv = customAjv;
   protected isReadOnly = false;
   protected wasUnauthorized = false;
   protected isPublished = false;
   protected allowFileUpload = true;
+  protected config = {
+    restrict: true,
+    trim: false,
+    showUnfocusedDescription: false,
+    hideRequiredAsterisk: false,
+    collapseNewItems: false,
+    breakHorizontal: false,
+    initCollapsed: false,
+    hideAvatar: false,
+    hideArraySummaryValidation: false,
+    vuetify: {
+      commonAttrs: {
+        dense: true,
+        outlined: true,
+        "persistent-hint": true,
+        "hide-details": false,
+      },
+    },
+  };
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined;
@@ -350,7 +330,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     return this.activeRepository?.get()?.schema;
   }
 
-  protected get uischema() {
+  protected get uiSchema() {
     return this.activeRepository?.get()?.uischema || undefined;
   }
 
@@ -482,7 +462,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     } else if (DELETED_RESOURCE_STATUS_CODES.includes(response)) {
       // Resource has been deleted in repository
       this.repositoryRecord = null;
-      CzNotification.openDialog({
+      Notifications.openDialog({
         title: "This resource has been deleted",
         content:
           "The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?",
@@ -499,20 +479,16 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     } else {
       this.repositoryRecord = response.metadata;
       if (response.published) {
-        if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
-          this.isPublished = this.repositoryRecord.status === "published";
-        } else {
-          this.isPublished = true;
-        }
+        this.isPublished =
+          this.activeRepository.entity === EnumRepositoryKeys.earthchem
+            ? this.repositoryRecord.status === "published"
+            : true;
       }
       this.wasUnauthorized = false;
       if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare) {
-        if (this.repositoryRecord.hasOwnProperty("type")) {
-          this.allowFileUpload = this.repositoryRecord.type === "CompositeResource" && !this.isPublished;
-        }
-        else {
-          this.allowFileUpload = !this.isPublished;
-        }
+        this.allowFileUpload =
+          !this.isPublished &&
+          this.repositoryRecord.type === "CompositeResource";
       }
     }
 
@@ -543,7 +519,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
             );
           this.rootDirectory.children = initialStructure;
         } catch (e) {
-          CzNotification.toast({
+          Notifications.toast({
             message: "Failed to load existing files.",
             type: "error",
           });
@@ -572,22 +548,13 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     this.isLoading = false;
   }
 
-  protected onShowUISchema() {
-    if (this.jsonForm) {
-      this.usedUISchema = this.jsonForm.uischemaToUse;
-    } else {
-      this.usedUISchema = {}; // default
-    }
-    this.showUISchema = true;
-  }
-
   protected onSaveAndFinish() {
     if (
       !this.isExternal &&
       (this.folderStructure?.hasInvalidFilesToUpload ||
         !this.folderStructure?.canUploadFiles)
     ) {
-      CzNotification.openDialog({
+      Notifications.openDialog({
         title: "Some of your files cannot be uploaded",
         content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
         confirmText: "Continue",
@@ -613,7 +580,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     // In earthchem, we want to confirm if the user wants to mark the status as complete before navigating away
     if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
       if (this.data.status === "incomplete") {
-        CzNotification.openDialog({
+        Notifications.openDialog({
           title: "Are you finished with this submission?",
           content: `Do you want to submit this resource for review? If so, you will not be able to make further changes.`,
           confirmText: "Submit for review",
@@ -642,7 +609,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
       (this.folderStructure?.hasInvalidFilesToUpload ||
         !this.folderStructure?.canUploadFiles)
     ) {
-      CzNotification.openDialog({
+      Notifications.openDialog({
         title: "Some of your files cannot be uploaded",
         content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
         confirmText: "Continue",
@@ -734,14 +701,14 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 
     if (wasSaved) {
       // Indicate that changes have been saved
-      CzNotification.toast({
+      Notifications.toast({
         message: this.isEditMode
           ? "Your changes have been saved"
           : "Your submission has been saved!",
         type: "success",
       });
     } else {
-      CzNotification.toast({
+      Notifications.toast({
         message: this.isEditMode
           ? "Your changes could not be saved"
           : "Failed to create submission",
@@ -754,21 +721,15 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     return wasSaved;
   }
 
-  protected onChange(event: JsonFormsChangeEvent) {
-    // Pristine/dirty checks are currently not supported in jsonforms.
-    // We use onChange event for now by ignoring the two times it is called when the form is rendered.
-    // https://spectrum.chat/jsonforms/general/pristine-and-dirty-checking~2ece93ab-7783-41cb-8ba1-804414eb1da4?m=MTU2MzM0OTY0NDQxNg==
+  protected onDataChange(_data) {
+    // cz-form emits 'change' event multiple times during instantioation.
+    const changesDuringInstantiation = this.isEditMode ? 2 : 3;
 
-    // json-forms emits 'change' event twice during instantioation.
-    const changesDuringInstantiation = 2;
-
-    if (this.timesChanged <= 2) {
+    if (this.timesChanged <= changesDuringInstantiation) {
       this.timesChanged = this.timesChanged + 1;
     }
 
     this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation;
-    this.errors = event.errors || [];
-    this.data = event.data;
   }
 
   protected async uploadFiles(files: (IFolder | IFile)[]) {
@@ -792,18 +753,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 </script>
 
 <style lang="scss" scoped>
-// .cz-new-submission {
-// }
-
-.schema-wrapper {
-  max-width: 100%;
-  height: 0;
-  flex: 1;
-  overflow: auto;
-  border-top: 1px solid #ddd;
-  min-height: 75vh;
-}
-
 .form-controls {
   button + button {
     margin-left: 1rem;
@@ -816,16 +765,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 
 ::v-deep .v-overlay.backdrop {
   z-index: 4 !important;
-}
-
-::v-deep .v-label--active {
-  transform: translateY(-26px) scale(1) !important;
-  background-color: #fff;
-  padding-right: 0.2rem;
-}
-
-::v-deep .horizontal-layout {
-  gap: 2rem;
 }
 
 ::v-deep .v-alert__content {

@@ -2,7 +2,7 @@
   <div class="cz-submissions">
     <div class="cz-submissions--header">
       <div class="text-h4">My Submissions</div>
-      <v-divider class="has-space-bottom" />
+      <v-divider class="mb-2" />
       <div>
         <div class="d-flex align-sm-center flex-column flex-sm-row">
           <div
@@ -115,7 +115,7 @@
     <template v-else>
       <div v-if="submissions.length" class="mt-4">
         <div>
-          <div id="total_submissions" class="has-space-bottom text-h6">
+          <div id="total_submissions" class="mb-2 text-h6">
             {{ submissions.length }} Total Submissions
           </div>
           <p v-if="isAnyFilterAcitve" class="text--secondary">
@@ -492,7 +492,7 @@ import CzRegisterDatasetDialog from "@/components/register-dataset/cz.register-d
 import Submission from "@/models/submission.model";
 import Repository from "@/models/repository.model";
 import User from "@/models/user.model";
-import { isRepositoryAuthorized } from "@/renderers/styles";
+import { isRepositoryAuthorized } from "@/util";
 
 @Component({
   name: "cz-submissions",
@@ -780,7 +780,9 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
 
       if (deleteInRepo) {
         // Check that the user has authorized the selected repository
-        if (!isRepositoryAuthorized(this.deleteDialogData.submission.repository)) {
+        if (
+          !isRepositoryAuthorized(this.deleteDialogData.submission.repository)
+        ) {
           this.$set(
             this.isDeleting,
             `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
@@ -793,7 +795,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
               await this.onDeleteSubmission();
             }
           );
-          return
+          return;
         }
       }
 

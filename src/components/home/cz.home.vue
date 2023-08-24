@@ -1,23 +1,26 @@
 <template>
   <div class="cz-home">
-    <v-parallax class="text-center" :src="require('@/assets/img/bg-3.jpg')" :height="isLoggedIn ? 450 : 650">
+    <v-parallax
+      class="text-center"
+      :src="require('@/assets/img/bg-3.jpg')"
+      :height="isLoggedIn ? 450 : 650"
+    >
       <v-container
         class="d-flex flex-column justify-center align-center full-height pa-12"
-        style="background-image: linear-gradient(rgb(66 142 218 / 52%), rgb(0 0 0 / 38%));"
+        :style="{
+          'background-image':
+            'linear-gradient(rgb(66 142 218 / 52%),rgb(0 0 0 / 38%))',
+        }"
       >
         <div class="has-text-shadow">
           <div class="has-text-white text-h3">
             Critical Zone Collaborative Network
           </div>
-          <div class="has-text-white has-space-top-2x text-h4">
-            Data Submission Portal
-          </div>
+          <div class="has-text-white mt-4 text-h4">Data Submission Portal</div>
         </div>
         <template v-if="!isLoggedIn">
           <div>
-            <div
-              class="has-text-white has-space-top-2x mb-4 has-text-shadow text-h6"
-            >
+            <div class="has-text-white mt-4 mb-4 has-text-shadow text-h6">
               Ready to Submit Data?
             </div>
             <v-btn @click="openLogInDialog()" rounded>Log In</v-btn>
@@ -47,12 +50,7 @@
           </p>
         </div>
 
-        <v-row
-          id="features-1"
-          justify="center"
-          align="baseline"
-          class="has-space-top-2x"
-        >
+        <v-row id="features-1" justify="center" align="baseline" class="mt-4">
           <v-col
             class="d-flex align-center align-md-start flex-md-row flex-column"
           >
@@ -98,16 +96,13 @@
     <v-divider />
 
     <section class="text-center">
-      <div class="has-space-bottom-2x text-h4">What do you want to do?</div>
+      <div class="mb-4 text-h4">What do you want to do?</div>
       <v-row id="features-2" justify="center">
         <v-col>
           <router-link class="is-clickable" to="/submit" tag="div"
             ><v-icon>mdi-book-plus</v-icon></router-link
           >
-          <router-link
-            class="has-space-bottom text-h6 is-clickable"
-            to="/submit"
-            tag="div"
+          <router-link class="mb-2 text-h6 is-clickable" to="/submit" tag="div"
             >Submit Data Products</router-link
           >
           <div class="text--secondary text-subtitle-1">
@@ -124,7 +119,7 @@
           >
           <router-link
             to="/resources/recommendations"
-            class="has-space-bottom text-h6 is-clickable"
+            class="mb-2 text-h6 is-clickable"
             tag="div"
             >Find the Right Repository</router-link
           >
@@ -137,7 +132,7 @@
         <!-- TODO: link to cataloging and discovery once implemented -->
         <!-- <v-col>
           <v-icon >mdi-database-search</v-icon>
-          <div class=" has-space-bottom text-h6">Explore CZCN Data</div>
+          <div class=" mb-2 text-h6">Explore CZCN Data</div>
         </v-col> -->
       </v-row>
     </section>
@@ -146,7 +141,7 @@
 
     <section class="d-flex align-center flex-column flex-lg-row">
       <div class="text-center text-lg-left">
-        <div class="has-space-bottom-2x text-h4">Make your Data FAIR</div>
+        <div class="mb-4 text-h4">Make your Data FAIR</div>
         <p class="text--secondary text-subtitle-1">
           This Data Submission Portal works with reputable Earth Science
           repositories to ensure that research products you submit are
@@ -155,9 +150,7 @@
         </p>
       </div>
 
-      <div
-        class="has-space-top-2x text-center text-sm-center text-right flex-shrink-0"
-      >
+      <div class="mt-4 text-center text-sm-center text-right flex-shrink-0">
         <a
           href="https://www.go-fair.org/fair-principles/"
           class="d-block full-width"
@@ -176,19 +169,15 @@
     <v-divider />
 
     <section>
-      <div class="has-space-bottom text-center text-h4">
-        Supported Repositories
-      </div>
-      <div class="d-flex justify-center has-space-bottom-2x">
+      <div class="mb-2 text-center text-h4">Supported Repositories</div>
+      <div class="d-flex justify-center mb-4">
         <p class="text--secondary text-center text-subtitle-1">
           Data submitted via this Portal are deposited in multiple repositories.
           Click the links below to learn more about each of the supported
           repositories.
         </p>
       </div>
-      <div
-        class="repos has-space-bottom-2x d-flex flex-wrap align-center justify-center"
-      >
+      <div class="repos mb-4 d-flex flex-wrap align-center justify-center">
         <a
           v-for="repo of supportedRepositories"
           :key="repo.key"
@@ -213,7 +202,7 @@ import User from "@/models/user.model";
 })
 export default class CzHome extends Vue {
   protected repoMetadata = repoMetadata;
-  protected discoverySiteUrl = DISCOVERY_SITE_URL
+  protected discoverySiteUrl = DISCOVERY_SITE_URL;
 
   protected get isLoggedIn() {
     return User.$state.isLoggedIn;

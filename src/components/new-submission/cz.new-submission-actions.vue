@@ -79,7 +79,7 @@
             class="text-subtitle-1"
           >
             <li>
-              <b>{{ getTitle(error) }}</b> {{ getMessage(error) }}.
+              <b>{{ error.title }}</b> {{ error.message }}.
             </li>
           </ul>
         </div>
@@ -89,7 +89,6 @@
 </template>
 
 <script lang="ts">
-import { ErrorObject } from "ajv";
 import { Component, Vue, Prop } from "vue-property-decorator";
 
 @Component({
@@ -104,72 +103,7 @@ export default class CzNewSubmissionActions extends Vue {
   @Prop() hasUnsavedChanges!: boolean;
   @Prop() isSaving!: boolean;
   @Prop() confirmText!: string;
-  @Prop() errors!: ErrorObject[];
-
-  protected getTitle(error: ErrorObject) {
-    if (error.instancePath) {
-      return error.parentSchema?.title || error.params.missingProperty;
-    }
-    return (
-      error.parentSchema?.properties?.[error.params.missingProperty]?.title ||
-      error.params.missingProperty ||
-      ""
-    );
-  }
-
-  protected getMessage(error: ErrorObject) {
-    if (error.keyword === "required") {
-      if (error.instancePath) {
-        // Error is in a nested object
-        // For combinator renderers we must anotate the fitting schema in the renderer itself and then use it here to get the corresponding prop title
-        const isCombinatorSchema = this._isCombinatorSchema(error.parentSchema);
-
-        const propTitle = isCombinatorSchema
-          ? this._getCombinatorSchemaProperties(error.parentSchema)?.[
-              error.params.missingProperty
-            ]?.title
-          : error.parentSchema?.properties?.[error.params.missingProperty]
-              ?.title;
-
-        if (propTitle) {
-          return `must have required property '${propTitle}'`;
-        }
-      } else {
-        return "is a required property";
-      }
-    }
-    return error.message;
-  }
-
-  private _isCombinatorSchema(schema: any): string {
-    return schema.anyOf
-      ? "anyOf"
-      : schema.allOf
-      ? "allOf"
-      : schema.oneOf
-      ? "oneOf"
-      : "";
-  }
-
-  /** Find and return the properties array inside nested combinator schemas */
-  private _getCombinatorSchemaProperties(schema: any) {
-    const isCombinatorSchema = this._isCombinatorSchema(schema);
-
-    if (!isCombinatorSchema) {
-      return;
-    }
-
-    const fittingSchema = schema[isCombinatorSchema]?.find(
-      (s) => s.isFittingSchema
-    );
-    if (fittingSchema) {
-      if (fittingSchema.properties) {
-        return fittingSchema.properties;
-      } else {
-        return this._getCombinatorSchemaProperties(fittingSchema);
-      }
-    }
-  }
+  @Prop() errors!: any[];
 }
 </script>
 

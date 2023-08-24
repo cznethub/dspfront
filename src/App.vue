@@ -20,7 +20,7 @@
         </router-link>
         <div class="spacer"></div>
         <v-card
-          class="nav-items has-space-right d-flex"
+          class="nav-items mr-2 d-flex"
           :elevation="2"
           v-if="!$vuetify.breakpoint.mdAndDown"
         >
@@ -188,71 +188,7 @@
       </v-list>
     </v-navigation-drawer>
 
-    <v-snackbar
-      v-model="snackbar.isActive"
-      :timeout="snackbar.isInfinite ? -1 : snackbar.duration"
-      :color="snackbarColors[snackbar.type].snackbar"
-    >
-      <span>{{ snackbar.message }}</span>
-
-      <template v-slot:action="{ attrs }">
-        <v-btn
-          @click="snackbar.isActive = false"
-          v-bind="attrs"
-          :color="snackbarColors[snackbar.type].actionButton"
-          >Dismiss</v-btn
-        >
-      </template>
-    </v-snackbar>
-
-    <v-dialog
-      :id="`dialog-` + dialog.title.replaceAll(` `, ``)"
-      v-model="dialog.isActive"
-      persistent
-      width="500"
-    >
-      <v-card>
-        <v-card-title>{{ dialog.title }}</v-card-title>
-        <v-card-text class="text-body-1">{{ dialog.content }}</v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn
-            class="dialog-cancel"
-            @click="
-              dialog.isActive = false;
-              dialog.onCancel();
-            "
-            text
-          >
-            {{ dialog.cancelText }}
-          </v-btn>
-
-          <v-btn
-            v-if="dialog.onSecondaryAction"
-            @click="
-              dialog.isActive = false;
-              dialog.onSecondaryAction();
-            "
-            color="green darken-1"
-            text
-          >
-            {{ dialog.secondaryActionText }}
-          </v-btn>
-
-          <v-btn
-            class="dialog-confirm"
-            @click="
-              dialog.isActive = false;
-              dialog.onConfirm();
-            "
-            color="green darken-1"
-            text
-          >
-            {{ dialog.confirmText }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+    <cz-notifications />
 
     <v-dialog v-model="logInDialog.isActive" width="500">
       <cz-login
@@ -289,7 +225,7 @@ import {
 } from "./constants";
 import { RawLocation } from "vue-router";
 import { EnumRepositoryKeys } from "./components/submissions/types";
-import CzNotification, { IDialog, IToast } from "./models/notifications.model";
+import { CzNotifications, Notifications } from "@cznethub/cznet-vue-core";
 import CzFooter from "@/components/base/cz.footer.vue";
 import CzLogin from "@/components/account/cz.login.vue";
 import CzAuthorize from "@/components/authorize/cz.authorize.vue";
@@ -323,7 +259,7 @@ const INITIAL_SNACKBAR = {
 
 @Component({
   name: "app",
-  components: { CzFooter, CzLogin, CzAuthorize },
+  components: { CzFooter, CzLogin, CzAuthorize, CzNotifications },
 })
 export default class App extends Vue {
   protected isLoading = true;
@@ -333,7 +269,7 @@ export default class App extends Vue {
   protected onOpenAuthorizeDialog!: Subscription;
   protected showMobileNavigation = false;
   protected loggedInSubject = new Subscription();
-  protected authorizedSubject = new Subscription();
+  // protected authorizedSubject = new Subscription();
   protected isAppBarExtended = true;
   protected snackbarColors = {
     success: { snackbar: "primary", actionButton: "primary darken-2" },
@@ -341,9 +277,9 @@ export default class App extends Vue {
     info: { snackbar: "warning darken-2", actionButton: "warning darken-4" },
     default: { snackbar: undefined, actionButton: undefined },
   };
-  protected snackbar: IToast & { isActive: boolean; isInfinite: boolean } =
+  protected snackbar: any & { isActive: boolean; isInfinite: boolean } =
     INITIAL_SNACKBAR;
-  protected dialog: IDialog & { isActive: boolean } = INITIAL_DIALOG;
+  protected dialog: any & { isActive: boolean } = INITIAL_DIALOG;
   protected logInDialog: any & { isActive: boolean } = {
     isActive: false,
     onLoggedIn: () => {},
@@ -405,7 +341,7 @@ export default class App extends Vue {
   }
 
   protected logOut() {
-    CzNotification.openDialog({
+    Notifications.openDialog({
       title: "Log out?",
       content: "Are you sure you want to log out?",
       confirmText: "Log Out",
@@ -432,12 +368,12 @@ export default class App extends Vue {
       Submission.fetchSubmissions();
     }
 
-    this.onToast = CzNotification.toast$.subscribe((toast: IToast) => {
+    this.onToast = Notifications.toast$.subscribe((toast) => {
       this.snackbar = { ...this.snackbar, ...toast };
       this.snackbar.isActive = true;
     });
 
-    this.onOpenDialog = CzNotification.dialog$.subscribe((dialog: IDialog) => {
+    this.onOpenDialog = Notifications.dialog$.subscribe((dialog) => {
       this.dialog = { ...INITIAL_DIALOG, ...dialog };
       this.dialog.isActive = true;
     });
@@ -448,7 +384,7 @@ export default class App extends Vue {
 
         this.logInDialog.onLoggedIn = () => {
           if (redirectTo) {
-            this.$router.push(redirectTo);
+            this.$router.push(redirectTo).catch(() => {});
           }
           this.logInDialog.isActive = false;
         };
@@ -471,7 +407,7 @@ export default class App extends Vue {
             } else if (params.repository === EnumRepositoryKeys.earthchem) {
               await EarthChem.init();
             }
-            this.$router.push(params.redirectTo);
+            this.$router.push(params.redirectTo).catch(() => {});
           }
           this.authorizeDialog.isActive = false;
         };
