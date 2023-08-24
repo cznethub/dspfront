@@ -1,7 +1,7 @@
 <template>
   <v-container class="cz-register-dataset">
     <div class="text-h4">Register Dataset</div>
-    <v-divider class="has-space-bottom" />
+    <v-divider class="mb-2" />
 
     <v-alert border="left" colored-border type="info" elevation="1">
       You should only use this form to register existing datasets from
@@ -329,10 +329,10 @@ import { repoMetadata } from "@/components/submit/constants";
 import { EnumRepositoryKeys, IRepository } from "../submissions/types";
 import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
+import { Notifications } from "@cznethub/cznet-vue-core";
 import Repository from "@/models/repository.model";
 import Submission from "@/models/submission.model";
 import User from "@/models/user.model";
-import CzNotification from "@/models/notifications.model";
 
 @Component({
   name: "cz-register-dataset",
@@ -425,7 +425,7 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
       );
 
       this.isRegistering = false;
-      CzNotification.toast({
+      Notifications.toast({
         message: "Your dataset has been registered!",
         type: "success",
       });
@@ -434,7 +434,7 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
       });
     } catch (e) {
       this.isRegistering = false;
-      CzNotification.toast({
+      Notifications.toast({
         message: "Failed to register dataset",
         type: "error",
       });

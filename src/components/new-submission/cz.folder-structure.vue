@@ -308,8 +308,8 @@
                             <li v-if="isFileTooBig(item)">
                               Files cannot be larger than
                               <b>{{
-                                repoMetadata.maxUploadSizePerFile
-                                  | prettyBytes(2, false)
+                                repoMetadata.maxUploadSizePerFile |
+                                  prettyBytes(2, false)
                               }}</b
                               >.
                             </li>
@@ -390,7 +390,7 @@
 
       <div
         v-else-if="isReadOnly || !rootDirectory.children.length"
-        class="pa-2 text-body-1 text--secondary"
+        class="pa-2 text-body-1 text--secondary mb-2"
       >
         No files have been included in this submission.
       </div>
@@ -437,12 +437,12 @@
 </template>
 
 <script lang="ts">
-import CzNotification from "@/models/notifications.model";
 import { Component, Watch, Prop } from "vue-property-decorator";
 import { IFolder, IFile } from "@/components/new-submission/types";
 import { mixins } from "vue-class-component";
 import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
 import { IRepository } from "../submissions/types";
+import { Notifications } from "@cznethub/cznet-vue-core";
 
 @Component({
   name: "cz-folder-structure",
@@ -866,7 +866,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
         if (wasRenamed) {
           item.name = newName;
         } else {
-          CzNotification.toast({
+          Notifications.toast({
             message: `Failed to rename ${
               this.isFolder(item) ? "folder" : "file"
             }`,
@@ -883,7 +883,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
   }
 
   protected async deleteSelected() {
-    CzNotification.openDialog({
+    Notifications.openDialog({
       title: "Remove files?",
       content: "Are you sure you want to remove the selected files?",
       confirmText: "Remove",
@@ -931,7 +931,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
     // TODO: zenodo cannot handle multiple deletes in parallel. We do it sequentially
     if (response.includes(false)) {
       // Failed to delete some file
-      CzNotification.toast({
+      Notifications.toast({
         message: "Some of your files could not be deleted",
         type: "error",
       });
@@ -982,7 +982,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
   }
 
   protected empty() {
-    CzNotification.openDialog({
+    Notifications.openDialog({
       title: "Remove all files?",
       content: "Are you sure you want to remove all files from this list?",
       confirmText: "Remove",

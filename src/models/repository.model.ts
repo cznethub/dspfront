@@ -8,16 +8,16 @@ import { repoMetadata } from "@/components/submit/constants";
 import { Subject } from "rxjs";
 import { RawLocation } from "vue-router";
 import { IFile, IFolder } from "@/components/new-submission/types";
-import { DELETED_RESOURCE_STATUS_CODES } from "@/constants";
+import { APP_URL, DELETED_RESOURCE_STATUS_CODES } from "@/constants";
 import axios from "axios";
 import Submission from "./submission.model";
-import CzNotification from "./notifications.model";
+import { Notifications } from "@cznethub/cznet-vue-core";
 import User from "./user.model";
 
 export default class Repository extends Model implements IRepository {
   static entity = "repository";
   static primaryKey = "key";
-  static isAuthorizeListenerSet = false;
+  static controller = new AbortController();
   static authorizeDialog$ = new Subject<{
     repository: string;
     redirectTo?: RawLocation | undefined;
@@ -129,10 +129,39 @@ export default class Repository extends Model implements IRepository {
     activeRepository: typeof Repository,
     callback?: () => any
   ) {
+    const handleMessage = async (event: MessageEvent) => {
+      if (
+        event.origin !== APP_URL ||
+        !event.data.hasOwnProperty("token") ||
+        !event.data.hasOwnProperty("repository")
+      ) {
+        return;
+      }
+
+      // We must get `repository` using the key in the response, because `activeRepository` is only populated the first time the window is instantiated
+      // const repository = getRepositoryFromKey(
+      //   event.data.repository as EnumRepositoryKeys
+      // );
+
+      if (activeRepository && event.data?.token) {
+        activeRepository.commit((state) => {
+          state.accessToken = event.data.token.access_token || "";
+        });
+
+        callback?.();
+        this.authorized$.next(activeRepository.entity as EnumRepositoryKeys);
+      } else {
+        Notifications.toast({
+          message: "Failed to authorize repository",
+          type: "error",
+        });
+      }
+    };
+
     const authorizeUrl = activeRepository?.get()?.urls?.authorizeUrl;
 
     if (!authorizeUrl) {
-      CzNotification.toast({
+      Notifications.toast({
         message: "Failed to authorize repository",
         type: "error",
       });
@@ -140,46 +169,22 @@ export default class Repository extends Model implements IRepository {
     }
 
     window.open(
-      `${window.location.origin}${authorizeUrl}`,
+      `${APP_URL}${authorizeUrl}`,
       "_blank",
       "location=1,status=1,scrollbars=1, width=800,height=800"
     );
 
-    if (!this.isAuthorizeListenerSet) {
-      window.addEventListener(
-        "message",
-        async (message) => {
-          console.info(
-            `${activeRepository.entity}: listening to authorization window...`
-          );
-
-          if (message.data?.token) {
-            activeRepository.commit((state) => {
-              state.accessToken = message.data.token.access_token || "";
-            });
-
-            if (callback) {
-              callback();
-            }
-            this.authorized$.next(
-              activeRepository.entity as EnumRepositoryKeys
-            );
-          } else {
-            CzNotification.toast({
-              message: "Failed to authorize repository",
-              type: "error",
-            });
-          }
-          this.isAuthorizeListenerSet = false;
-        },
-        { once: true }
-      );
-      this.isAuthorizeListenerSet = true;
-    }
+    // We need to re-instantiate the listener so that it uses the new values in this function
+    this.controller.abort();
+    this.controller = new AbortController();
+    window.addEventListener("message", handleMessage, {
+      signal: this.controller.signal, // Used to remove the listener
+    });
+    console.info(`Listening to authorization window...`);
   }
 
   static openRevokeDialog(repository: typeof Repository) {
-    CzNotification.openDialog({
+    Notifications.openDialog({
       title: "Revoke access",
       content: "Are you sure you want to revoke access to this repository?",
       confirmText: "Revoke",
@@ -187,7 +192,7 @@ export default class Repository extends Model implements IRepository {
       onConfirm: async () => {
         const accessTokenUrl = repository?.get()?.urls?.accessTokenUrl;
         if (!accessTokenUrl) {
-          CzNotification.toast({
+          Notifications.toast({
             message: "Failed to revoke access",
             type: "error",
           });
@@ -202,19 +207,19 @@ export default class Repository extends Model implements IRepository {
               state.accessToken = "";
             });
 
-            CzNotification.toast({
+            Notifications.toast({
               message: "Access to this repository has been revoked",
               type: "success",
             });
           } else {
-            CzNotification.toast({
+            Notifications.toast({
               message: "Failed to revoke access to this repository",
               type: "error",
             });
           }
         } catch (e) {
           console.log(e);
-          CzNotification.toast({
+          Notifications.toast({
             message: "Failed to revoke access to this repository",
             type: "error",
           });
@@ -348,14 +353,14 @@ export default class Repository extends Model implements IRepository {
           state.accessToken = "";
         });
 
-        CzNotification.toast({
+        Notifications.toast({
           message: "Authorization token is invalid or has expired.",
           type: "error",
         });
 
         Repository.openAuthorizeDialog(this.entity);
       } else {
-        CzNotification.toast({
+        Notifications.toast({
           message: "Failed to create submission",
           type: "error",
         });
@@ -414,7 +419,7 @@ export default class Repository extends Model implements IRepository {
           identifier
         ),
       });
-      CzNotification.toast({
+      Notifications.toast({
         message: "Your submission has been reloaded with its latest changes",
         type: "success",
       });
@@ -425,7 +430,7 @@ export default class Repository extends Model implements IRepository {
         this.commit((state) => {
           state.accessToken = "";
         });
-        CzNotification.toast({
+        Notifications.toast({
           message: "Authorization token is invalid or has expired.",
           type: "error",
         });
@@ -433,7 +438,7 @@ export default class Repository extends Model implements IRepository {
         Repository.openAuthorizeDialog(repository);
       } else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         // Resource has been deleted in repository
-        CzNotification.openDialog({
+        Notifications.openDialog({
           title: "This resource has been deleted",
           content:
             "The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?",
@@ -448,7 +453,7 @@ export default class Repository extends Model implements IRepository {
           `${repository}: failed to update submission.`,
           e.response
         );
-        CzNotification.toast({
+        Notifications.toast({
           message: "Failed to update record",
           type: "error",
         });
@@ -478,7 +483,7 @@ export default class Repository extends Model implements IRepository {
       if (response.status === 200) {
         await Submission.delete([identifier, repository]);
 
-        CzNotification.toast({
+        Notifications.toast({
           message: "Your submission has been deleted",
           type: "success",
         });
@@ -489,7 +494,7 @@ export default class Repository extends Model implements IRepository {
         this.commit((state) => {
           state.accessToken = "";
         });
-        CzNotification.toast({
+        Notifications.toast({
           message: "Authorization token is invalid or has expired.",
           type: "error",
         });
@@ -499,14 +504,14 @@ export default class Repository extends Model implements IRepository {
       if (e.response?.status === 403) {
         await Submission.delete([identifier, repository]);
         // Repository refused to delete submission
-        CzNotification.toast({
+        Notifications.toast({
           message: "Your submission could not be deleted from the repository.",
           type: "info",
         });
       } else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         // Resource has been deleted in the repository
         await Submission.delete([identifier, repository]);
-        CzNotification.toast({
+        Notifications.toast({
           message: "Your submission has been deleted",
           type: "success",
         });
@@ -515,7 +520,7 @@ export default class Repository extends Model implements IRepository {
           `${repository}: failed to delete submission.`,
           e.response
         );
-        CzNotification.toast({
+        Notifications.toast({
           message: "Failed to delete submission",
           type: "error",
         });
@@ -538,7 +543,7 @@ export default class Repository extends Model implements IRepository {
       if (response.status === 200) {
         return response.data;
       } else {
-        CzNotification.toast({
+        Notifications.toast({
           message: "Failed to load submission",
           type: "error",
         });
@@ -551,7 +556,7 @@ export default class Repository extends Model implements IRepository {
           state.accessToken = "";
         });
 
-        CzNotification.toast({
+        Notifications.toast({
           message: "Authorization token is invalid or has expired.",
           type: "error",
         });
@@ -560,7 +565,7 @@ export default class Repository extends Model implements IRepository {
         return e.response.status;
       } else if (e.response?.status === 403) {
         // Submission might have been deleted or service unavailable
-        CzNotification.toast({
+        Notifications.toast({
           message: "Failed to load submission",
           type: "error",
         });
@@ -591,7 +596,7 @@ export default class Repository extends Model implements IRepository {
       if (response.status === 200) {
         return response.data;
       } else {
-        CzNotification.toast({
+        Notifications.toast({
           message: "Failed to load existing submission",
           type: "error",
         });
@@ -608,7 +613,7 @@ export default class Repository extends Model implements IRepository {
         return e.response.status;
       } else if (e.response?.status === 404) {
         // Submission might have been deleted or service unavailable
-        // CzNotification.toast({
+        // Notifications.toast({
         //   message: 'Failed to read existing submission',
         //   type: 'error'
         // })
@@ -630,7 +635,7 @@ export default class Repository extends Model implements IRepository {
       state.accessToken = "";
     });
 
-    CzNotification.toast({
+    Notifications.toast({
       message: "Authorization token is invalid or has expired.",
       type: "error",
     });

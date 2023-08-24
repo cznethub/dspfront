@@ -53,7 +53,7 @@
                   submitTo(externalRepoMetadata);
                 "
               >
-                <v-icon large color="#C37B89">mdi-book-plus</v-icon>
+                <v-icon large color="#C37B89">mdi-text-box-plus</v-icon>
                 <div>
                   <div class="text-overline mb-2 has-text-black">OTHER</div>
                   <div class="text-body-1">
