@@ -16,9 +16,27 @@
         @click="$emit('cancel')"
         rounded
         class="submission-cancel my-2 my-sm-0"
-        >{{ isPublished ? "Back" : "Cancel" }}</v-btn
+        >{{ isPublished || isReadOnly ? "Back" : "Cancel" }}</v-btn
       >
-      <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
+
+      <v-btn
+        v-if="repositoryUrl"
+        :href="repositoryUrl"
+        target="_blank"
+        color="blue-grey lighten-4"
+        rounded
+      >
+        <v-icon class="mr-1">mdi-open-in-new</v-icon> View In Repository
+      </v-btn>
+
+      <v-menu
+        v-if="!isReadOnly"
+        :disabled="!errors.length"
+        open-on-hover
+        bottom
+        left
+        offset-y
+      >
         <template v-slot:activator="{ on, attrs }">
           <div
             v-bind="attrs"
@@ -97,6 +115,7 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 })
 export default class CzNewSubmissionActions extends Vue {
   @Prop() isEditMode!: boolean;
+  @Prop() repositoryUrl!: string;
   @Prop() isReadOnly!: boolean;
   @Prop() isPublished!: boolean;
   @Prop() isDevMode!: boolean;

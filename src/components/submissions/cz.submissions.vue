@@ -233,7 +233,7 @@
                           "
                         >
                           <th class="pr-4 body-2">Type:</th>
-                           <td>{{ getResourceType(item) }}</td>
+                          <td>{{ getResourceType(item) }}</td>
                         </tr>
                         <tr
                           v-if="
@@ -275,6 +275,17 @@
                         Repository
                       </v-btn>
                       <v-btn
+                        v-if="isItemHsCollection(item)"
+                        :id="`sub-${index}-edit`"
+                        @click="goToEditSubmission(item)"
+                        :disabled="isEditButtonDisabled(item)"
+                        rounded
+                      >
+                        <v-icon class="mr-1">mdi-file-document-outline</v-icon>
+                        View
+                      </v-btn>
+                      <v-btn
+                        v-else
                         :id="`sub-${index}-edit`"
                         @click="goToEditSubmission(item)"
                         :disabled="isEditButtonDisabled(item)"
@@ -317,7 +328,7 @@
                           "
                           >fas fa-circle-notch fa-spin</v-icon
                         >
-                        <v-icon v-else>mdi-delete</v-icon
+                        <v-icon v-else>mdi-delete-outline</v-icon
                         ><span class="ml-1">
                           {{
                             isDeleting[`${item.repository}-${item.identifier}`]
@@ -754,10 +765,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     return this.isDeleting[`${item.repository}-${item.identifier}`];
   }
 
+  protected isItemHsCollection(submission: ISubmission) {
+    return (
+      submission.repository === EnumRepositoryKeys.hydroshare &&
+      submission.metadata.type === "CollectionResource"
+    );
+  }
+
   protected isEditButtonDisabled(item) {
-    if (item.repository === EnumRepositoryKeys.hydroshare) {
-      return item.metadata.type === "CollectionResource";
-    }
     return false;
   }
 
@@ -829,11 +844,9 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
   protected getResourceType(item: ISubmission) {
     // For hydroshare submissions, get the resource type
     if (item.repository === EnumRepositoryKeys.hydroshare) {
-      if(item.metadata.type === "CollectionResource") {
+      if (item.metadata.type === "CollectionResource") {
         return "Collection";
-      }
-      else
-        return "Resource";
+      } else return "Resource";
     }
     return "";
   }

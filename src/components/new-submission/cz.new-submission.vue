@@ -51,13 +51,20 @@
     <v-alert
       class="my-8"
       outlined
-      v-if="isReadOnly"
+      v-if="isReadOnly || isHsCollection"
       icon="mdi-lock"
-      type="warning"
+      type="info"
       prominent
       border="left"
     >
-      <div class="text-body-1">
+      <div v-if="isHsCollection" class="text-body-1">
+        This resource is a HydroShare Collection and is not editable in the Data
+        Submission Portal. If you need to modify this resource once registered,
+        navigate to the resource in the repository where it is hosted and modify
+        it there (if possible). You can refresh the metadata for this resource
+        by clicking the "Update Record" button on the My Submissions page.
+      </div>
+      <div v-else class="text-body-1">
         This submission has been submitted for review and can no longer be
         modified.
       </div>
@@ -66,8 +73,9 @@
     <cz-new-submission-actions
       id="cz-new-submission-actions-top"
       v-if="!isLoading && wasLoaded"
+      :repositoryUrl="repositoryUrl"
       :isEditMode="isEditMode"
-      :isReadOnly="isReadOnly"
+      :isReadOnly="isReadOnly || isHsCollection"
       :isPublished="isPublished"
       :allowFileUpload="allowFileUpload"
       :isDevMode="isDevMode"
@@ -84,11 +92,11 @@
       <div v-if="!isLoading">
         <cz-folder-structure
           id="cz-folder-structure"
-          v-if="!isExternal && wasLoaded"
+          v-if="hasFolderStructure"
           ref="folderStructure"
           v-model="uploads"
           @upload="uploadFiles($event)"
-          :isReadOnly="isReadOnly"
+          :isReadOnly="isReadOnly || isHsCollection"
           :isPublished="isPublished"
           :allowFileUpload="allowFileUpload"
           :rootDirectory.sync="rootDirectory"
@@ -122,8 +130,9 @@
       <cz-new-submission-actions
         id="cz-new-submission-actions-bottom"
         v-if="!isLoading && wasLoaded"
+        :repositoryUrl="repositoryUrl"
         :isEditMode="isEditMode"
-        :isReadOnly="isReadOnly"
+        :isReadOnly="isReadOnly || isHsCollection"
         :isPublished="isPublished"
         :isDevMode="isDevMode"
         :isSaving="isSaving"
@@ -295,31 +304,57 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   protected loggedInSubject = new Subscription();
   protected timesChanged = 0;
   protected isReadOnly = false;
+  // protected isHsCollection = false;
   protected wasUnauthorized = false;
   protected isPublished = false;
   protected allowFileUpload = true;
-  protected config = {
-    restrict: true,
-    trim: false,
-    showUnfocusedDescription: false,
-    hideRequiredAsterisk: false,
-    collapseNewItems: false,
-    breakHorizontal: false,
-    initCollapsed: false,
-    hideAvatar: false,
-    hideArraySummaryValidation: false,
-    vuetify: {
-      commonAttrs: {
-        dense: true,
-        outlined: true,
-        "persistent-hint": true,
-        "hide-details": false,
+  protected isCollectionResource = false;
+
+  protected get config() {
+    return {
+      restrict: true,
+      trim: false,
+      showUnfocusedDescription: false,
+      hideRequiredAsterisk: false,
+      collapseNewItems: false,
+      breakHorizontal: false,
+      initCollapsed: false,
+      hideAvatar: false,
+      hideArraySummaryValidation: false,
+      vuetify: {
+        commonAttrs: {
+          dense: true,
+          outlined: true,
+          "persistent-hint": true,
+          "hide-details": false,
+        },
       },
-    },
-  };
+      isViewMode: this.isHsCollection,
+      isReadOnly: this.isReadOnly,
+      // isDisabled: false,
+    };
+  }
+
+  protected get dbSubmission() {
+    const identifier = this.$route.params.id;
+    const submission = Submission.find([identifier, "hydroshare"]);
+    return submission;
+  }
+
+  protected get isHsCollection(): boolean {
+    return this.dbSubmission?.metadata.type === "CollectionResource";
+  }
+
+  protected get repositoryUrl() {
+    return this.dbSubmission?.url;
+  }
 
   protected get isEditMode() {
     return this.$route.params.id !== undefined;
+  }
+
+  protected get hasFolderStructure() {
+    return this.wasLoaded && !this.isExternal && !this.isHsCollection;
   }
 
   protected get repositoryKey(): EnumRepositoryKeys {
@@ -352,6 +387,11 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     if (this.isExternal) {
       return "Register Dataset from External Repository";
     }
+
+    if (this.isHsCollection) {
+      return "View Submission";
+    }
+
     return this.isEditMode
       ? "Edit Submission"
       : `Submit to ${this.activeRepository.get()?.name}`;
@@ -444,7 +484,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 
       // Try again when user has authorized the repository
       this.authorizedSubject = Repository.authorized$.subscribe(
-        async (repositoryKey: EnumRepositoryKeys) => {
+        async (_repositoryKey: EnumRepositoryKeys) => {
           this.isLoading = true;
           await this.loadSavedSubmission();
         }
@@ -508,8 +548,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
           status === "archived";
       }
 
-      console.info("CzNewSubmission: reading existing files...");
-      if (!this.isExternal && this.repositoryRecord) {
+      if (this.hasFolderStructure) {
+        console.info("CzNewSubmission: reading existing files...");
         try {
           const initialStructure: (IFile | IFolder)[] =
             await this.activeRepository.readRootFolder(
@@ -550,7 +590,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 
   protected onSaveAndFinish() {
     if (
-      !this.isExternal &&
+      this.hasFolderStructure &&
       (this.folderStructure?.hasInvalidFilesToUpload ||
         !this.folderStructure?.canUploadFiles)
     ) {

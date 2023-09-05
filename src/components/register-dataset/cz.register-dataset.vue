@@ -177,6 +177,23 @@
             the My Submissions page.
           </v-alert>
 
+          <v-alert
+            v-if="isHsCollection"
+            class="text-subtitle-1 my-8 mr-1"
+            border="left"
+            colored-border
+            type="warning"
+            icon="mdi-pencil-off"
+            elevation="2"
+          >
+            This resource is a HydroShare Collection and is not editable in the
+            Data Submission Portal. If you need to modify this resource once
+            registered, navigate to the resource in the repository where it is
+            hosted and modify it there (if possible). You can refresh the
+            metadata for this resource by clicking the "Update Record" button on
+            the My Submissions page.
+          </v-alert>
+
           <v-card elevation="2" outlined class="mb-6">
             <div
               class="table-item d-flex justify-space-between flex-column flex-md-row"
@@ -248,7 +265,7 @@
 
           <div class="mb-2">
             <v-btn
-              v-if="isPublished"
+              v-if="isPublished || isHsCollection"
               color="primary"
               class="mr-4"
               @click="registerSubmissionAsIs"
@@ -357,6 +374,7 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
   protected isRegistering = false;
   protected allowFileUpload = true;
   protected resourceType = "";
+  protected isHsCollection = false;
 
   protected get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
@@ -469,6 +487,7 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
     this.isFetching = true;
     this.wasUnauthorized = false;
     this.isPublished = false;
+    this.isHsCollection = false;
     this.allowFileUpload = true;
     this.resourceType = "";
 
@@ -496,6 +515,10 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
             this.apiSubmission.community = "CZNet";
           }
           if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
+            if (response.metadata.type === "CollectionResource") {
+              this.isHsCollection = true;
+            }
+
             this.allowFileUpload =
               this.apiSubmission.type === "CompositeResource" &&
               !this.isPublished;
