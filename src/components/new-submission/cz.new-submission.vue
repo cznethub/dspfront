@@ -34,12 +34,12 @@
 
     <v-alert
       v-if="!isLoading && isPublished"
-      class="text-subtitle-1 my-8"
+      class="my-8"
+      outlined
+      icon="mdi-lock"
+      type="info"
+      prominent
       border="left"
-      colored-border
-      type="warning"
-      icon="mdi-pencil-off"
-      elevation="2"
     >
       This resource is published and is not editable in the Data Submission
       Portal. If you need to modify this resource, navigate to the resource in
@@ -49,9 +49,9 @@
     </v-alert>
 
     <v-alert
+      v-if="isReadOnly || isHsCollection"
       class="my-8"
       outlined
-      v-if="isReadOnly || isHsCollection"
       icon="mdi-lock"
       type="info"
       prominent
@@ -304,9 +304,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   protected loggedInSubject = new Subscription();
   protected timesChanged = 0;
   protected isReadOnly = false;
-  // protected isHsCollection = false;
   protected wasUnauthorized = false;
-  protected isPublished = false;
   protected allowFileUpload = true;
   protected isCollectionResource = false;
 
@@ -329,7 +327,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
           "hide-details": false,
         },
       },
-      isViewMode: this.isHsCollection,
+      isViewMode: this.isHsCollection || this.isPublished,
       isReadOnly: this.isReadOnly,
       // isDisabled: false,
     };
@@ -343,6 +341,16 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 
   protected get isHsCollection(): boolean {
     return this.dbSubmission?.metadata.type === "CollectionResource";
+  }
+
+  protected get isPublished(): boolean {
+    if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare) {
+      return !!this.dbSubmission?.metadata.published;
+    } else if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
+      return this.dbSubmission?.metadata.status === "published";
+    }
+
+    return false;
   }
 
   protected get repositoryUrl() {
@@ -386,9 +394,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   protected get formTitle() {
     if (this.isExternal) {
       return "Register Dataset from External Repository";
-    }
-
-    if (this.isHsCollection) {
+    } else if (this.isHsCollection || this.isPublished) {
       return "View Submission";
     }
 
@@ -518,12 +524,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
       });
     } else {
       this.repositoryRecord = response.metadata;
-      if (response.published) {
-        this.isPublished =
-          this.activeRepository.entity === EnumRepositoryKeys.earthchem
-            ? this.repositoryRecord.status === "published"
-            : true;
-      }
       this.wasUnauthorized = false;
       if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare) {
         this.allowFileUpload =

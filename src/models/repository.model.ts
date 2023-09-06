@@ -412,12 +412,12 @@ export default class Repository extends Model implements IRepository {
           params: { access_token: User.$state.orcidAccessToken },
         }
       );
+
+      // TODO: Test when api changes are applied
+      // Update in persisted state
+      console.log(response);
       await Submission.insertOrUpdate({
-        data: Submission.getInsertData(
-          response.data.metadata,
-          repository,
-          identifier
-        ),
+        data: Submission.getInsertDataFromDb(response.data.metadata),
       });
       Notifications.toast({
         message: "Your submission has been reloaded with its latest changes",
@@ -533,7 +533,10 @@ export default class Repository extends Model implements IRepository {
    * @param {string} identifier - the identifier of the resource in the repository
    * @param {string} repositiry - the repository key
    */
-  static async readSubmission(identifier: string, repository: string) {
+  static async readSubmission(
+    identifier: string,
+    repository: EnumRepositoryKeys
+  ) {
     try {
       const response = await axios.get(
         `/api/metadata/${repository}/${identifier}`,
@@ -541,6 +544,15 @@ export default class Repository extends Model implements IRepository {
       );
 
       if (response.status === 200) {
+        // Update in persisted state
+        await Submission.insertOrUpdate({
+          data: Submission.getInsertData(
+            response.data.metadata,
+            repository,
+            identifier
+          ),
+        });
+
         return response.data;
       } else {
         Notifications.toast({

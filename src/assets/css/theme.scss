@@ -16,8 +16,10 @@ section {
   padding: 4rem 0;
 }
 
-.gap-1 {
-  gap: 1rem;
+@for $i from 1 through 4 {
+  .gap-#{$i} {
+    gap: #{$i}rem;
+  }
 }
 
 #main-container {
@@ -89,10 +91,6 @@ section {
 
 p {
   max-width: 70rem;
-}
-
-.f-gap-2 {
-  gap: 2rem;
 }
 
 .is-borderless {
