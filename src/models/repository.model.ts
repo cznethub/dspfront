@@ -427,10 +427,13 @@ export default class Repository extends Model implements IRepository {
         }
       );
 
-      // Update in persisted state
-      await Submission.insertOrUpdate({
-        data: Submission.getInsertDataFromDb(response.data),
-      });
+      // Update in persisted state if not an external submission
+      if (repository !== EnumRepositoryKeys.external) {
+        await Submission.insertOrUpdate({
+          data: Submission.getInsertDataFromDb(response.data),
+        });
+      }
+
       Notifications.toast({
         message: "Your submission has been reloaded with its latest changes",
         type: "success",
@@ -556,14 +559,16 @@ export default class Repository extends Model implements IRepository {
       );
 
       if (response.status === 200) {
-        // Update in persisted state
-        await Submission.insertOrUpdate({
-          data: Submission.getInsertData(
-            response.data.metadata,
-            repository,
-            identifier
-          ),
-        });
+        // Update in persisted state if not an external submission
+        if (repository !== EnumRepositoryKeys.external) {
+          await Submission.insertOrUpdate({
+            data: Submission.getInsertData(
+              response.data.metadata,
+              repository,
+              identifier
+            ),
+          });
+        }
 
         return response.data;
       } else {
