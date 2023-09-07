@@ -407,17 +407,15 @@ export default class Repository extends Model implements IRepository {
   ) {
     try {
       const response = await axios.get(
-        `/api/metadata/${repository}/${identifier}`,
+        `/api/submission/${repository}/${identifier}`,
         {
           params: { access_token: User.$state.orcidAccessToken },
         }
       );
 
-      // TODO: Test when api changes are applied
       // Update in persisted state
-      console.log(response);
       await Submission.insertOrUpdate({
-        data: Submission.getInsertDataFromDb(response.data.metadata),
+        data: Submission.getInsertDataFromDb(response.data),
       });
       Notifications.toast({
         message: "Your submission has been reloaded with its latest changes",
