@@ -389,9 +389,22 @@ export default class Repository extends Model implements IRepository {
           params: { access_token: User.$state.orcidAccessToken },
         }
       );
+
       return response.status === 200;
     } catch (e: any) {
       console.log(e);
+      if (e.response?.status === 401 || e.response?.status === 403) {
+        // Token has expired
+        this.commit((state) => {
+          state.accessToken = "";
+        });
+        Notifications.toast({
+          message: "Authorization token is invalid or has expired.",
+          type: "error",
+        });
+
+        Repository.openAuthorizeDialog(this.entity);
+      }
       return false;
     }
   }

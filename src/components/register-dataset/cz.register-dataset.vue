@@ -3,7 +3,13 @@
     <div class="text-h4">Register Dataset</div>
     <v-divider class="mb-2" />
 
-    <v-alert border="left" colored-border type="info" elevation="1">
+    <v-alert
+      class="mt-2"
+      border="left"
+      colored-border
+      type="info"
+      elevation="1"
+    >
       You should only use this form to register existing datasets from
       HydroShare, EarthChem, or Zenodo that were not submitted through the Data
       Submission Portal
@@ -162,12 +168,12 @@
         <template v-else-if="submission">
           <v-alert
             v-if="isPublished"
-            class="text-subtitle-1 my-8 mr-1"
+            class="my-8"
+            outlined
+            icon="mdi-lock"
+            type="info"
+            prominent
             border="left"
-            colored-border
-            type="warning"
-            icon="mdi-pencil-off"
-            elevation="2"
           >
             This resource is published and is not editable in the Data
             Submission Portal. If you need to modify this resource once
@@ -179,12 +185,12 @@
 
           <v-alert
             v-if="isHsCollection"
-            class="text-subtitle-1 my-8 mr-1"
+            class="my-8"
+            outlined
+            icon="mdi-lock"
+            type="info"
+            prominent
             border="left"
-            colored-border
-            type="warning"
-            icon="mdi-pencil-off"
-            elevation="2"
           >
             This resource is a HydroShare Collection and is not editable in the
             Data Submission Portal. If you need to modify this resource once

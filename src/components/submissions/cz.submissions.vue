@@ -275,21 +275,22 @@
                         Repository
                       </v-btn>
                       <v-btn
-                        v-if="isItemHsCollection(item) || isItemPublished(item)"
-                        :id="`sub-${index}-edit`"
-                        @click="goToEditSubmission(item)"
+                        :id="`sub-${index}-view`"
+                        @click="goToViewSubmission(item)"
                         rounded
                       >
                         <v-icon class="mr-1">mdi-file-document-outline</v-icon>
                         View
                       </v-btn>
                       <v-btn
-                        v-else
+                        v-if="
+                          !(isItemHsCollection(item) || isItemPublished(item))
+                        "
                         :id="`sub-${index}-edit`"
                         @click="goToEditSubmission(item)"
                         rounded
                       >
-                        <v-icon class="mr-1">mdi-pencil</v-icon> Edit
+                        <v-icon class="mr-1">mdi-pencil-outline</v-icon> Edit
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-update`"
@@ -306,8 +307,14 @@
                           "
                           >fas fa-circle-notch fa-spin</v-icon
                         >
-                        <v-icon v-else>mdi-update</v-icon
-                        ><span class="ml-1"> Update Record</span>
+                        <v-icon v-else>mdi-sync</v-icon
+                        ><span class="ml-1">
+                          {{
+                            isUpdating[`${item.repository}-${item.identifier}`]
+                              ? "Updating Record..."
+                              : "Update Record"
+                          }}</span
+                        >
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-delete`"
@@ -682,6 +689,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     const repo: IRepository = repoMetadata[submission.repository];
     this.$router.push({
       name: "submit.repository",
+      params: { repository: repo.key, id: submission.identifier },
+    });
+  }
+
+  protected goToViewSubmission(submission: ISubmission) {
+    const repo: IRepository = repoMetadata[submission.repository];
+    this.$router.push({
+      name: "view-submission",
       params: { repository: repo.key, id: submission.identifier },
     });
   }

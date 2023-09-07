@@ -93,7 +93,7 @@ export default class Submission extends Model implements ISubmission {
         repository: repository,
         identifier: identifier,
         url: viewUrl,
-        metadata: {},
+        // metadata: {},
       };
 
       if (overrideDate) {
