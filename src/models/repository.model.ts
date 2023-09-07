@@ -266,6 +266,7 @@ export default class Repository extends Model implements IRepository {
         accessTokenUrl: response.data.access_token,
         authorizeUrl: response.data.authorize_url,
         viewUrl: response.data.view_url,
+        publicViewUrl: response.data.public_view_url,
       };
     } catch (e) {
       console.error(this.get()?.key + ": Failed to fetch repository Urls", e);

@@ -84,7 +84,7 @@ export default class Submission extends Model implements ISubmission {
     overrideDate?: boolean
   ): ISubmission | Partial<Submission> {
     const repo = getRepositoryFromKey(repository);
-    const viewUrl = sprintf(repo?.get()?.urls?.viewUrl, identifier);
+    let viewUrl = sprintf(repo?.get()?.urls?.viewUrl, identifier);
 
     if (repository === EnumRepositoryKeys.hydroshare) {
       const data: Partial<Submission> = {
@@ -119,6 +119,11 @@ export default class Submission extends Model implements ISubmission {
 
       return data;
     } else if (repository === EnumRepositoryKeys.earthchem) {
+      // If the record has been published, use the public view URL
+      if (apiSubmission.status === "published") {
+        viewUrl = sprintf(repo?.get()?.urls?.publicViewUrl, identifier);
+      }
+
       const data: Partial<Submission> = {
         title: apiSubmission.title,
         authors: [apiSubmission.leadAuthor, ...apiSubmission.contributors].map(
