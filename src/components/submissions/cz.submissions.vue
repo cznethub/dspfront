@@ -188,9 +188,9 @@
               <template v-slot:default="{ items }">
                 <v-divider />
                 <div
-                  :id="`submission-${index}`"
                   v-for="(item, index) in items"
-                  :key="item.identifier"
+                  :id="`submission-${index}`"
+                  :key="index"
                 >
                   <div
                     class="table-item d-flex justify-space-between flex-column flex-md-row"
@@ -294,7 +294,7 @@
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-update`"
-                        v-if="!repoMetadata[item.repository].isExternal"
+                        v-if="!repoMetadata[item.repository]?.isExternal"
                         @click="onUpdateRecord(item)"
                         :disabled="
                           isUpdating[`${item.repository}-${item.identifier}`]
@@ -321,7 +321,7 @@
                         @click="
                           onDelete(
                             item,
-                            repoMetadata[item.repository].isExternal
+                            repoMetadata[item.repository]?.isExternal
                           )
                         "
                         :disabled="isDeleteButtonDisabled(item)"
