@@ -266,6 +266,7 @@ export default class Repository extends Model implements IRepository {
         accessTokenUrl: response.data.access_token,
         authorizeUrl: response.data.authorize_url,
         viewUrl: response.data.view_url,
+        publicViewUrl: response.data.public_view_url,
       };
     } catch (e) {
       console.error(this.get()?.key + ": Failed to fetch repository Urls", e);
@@ -389,9 +390,22 @@ export default class Repository extends Model implements IRepository {
           params: { access_token: User.$state.orcidAccessToken },
         }
       );
+
       return response.status === 200;
     } catch (e: any) {
       console.log(e);
+      if (e.response?.status === 401 || e.response?.status === 403) {
+        // Token has expired
+        this.commit((state) => {
+          state.accessToken = "";
+        });
+        Notifications.toast({
+          message: "Authorization token is invalid or has expired.",
+          type: "error",
+        });
+
+        Repository.openAuthorizeDialog(this.entity);
+      }
       return false;
     }
   }
@@ -407,18 +421,19 @@ export default class Repository extends Model implements IRepository {
   ) {
     try {
       const response = await axios.get(
-        `/api/metadata/${repository}/${identifier}`,
+        `/api/submission/${repository}/${identifier}`,
         {
           params: { access_token: User.$state.orcidAccessToken },
         }
       );
-      await Submission.insertOrUpdate({
-        data: Submission.getInsertData(
-          response.data.metadata,
-          repository,
-          identifier
-        ),
-      });
+
+      // Update in persisted state if not an external submission
+      if (repository !== EnumRepositoryKeys.external) {
+        await Submission.insertOrUpdate({
+          data: Submission.getInsertDataFromDb(response.data),
+        });
+      }
+
       Notifications.toast({
         message: "Your submission has been reloaded with its latest changes",
         type: "success",
@@ -533,7 +548,10 @@ export default class Repository extends Model implements IRepository {
    * @param {string} identifier - the identifier of the resource in the repository
    * @param {string} repositiry - the repository key
    */
-  static async readSubmission(identifier: string, repository: string) {
+  static async readSubmission(
+    identifier: string,
+    repository: EnumRepositoryKeys
+  ) {
     try {
       const response = await axios.get(
         `/api/metadata/${repository}/${identifier}`,
@@ -541,6 +559,17 @@ export default class Repository extends Model implements IRepository {
       );
 
       if (response.status === 200) {
+        // Update in persisted state if not an external submission
+        if (repository !== EnumRepositoryKeys.external) {
+          await Submission.insertOrUpdate({
+            data: Submission.getInsertData(
+              response.data.metadata,
+              repository,
+              identifier
+            ),
+          });
+        }
+
         return response.data;
       } else {
         Notifications.toast({

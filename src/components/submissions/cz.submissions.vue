@@ -188,9 +188,9 @@
               <template v-slot:default="{ items }">
                 <v-divider />
                 <div
-                  :id="`submission-${index}`"
                   v-for="(item, index) in items"
-                  :key="item.identifier"
+                  :id="`submission-${index}`"
+                  :key="index"
                 >
                   <div
                     class="table-item d-flex justify-space-between flex-column flex-md-row"
@@ -226,6 +226,14 @@
                         <tr>
                           <th class="pr-4 body-2">Identifier:</th>
                           <td>{{ item.identifier }}</td>
+                        </tr>
+                        <tr
+                          v-if="
+                            item.repository === enumRepositoryKeys.hydroshare
+                          "
+                        >
+                          <th class="pr-4 body-2">Type:</th>
+                          <td>{{ getItemResourceType(item) }}</td>
                         </tr>
                         <tr
                           v-if="
@@ -267,15 +275,26 @@
                         Repository
                       </v-btn>
                       <v-btn
+                        :id="`sub-${index}-view`"
+                        @click="goToViewSubmission(item)"
+                        rounded
+                      >
+                        <v-icon class="mr-1">mdi-file-document-outline</v-icon>
+                        View
+                      </v-btn>
+                      <v-btn
+                        v-if="
+                          !(isItemHsCollection(item) || isItemPublished(item))
+                        "
                         :id="`sub-${index}-edit`"
                         @click="goToEditSubmission(item)"
                         rounded
                       >
-                        <v-icon class="mr-1">mdi-pencil</v-icon> Edit
+                        <v-icon class="mr-1">mdi-pencil-outline</v-icon> Edit
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-update`"
-                        v-if="!repoMetadata[item.repository].isExternal"
+                        v-if="!repoMetadata[item.repository]?.isExternal"
                         @click="onUpdateRecord(item)"
                         :disabled="
                           isUpdating[`${item.repository}-${item.identifier}`]
@@ -288,15 +307,21 @@
                           "
                           >fas fa-circle-notch fa-spin</v-icon
                         >
-                        <v-icon v-else>mdi-update</v-icon
-                        ><span class="ml-1"> Update Record</span>
+                        <v-icon v-else>mdi-sync</v-icon
+                        ><span class="ml-1">
+                          {{
+                            isUpdating[`${item.repository}-${item.identifier}`]
+                              ? "Updating Record..."
+                              : "Update Record"
+                          }}</span
+                        >
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-delete`"
                         @click="
                           onDelete(
                             item,
-                            repoMetadata[item.repository].isExternal
+                            repoMetadata[item.repository]?.isExternal
                           )
                         "
                         :disabled="isDeleteButtonDisabled(item)"
@@ -308,7 +333,7 @@
                           "
                           >fas fa-circle-notch fa-spin</v-icon
                         >
-                        <v-icon v-else>mdi-delete</v-icon
+                        <v-icon v-else>mdi-delete-outline</v-icon
                         ><span class="ml-1">
                           {{
                             isDeleting[`${item.repository}-${item.identifier}`]
@@ -606,6 +631,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
         this.filters.repoOptions.includes(s.repository)
       );
     }
+
     return Submission.all();
   }
 
@@ -663,6 +689,14 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     const repo: IRepository = repoMetadata[submission.repository];
     this.$router.push({
       name: "submit.repository",
+      params: { repository: repo.key, id: submission.identifier },
+    });
+  }
+
+  protected goToViewSubmission(submission: ISubmission) {
+    const repo: IRepository = repoMetadata[submission.repository];
+    this.$router.push({
+      name: "view-submission",
       params: { repository: repo.key, id: submission.identifier },
     });
   }
@@ -745,6 +779,23 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     return this.isDeleting[`${item.repository}-${item.identifier}`];
   }
 
+  protected isItemHsCollection(submission: ISubmission) {
+    return (
+      submission.repository === EnumRepositoryKeys.hydroshare &&
+      submission.metadata.type === "CollectionResource"
+    );
+  }
+
+  protected isItemPublished(submission): boolean {
+    if (submission.repository === EnumRepositoryKeys.hydroshare) {
+      return !!submission?.metadata.published;
+    } else if (submission.repository === EnumRepositoryKeys.earthchem) {
+      return submission?.metadata.status === "published";
+    }
+
+    return false;
+  }
+
   protected onDelete(submission: ISubmission, isExternal: boolean) {
     this.deleteDialogData = { submission, isExternal };
     this.alsoDeleteInRepository = false; // we want it unchecked initially
@@ -808,6 +859,16 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     return repoMetadata[item.repository]
       ? repoMetadata[item.repository].name
       : "";
+  }
+
+  protected getItemResourceType(item: ISubmission) {
+    // For hydroshare submissions, get the resource type
+    if (item.repository === EnumRepositoryKeys.hydroshare) {
+      if (item.metadata.type === "CollectionResource") {
+        return "Collection";
+      } else return "Resource";
+    }
+    return "";
   }
 
   /** Use this function to load the correct sort option in case we have mutaded the entries to override the labels */

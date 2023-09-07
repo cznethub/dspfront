@@ -4,7 +4,7 @@
       class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included flex-wrap"
     >
       <v-tooltip
-        v-if="repoMetadata.hasFolderStructure && !isReadOnly && !isPublished"
+        v-if="repoMetadata.hasFolderStructure && !isReadOnly && allowFileUpload"
         bottom
         transition="fade"
       >
@@ -24,7 +24,7 @@
 
       <div v-else class="text-subtitle-1 mr-4">Files</div>
 
-      <template v-if="!isReadOnly && !isPublished">
+      <template v-if="!isReadOnly && allowFileUpload">
         <template>
           <v-tooltip bottom transition="fade">
             <template v-slot:activator="{ on, attrs }">
@@ -80,11 +80,7 @@
             Cut
           </v-tooltip>
 
-          <v-tooltip
-            v-if="!isReadOnly && !isPublished"
-            bottom
-            transition="fade"
-          >
+          <v-tooltip v-if="!isReadOnly" bottom transition="fade">
             <template v-slot:activator="{ on, attrs }">
               <v-btn
                 @click="paste"
@@ -133,7 +129,14 @@
 
       <v-spacer></v-spacer>
 
-      <template v-if="rootDirectory.children.length && !isEditMode">
+      <template
+        v-if="
+          rootDirectory.children.length &&
+          !isEditMode &&
+          !isReadOnly &&
+          allowFileUpload
+        "
+      >
         <v-btn @click="empty" small depressed class="primary lighten-2">
           Discard All
         </v-btn>
@@ -142,7 +145,7 @@
 
     <v-card-text style="min-height: 10rem">
       <v-alert
-        v-if="isEditMode && !isReadOnly && !isPublished"
+        v-if="isEditMode && !isReadOnly && allowFileUpload"
         class="text-subtitle-1"
         border="left"
         colored-border
@@ -319,11 +322,7 @@
                     </v-col>
                     <v-col
                       v-if="
-                        active &&
-                        !item.isDisabled &&
-                        canRename &&
-                        !isReadOnly &&
-                        !isPublished
+                        active && !item.isDisabled && canRename && !isReadOnly
                       "
                     >
                       <template>
@@ -408,7 +407,7 @@
       </v-alert>
 
       <div
-        v-if="!isReadOnly && !isPublished"
+        v-if="!isReadOnly && allowFileUpload"
         class="upload-drop-area files-container--included"
       >
         <b-upload
@@ -455,7 +454,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
   @Prop({ default: false }) repoMetadata!: IRepository;
   @Prop({ default: false }) isEditMode!: boolean;
   @Prop({ default: false }) isReadOnly!: boolean;
-  @Prop({ default: false }) isPublished!: boolean;
+  @Prop({ default: true }) allowFileUpload!: boolean;
   @Prop() identifier!: string; // Use if isEditMode is true
   @Prop({ required: true }) rootDirectory!: IFolder;
   protected redraw = 0;
@@ -556,14 +555,12 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
   }
 
   protected get canCut() {
-    return this.selected.length && !this.isReadOnly && !this.isPublished;
+    return this.selected.length && !this.isReadOnly;
   }
 
   protected get canRename() {
     return (
-      !(this.isEditMode && !this.canRenameUploadedFiles) &&
-      !this.isReadOnly &&
-      !this.isPublished
+      !(this.isEditMode && !this.canRenameUploadedFiles) && !this.isReadOnly
     );
   }
 

@@ -16,8 +16,9 @@
         @click="$emit('cancel')"
         rounded
         class="submission-cancel my-2 my-sm-0"
-        >{{ isPublished ? "Back" : "Cancel" }}</v-btn
+        >Cancel</v-btn
       >
+
       <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
         <template v-slot:activator="{ on, attrs }">
           <div
@@ -25,7 +26,7 @@
             v-on="on"
             class="d-flex form-controls flex-column flex-sm-row"
           >
-            <template v-if="!isPublished">
+            <template>
               <v-badge
                 :value="!!errors.length"
                 bordered
@@ -37,12 +38,7 @@
                   @click="$emit('save')"
                   color="primary"
                   class="submission-save my-1 my-sm-0"
-                  :disabled="
-                    isSaving ||
-                    !!errors.length ||
-                    !hasUnsavedChanges ||
-                    isReadOnly
-                  "
+                  :disabled="isSaving || !!errors.length || !hasUnsavedChanges"
                   rounded
                   block
                 >
@@ -61,7 +57,7 @@
                   @click="$emit('save-and-finish')"
                   class="ml-sm-2 my-1 my-sm-0 submission-finish"
                   color="primary"
-                  :disabled="isSaving || !!errors.length || isReadOnly"
+                  :disabled="isSaving || !!errors.length"
                   rounded
                   block
                 >
@@ -97,8 +93,7 @@ import { Component, Vue, Prop } from "vue-property-decorator";
 })
 export default class CzNewSubmissionActions extends Vue {
   @Prop() isEditMode!: boolean;
-  @Prop() isReadOnly!: boolean;
-  @Prop() isPublished!: boolean;
+  @Prop() repositoryUrl!: string;
   @Prop() isDevMode!: boolean;
   @Prop() hasUnsavedChanges!: boolean;
   @Prop() isSaving!: boolean;

@@ -296,6 +296,7 @@ export default class App extends Vue {
       attrs: { to: "/submissions" },
       label: "My Submissions",
       icon: "mdi-bookmark-multiple",
+      isActive: () => this.$route.name === "view-submission",
     },
     {
       attrs: { to: "/resources" },

@@ -3,7 +3,13 @@
     <div class="text-h4">Register Dataset</div>
     <v-divider class="mb-2" />
 
-    <v-alert border="left" colored-border type="info" elevation="1">
+    <v-alert
+      class="mt-2"
+      border="left"
+      colored-border
+      type="info"
+      elevation="1"
+    >
       You should only use this form to register existing datasets from
       HydroShare, EarthChem, or Zenodo that were not submitted through the Data
       Submission Portal
@@ -162,15 +168,32 @@
         <template v-else-if="submission">
           <v-alert
             v-if="isPublished"
-            class="text-subtitle-1 my-8 mr-1"
+            class="my-8"
+            outlined
+            icon="mdi-lock"
+            type="info"
+            prominent
             border="left"
-            colored-border
-            type="warning"
-            icon="mdi-pencil-off"
-            elevation="2"
           >
             This resource is published and is not editable in the Data
             Submission Portal. If you need to modify this resource once
+            registered, navigate to the resource in the repository where it is
+            hosted and modify it there (if possible). You can refresh the
+            metadata for this resource by clicking the "Update Record" button on
+            the My Submissions page.
+          </v-alert>
+
+          <v-alert
+            v-if="isHsCollection"
+            class="my-8"
+            outlined
+            icon="mdi-lock"
+            type="info"
+            prominent
+            border="left"
+          >
+            This resource is a HydroShare Collection and is not editable in the
+            Data Submission Portal. If you need to modify this resource once
             registered, navigate to the resource in the repository where it is
             hosted and modify it there (if possible). You can refresh the
             metadata for this resource by clicking the "Update Record" button on
@@ -205,6 +228,10 @@
                 <tr>
                   <th class="pr-4 body-2">Identifier:</th>
                   <td>{{ submission.identifier }}</td>
+                </tr>
+                <tr v-if="selectedRepository.name == 'HydroShare'">
+                  <th class="pr-4 body-2">Type:</th>
+                  <td>{{ resourceType }}</td>
                 </tr>
                 <tr v-if="submission.metadata && submission.metadata.status">
                   <th class="pr-4 body-2">Status:</th>
@@ -244,7 +271,7 @@
 
           <div class="mb-2">
             <v-btn
-              v-if="isPublished"
+              v-if="isPublished || isHsCollection"
               color="primary"
               class="mr-4"
               @click="registerSubmissionAsIs"
@@ -351,6 +378,9 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
   protected wasUnauthorized = false;
   protected isPublished = false;
   protected isRegistering = false;
+  protected allowFileUpload = true;
+  protected resourceType = "";
+  protected isHsCollection = false;
 
   protected get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
@@ -463,6 +493,9 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
     this.isFetching = true;
     this.wasUnauthorized = false;
     this.isPublished = false;
+    this.isHsCollection = false;
+    this.allowFileUpload = true;
+    this.resourceType = "";
 
     try {
       if (this.selectedRepository) {
@@ -486,6 +519,21 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
           // For earthchem submissions we need to set the community to a constant
           if (this.submission.repository === EnumRepositoryKeys.earthchem) {
             this.apiSubmission.community = "CZNet";
+          }
+          if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
+            if (response.metadata.type === "CollectionResource") {
+              this.isHsCollection = true;
+            }
+
+            this.allowFileUpload =
+              this.apiSubmission.type === "CompositeResource" &&
+              !this.isPublished;
+            this.resourceType =
+              this.apiSubmission.type === "CompositeResource"
+                ? "Resource"
+                : "Collection";
+          } else {
+            this.allowFileUpload = !this.isPublished;
           }
         }
         // Repository was unauthorized
