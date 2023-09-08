@@ -328,8 +328,8 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
           "hide-details": false,
         },
       },
-      isViewMode: true,
-      // isReadOnly: true,
+      // isViewMode: true,
+      isReadOnly: true,
       // isDisabled: false,
     };
   }
