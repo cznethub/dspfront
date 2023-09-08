@@ -12,11 +12,12 @@ import vueFilterPrettyBytes from "vue-filter-pretty-bytes";
 import vuetify from "@/plugins/vuetify";
 import browserDetect from "vue-browser-detect-plugin";
 import IdleVue from "idle-vue";
+import VueI18n from "vue-i18n";
 
 import { router } from "./router";
 import { orm } from "@/models/orm";
 import { persistedPaths } from "./models/persistedPaths";
-import { APP_NAME } from "./constants";
+import { messages } from "./i18n/messages";
 
 // Uncomment to filter out errors
 // Vue.config.errorHandler = (err, vm, info) => {
@@ -30,6 +31,13 @@ import { APP_NAME } from "./constants";
 
 Vue.config.productionTip = false;
 Vue.use(Vuex);
+Vue.use(VueI18n);
+// Create VueI18n instance
+export const i18n = new VueI18n({
+  locale: "en",
+  fallbackLocale: "en",
+  messages,
+});
 
 // Create Vuex Store and register database through Vuex ORM.
 const store = new Vuex.Store({
@@ -37,7 +45,7 @@ const store = new Vuex.Store({
     VuexORM.install(orm),
     createPersistedState({
       paths: persistedPaths,
-      key: APP_NAME,
+      key: `${i18n.t(`hubName`)}`,
     }),
   ],
 });
@@ -55,5 +63,6 @@ new Vue({
   router,
   store,
   vuetify,
+  i18n,
   render: (h) => h(App),
 }).$mount("#app");

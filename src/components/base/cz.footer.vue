@@ -9,9 +9,12 @@
         <router-link to="/contact">Contact</router-link>
         <p>
           Learn more about the
-          <a href="https://www.criticalzone.org/" target="_blank">CZNet</a> and
-          <a href="https://criticalzone.org/hub" target="_blank">{{
-            appName
+          <a :href="`${$t('footer.orgLink')}`" target="_blank">{{
+            $t("footer.orgName")
+          }}</a>
+          and
+          <a :href="`${$t('footer.hubLink')}`" target="_blank">{{
+            $t("hubName")
           }}</a>
         </p>
         <p>
@@ -28,16 +31,14 @@
       <div>
         <div class="mb-2 text-h6">Open Source</div>
         <p>
-          The Data Submission Portal is Open Source. Find us on
-          <a href="https://github.com/cznethub/dsp" target="_blank">GitHub</a>.
+          The {{ $t("portalName") }} is Open Source. Find us on
+          <a :href="`${$t('footer.repoUrl')}`" target="_blank">GitHub</a>.
         </p>
         <p>
           Report a bug
-          <a href="https://github.com/cznethub/dsp/issues" target="_blank"
-            >here</a
-          >
+          <a :href="`${$t('footer.reportIssuesUrl')}`" target="_blank">here</a>
         </p>
-        <p>This is Version {{ version }} of the Data Submission Portal</p>
+        <p>This is Version {{ version }} of the {{ $t("portalName") }}</p>
       </div>
     </div>
 
@@ -58,7 +59,6 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import { APP_NAME } from "@/constants";
 import User from "@/models/user.model";
 
 @Component({
@@ -66,8 +66,6 @@ import User from "@/models/user.model";
   components: {},
 })
 export default class CzFooter extends Vue {
-  protected appName = APP_NAME;
-
   protected openLogInDialog() {
     User.openLogInDialog();
   }

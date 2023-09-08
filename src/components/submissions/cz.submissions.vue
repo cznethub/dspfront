@@ -67,7 +67,7 @@
               </v-btn>
             </template>
 
-            <v-card color="blue-grey lighten-4">
+            <v-card color="secondary">
               <v-card-text>
                 <template v-for="repo of supportedRepoMetadata">
                   <v-tooltip :key="repo.name" left transition="fade">
@@ -758,7 +758,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     const csvContent = headerRow + rows.map((c) => c.join(",")).join("\n");
 
     // Download as CSV
-    const filename = `CZNet_submissions.csv`;
+    const filename = `${this.$t(`footer.orgName`)}_submissions.csv`;
 
     const element = document.createElement("a");
     element.setAttribute(

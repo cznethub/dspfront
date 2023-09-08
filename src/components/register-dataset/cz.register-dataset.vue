@@ -193,7 +193,7 @@
             border="left"
           >
             This resource is a HydroShare Collection and is not editable in the
-            Data Submission Portal. If you need to modify this resource once
+            {{ $t("portalName") }}. If you need to modify this resource once
             registered, navigate to the resource in the repository where it is
             hosted and modify it there (if possible). You can refresh the
             metadata for this resource by clicking the "Update Record" button on
@@ -518,7 +518,7 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
 
           // For earthchem submissions we need to set the community to a constant
           if (this.submission.repository === EnumRepositoryKeys.earthchem) {
-            this.apiSubmission.community = "CZNet";
+            this.apiSubmission.community = this.$t(`footer.orgName`);
           }
           if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
             if (response.metadata.type === "CollectionResource") {

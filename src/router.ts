@@ -1,10 +1,10 @@
 import { routes } from "./routes";
-import { APP_NAME } from "./constants";
 import { isRepositoryAuthorized } from "./util";
 import { Notifications } from "@cznethub/cznet-vue-core";
 import VueRouter, { RawLocation } from "vue-router";
 import User from "./models/user.model";
 import Repository from "./models/repository.model";
+import { i18n } from "@/main";
 
 export const router = new VueRouter({
   mode: "history",
@@ -104,11 +104,11 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
 
     // If a route with a title was found, set the document (page) title to that value.
     if (nearestWithTitle) {
-      document.title = `${APP_NAME} | ${nearestWithTitle.meta.title}`;
+      document.title = `${i18n.t(`hubName`)} | ${nearestWithTitle.meta.title}`;
     } else if (previousNearestWithMeta) {
       document.title = previousNearestWithMeta.meta.title;
     } else {
-      document.title = APP_NAME;
+      document.title = `${i18n.t(`hubName`)}`;
     }
 
     // Remove any stale meta tags from the document using the key attribute we set below.
