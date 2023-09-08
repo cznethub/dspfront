@@ -1,8 +1,10 @@
-import CzAbout from './cz.about.vue'
+import CzAbout from "./cz.about.vue";
+import { i18n } from "@/main";
 
-describe('<CzAbout />', () => {
-  it('renders', () => {
+describe("<CzAbout />", () => {
+  it("renders", () => {
     // see: https://on.cypress.io/mounting-vue
-    cy.mount(CzAbout)
-  })
-})
+    // @ts-ignore
+    cy.mount(CzAbout, { i18n });
+  });
+});
