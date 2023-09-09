@@ -3,7 +3,7 @@
     <v-app-bar
       ref="appBar"
       id="app-bar"
-      color="blue-grey lighten-4"
+      color="navbar"
       elevate-on-scroll
       fixed
       app
@@ -14,8 +14,8 @@
       >
         <router-link :to="{ path: `/` }" class="logo">
           <img
-            :src="require('@/assets/img/CZN_Logo.png')"
-            alt="Critical Zone Network home"
+            :src="require(`@/assets/img/${$t('logo')}`)"
+            :alt="`${$t('portalName')} home`"
           />
         </router-link>
         <div class="spacer"></div>
@@ -218,11 +218,7 @@
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { setupRouteGuards } from "./router";
 import { Subscription } from "rxjs";
-import {
-  APP_NAME,
-  DEFAULT_TOAST_DURATION,
-  DISCOVERY_SITE_URL,
-} from "./constants";
+import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from "./constants";
 import { RawLocation } from "vue-router";
 import { EnumRepositoryKeys } from "./components/submissions/types";
 import { CzNotifications, Notifications } from "@cznethub/cznet-vue-core";
@@ -355,14 +351,14 @@ export default class App extends Vue {
 
   /** Check if the user is still logged in after being idle for a while */
   @Watch("isAppIdle")
-  onIdleChange(wasActive, isActive) {
+  onIdleChange(_wasActive, isActive) {
     if (isActive) {
       User.checkAuthorization();
     }
   }
 
   async created() {
-    document.title = APP_NAME;
+    document.title = `${this.$t("hubName")}`;
 
     if (this.$route.name !== "submissions") {
       // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook

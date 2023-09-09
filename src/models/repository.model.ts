@@ -13,6 +13,7 @@ import axios from "axios";
 import Submission from "./submission.model";
 import { Notifications } from "@cznethub/cznet-vue-core";
 import User from "./user.model";
+import { i18n } from "@/main";
 
 export default class Repository extends Model implements IRepository {
   static entity = "repository";
@@ -455,8 +456,9 @@ export default class Repository extends Model implements IRepository {
         // Resource has been deleted in repository
         Notifications.openDialog({
           title: "This resource has been deleted",
-          content:
-            "The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?",
+          content: `The resource you requested does not exist in the remote repository. It may have been deleted outside of the ${i18n.t(
+            "portalName"
+          )}. Do you want to remove it from your list of submissions?`,
           confirmText: "Remove",
           cancelText: "Cancel",
           onConfirm: async () => {

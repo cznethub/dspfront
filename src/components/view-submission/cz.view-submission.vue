@@ -87,7 +87,7 @@
         >
           <p class="ma-0">
             This resource is a HydroShare Collection and is not editable in the
-            Data Submission Portal. If you need to modify this resource once
+            {{ $t("portalName") }}. If you need to modify this resource once
             registered, navigate to the resource in the repository where it is
             hosted and modify it there (if possible). You can refresh the
             metadata for this resource by clicking the "Update Record" button on

@@ -466,8 +466,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
       this.repositoryRecord = null;
       Notifications.openDialog({
         title: "This resource has been deleted",
-        content:
-          "The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?",
+        content: `The resource you requested does not exist in the remote repository. It may have been deleted outside of the ${this.$t(
+          "portalName"
+        )}. Do you want to remove it from your list of submissions?`,
         confirmText: "Remove",
         cancelText: "Cancel",
         onConfirm: async () => {

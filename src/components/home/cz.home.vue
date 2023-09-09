@@ -14,9 +14,12 @@
       >
         <div class="has-text-shadow">
           <div class="has-text-white text-h3">
-            Critical Zone Collaborative Network
+            {{ $t("home.banner.title") }}
           </div>
-          <div class="has-text-white mt-4 text-h4">Data Submission Portal</div>
+
+          <div class="has-text-white mt-4 text-h4">
+            {{ $t("home.banner.subtitle") }}
+          </div>
         </div>
         <template v-if="!isLoggedIn">
           <div>
@@ -28,10 +31,10 @@
         </template>
         <div class="mt-16">
           <div class="has-text-shadow has-text-white text-h6 mb-2">
-            Looking for CZNet data?
+            {{ $t("home.banner.portalLinkHint") }}
           </div>
           <v-btn color="white" :href="discoverySiteUrl">
-            Visit our data discovery portal
+            {{ $t("home.banner.portalLinkText") }}
           </v-btn>
         </div>
       </v-container>
@@ -40,13 +43,9 @@
     <section>
       <div>
         <div class="text-center d-flex flex-column align-center">
-          <div class="mb-4 text-h4">Submit Your Data and Research Products</div>
+          <div class="mb-4 text-h4">{{ $t("home.submitData.title") }}</div>
           <p class="text--secondary text-center text-subtitle-1">
-            Created for the Critical Zone Collaborative Network (CZCN), this
-            Data Submission Portal provides tools for determining which
-            repository to use for data submission along with enhanced submission
-            tools to encourage data standards, complete metadata, and
-            high-quality submissions.
+            {{ $t("home.submitData.description") }}
           </p>
         </div>
 
@@ -56,10 +55,11 @@
           >
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
             <div class="text-md-left text-center">
-              <div class="text-h6">Which repository?</div>
+              <div class="text-h6">
+                {{ $t("home.submitData.points[0].title") }}
+              </div>
               <p class="text--secondary text-subtitle-1">
-                Use the Portal's repository recommendation system to determine
-                which repository is right for submitting your research products.
+                {{ $t("home.submitData.points[0].description") }}
               </p>
             </div>
           </v-col>
@@ -69,10 +69,11 @@
           >
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
             <div class="text-md-left text-center">
-              <div class="text-h6">Which format?</div>
+              <div class="text-h6">
+                {{ $t("home.submitData.points[1].title") }}
+              </div>
               <p class="text--secondary text-subtitle-1">
-                Use CZ community recommendations to decide on formats and
-                conventions for your data files.
+                {{ $t("home.submitData.points[1].description") }}
               </p>
             </div>
           </v-col>
@@ -82,10 +83,11 @@
           >
             <v-icon>mdi-checkbox-marked-circle-outline</v-icon>
             <div class="text-md-left text-center">
-              <div class="text-h6">Which metadata?</div>
+              <div class="text-h6">
+                {{ $t("home.submitData.points[2].title") }}
+              </div>
               <p class="text--secondary text-subtitle-1">
-                Use the Portal's submission tools to ensure your metadata are
-                complete and that your data are well described.
+                {{ $t("home.submitData.points[2].description") }}
               </p>
             </div>
           </v-col>
@@ -143,7 +145,7 @@
       <div class="text-center text-lg-left">
         <div class="mb-4 text-h4">Make your Data FAIR</div>
         <p class="text--secondary text-subtitle-1">
-          This Data Submission Portal works with reputable Earth Science
+          This {{ $t("portalName") }} works with reputable Earth Science
           repositories to ensure that research products you submit are
           <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and
           <u>R</u>eusable.
@@ -182,6 +184,7 @@
           v-for="repo of supportedRepositories"
           :key="repo.key"
           :href="repo.url"
+          :title="repo.name"
           target="_blank"
           ><img :src="repo.logoSrc" :alt="repo.name"
         /></a>

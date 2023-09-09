@@ -11,7 +11,7 @@
       <v-card-text class="white--text"
         >If you do not have a {{ repoName }} account yet, create one in
         {{ repoName }} and then come back here to submit your content through
-        the Data Submission Portal.</v-card-text
+        the {{ $t("portalName") }}.</v-card-text
       >
     </v-card>
     <v-card elevation="0">
@@ -41,8 +41,8 @@
       <v-divider></v-divider>
       <v-card-text class="text-center mt-4">
         <p class="text-subtitle">
-          Follow the instructions on the next page to allow CZnet to access this
-          repository.
+          Follow the instructions on the next page to allow
+          {{ $t(`orgName`) }} to access this repository.
         </p>
       </v-card-text>
     </v-card>

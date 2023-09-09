@@ -4,7 +4,7 @@
     <v-divider class="mb-4"></v-divider>
 
     <p class="text-body-1 mb-4">
-      The Data Submission Portal needs your permission to access and interact
+      The {{ $t("portalName") }} needs your permission to access and interact
       with the repositories below.
     </p>
 
