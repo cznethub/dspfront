@@ -15,7 +15,7 @@
     "test-e2e": "start-server-and-test serve http-get://localhost:8080 cypress:run-e2e"
   },
   "dependencies": {
-    "@cznethub/cznet-vue-core": "^0.1.61",
+    "@cznethub/cznet-vue-core": "^0.1.63",
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@vuex-orm/core": "^0.36.4",
     "axios": "^0.21.1",
