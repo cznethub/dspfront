@@ -82,7 +82,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     exampleUrl: "https://www.earthchem.org/view.php?id=2391",
     exampleIdentifier: "2391",
     identifierUrlPattern: new RegExp(
-      `(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:earthchem\.org\/my\/my_view\.php\\?id=)([0-9]+)/?$`
+      `(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:earthchem\.org\/view\.php\\?id=)([0-9]+)/?$`
     ),
     identifierPattern: new RegExp(`^[0-9]+$`),
   },
