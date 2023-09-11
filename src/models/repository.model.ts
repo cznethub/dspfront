@@ -131,18 +131,9 @@ export default class Repository extends Model implements IRepository {
     callback?: () => any
   ) {
     const handleMessage = async (event: MessageEvent) => {
-      if (
-        event.origin !== APP_URL ||
-        !event.data.hasOwnProperty("token") ||
-        !event.data.hasOwnProperty("repository")
-      ) {
+      if (event.origin !== APP_URL || !event.data.hasOwnProperty("token")) {
         return;
       }
-
-      // We must get `repository` using the key in the response, because `activeRepository` is only populated the first time the window is instantiated
-      // const repository = getRepositoryFromKey(
-      //   event.data.repository as EnumRepositoryKeys
-      // );
 
       if (activeRepository && event.data?.token) {
         activeRepository.commit((state) => {
