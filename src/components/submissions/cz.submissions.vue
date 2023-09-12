@@ -274,14 +274,14 @@
                         <v-icon class="mr-1">mdi-open-in-new</v-icon> View In
                         Repository
                       </v-btn>
-                      <v-btn
+                      <!-- <v-btn
                         :id="`sub-${index}-view`"
                         @click="goToViewSubmission(item)"
                         rounded
                       >
                         <v-icon class="mr-1">mdi-file-document-outline</v-icon>
                         View
-                      </v-btn>
+                      </v-btn> -->
                       <v-btn
                         v-if="
                           !(isItemHsCollection(item) || isItemPublished(item))
@@ -693,13 +693,13 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     });
   }
 
-  protected goToViewSubmission(submission: ISubmission) {
-    const repo: IRepository = repoMetadata[submission.repository];
-    this.$router.push({
-      name: "view-submission",
-      params: { repository: repo.key, id: submission.identifier },
-    });
-  }
+  // protected goToViewSubmission(submission: ISubmission) {
+  //   const repo: IRepository = repoMetadata[submission.repository];
+  //   this.$router.push({
+  //     name: "view-submission",
+  //     params: { repository: repo.key, id: submission.identifier },
+  //   });
+  // }
 
   protected getDateInLocalTime(date: number): string {
     const offset = new Date(date).getTimezoneOffset() * 60 * 1000;

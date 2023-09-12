@@ -13,7 +13,7 @@ import CzAccount from "@/components/profile/cz.account.vue";
 import CzAuthorizedRepositories from "@/components/profile/cz.authorized-repositories.vue";
 import CzSubmissions from "@/components/submissions/cz.submissions.vue";
 import CzNewSubmission from "@/components/new-submission/cz.new-submission.vue";
-import CzViewSubmission from "@/components/view-submission/cz.view-submission.vue";
+// import CzViewSubmission from "@/components/view-submission/cz.view-submission.vue";
 import CzRegisterDataset from "@/components/register-dataset/cz.register-dataset.vue";
 
 export const routes: RouteConfig[] = [
@@ -124,7 +124,7 @@ export const routes: RouteConfig[] = [
     },
     meta: {
       hasLoggedInGuard: true,
-      // hasAccessTokenGuard: true,
+      hasAccessTokenGuard: true,
       title: "Register Dataset",
     },
   },
@@ -159,19 +159,19 @@ export const routes: RouteConfig[] = [
       },
     ],
   },
-  {
-    name: "view-submission",
-    path: "/submission/:repository/:id",
-    components: {
-      content: CzViewSubmission,
-      footer: CzFooter,
-    },
-    meta: {
-      hasLoggedInGuard: true,
-      hasAccessTokenGuard: true,
-      title: "View Submission", // TODO: use dataset title if possible
-    },
-  },
+  // {
+  //   name: "view-submission",
+  //   path: "/submission/:repository/:id",
+  //   components: {
+  //     content: CzViewSubmission,
+  //     footer: CzFooter,
+  //   },
+  //   meta: {
+  //     hasLoggedInGuard: true,
+  //     hasAccessTokenGuard: true,
+  //     title: "View Submission", // TODO: use dataset title if possible
+  //   },
+  // },
   {
     name: "contact",
     path: "/contact",

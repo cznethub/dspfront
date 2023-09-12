@@ -56,7 +56,7 @@
           ref="folderStructure"
           v-model="uploads"
           @upload="uploadFiles($event)"
-          :isReadOnly="isReadOnly || isHsCollection"
+          :isReadOnly="config.isReadOnly"
           :allowFileUpload="allowFileUpload"
           :rootDirectory.sync="rootDirectory"
           :repoMetadata="repoMetadata[repositoryKey]"
@@ -260,7 +260,6 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   protected repositoryRecord: any = null;
   protected loggedInSubject = new Subscription();
   protected timesChanged = 0;
-  protected isReadOnly = false;
   protected wasUnauthorized = false;
   protected allowFileUpload = true;
   protected repositoryKey: EnumRepositoryKeys = EnumRepositoryKeys.external;
@@ -284,6 +283,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
           "hide-details": false,
         },
       },
+      // isViewMode: true,
+      isReadOnly: this.isPublished || this.isHsCollection,
+      // isDisabled: false,
     };
   }
 
@@ -483,16 +485,16 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
       this.repositoryRecord = response.metadata;
       this.wasUnauthorized = false;
 
-      // Redirect to view page if submission is not editable
-      if (this.isPublished || this.isHsCollection || this.isEclSubmitted) {
-        this.$router.push({
-          name: "view-submission",
-          params: {
-            id: this.identifier,
-            repositoryKey: this.activeRepository.entity,
-          },
-        });
-      }
+      // // Redirect to view page if submission is not editable
+      // if (this.isPublished || this.isHsCollection || this.isEclSubmitted) {
+      //   this.$router.push({
+      //     name: "view-submission",
+      //     params: {
+      //       id: this.identifier,
+      //       repositoryKey: this.activeRepository.entity,
+      //     },
+      //   });
+      // }
     }
 
     if (this.repositoryRecord) {
