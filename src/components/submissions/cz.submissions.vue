@@ -796,7 +796,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     } else if (submission.repository === EnumRepositoryKeys.earthchem) {
       return submission?.metadata?.status === "published";
     } else if (submission.repository === EnumRepositoryKeys.zenodo) {
-      return !!submission?.metadata?.metadata?.publication_date;
+      return !!submission?.metadata?.doi;
     }
 
     return false;
