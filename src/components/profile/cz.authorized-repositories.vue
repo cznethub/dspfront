@@ -89,15 +89,7 @@ export default class CzAuthorizedRepositories extends mixins<ActiveRepositoryMix
   }
 
   protected async openAuthorizePopup(repositoryKey: string) {
-    Repository.authorize(
-      getRepositoryFromKey(repositoryKey) as typeof Repository,
-      () => {
-        Notifications.toast({
-          message: "Access to this repository has been authorized",
-          type: "success",
-        });
-      }
-    );
+    Repository.openAuthorizeDialog(repositoryKey);
   }
 
   protected openRevokeDialog(repositoryKey: string) {
