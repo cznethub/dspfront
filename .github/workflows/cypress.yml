@@ -1,10 +1,7 @@
 name: Cypress Tests with Dependency and Artifact Caching
 # https://docs.cypress.io/guides/continuous-integration/github-actions
 
-on:
-  pull_request:
-    types:
-      - opened
+on: push
 
 jobs:
   install:
