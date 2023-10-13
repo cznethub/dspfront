@@ -720,7 +720,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 
   protected onDataChange(_data) {
     // cz-form emits 'change' event multiple times during instantioation.
-    const changesDuringInstantiation = this.isEditMode ? 2 : 3;
+    const changesDuringInstantiation = 2;
 
     if (this.timesChanged <= changesDuringInstantiation) {
       this.timesChanged = this.timesChanged + 1;

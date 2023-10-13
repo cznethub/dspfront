@@ -284,7 +284,11 @@
                       </v-btn> -->
                       <v-btn
                         v-if="
-                          !(isItemHsCollection(item) || isItemPublished(item))
+                          !(
+                            isItemHsCollection(item) ||
+                            isItemPublished(item) ||
+                            isItemEclSubmitted(item)
+                          )
                         "
                         :id="`sub-${index}-edit`"
                         @click="goToEditSubmission(item)"
@@ -790,10 +794,19 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     if (submission.repository === EnumRepositoryKeys.hydroshare) {
       return !!submission?.metadata.published;
     } else if (submission.repository === EnumRepositoryKeys.earthchem) {
-      return submission?.metadata.status === "published";
+      return submission?.metadata?.status === "published";
+    } else if (submission.repository === EnumRepositoryKeys.zenodo) {
+      return !!submission?.metadata?.doi;
     }
 
     return false;
+  }
+
+  protected isItemEclSubmitted(submission): boolean {
+    return (
+      submission.repository === EnumRepositoryKeys.earthchem &&
+      submission?.metadata.status === "submitted"
+    );
   }
 
   protected onDelete(submission: ISubmission, isExternal: boolean) {
