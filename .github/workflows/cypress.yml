@@ -1,22 +1,23 @@
 name: Cypress Tests with Dependency and Artifact Caching
 # https://docs.cypress.io/guides/continuous-integration/github-actions
 
-on: push
+on: workflow_dispatch
 
 jobs:
   install:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
           node-version: 14.x
+          cache: 'npm'
 
       - name: Cypress install
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           # Disable running of tests within install job
           runTests: false
@@ -34,7 +35,7 @@ jobs:
     needs: install
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -48,11 +49,11 @@ jobs:
           path: dist
 
       - name: Cypress run
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           start: npx serve -s dist -p 8080
           wait-on: 'http://localhost:8080'
           browser: chrome
           command: npm run cypress:run-component
-        # or install start-server-and-test and do:
-        # run: npm run test-component
+          # or install start-server-and-test and do:
+          # run: npm run test-component
