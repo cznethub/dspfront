@@ -17,7 +17,7 @@
                 {{ repo.description }}
               </div>
               <v-chip v-if="repo.isComingSoon" class="mt-2"
-                >{{ $t(`footer.orgName`) }} support coming soon...</v-chip
+                >{{ $t("footer.orgName") }} support coming soon...</v-chip
               >
             </div>
           </v-list-item-content>

@@ -140,6 +140,7 @@ export default class Repository extends Model implements IRepository {
           state.accessToken = event.data.token.access_token || "";
         });
 
+        this.controller.abort();
         callback?.();
         this.authorized$.next(activeRepository.entity as EnumRepositoryKeys);
       } else {

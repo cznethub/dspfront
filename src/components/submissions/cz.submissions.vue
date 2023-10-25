@@ -762,7 +762,7 @@ export default class CzSubmissions extends mixins<ActiveRepositoryMixin>(
     const csvContent = headerRow + rows.map((c) => c.join(",")).join("\n");
 
     // Download as CSV
-    const filename = `${this.$t(`footer.orgName`)}_submissions.csv`;
+    const filename = `${this.$t("footer.orgName")}_submissions.csv`;
 
     const element = document.createElement("a");
     element.setAttribute(

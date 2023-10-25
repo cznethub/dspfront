@@ -518,7 +518,7 @@ export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
 
           // For earthchem submissions we need to set the community to a constant
           if (this.submission.repository === EnumRepositoryKeys.earthchem) {
-            this.apiSubmission.community = this.$t(`footer.orgName`);
+            this.apiSubmission.community = this.$t("footer.orgName");
           }
           if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
             if (response.metadata.type === "CollectionResource") {

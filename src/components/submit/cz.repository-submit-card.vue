@@ -38,7 +38,7 @@
 
             <template v-if="repo.isComingSoon">
               <v-divider class="mt-2 mb-2" />
-              <v-chip>{{ $t(`footer.orgName`) }} support coming soon...</v-chip>
+              <v-chip>{{ $t("footer.orgName") }} support coming soon...</v-chip>
             </template>
           </v-card-text>
         </v-card>

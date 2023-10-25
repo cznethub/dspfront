@@ -23,9 +23,9 @@ export interface IUserState {
 
 export default class User extends Model {
   static entity = "users";
-  static isLoginListenerSet = false;
   static logInDialog$ = new Subject<RawLocation | undefined>();
   static loggedIn$ = new Subject<void>();
+  static controller = new AbortController();
 
   static fields() {
     return {};
@@ -59,41 +59,44 @@ export default class User extends Model {
   }
 
   static async logIn(callback?: () => any) {
+    const handleMessage = async (event: MessageEvent) => {
+      if (event.origin !== APP_URL || !event.data.hasOwnProperty("token")) {
+        return;
+      }
+      if (event.data.token) {
+        Notifications.toast({
+          message: "You have logged in!",
+          type: "success",
+        });
+        await User.commit((state) => {
+          state.isLoggedIn = true;
+          state.orcid = event.data.orcid;
+          state.orcidAccessToken = event.data.token;
+        });
+        document.cookie = `Authorization=Bearer ${event.data.token}; expires=${event.data.expiresIn}; path=/`;
+        this.controller.abort();
+        this.loggedIn$.next();
+        callback?.();
+      } else {
+        Notifications.toast({
+          message: "Failed to Log In",
+          type: "error",
+        });
+      }
+    };
+
     window.open(
       `${API_BASE}/login?window_close=True`,
       "_blank",
       "location=1,status=1,scrollbars=1, width=800,height=800"
     );
 
-    if (!this.isLoginListenerSet) {
-      this.isLoginListenerSet = true; // Prevents registering the listener more than once
-      console.info(`User: listening to login window...`);
-
-      window.addEventListener("message", async (event: MessageEvent) => {
-        if (event.origin !== APP_URL || !event.data.hasOwnProperty("token")) {
-          return;
-        }
-        if (event.data.token) {
-          Notifications.toast({
-            message: "You have logged in!",
-            type: "success",
-          });
-          await User.commit((state) => {
-            state.isLoggedIn = true;
-            state.orcid = event.data.orcid;
-            state.orcidAccessToken = event.data.token;
-          });
-          document.cookie = `Authorization=Bearer ${event.data.token}; expires=${event.data.expiresIn}; path=/`;
-          this.loggedIn$.next();
-          callback?.();
-        } else {
-          Notifications.toast({
-            message: "Failed to Log In",
-            type: "error",
-          });
-        }
-      });
-    }
+    this.controller.abort();
+    this.controller = new AbortController();
+    window.addEventListener("message", handleMessage, {
+      signal: this.controller.signal, // Used to remove the listener
+    });
+    console.info(`User: listening to login window...`);
   }
 
   static async checkAuthorization() {
@@ -130,7 +133,6 @@ export default class User extends Model {
     await User.commit((state) => {
       (state.isLoggedIn = false), (state.orcidAccessToken = "");
     });
-    this.isLoginListenerSet = false;
 
     Notifications.toast({
       message: "You have logged out!",
