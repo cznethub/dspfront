@@ -482,7 +482,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
         },
       });
     } else {
-      this.repositoryRecord = response.metadata;
+      this.repositoryRecord = response?.metadata;
       this.wasUnauthorized = false;
 
       // // Redirect to view page if submission is not editable

@@ -34,7 +34,14 @@ const guards: ((to, from?, next?) => RawLocation | null)[] = [
   (to, from?, _next?): RawLocation | null => {
     if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
       User.openLogInDialog({ path: to.path });
-      return from;
+
+      // Stay in current path if the route does not have the same guard
+      if (from && !from.meta?.hasLoggedInGuard) {
+        return from;
+      }
+
+      // default
+      return { name: "home" };
     }
 
     return null;

@@ -433,7 +433,11 @@ export default class Repository extends Model implements IRepository {
       });
     } catch (e: any) {
       console.log(e);
-      if (e.response?.status === 401 || e.response?.status === 403) {
+      if (
+        e.response?.status === 400 ||
+        e.response?.status === 401 ||
+        e.response?.status === 403
+      ) {
         // Token has expired
         this.commit((state) => {
           state.accessToken = "";
