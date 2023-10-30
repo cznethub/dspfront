@@ -97,10 +97,10 @@ export const repoMetadata: { [key: string]: IRepository } = {
     url: "https://www.zenodo.org",
     supportUrl: "https://help.zenodo.org/",
     maxTotalUploadSize: 50000000000, // 50 GB
-    exampleUrl: "https://zenodo.org/record/7047180",
+    exampleUrl: "https://zenodo.org/records/7047180",
     exampleIdentifier: "7047180",
     identifierUrlPattern: new RegExp(
-      `(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:zenodo.org/record/)([0-9]+)/?$`
+      `(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:zenodo.org/records/)([0-9]+)/?$`
     ),
     identifierPattern: new RegExp(`^[0-9]+$`),
   },
