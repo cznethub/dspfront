@@ -466,6 +466,7 @@ export default class CzFolderStructure extends mixins<ActiveRepositoryMixin>(
     json: "mdi-code-json",
     pdf: "mdi-file-pdf-box",
     txt: "mdi-file-document-outline",
+    csv: "mdi-file-delimited-outline",
 
     zip: "mdi-folder-zip",
     rar: "mdi-folder-zip",
