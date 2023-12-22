@@ -299,6 +299,10 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     return this.dbSubmission?.metadata.type === "CollectionResource";
   }
 
+  protected get isHsComposite(): boolean {
+    return this.dbSubmission?.metadata.type === "CompositeResource";
+  }
+
   protected get isEclSubmitted(): boolean {
     return (
       this.activeRepository.entity === EnumRepositoryKeys.earthchem &&
@@ -506,8 +510,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
 
       // For HydroShare, only allow file upload for Composite Resources
       if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare) {
-        this.allowFileUpload =
-          this.repositoryRecord.type === "CompositeResource";
+        this.allowFileUpload = this.isHsComposite;
       }
 
       if (this.hasFolderStructure) {
