@@ -42,7 +42,7 @@
       <v-card-text class="text-center mt-4">
         <p class="text-subtitle">
           Follow the instructions on the next page to allow
-          {{ $t("orgName") }} to access this repository.
+          {{ $t("footer.orgName") }} to access this repository.
         </p>
       </v-card-text>
     </v-card>
