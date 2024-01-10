@@ -290,7 +290,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   }
 
   protected get dbSubmission() {
-    const identifier = this.$route.params.id;
+    const identifier = this.$route.params.id?.toString();
     const submission = Submission.find([identifier, "hydroshare"]);
     return submission;
   }
@@ -417,8 +417,8 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     }
 
     if (this.isEditMode) {
-      const identifier = this.$route.params.id;
-      this.identifier = identifier;
+      // `$route.params.id` will cast to a number. We need the identifier as a string.
+      this.identifier = this.$route.params.id?.toString();
       this.loadSavedSubmission();
     } else {
       this.isLoading = false;
@@ -641,6 +641,9 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
             id: this.identifier,
           },
         });
+        // Vue-router does not reload components when redirecting the same route.
+        // The only way to do it is using a `key` in a `router-view`, but we do not use a `router-view` in this page.
+        // We reset the state ourselves instead
         this.init();
       }
     }

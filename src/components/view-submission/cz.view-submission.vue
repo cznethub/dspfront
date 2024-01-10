@@ -413,7 +413,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
     this.isLoading = true;
     this.data = this.schemaDefaults;
     this.repositoryKey = this.$route.params.repository as EnumRepositoryKeys;
-    this.identifier = this.$route.params.id;
+    this.identifier = this.$route.params.id?.toString();
 
     if (
       !this.activeRepository ||
