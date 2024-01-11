@@ -27,7 +27,7 @@
       </div>
 
       <v-divider></v-divider>
-      <v-card-title class="justify-center text-center">
+      <v-card-title class="justify-center text-center flex-column">
         <div class="text-h4 mt-2">Access {{ repoName }}</div>
         <div class="text-body-1 my-4">
           Permission is needed to access this repository
