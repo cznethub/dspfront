@@ -323,6 +323,15 @@ export default class Repository extends Model implements IRepository {
         switch (this.entity) {
           case EnumRepositoryKeys.hydroshare:
             identifier = response.data.metadata.identifier?.split("/").pop();
+            // For HydroShare, we need to store the resource type so we can use it immediately
+            // When we redirect to the edit page and need to load the file browser conditionally
+            await Submission.insertOrUpdate({
+              data: {
+                identifier,
+                repository,
+                metadata: { type: "CompositeResource" }, // The HydroShare form creates a CompositeResource
+              },
+            });
             break;
           case EnumRepositoryKeys.zenodo:
             identifier = response.data.metadata.prereserve_doi?.recid;
