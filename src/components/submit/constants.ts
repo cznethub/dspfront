@@ -100,7 +100,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     exampleUrl: "https://zenodo.org/uploads/7047180",
     exampleIdentifier: "7047180",
     identifierUrlPattern: new RegExp(
-      `(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:zenodo.org/uploads/)([0-9]+)/?$`
+      `(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:zenodo.org/(uploads|records)/)([0-9]+)/?$`
     ),
     identifierPattern: new RegExp(`^[0-9]+$`),
   },
