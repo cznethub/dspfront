@@ -24,8 +24,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          start: npx serve -s dist -p 8080
-          wait-on: 'http://localhost:8080'
+          start: npm run serve
           browser: chrome
           command: npm run cypress:run-component
           # or install start-server-and-test and do:
