@@ -34,7 +34,7 @@ jobs:
       # https://github.com/SeleniumHQ/selenium/blob/selenium-4.0.0-beta-3/.github/actions/setup-chrome/action.yml
       - name: Prepare Selenium
         run: |
-          wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+          wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
           echo "deb http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee -a /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update -qqy
           sudo apt-get -qqy install google-chrome-stable
