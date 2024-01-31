@@ -24,8 +24,4 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          start: npm run serve
-          browser: chrome
-          command: npm run cypress:run-component
-          # or install start-server-and-test and do:
-          # run: npm run test-component
+          component: true
