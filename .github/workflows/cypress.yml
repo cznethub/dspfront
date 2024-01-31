@@ -10,35 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  install:
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14.x
-          cache: 'npm'
-
-      - name: Cypress install
-        uses: cypress-io/github-action@v6
-        with:
-          # Disable running of tests within install job
-          runTests: false
-          build: npm run build
-
-      - name: Save build folder
-        uses: actions/upload-artifact@v3
-        with:
-          name: build
-          if-no-files-found: error
-          path: dist
-
   cypress-run:
     runs-on: ubuntu-22.04
-    needs: install
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -47,12 +20,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 14.x
-
-      - name: Download the build folder
-        uses: actions/download-artifact@v3
-        with:
-          name: build
-          path: dist
 
       - name: Cypress run
         uses: cypress-io/github-action@v6
