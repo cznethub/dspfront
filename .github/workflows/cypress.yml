@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  install:
+  build:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
@@ -22,7 +22,7 @@ jobs:
           node-version: 14.x
           cache: 'npm'
 
-      - name: Cypress install
+      - name: Build
         uses: cypress-io/github-action@v6
         with:
           # Disable running of tests within install job
@@ -38,7 +38,7 @@ jobs:
 
   cypress-run:
     runs-on: ubuntu-22.04
-    needs: install
+    needs: build
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -52,9 +52,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v6
         with:
-          start: npx serve -s dist -p 8080
-          wait-on: 'http://localhost:8080'
+          start: npx serve -s dist
           browser: chrome
-          command: npm run cypress:run-component
           # or install start-server-and-test and do:
           # run: npm run test-component
