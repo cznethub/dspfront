@@ -1,7 +1,13 @@
 name: Cypress Tests with Dependency and Artifact Caching
 # https://docs.cypress.io/guides/continuous-integration/github-actions
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - '*cypress*'
+  pull_request:
+    branches: [develop]
+  workflow_dispatch:
 
 jobs:
   install:
@@ -36,11 +42,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 14.x
 
       - name: Download the build folder
         uses: actions/download-artifact@v3
