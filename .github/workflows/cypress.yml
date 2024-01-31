@@ -1,7 +1,13 @@
 name: Cypress Tests with Dependency and Artifact Caching
 # https://docs.cypress.io/guides/continuous-integration/github-actions
 
-on: workflow_dispatch
+on:
+  push:
+    branches:
+      - '*cypress*'
+  pull_request:
+    branches: [develop]
+  workflow_dispatch:
 
 jobs:
   install:
