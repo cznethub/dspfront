@@ -43,6 +43,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14.x
+          cache: 'npm'
+
       - name: Download the build folder
         uses: actions/download-artifact@v3
         with:
@@ -53,6 +59,3 @@ jobs:
         uses: cypress-io/github-action@v6
         with:
           start: npx serve -s dist
-          browser: chrome
-          # or install start-server-and-test and do:
-          # run: npm run test-component
