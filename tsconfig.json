@@ -1,32 +1,29 @@
 {
   "compilerOptions": {
-    "incremental": true,
-    "resolveJsonModule": true,
-    "target": "es2017",
-    "module": "esnext",
-    "strict": true,
-    "importHelpers": true,
-    "moduleResolution": "node",
+    "target": "ESNext",
+    "jsx": "preserve",
+    "lib": ["DOM", "ESNext"],
     "experimentalDecorators": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "noImplicitAny": false,
-    "skipLibCheck": true,
     "baseUrl": ".",
-    "types": ["webpack-env", "node", "cypress"],
+    "module": "ESNext",
+    "moduleResolution": "node",
     "paths": {
-      "@/*": ["src/*"]
+      "~/*": ["src/*"]
     },
-    "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
+    "resolveJsonModule": true,
+    "types": [
+      "vitest",
+      "vite/client",
+      "vite-plugin-pwa/client"
+    ],
+    "allowJs": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.vue",
-    "tests/**/*.ts"
-  ],
-  "exclude": ["node_modules"],
-  "vueCompilerOptions": {
-    "target": 2.7
-  }
+  "exclude": ["dist", "node_modules", "cypress"]
 }

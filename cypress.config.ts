@@ -1,10 +1,20 @@
-import { defineConfig } from "cypress";
+import { defineConfig } from 'cypress'
+import vitePreprocessor from 'cypress-vite'
 
 export default defineConfig({
-  component: {
-    devServer: {
-      framework: "vue-cli",
-      bundler: "webpack",
+  e2e: {
+    baseUrl: 'http://localhost:8080',
+    chromeWebSecurity: false,
+    specPattern: 'cypress/e2e/**/*.spec.*',
+    supportFile: false,
+    setupNodeEvents(on) {
+      on('file:preprocessor', vitePreprocessor())
     },
   },
-});
+  component: {
+    devServer: {
+      framework: 'vue-cli',
+      bundler: 'webpack',
+    },
+  },
+})

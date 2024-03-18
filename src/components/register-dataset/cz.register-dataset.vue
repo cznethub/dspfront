@@ -1,6 +1,216 @@
+<script lang="ts">
+import { Component, Vue, Watch } from 'vue-facing-decorator'
+import { Notifications } from '@cznethub/cznet-vue-core'
+import { repoMetadata } from '~/components/submit/constants'
+import { EnumRepositoryKeys } from '~/components/submissions/types'
+import type { IRepository } from '~/components/submissions/types'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+
+import Repository from '~/models/repository.model'
+import Submission from '~/models/submission.model'
+import User from '~/models/user.model'
+
+@Component({
+  name: 'cz-register-dataset',
+  components: {},
+  mixins: [ActiveRepositoryMixin],
+})
+export default class CzRegisterDataset extends Vue {
+  protected url = ''
+  protected step = 1
+  protected selectedRepository: IRepository | null = null
+  protected isFetching = false
+  protected isValid = false
+  protected submission: Partial<Submission> | null = null
+  protected apiSubmission: any = null
+  protected wasUnauthorized = false
+  protected isPublished = false
+  protected isRegistering = false
+  protected allowFileUpload = true
+  protected resourceType = ''
+  protected isHsCollection = false
+
+  protected get repoCollection(): IRepository[] {
+    return Object.keys(repoMetadata).map(r => repoMetadata[r])
+  }
+
+  protected get supportedRepoMetadata() {
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+  }
+
+  protected get canReadDataset(): boolean {
+    return !this.isFetching && this.isValid && !!this.url
+  }
+
+  protected get identifierFromUrl(): string {
+    if (this.selectedRepository?.identifierPattern?.test(this.url)) {
+      return this.url
+    }
+    else if (this.selectedRepository?.identifierUrlPattern?.test(this.url)) {
+      const matches = this.selectedRepository?.identifierUrlPattern?.exec(
+        this.url,
+      )
+
+      if (matches && matches.length)
+        return matches[1]
+    }
+
+    return this.url // default
+  }
+
+  @Watch('step')
+  onStepChange(currentStep, previousStep) {
+    if (currentStep === 2) {
+      // @ts-expect-error
+      this.$refs.txtIdentifier?.focus()
+    }
+  }
+
+  created() {
+    this.selectedRepository = this.repoCollection[0]
+  }
+
+  protected onReadDataset() {
+    if (this.canReadDataset) {
+      this.step++
+      this._readDataset()
+    }
+  }
+
+  protected goToEditSubmission() {
+    // We cannot pass objects through routing, so we store it in ORM temporarily
+    User.commit((state) => {
+      state.registeringSubmission = this.apiSubmission
+    })
+
+    this.$router.push({
+      name: 'submit.repository',
+      params: {
+        repository: (this.selectedRepository as IRepository).key,
+        id: this.identifierFromUrl,
+      },
+      query: { mode: 'register' },
+    })
+  }
+
+  /** We register published submissions as they are because they can no longer be edited */
+  protected async registerSubmissionAsIs() {
+    this.isRegistering = true
+    try {
+      await Repository.readSubmission(
+        this.identifierFromUrl,
+        (this.selectedRepository as IRepository).key,
+      )
+
+      this.isRegistering = false
+      Notifications.toast({
+        message: 'Your dataset has been registered!',
+        type: 'success',
+      })
+      this.$router.push({
+        name: 'submissions',
+      })
+    }
+    catch (e) {
+      this.isRegistering = false
+      Notifications.toast({
+        message: 'Failed to register dataset',
+        type: 'error',
+      })
+    }
+  }
+
+  protected getDateInLocalTime(date: number): string {
+    const offset = new Date(date).getTimezoneOffset() * 60 * 1000
+    const localDateTime = date + offset
+    return new Date(localDateTime).toLocaleString()
+  }
+
+  protected isValidUrlOrIdentifier(): true | string {
+    if (!this.url)
+      return 'required'
+
+    return this.selectedRepository?.identifierPattern?.test(this.url)
+      || this.selectedRepository?.identifierUrlPattern?.test(this.url)
+      ? true
+      : 'invalid URL or Identifier'
+  }
+
+  private async _readDataset() {
+    this.submission = null
+    this.isFetching = true
+    this.wasUnauthorized = false
+    this.isPublished = false
+    this.isHsCollection = false
+    this.allowFileUpload = true
+    this.resourceType = ''
+
+    try {
+      if (this.selectedRepository) {
+        const response = await Repository.readExistingSubmission(
+          this.identifierFromUrl,
+          this.selectedRepository.key,
+        )
+
+        if (response && isNaN(response)) {
+          this.submission = Submission.getInsertData(
+            response.metadata,
+            this.selectedRepository.key,
+            this.identifierFromUrl,
+            true,
+          )
+          this.apiSubmission = response.metadata
+          if (response.published)
+            this.isPublished = true
+
+          // For earthchem submissions we need to set the community to a constant
+          if (this.submission.repository === EnumRepositoryKeys.earthchem)
+            this.apiSubmission.community = this.$t('footer.orgName')
+
+          if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
+            if (response.metadata.type === 'CollectionResource')
+              this.isHsCollection = true
+
+            this.allowFileUpload
+              = this.apiSubmission.type === 'CompositeResource'
+              && !this.isPublished
+            this.resourceType
+              = this.apiSubmission.type === 'CompositeResource'
+                ? 'Resource'
+                : 'Collection'
+          }
+          else {
+            this.allowFileUpload = !this.isPublished
+          }
+        }
+        // Repository was unauthorized
+        else if (response === 401) {
+          this.wasUnauthorized = true
+
+          // Try again when user has authorized the repository
+          this.authorizedSubject = Repository.authorized$.subscribe(
+            async (_repositoryKey: EnumRepositoryKeys) => {
+              await this._readDataset()
+            },
+          )
+        }
+      }
+    }
+    catch (e) {
+      console.log(e)
+    }
+    finally {
+      this.isFetching = false
+    }
+  }
+}
+</script>
+
 <template>
   <v-container class="cz-register-dataset">
-    <div class="text-h4">Register Dataset</div>
+    <div class="text-h4">
+      Register Dataset
+    </div>
     <v-divider class="mb-2" />
 
     <v-alert
@@ -27,8 +237,9 @@
           v-if="selectedRepository && step > 1"
           class="mt-2"
           color="success"
-          >{{ selectedRepository.name }}</v-chip
         >
+          {{ selectedRepository.name }}
+        </v-chip>
       </v-stepper-step>
 
       <v-stepper-content step="1">
@@ -38,11 +249,12 @@
             :key="repo.key"
             :value="repo"
             :label="repo.name"
-          >
-          </v-radio>
+          />
         </v-radio-group>
 
-        <v-btn color="primary" @click="step = 2"> Continue </v-btn>
+        <v-btn color="primary" @click="step = 2">
+          Continue
+        </v-btn>
       </v-stepper-content>
 
       <v-stepper-step
@@ -52,9 +264,11 @@
         edit-icon="mdi-check"
       >
         <div>What is the URL to or identifier for the resource?</div>
-        <v-chip v-if="url && step > 2" class="mt-2" color="success">{{
-          url
-        }}</v-chip>
+        <v-chip v-if="url && step > 2" class="mt-2" color="success">
+          {{
+            url
+          }}
+        </v-chip>
       </v-stepper-step>
 
       <v-stepper-content step="2">
@@ -66,8 +280,8 @@
           @submit.prevent
         >
           <v-text-field
-            v-model.trim="url"
             ref="txtIdentifier"
+            v-model.trim="url"
             :disabled="isFetching"
             :required="true"
             :rules="[isValidUrlOrIdentifier()]"
@@ -79,8 +293,7 @@
             persistent-hint
             outlined
             @keypress.enter="onReadDataset"
-          >
-          </v-text-field>
+          />
 
           <div class="text-subtitle-1 text--secondary pl-3 mb-4 mt-1">
             {{
@@ -91,12 +304,12 @@
           <v-btn
             color="primary"
             class="mr-4"
-            @click="onReadDataset"
             :disabled="!canReadDataset"
+            @click="onReadDataset"
           >
             Continue
           </v-btn>
-          <v-btn color="default" @click="step--" :disabled="isFetching" text>
+          <v-btn color="default" :disabled="isFetching" text @click="step--">
             Back
           </v-btn>
         </v-form>
@@ -116,7 +329,7 @@
           <div class="table-item">
             <table
               class="text-body-1"
-              :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+              :class="{ 'is-xs-small': $vuetify.display.xs }"
             >
               <tr>
                 <td colspan="2" class="text-h6 title">
@@ -131,7 +344,7 @@
           >
             <table
               class="text-body-1"
-              :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+              :class="{ 'is-xs-small': $vuetify.display.xs }"
             >
               <tr>
                 <th class="pr-4 body-2 text-right">
@@ -206,7 +419,7 @@
             >
               <table
                 class="text-body-1"
-                :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+                :class="{ 'is-xs-small': $vuetify.display.xs }"
               >
                 <tr>
                   <td colspan="2" class="text-h6 title">
@@ -214,27 +427,39 @@
                   </td>
                 </tr>
                 <tr v-if="submission.authors && submission.authors.length">
-                  <th class="pr-4 body-2">Authors:</th>
+                  <th class="pr-4 body-2">
+                    Authors:
+                  </th>
                   <td>{{ submission.authors.join(" | ") }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2">Submission Repository:</th>
+                  <th class="pr-4 body-2">
+                    Submission Repository:
+                  </th>
                   <td>{{ selectedRepository.name }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2">Submission Date:</th>
+                  <th class="pr-4 body-2">
+                    Submission Date:
+                  </th>
                   <td>{{ getDateInLocalTime(submission.date) }}</td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2">Identifier:</th>
+                  <th class="pr-4 body-2">
+                    Identifier:
+                  </th>
                   <td>{{ submission.identifier }}</td>
                 </tr>
                 <tr v-if="selectedRepository.name == 'HydroShare'">
-                  <th class="pr-4 body-2">Type:</th>
+                  <th class="pr-4 body-2">
+                    Type:
+                  </th>
                   <td>{{ resourceType }}</td>
                 </tr>
                 <tr v-if="submission.metadata && submission.metadata.status">
-                  <th class="pr-4 body-2">Status:</th>
+                  <th class="pr-4 body-2">
+                    Status:
+                  </th>
 
                   <td>
                     <v-chip
@@ -243,12 +468,16 @@
                       small
                       outlined
                     >
-                      <v-icon left small>mdi-lock</v-icon>
+                      <v-icon left small>
+                        mdi-lock
+                      </v-icon>
                       {{ submission.metadata.status }}
                     </v-chip>
 
                     <v-chip v-else small outlined>
-                      <v-icon left small>mdi-pencil</v-icon>
+                      <v-icon left small>
+                        mdi-pencil
+                      </v-icon>
                       {{ submission.metadata.status }}
                     </v-chip>
                   </td>
@@ -262,7 +491,9 @@
                   color="blue-grey lighten-4"
                   rounded
                 >
-                  <v-icon class="mr-1">mdi-open-in-new</v-icon> View In
+                  <v-icon class="mr-1">
+                    mdi-open-in-new
+                  </v-icon> View In
                   Repository
                 </v-btn>
               </div>
@@ -274,8 +505,8 @@
               v-if="isPublished || isHsCollection"
               color="primary"
               class="mr-4"
-              @click="registerSubmissionAsIs"
               :disabled="isFetching || !isValid || !url || isRegistering"
+              @click="registerSubmissionAsIs"
             >
               {{ isRegistering ? "Registering..." : "Register Dataset" }}
             </v-btn>
@@ -284,13 +515,13 @@
               v-else
               color="primary"
               class="mr-4"
-              @click="goToEditSubmission"
               :disabled="isFetching || !isValid || !url"
+              @click="goToEditSubmission"
             >
               Continue & Edit...
             </v-btn>
 
-            <v-btn color="default" @click="step--" :disabled="isFetching" text>
+            <v-btn color="default" :disabled="isFetching" text @click="step--">
               Back
             </v-btn>
           </div>
@@ -305,14 +536,14 @@
             elevation="2"
           >
             <v-row>
-              <v-col class="flex-grow-1"
-                >We need your authorization to load this submission from the
-                repository.</v-col
-              >
+              <v-col class="flex-grow-1">
+                We need your authorization to load this submission from the
+                repository.
+              </v-col>
               <v-col class="flex-grow-0">
                 <v-btn
-                  @click="openAuthorizePopup(selectedRepository.key)"
                   color="primary"
+                  @click="openAuthorizePopup(selectedRepository.key)"
                 >
                   <i class="fas fa-key mr-2" />Authorize
                 </v-btn>
@@ -338,9 +569,9 @@
           <v-btn
             color="default"
             class="mb-2"
-            @click="step--"
             :disabled="isFetching"
             text
+            @click="step--"
           >
             Back
           </v-btn>
@@ -349,213 +580,6 @@
     </v-stepper>
   </v-container>
 </template>
-
-<script lang="ts">
-import { Component, Watch } from "vue-property-decorator";
-import { repoMetadata } from "@/components/submit/constants";
-import { EnumRepositoryKeys, IRepository } from "../submissions/types";
-import { mixins } from "vue-class-component";
-import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
-import { Notifications } from "@cznethub/cznet-vue-core";
-import Repository from "@/models/repository.model";
-import Submission from "@/models/submission.model";
-import User from "@/models/user.model";
-
-@Component({
-  name: "cz-register-dataset",
-  components: {},
-})
-export default class CzRegisterDataset extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
-  protected url = "";
-  protected step = 1;
-  protected selectedRepository: IRepository | null = null;
-  protected isFetching = false;
-  protected isValid = false;
-  protected submission: Partial<Submission> | null = null;
-  protected apiSubmission: any = null;
-  protected wasUnauthorized = false;
-  protected isPublished = false;
-  protected isRegistering = false;
-  protected allowFileUpload = true;
-  protected resourceType = "";
-  protected isHsCollection = false;
-
-  protected get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
-  }
-
-  protected get supportedRepoMetadata() {
-    return this.repoCollection.filter((r) => !r.isExternal && r.isSupported);
-  }
-
-  protected get canReadDataset(): boolean {
-    return !this.isFetching && this.isValid && !!this.url;
-  }
-
-  protected get identifierFromUrl(): string {
-    if (this.selectedRepository?.identifierPattern?.test(this.url)) {
-      return this.url;
-    } else if (this.selectedRepository?.identifierUrlPattern?.test(this.url)) {
-      const matches = this.selectedRepository?.identifierUrlPattern?.exec(
-        this.url
-      );
-
-      if (matches && matches.length) {
-        return matches[1];
-      }
-    }
-
-    return this.url; // default
-  }
-
-  @Watch("step")
-  onStepChange(currentStep, previousStep) {
-    if (currentStep === 2) {
-      // @ts-ignore
-      this.$refs.txtIdentifier?.focus();
-    }
-  }
-
-  created() {
-    this.selectedRepository = this.repoCollection[0];
-  }
-
-  protected onReadDataset() {
-    if (this.canReadDataset) {
-      this.step++;
-      this._readDataset();
-    }
-  }
-
-  protected goToEditSubmission() {
-    // We cannot pass objects through routing, so we store it in ORM temporarily
-    User.commit((state) => {
-      state.registeringSubmission = this.apiSubmission;
-    });
-
-    this.$router.push({
-      name: "submit.repository",
-      params: {
-        repository: (this.selectedRepository as IRepository).key,
-        id: this.identifierFromUrl,
-      },
-      query: { mode: "register" },
-    });
-  }
-
-  /** We register published submissions as they are because they can no longer be edited */
-  protected async registerSubmissionAsIs() {
-    this.isRegistering = true;
-    try {
-      await Repository.readSubmission(
-        this.identifierFromUrl,
-        (this.selectedRepository as IRepository).key
-      );
-
-      this.isRegistering = false;
-      Notifications.toast({
-        message: "Your dataset has been registered!",
-        type: "success",
-      });
-      this.$router.push({
-        name: "submissions",
-      });
-    } catch (e) {
-      this.isRegistering = false;
-      Notifications.toast({
-        message: "Failed to register dataset",
-        type: "error",
-      });
-    }
-  }
-
-  protected getDateInLocalTime(date: number): string {
-    const offset = new Date(date).getTimezoneOffset() * 60 * 1000;
-    const localDateTime = date + offset;
-    return new Date(localDateTime).toLocaleString();
-  }
-
-  protected isValidUrlOrIdentifier(): true | string {
-    if (!this.url) {
-      return "required";
-    }
-
-    return this.selectedRepository?.identifierPattern?.test(this.url) ||
-      this.selectedRepository?.identifierUrlPattern?.test(this.url)
-      ? true
-      : "invalid URL or Identifier";
-  }
-
-  private async _readDataset() {
-    this.submission = null;
-    this.isFetching = true;
-    this.wasUnauthorized = false;
-    this.isPublished = false;
-    this.isHsCollection = false;
-    this.allowFileUpload = true;
-    this.resourceType = "";
-
-    try {
-      if (this.selectedRepository) {
-        const response = await Repository.readExistingSubmission(
-          this.identifierFromUrl,
-          this.selectedRepository.key
-        );
-
-        if (response && isNaN(response)) {
-          this.submission = Submission.getInsertData(
-            response.metadata,
-            this.selectedRepository.key,
-            this.identifierFromUrl,
-            true
-          );
-          this.apiSubmission = response.metadata;
-          if (response.published) {
-            this.isPublished = true;
-          }
-
-          // For earthchem submissions we need to set the community to a constant
-          if (this.submission.repository === EnumRepositoryKeys.earthchem) {
-            this.apiSubmission.community = this.$t("footer.orgName");
-          }
-          if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
-            if (response.metadata.type === "CollectionResource") {
-              this.isHsCollection = true;
-            }
-
-            this.allowFileUpload =
-              this.apiSubmission.type === "CompositeResource" &&
-              !this.isPublished;
-            this.resourceType =
-              this.apiSubmission.type === "CompositeResource"
-                ? "Resource"
-                : "Collection";
-          } else {
-            this.allowFileUpload = !this.isPublished;
-          }
-        }
-        // Repository was unauthorized
-        else if (response === 401) {
-          this.wasUnauthorized = true;
-
-          // Try again when user has authorized the repository
-          this.authorizedSubject = Repository.authorized$.subscribe(
-            async (_repositoryKey: EnumRepositoryKeys) => {
-              await this._readDataset();
-            }
-          );
-        }
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      this.isFetching = false;
-    }
-  }
-}
-</script>
 
 <style lang="scss" scoped>
 .table-item {

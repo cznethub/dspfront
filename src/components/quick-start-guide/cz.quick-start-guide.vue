@@ -1,9 +1,23 @@
+<script lang="ts">
+import { Component, Vue } from 'vue-facing-decorator'
+
+@Component({
+  name: 'cz-quick-start-guide',
+  components: {},
+})
+export default class CzQuickStartGuide extends Vue {}
+</script>
+
 <template>
   <v-container class="cz-quick-start-guide">
-    <div class="text-h4">{{ $t("portalName") }} Quickstart Guide</div>
+    <div class="text-h4">
+      {{ $t("portalName") }} Quickstart Guide
+    </div>
     <v-divider class="mb-2" />
 
-    <div class="text-h6 mb-3 mt-6">Purpose</div>
+    <div class="text-h6 mb-3 mt-6">
+      Purpose
+    </div>
     <p class="text-body-1">
       The {{ $t("portalName") }} ({{ $t("portalNameShort") }}) is intended to
       streamline the data submission and sharing process for critical zone
@@ -12,7 +26,9 @@
       submitted data to an appropriate repository.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">Who Should Use the DSP?</div>
+    <div class="text-h6 mb-3 mt-6">
+      Who Should Use the DSP?
+    </div>
     <p class="text-body-1">
       The DSP was designed for scientists and others working in the Critical
       Zone who need to submit data to a reputable repository and who want their
@@ -24,7 +40,9 @@
       can register datasets with the DSP.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">Getting Started</div>
+    <div class="text-h6 mb-3 mt-6">
+      Getting Started
+    </div>
     <p class="text-body-1">
       The DSP requires an ORCID for login. On the landing page of the DSP, users
       can select “Log In” and be prompted to login using their ORCID. This will
@@ -33,13 +51,15 @@
     </p>
 
     <p class="text-body-1">
-      <a href="https://orcid.org/" target="_blank"
-        >Register for and learn more about ORCIDs</a
-      >
-      <v-icon class="ml-2" small>mdi-open-in-new</v-icon>
+      <a href="https://orcid.org/" target="_blank">Register for and learn more about ORCIDs</a>
+      <v-icon class="ml-2" small>
+        mdi-open-in-new
+      </v-icon>
     </p>
 
-    <div class="text-h6 mb-3 mt-6">Choosing a Repository</div>
+    <div class="text-h6 mb-3 mt-6">
+      Choosing a Repository
+    </div>
     <p class="text-body-1">
       Users can click the “Resources” link at the top of the DSP to access the
       Resources page and then click the “Help Me Decide” button to access a page
@@ -49,7 +69,9 @@
       you can skip this step.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">Data Submission</div>
+    <div class="text-h6 mb-3 mt-6">
+      Data Submission
+    </div>
     <p class="text-body-1">
       To submit data through the DSP, users can select “Submit data” from the
       top menu in the DSP. You can then select the repository you want to submit
@@ -66,7 +88,9 @@
       metadata as you possibly can.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">DSP Supported Repositories</div>
+    <div class="text-h6 mb-3 mt-6">
+      DSP Supported Repositories
+    </div>
     <p class="text-body-1">
       The DSP supports the following repositories for data submission. If you
       have data content to submit, you can submit it directly to these
@@ -103,7 +127,9 @@
       metadata form to tell us about your CZ-related data.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">Tracking Your Submissions</div>
+    <div class="text-h6 mb-3 mt-6">
+      Tracking Your Submissions
+    </div>
     <p class="text-body-1">
       If you click on the “My Submissions” link at the top of the DSP, you will
       be able to see all of the datasets you have submitted to the DSP. On this
@@ -113,15 +139,5 @@
     </p>
   </v-container>
 </template>
-
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-
-@Component({
-  name: "cz-quick-start-guide",
-  components: {},
-})
-export default class CzQuickStartGuide extends Vue {}
-</script>
 
 <style lang="scss" scoped></style>

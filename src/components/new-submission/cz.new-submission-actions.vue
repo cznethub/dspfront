@@ -1,30 +1,50 @@
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-facing-decorator'
+
+@Component({
+  name: 'cz-new-submission-actions',
+  components: {},
+})
+export default class CzNewSubmissionActions extends Vue {
+  @Prop() isEditMode!: boolean
+  @Prop() repositoryUrl!: string
+  @Prop() isDevMode!: boolean
+  @Prop() hasUnsavedChanges!: boolean
+  @Prop() isSaving!: boolean
+  @Prop() confirmText!: string
+  @Prop() errors!: any[]
+}
+</script>
+
 <template>
   <div class="cz-new-submission-actions d-flex align-center my-4">
-    <v-spacer class="d-none d-sm-block"></v-spacer>
+    <v-spacer class="d-none d-sm-block" />
     <div
       class="d-flex form-controls flex-column flex-sm-row flex-grow-1 flex-sm-grow-0"
     >
       <v-btn
         v-if="isDevMode"
-        @click="$emit('show-ui-schema')"
         class="my-1 my-sm-0"
         rounded
-        >UI Schema</v-btn
+        @click="$emit('show-ui-schema')"
       >
+        UI Schema
+      </v-btn>
       <v-btn
         v-if="isEditMode"
-        @click="$emit('cancel')"
         rounded
         class="submission-cancel my-2 my-sm-0"
-        >Cancel</v-btn
+        @click="$emit('cancel')"
       >
+        Cancel
+      </v-btn>
 
       <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
-        <template v-slot:activator="{ on, attrs }">
+        <template #activator="{ on, attrs }">
           <div
             v-bind="attrs"
-            v-on="on"
             class="d-flex form-controls flex-column flex-sm-row"
+            v-on="on"
           >
             <template>
               <v-badge
@@ -35,12 +55,12 @@
                 overlap
               >
                 <v-btn
-                  @click="$emit('save')"
                   color="primary"
                   class="submission-save my-1 my-sm-0"
                   :disabled="isSaving || !!errors.length || !hasUnsavedChanges"
                   rounded
                   block
+                  @click="$emit('save')"
                 >
                   {{ isSaving ? "Saving..." : confirmText }}
                 </v-btn>
@@ -54,12 +74,12 @@
                 overlap
               >
                 <v-btn
-                  @click="$emit('save-and-finish')"
                   class="ml-sm-2 my-1 my-sm-0 submission-finish"
                   color="primary"
                   :disabled="isSaving || !!errors.length"
                   rounded
                   block
+                  @click="$emit('save-and-finish')"
                 >
                   Finish
                 </v-btn>
@@ -83,24 +103,6 @@
     </div>
   </div>
 </template>
-
-<script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
-
-@Component({
-  name: "cz-new-submission-actions",
-  components: {},
-})
-export default class CzNewSubmissionActions extends Vue {
-  @Prop() isEditMode!: boolean;
-  @Prop() repositoryUrl!: string;
-  @Prop() isDevMode!: boolean;
-  @Prop() hasUnsavedChanges!: boolean;
-  @Prop() isSaving!: boolean;
-  @Prop() confirmText!: string;
-  @Prop() errors!: any[];
-}
-</script>
 
 <style lang="scss" scoped>
 .form-controls {

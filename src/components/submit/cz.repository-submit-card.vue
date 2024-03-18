@@ -1,9 +1,23 @@
+<script lang="ts">
+import { Component, Prop, Vue } from 'vue-facing-decorator'
+import type { IRepository } from '../submissions/types'
+
+@Component({
+  name: 'cz-repository-submit-card',
+  components: {},
+})
+export default class CzRepositorySubmitCard extends Vue {
+  @Prop({ required: true }) repo!: IRepository
+  @Prop() hideLogo!: boolean
+}
+</script>
+
 <template>
   <div class="cz-repository-submit-card">
     <v-hover :key="repo.key">
-      <template v-slot:default="{ hover }">
+      <template #default="{ hover }">
         <v-card
-          :id="repo.name.replaceAll(` `, ``) + `-card`"
+          :id="`${repo.name.replaceAll(` `, ``)}-card`"
           :disabled="repo.isDisabled"
           :class="`elevation-${hover ? 12 : 2}`"
           class="has-cursor-pointer transition-swing"
@@ -11,8 +25,9 @@
           <v-icon
             v-if="!repo.isSupported || repo.isComingSoon"
             class="open-in-new"
-            >mdi-open-in-new</v-icon
           >
+            mdi-open-in-new
+          </v-icon>
           <template v-if="!hideLogo">
             <v-card-title
               v-if="!repo.isExternal"
@@ -21,7 +36,7 @@
               <div
                 class="repo-logo"
                 :style="{ 'background-image': `url(${repo.logoSrc})` }"
-              ></div>
+              />
             </v-card-title>
 
             <v-card-title v-else class="v-card-media justify-center">
@@ -30,11 +45,15 @@
           </template>
 
           <v-card-title>
-            <div class="text-h4 repo-name">{{ repo.name }}</div>
+            <div class="text-h4 repo-name">
+              {{ repo.name }}
+            </div>
           </v-card-title>
 
           <v-card-text class="text--secondary">
-            <div class="text-subtitle-1">{{ repo.description }}</div>
+            <div class="text-subtitle-1">
+              {{ repo.description }}
+            </div>
 
             <template v-if="repo.isComingSoon">
               <v-divider class="mt-2 mb-2" />
@@ -47,22 +66,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { IRepository } from "../submissions/types";
-
-@Component({
-  name: "cz-repository-submit-card",
-  components: {},
-})
-export default class CzRepositorySubmitCard extends Vue {
-  @Prop({ required: true }) repo!: IRepository;
-  @Prop() hideLogo!: boolean;
-}
-</script>
-
 <style lang="scss" scoped>
-::v-deep .v-card-media {
+:deep(.v-card-media) {
   background: linear-gradient(135deg, #f1f3f5 0%, #cfd8dc 100%);
   height: 10rem;
   padding: 2rem;

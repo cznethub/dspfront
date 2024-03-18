@@ -102,8 +102,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { guideUrls } from "@/components/recommendations/constants";
+import { Component, Vue } from "vue-facing-decorator";
+import { guideUrls } from "~/components/recommendations/constants";
 
 interface IDataTemplate {
   title: string;

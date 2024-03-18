@@ -1,3 +1,30 @@
+<script lang="ts">
+import { Component, Vue } from 'vue-facing-decorator'
+import User from '~/models/user.model'
+
+@Component({
+  name: 'cz-footer',
+  components: {},
+})
+export default class CzFooter extends Vue {
+  protected openLogInDialog() {
+    User.openLogInDialog()
+  }
+
+  protected get isLoggedIn() {
+    return User.$state.isLoggedIn
+  }
+
+  protected get version() {
+    return import.meta.env.VITE_APP_VERSION || '0'
+  }
+
+  protected get year() {
+    return new Date().getFullYear()
+  }
+}
+</script>
+
 <template>
   <v-container
     flat
@@ -5,8 +32,12 @@
   >
     <div class="d-lg-flex justify-space-between full-width">
       <div class="mb-4">
-        <div class="mb-2 text-h6">Contact Us</div>
-        <router-link to="/contact">Contact</router-link>
+        <div class="mb-2 text-h6">
+          Contact Us
+        </div>
+        <router-link to="/contact">
+          Contact
+        </router-link>
         <p>
           Learn more about the
           <a :href="`${$t('footer.orgLink')}`" target="_blank">{{
@@ -23,13 +54,19 @@
       </div>
 
       <div class="mb-4">
-        <div class="mb-2 text-h6">Get Started</div>
+        <div class="mb-2 text-h6">
+          Get Started
+        </div>
         <a v-if="!isLoggedIn" @click="openLogInDialog()">Log In</a>
-        <router-link v-else to="/submit">Submit Data</router-link>
+        <router-link v-else to="/submit">
+          Submit Data
+        </router-link>
       </div>
 
       <div>
-        <div class="mb-2 text-h6">Open Source</div>
+        <div class="mb-2 text-h6">
+          Open Source
+        </div>
         <p>
           The {{ $t("portalName") }} is Open Source. Find us on
           <a :href="`${$t('footer.repoUrl')}`" target="_blank">GitHub</a>.
@@ -42,13 +79,13 @@
       </div>
     </div>
 
-    <v-divider></v-divider>
+    <v-divider />
 
     <div class="text-center d-flex flex-column align-center mt-4">
       <p>
         (c) {{ year }} CUAHSI. ﻿This material is based upon work supported by
         the National Science Foundation (NSF) under awards 2012893, 2012593, and
-        2012748.<br />
+        2012748.<br>
         Any opinions, findings, conclusions, or recommendations expressed in
         this material are those of the authors and do not necessarily reflect
         the views of the NSF.
@@ -56,33 +93,6 @@
     </div>
   </v-container>
 </template>
-
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import User from "@/models/user.model";
-
-@Component({
-  name: "cz-footer",
-  components: {},
-})
-export default class CzFooter extends Vue {
-  protected openLogInDialog() {
-    User.openLogInDialog();
-  }
-
-  protected get isLoggedIn() {
-    return User.$state.isLoggedIn;
-  }
-
-  protected get version() {
-    return process.env.VUE_APP_VERSION || "0";
-  }
-
-  protected get year() {
-    return new Date().getFullYear();
-  }
-}
-</script>
 
 <style lang="scss" scoped>
 .cz-footer {

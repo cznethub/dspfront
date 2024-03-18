@@ -1,8 +1,42 @@
+<script lang="ts">
+import { Component, Vue } from 'vue-facing-decorator'
+import { repoMetadata } from '~/components/submit/constants'
+import type { IRepository } from '~/components/submissions/types'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+
+@Component({
+  name: 'cz-register-dataset-dialog',
+  components: {},
+  mixins: [ActiveRepositoryMixin],
+})
+export default class CzRegisterDatasetDialog extends Vue {
+  public active = false
+
+  protected get repoCollection(): IRepository[] {
+    return Object.keys(repoMetadata).map(r => repoMetadata[r])
+  }
+
+  protected get supportedRepoMetadata() {
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+  }
+
+  protected get externalRepoMetadata() {
+    return this.repoCollection.find(r => r.isExternal)
+  }
+
+  protected close() {
+    this.$emit('close')
+  }
+}
+</script>
+
 <template>
   <v-dialog v-model="active" width="800">
     <v-card>
       <v-card-title>
-        <div class="text-heading-4 mb-4">Register Dataset</div>
+        <div class="text-heading-4 mb-4">
+          Register Dataset
+        </div>
       </v-card-title>
 
       <v-card-subtitle class="text-body-1">
@@ -11,10 +45,10 @@
 
       <v-card-text
         class="choice-container pb-8 gap-1"
-        :class="{ 'is-xs-small': $vuetify.breakpoint.xs }"
+        :class="{ 'is-xs-small': $vuetify.display.xs }"
       >
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ hover }">
             <v-card
               class="transition-swing"
               :to="{ path: 'register' }"
@@ -22,7 +56,9 @@
               outlined
             >
               <v-card-text class="d-flex align-items-center gap-1">
-                <v-icon large color="#87AAAA">mdi-link-plus</v-icon>
+                <v-icon large color="#87AAAA">
+                  mdi-link-plus
+                </v-icon>
                 <div>
                   <div class="text-overline mb-2 has-text-black">
                     SUPPORTED REPOSITORY
@@ -38,7 +74,7 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ hover }">
             <v-card
               class="transition-swing"
               :class="`elevation-${hover ? 2 : 0}`"
@@ -53,9 +89,13 @@
                   submitTo(externalRepoMetadata);
                 "
               >
-                <v-icon large color="#C37B89">mdi-text-box-plus</v-icon>
+                <v-icon large color="#C37B89">
+                  mdi-text-box-plus
+                </v-icon>
                 <div>
-                  <div class="text-overline mb-2 has-text-black">OTHER</div>
+                  <div class="text-overline mb-2 has-text-black">
+                    OTHER
+                  </div>
                   <div class="text-body-1">
                     Register a dataset from a different repository
                   </div>
@@ -66,49 +106,17 @@
         </v-hover>
       </v-card-text>
 
-      <v-divider></v-divider>
+      <v-divider />
 
       <v-card-actions>
-        <v-spacer></v-spacer>
-        <v-btn @click="active = false">Cancel</v-btn>
+        <v-spacer />
+        <v-btn @click="active = false">
+          Cancel
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
-
-<script lang="ts">
-import { Component } from "vue-property-decorator";
-import { repoMetadata } from "@/components/submit/constants";
-import { IRepository } from "../submissions/types";
-import { mixins } from "vue-class-component";
-import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
-
-@Component({
-  name: "cz-register-dataset-dialog",
-  components: {},
-})
-export default class CzRegisterDatasetDialog extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
-  public active = false;
-
-  protected get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
-  }
-
-  protected get supportedRepoMetadata() {
-    return this.repoCollection.filter((r) => !r.isExternal && r.isSupported);
-  }
-
-  protected get externalRepoMetadata() {
-    return this.repoCollection.find((r) => r.isExternal);
-  }
-
-  protected close() {
-    this.$emit("close");
-  }
-}
-</script>
 
 <style lang="scss" scoped>
 .choice-container {

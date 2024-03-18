@@ -1,10 +1,10 @@
-import CzContact from "./cz.contact.vue";
-import { i18n } from "@/main";
+import CzContact from './cz.contact.vue'
+import { i18n } from '~/modules/i18n'
 
-describe("<CzContact />", () => {
-  it("renders", () => {
+describe('<CzContact />', () => {
+  it('renders', () => {
     // see: https://on.cypress.io/mounting-vue
-    // @ts-ignore
-    cy.mount(CzContact, { i18n });
-  });
-});
+    // @ts-expect-error
+    cy.mount(CzContact, { i18n })
+  })
+})

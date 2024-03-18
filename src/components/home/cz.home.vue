@@ -1,8 +1,38 @@
+<script lang="ts">
+import { Component, Vue } from 'vue-facing-decorator'
+import { repoMetadata } from '../submit/constants'
+import { DISCOVERY_SITE_URL } from '~/constants'
+import User from '~/models/user.model'
+
+@Component({
+  name: 'cz-home',
+  components: {},
+})
+export default class CzHome extends Vue {
+  protected repoMetadata = repoMetadata
+  protected discoverySiteUrl = DISCOVERY_SITE_URL
+
+  protected get isLoggedIn() {
+    return User.$state.isLoggedIn
+  }
+
+  protected get supportedRepositories() {
+    return Object.keys(repoMetadata)
+      .map(key => repoMetadata[key])
+      .filter(repo => !repo.isExternal && repo.isSupported)
+  }
+
+  protected openLogInDialog() {
+    User.openLogInDialog()
+  }
+}
+</script>
+
 <template>
   <div class="cz-home">
     <v-parallax
       class="text-center"
-      :src="require('@/assets/img/bg-3.jpg')"
+      src="/img/bg-3.jpg"
       :height="isLoggedIn ? 450 : 650"
     >
       <v-container
@@ -26,7 +56,9 @@
             <div class="has-text-white mt-4 mb-4 has-text-shadow text-h6">
               Ready to Submit Data?
             </div>
-            <v-btn @click="openLogInDialog()" rounded>Log In</v-btn>
+            <v-btn rounded @click="openLogInDialog()">
+              Log In
+            </v-btn>
           </div>
         </template>
         <div class="mt-16">
@@ -43,7 +75,9 @@
     <section>
       <div>
         <div class="text-center d-flex flex-column align-center">
-          <div class="mb-4 text-h4">{{ $t("home.submitData.title") }}</div>
+          <div class="mb-4 text-h4">
+            {{ $t("home.submitData.title") }}
+          </div>
           <p class="text--secondary text-center text-subtitle-1">
             {{ $t("home.submitData.description") }}
           </p>
@@ -98,15 +132,17 @@
     <v-divider />
 
     <section class="text-center">
-      <div class="mb-4 text-h4">What do you want to do?</div>
+      <div class="mb-4 text-h4">
+        What do you want to do?
+      </div>
       <v-row id="features-2" justify="center">
         <v-col>
-          <router-link class="is-clickable" to="/submit" tag="div"
-            ><v-icon>mdi-book-plus</v-icon></router-link
-          >
-          <router-link class="mb-2 text-h6 is-clickable" to="/submit" tag="div"
-            >Submit Data Products</router-link
-          >
+          <router-link class="is-clickable" to="/submit" tag="div">
+            <v-icon>mdi-book-plus</v-icon>
+          </router-link>
+          <router-link class="mb-2 text-h6 is-clickable" to="/submit" tag="div">
+            Submit Data Products
+          </router-link>
           <div class="text--secondary text-subtitle-1">
             Assemble your data files and metadata using our templates and submit
             directly to a supported repository.
@@ -117,14 +153,16 @@
             to="/resources/recommendations"
             class="is-clickable"
             tag="div"
-            ><v-icon>mdi-arrow-decision</v-icon></router-link
           >
+            <v-icon>mdi-arrow-decision</v-icon>
+          </router-link>
           <router-link
             to="/resources/recommendations"
             class="mb-2 text-h6 is-clickable"
             tag="div"
-            >Find the Right Repository</router-link
           >
+            Find the Right Repository
+          </router-link>
           <div class="text--secondary text-subtitle-1">
             Don't know which repository to use? Use our repository
             recommendation system to decide which repository is the best place
@@ -143,7 +181,9 @@
 
     <section class="d-flex align-center flex-column flex-lg-row">
       <div class="text-center text-lg-left">
-        <div class="mb-4 text-h4">Make your Data FAIR</div>
+        <div class="mb-4 text-h4">
+          Make your Data FAIR
+        </div>
         <p class="text--secondary text-subtitle-1">
           This {{ $t("portalName") }} works with reputable Earth Science
           repositories to ensure that research products you submit are
@@ -160,10 +200,10 @@
           style="max-width: 100%"
         >
           <img
-            :src="require('@/assets/img/fair.png')"
+            src="/img/fair.png"
             alt="FAIR"
             style="max-width: 100%"
-          />
+          >
         </a>
       </div>
     </section>
@@ -171,7 +211,9 @@
     <v-divider />
 
     <section>
-      <div class="mb-2 text-center text-h4">Supported Repositories</div>
+      <div class="mb-2 text-center text-h4">
+        Supported Repositories
+      </div>
       <div class="d-flex justify-center mb-4">
         <p class="text--secondary text-center text-subtitle-1">
           Data submitted via this Portal are deposited in multiple repositories.
@@ -186,42 +228,11 @@
           :href="repo.url"
           :title="repo.name"
           target="_blank"
-          ><img :src="repo.logoSrc" :alt="repo.name"
-        /></a>
+        ><img :src="repo.logoSrc" :alt="repo.name"></a>
       </div>
     </section>
   </div>
 </template>
-
-<script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { repoMetadata } from "../submit/constants";
-import { DISCOVERY_SITE_URL } from "@/constants";
-import User from "@/models/user.model";
-
-@Component({
-  name: "cz-home",
-  components: {},
-})
-export default class CzHome extends Vue {
-  protected repoMetadata = repoMetadata;
-  protected discoverySiteUrl = DISCOVERY_SITE_URL;
-
-  protected get isLoggedIn() {
-    return User.$state.isLoggedIn;
-  }
-
-  protected get supportedRepositories() {
-    return Object.keys(repoMetadata)
-      .map((key) => repoMetadata[key])
-      .filter((repo) => !repo.isExternal && repo.isSupported);
-  }
-
-  protected openLogInDialog() {
-    User.openLogInDialog();
-  }
-}
-</script>
 
 <style lang="scss" scoped>
 p {
@@ -232,7 +243,7 @@ section {
   padding: 4rem;
 }
 
-::v-deep .v-parallax__content {
+:deep(.v-parallax__content) {
   padding: 0;
 }
 

@@ -1,49 +1,50 @@
-import Vue from "vue";
-import Repository from "@/models/repository.model";
-import { Component } from "vue-property-decorator";
-import {
+import { Component, Vue } from 'vue-facing-decorator'
+import { Subscription } from 'rxjs'
+import Repository from '~/models/repository.model'
+import type {
   EnumRepositoryKeys,
   IRepository,
-} from "@/components/submissions/types";
-import { Subscription } from "rxjs";
-import { getRepositoryFromKey } from "@/constants";
+} from '~/components/submissions/types'
+import { getRepositoryFromKey } from '~/constants'
 
-@Component
+@Component({
+
+})
 export class ActiveRepositoryMixin extends Vue {
-  protected authorizedSubject = new Subscription();
+  protected authorizedSubject = new Subscription()
 
   protected get activeRepository() {
-    const key = Repository.$state.submittingTo;
-    return getRepositoryFromKey(key) as typeof Repository;
+    const key = Repository.$state.submittingTo
+    return getRepositoryFromKey(key) as typeof Repository
   }
 
   protected async openAuthorizePopup(repositoryKey: string) {
-    const repository = getRepositoryFromKey(repositoryKey) as typeof Repository;
-    Repository.authorize(repository); // We don't need to provide a callback because we already have a subject set
+    const repository = getRepositoryFromKey(repositoryKey) as typeof Repository
+    Repository.authorize(repository) // We don't need to provide a callback because we already have a subject set
   }
 
   protected setActiveRepository(key: EnumRepositoryKeys) {
     Repository.commit((state) => {
-      state.submittingTo = key;
-    });
+      state.submittingTo = key
+    })
   }
 
   protected submitTo(repo: IRepository) {
-    if (repo.isDisabled) {
-      return;
-    }
+    if (repo.isDisabled)
+      return
 
     if (repo.isSupported && !repo.isComingSoon) {
-      this.setActiveRepository(repo.key);
+      this.setActiveRepository(repo.key)
       this.$router
-        .push({ name: "submit.repository", params: { repository: repo.key } })
-        .catch(() => {});
-    } else {
-      window.open(repo.url, "_blank");
+        .push({ name: 'submit.repository', params: { repository: repo.key } })
+        .catch(() => {})
+    }
+    else {
+      window.open(repo.url, '_blank')
     }
   }
 
   beforeDestroy() {
-    this.authorizedSubject.unsubscribe();
+    this.authorizedSubject.unsubscribe()
   }
 }
