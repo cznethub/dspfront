@@ -4,7 +4,6 @@ import type { IRepository } from '../submissions/types'
 
 @Component({
   name: 'cz-repository-submit-card',
-  components: {},
 })
 export default class CzRepositorySubmitCard extends Vue {
   @Prop({ required: true }) repo!: IRepository
@@ -15,11 +14,12 @@ export default class CzRepositorySubmitCard extends Vue {
 <template>
   <div class="cz-repository-submit-card">
     <v-hover :key="repo.key">
-      <template #default="{ hover }">
+      <template #default="{ isHovering, props }">
         <v-card
           :id="`${repo.name.replaceAll(` `, ``)}-card`"
           :disabled="repo.isDisabled"
-          :class="`elevation-${hover ? 12 : 2}`"
+          :elevation="`${isHovering ? 12 : 2}`"
+          v-bind="props"
           class="has-cursor-pointer transition-swing"
         >
           <v-icon
@@ -50,7 +50,7 @@ export default class CzRepositorySubmitCard extends Vue {
             </div>
           </v-card-title>
 
-          <v-card-text class="text--secondary">
+          <v-card-text class="font-weight-light">
             <div class="text-subtitle-1">
               {{ repo.description }}
             </div>

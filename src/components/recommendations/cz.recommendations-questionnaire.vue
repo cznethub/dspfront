@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, mixins } from 'vue-facing-decorator'
 import type { IRepository } from '../submissions/types'
 import { EnumRepositoryKeys } from '../submissions/types'
 import { repoMetadata } from '~/components/submit/constants'
@@ -25,9 +25,8 @@ interface CzStep {
 @Component({
   name: 'cz-recommendations-questionnaire',
   components: { CzRecommendationCard },
-  mixins: [ActiveRepositoryMixin],
 })
-export default class CzRecommendationsQuestionnaire extends Vue {
+export default class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
   protected currentStepIndex = 0
   protected steps: CzStep[] = [mappings] as CzStep[]
   protected selectedOption: CzStep | null = null
@@ -102,7 +101,7 @@ export default class CzRecommendationsQuestionnaire extends Vue {
     <v-stepper v-model="currentStepIndex" flat outlined>
       <v-stepper-header>
         <template v-for="(step, index) in steps" :key="`${index}-step`">
-          <v-stepper-step
+          <v-stepper-item
             :complete="currentStepIndex > index"
             :step="index"
             editable
@@ -114,14 +113,14 @@ export default class CzRecommendationsQuestionnaire extends Vue {
                 step.selectedOption.label
               }}
             </v-chip>
-          </v-stepper-step>
+          </v-stepper-item>
 
           <v-divider v-if="index < steps.length" :key="index" />
         </template>
       </v-stepper-header>
 
-      <v-stepper-items>
-        <v-stepper-content
+      <v-stepper-window>
+        <v-stepper-window-item
           v-for="(step, index) in steps"
           :key="`${index}-content`"
           :step="index"
@@ -136,8 +135,8 @@ export default class CzRecommendationsQuestionnaire extends Vue {
                 @change="onOptionChanged"
               >
                 <v-radio
-                  v-for="(option, index) of step.options"
-                  :key="index"
+                  v-for="(option, rIndex) of step.options"
+                  :key="rIndex"
                   :label="option.label"
                   :value="option"
                   color="success"
@@ -161,7 +160,7 @@ export default class CzRecommendationsQuestionnaire extends Vue {
               type="warning"
               color="warning darken-2"
               prominent
-              border="left"
+              border="start"
             >
               <div class="text-body-1">
                 If you are a CZ Net data manager or investigator and you choose
@@ -178,7 +177,7 @@ export default class CzRecommendationsQuestionnaire extends Vue {
             <v-alert
               v-if="step.finish.linkToGuide"
               class="my-8"
-              border="left"
+              border="start"
               colored-border
               type="info"
               elevation="2"
@@ -207,7 +206,7 @@ export default class CzRecommendationsQuestionnaire extends Vue {
                 />
               </div>
             </template>
-            <div v-else class="text-subtitle-1 text--secondary">
+            <div v-else class="text-subtitle-1 font-weight-light">
               We have nothing specific to recommend for this query.
             </div>
 
@@ -234,7 +233,7 @@ export default class CzRecommendationsQuestionnaire extends Vue {
                   <template v-else>
                     <li :key="considered.key" class="my-2">
                       <div>{{ considered.name }}</div>
-                      <div class="text-subtitle-1 text--secondary">
+                      <div class="text-subtitle-1 font-weight-light">
                         {{ considered.description }}
                       </div>
                       <v-icon class="mr-2">
@@ -250,32 +249,38 @@ export default class CzRecommendationsQuestionnaire extends Vue {
               </ul>
             </div>
           </template>
-        </v-stepper-content>
-      </v-stepper-items>
+        </v-stepper-window-item>
+      </v-stepper-window>
     </v-stepper>
   </div>
 </template>
 
 <style lang="scss" scoped>
-.v-stepper__header {
-  height: unset;
-
-  .v-stepper__step {
-    align-items: flex-start;
+.v-stepper-header {
+  .v-stepper-item {
+    align-items: baseline;
 
     :deep(.v-stepper__step__step) {
       color: transparent;
     }
   }
 
-  .v-stepper__step--active {
+  .v-stepper-item--selected {
     background: rgba(0, 0, 0, 0.05);
+  }
+
+  :deep(.v-stepper-item__content) {
+    text-align: left;
   }
 }
 
-:deep(.v-input--radio-group__input) {
+:deep(.v-selection-control-group) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(30rem, 100%), 1fr));
+
+  .v-selection-control {
+    grid-area: unset;
+  }
 }
 
 :deep(.v-alert a) {

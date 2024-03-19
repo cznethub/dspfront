@@ -78,7 +78,7 @@ export default class CzHome extends Vue {
           <div class="mb-4 text-h4">
             {{ $t("home.submitData.title") }}
           </div>
-          <p class="text--secondary text-center text-subtitle-1">
+          <p class="font-weight-light text-center text-subtitle-1">
             {{ $t("home.submitData.description") }}
           </p>
         </div>
@@ -92,7 +92,7 @@ export default class CzHome extends Vue {
               <div class="text-h6">
                 {{ $t("home.submitData.points[0].title") }}
               </div>
-              <p class="text--secondary text-subtitle-1">
+              <p class="font-weight-light text-subtitle-1">
                 {{ $t("home.submitData.points[0].description") }}
               </p>
             </div>
@@ -106,7 +106,7 @@ export default class CzHome extends Vue {
               <div class="text-h6">
                 {{ $t("home.submitData.points[1].title") }}
               </div>
-              <p class="text--secondary text-subtitle-1">
+              <p class="font-weight-light text-subtitle-1">
                 {{ $t("home.submitData.points[1].description") }}
               </p>
             </div>
@@ -120,7 +120,7 @@ export default class CzHome extends Vue {
               <div class="text-h6">
                 {{ $t("home.submitData.points[2].title") }}
               </div>
-              <p class="text--secondary text-subtitle-1">
+              <p class="font-weight-light text-subtitle-1">
                 {{ $t("home.submitData.points[2].description") }}
               </p>
             </div>
@@ -137,13 +137,13 @@ export default class CzHome extends Vue {
       </div>
       <v-row id="features-2" justify="center">
         <v-col>
-          <router-link class="is-clickable" to="/submit" tag="div">
-            <v-icon>mdi-book-plus</v-icon>
+          <router-link class="is-clickable" to="/submit">
+            <div><v-icon>mdi-book-plus</v-icon></div>
           </router-link>
-          <router-link class="mb-2 text-h6 is-clickable" to="/submit" tag="div">
-            Submit Data Products
+          <router-link class="mb-2 text-h6 is-clickable" to="/submit">
+            <div>Submit Data Products</div>
           </router-link>
-          <div class="text--secondary text-subtitle-1">
+          <div class="font-weight-light text-subtitle-1">
             Assemble your data files and metadata using our templates and submit
             directly to a supported repository.
           </div>
@@ -152,18 +152,16 @@ export default class CzHome extends Vue {
           <router-link
             to="/resources/recommendations"
             class="is-clickable"
-            tag="div"
           >
-            <v-icon>mdi-arrow-decision</v-icon>
+            <div><v-icon>mdi-arrow-decision</v-icon></div>
           </router-link>
           <router-link
             to="/resources/recommendations"
             class="mb-2 text-h6 is-clickable"
-            tag="div"
           >
-            Find the Right Repository
+            <div>Find the Right Repository</div>
           </router-link>
-          <div class="text--secondary text-subtitle-1">
+          <div class="font-weight-light text-subtitle-1">
             Don't know which repository to use? Use our repository
             recommendation system to decide which repository is the best place
             for your data.
@@ -184,7 +182,7 @@ export default class CzHome extends Vue {
         <div class="mb-4 text-h4">
           Make your Data FAIR
         </div>
-        <p class="text--secondary text-subtitle-1">
+        <p class="font-weight-light text-subtitle-1">
           This {{ $t("portalName") }} works with reputable Earth Science
           repositories to ensure that research products you submit are
           <u>F</u>indable, <u>A</u>ccessible, <u>I</u>nteroperable, and
@@ -215,7 +213,7 @@ export default class CzHome extends Vue {
         Supported Repositories
       </div>
       <div class="d-flex justify-center mb-4">
-        <p class="text--secondary text-center text-subtitle-1">
+        <p class="font-weight-light text-center text-subtitle-1">
           Data submitted via this Portal are deposited in multiple repositories.
           Click the links below to learn more about each of the supported
           repositories.

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-facing-decorator'
+import { Component, Prop, Watch, mixins } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import type { IRepository } from '../submissions/types'
 import type { IFile, IFolder } from '~/components/new-submission/types'
@@ -8,9 +8,8 @@ import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 @Component({
   name: 'cz-folder-structure',
   components: {},
-  mixins: [ActiveRepositoryMixin],
 })
-export default class CzFolderStructure extends Vue {
+export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
   @Prop({ default: false }) repoMetadata!: IRepository
   @Prop({ default: false }) isEditMode!: boolean
   @Prop({ default: false }) isReadOnly!: boolean
@@ -937,7 +936,7 @@ export default class CzFolderStructure extends Vue {
                   />
                   <v-row
                     v-else
-                    :class="{ 'text--secondary': item.isCutting }"
+                    :class="{ 'font-weight-light': item.isCutting }"
                     class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column"
                     @click.exact="onItemClick(item)"
                     @click.ctrl.exact="onItemCtrlClick(item)"
@@ -952,13 +951,13 @@ export default class CzFolderStructure extends Vue {
                       </div>
                       <div
                         v-if="item.file"
-                        class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption text--secondary"
+                        class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption font-weight-light"
                       >
                         {{ item.file.size | prettyBytes(2, false) }}
                       </div>
                       <div
                         v-else-if="item.uploadedSize"
-                        class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption text--secondary"
+                        class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption font-weight-light"
                       >
                         {{ item.uploadedSize | prettyBytes(2, false) }}
                       </div>
@@ -994,7 +993,7 @@ export default class CzFolderStructure extends Vue {
                     </v-col>
                     <v-col
                       v-if="showFileWarnings(item)"
-                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption text--secondary align-center"
+                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption font-weight-light align-center"
                     >
                       <v-menu open-on-hover bottom left offset-y>
                         <template #activator="{ on, attrs }">
@@ -1112,7 +1111,7 @@ export default class CzFolderStructure extends Vue {
 
       <div
         v-else-if="isReadOnly || !rootDirectory.children.length"
-        class="pa-2 text-body-1 text--secondary mb-2"
+        class="pa-2 text-body-1 font-weight-light mb-2"
       >
         No files have been included in this submission.
       </div>

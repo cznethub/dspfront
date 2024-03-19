@@ -8,7 +8,9 @@ import type { UserModule } from '~/types'
 const lightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    // primary: colors.blue.darken2,
+    primary: '#1976d2',
+    surface: 'FFF',
+    navbar: '#cfd8dc',
     // secondary: colors.blueGrey,
     // accent: colors.blue,
     // error: colors.red.accent3,

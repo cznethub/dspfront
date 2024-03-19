@@ -16,7 +16,6 @@
     "up": "taze major -I"
   },
   "dependencies": {
-    "@cznethub/cznet-vue-core": "^0.1.93",
     "@unhead/vue": "^1.8.14",
     "@vueuse/core": "^10.9.0",
     "@vueuse/head": "^2.0.0",
@@ -34,6 +33,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^2.8.1",
+    "@fortawesome/fontawesome-free": "^6.5.1",
     "@iconify-json/carbon": "^1.1.31",
     "@shikijs/markdown-it": "^1.1.7",
     "@types/markdown-it-link-attributes": "^3.0.4",
@@ -47,7 +47,6 @@
     "eslint": "^8.57.0",
     "eslint-plugin-cypress": "^2.15.1",
     "eslint-plugin-format": "^0.1.0",
-    "https-localhost": "^4.7.1",
     "lint-staged": "^15.2.2",
     "markdown-it-link-attributes": "^4.0.1",
     "pnpm": "^8.15.4",

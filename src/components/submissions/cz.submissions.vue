@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Ref, Vue } from 'vue-facing-decorator'
+import { Component, Ref, mixins } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
 import type {
   IRepository,
@@ -28,9 +28,8 @@ import { isRepositoryAuthorized } from '~/util'
 @Component({
   name: 'cz-submissions',
   components: { CzRegisterDatasetDialog },
-  mixins: [ActiveRepositoryMixin],
 })
-export default class CzSubmissions extends Vue {
+export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   @Ref('registerDatasetDialog') registerDatasetDialog!: InstanceType<
     typeof CzRegisterDatasetDialog
   >
@@ -528,7 +527,7 @@ export default class CzSubmissions extends Vue {
           <div id="total_submissions" class="mb-2 text-h6">
             {{ submissions.length }} Total Submissions
           </div>
-          <p v-if="isAnyFilterAcitve" class="text--secondary">
+          <p v-if="isAnyFilterAcitve" class="font-weight-light">
             {{ currentItems.length }} Results
           </p>
         </div>
@@ -840,14 +839,14 @@ export default class CzSubmissions extends Vue {
               </template>
 
               <template #no-data>
-                <div class="text-subtitle-1 text--secondary ma-4">
+                <div class="text-subtitle-1 font-weight-light ma-4">
                   You don't have any submissions that match the selected
                   criteria.
                 </div>
               </template>
 
               <template #no-results>
-                <div class="text-subtitle-1 text--secondary ma-4">
+                <div class="text-subtitle-1 font-weight-light ma-4">
                   You don't have any submissions that match the selected
                   criteria.
                 </div>

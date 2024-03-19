@@ -1,6 +1,7 @@
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-facing-decorator'
+import { Component, Watch, mixins } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
+import type { VTextField } from 'vuetify/lib/components/index.mjs'
 import { repoMetadata } from '~/components/submit/constants'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
 import type { IRepository } from '~/components/submissions/types'
@@ -13,9 +14,8 @@ import User from '~/models/user.model'
 @Component({
   name: 'cz-register-dataset',
   components: {},
-  mixins: [ActiveRepositoryMixin],
 })
-export default class CzRegisterDataset extends Vue {
+export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   protected url = ''
   protected step = 1
   protected selectedRepository: IRepository | null = null
@@ -59,10 +59,11 @@ export default class CzRegisterDataset extends Vue {
   }
 
   @Watch('step')
-  onStepChange(currentStep, previousStep) {
+  onStepChange(currentStep: number, _previousStep: number) {
     if (currentStep === 2) {
-      // @ts-expect-error
-      this.$refs.txtIdentifier?.focus()
+      (this.$refs.txtIdentifier as InstanceType<
+    typeof VTextField
+  >)?.focus()
     }
   }
 
@@ -152,7 +153,7 @@ export default class CzRegisterDataset extends Vue {
           this.selectedRepository.key,
         )
 
-        if (response && isNaN(response)) {
+        if (response && Number.isNaN(response)) {
           this.submission = Submission.getInsertData(
             response.metadata,
             this.selectedRepository.key,
@@ -295,7 +296,7 @@ export default class CzRegisterDataset extends Vue {
             @keypress.enter="onReadDataset"
           />
 
-          <div class="text-subtitle-1 text--secondary pl-3 mb-4 mt-1">
+          <div class="text-subtitle-1 font-weight-light pl-3 mb-4 mt-1">
             {{
               `e.g. '${selectedRepository.exampleUrl}' or '${selectedRepository.exampleIdentifier}'`
             }}

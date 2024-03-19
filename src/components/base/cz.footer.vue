@@ -28,7 +28,7 @@ export default class CzFooter extends Vue {
 <template>
   <v-container
     flat
-    class="cz-footer text--secondary d-flex flex-column align-center full-width body-2"
+    class="cz-footer font-weight-light d-flex flex-column align-center full-width text-body-2"
   >
     <div class="d-lg-flex justify-space-between full-width">
       <div class="mb-4">
@@ -57,7 +57,7 @@ export default class CzFooter extends Vue {
         <div class="mb-2 text-h6">
           Get Started
         </div>
-        <a v-if="!isLoggedIn" @click="openLogInDialog()">Log In</a>
+        <a v-if="!isLoggedIn" href="#" @click="openLogInDialog()">Log In</a>
         <router-link v-else to="/submit">
           Submit Data
         </router-link>

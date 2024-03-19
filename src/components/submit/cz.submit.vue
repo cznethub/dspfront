@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Ref, Vue } from 'vue-facing-decorator'
+import { Component, Ref, mixins } from 'vue-facing-decorator'
 import type { RouteLocationNormalized } from 'vue-router'
 import type { IRepository } from '../submissions/types'
 import { repoMetadata } from '~/components/submit/constants'
@@ -10,9 +10,8 @@ import CzRegisterDatasetDialog from '~/components/register-dataset/cz.register-d
 @Component({
   name: 'cz-submit',
   components: { CzRepositorySubmitCard, CzRegisterDatasetDialog },
-  mixins: [ActiveRepositoryMixin],
 })
-export default class CzSubmit extends Vue {
+export default class CzSubmit extends mixins(ActiveRepositoryMixin) {
   @Ref('registerDatasetDialog') registerDatasetDialog!: InstanceType<
     typeof CzRegisterDatasetDialog
   >
@@ -75,11 +74,11 @@ export default class CzSubmit extends Vue {
               v-for="repo of supportedRepoMetadata"
               :key="repo.key"
               :repo="repo"
-              @click.native="submitTo(repo)"
+              @click.enter="submitTo(repo)"
             />
             <cz-repository-submit-card
               :repo="externalRepoMetadata"
-              @click.native="openRegisterDatasetDialog"
+              @click.enter="openRegisterDatasetDialog"
             />
           </div>
         </div>

@@ -1,11 +1,23 @@
+<script lang="ts">
+import { Component, Vue } from 'vue-facing-decorator'
+
+@Component({
+  name: 'cz-recommendations',
+  components: {},
+})
+export default class CzRecommendations extends Vue {}
+</script>
+
 <template>
   <div class="cz-recommendations">
-    <div class="banner text-center has-bg-light-gray">
+    <div class="py-8 text-center has-bg-light-gray">
       <div class="text-subtitle-1 mb-12">
         Coming soon: This page will provide functionality that will help you
         decide which repository to use for your data.
       </div>
-      <div class="mb-2 text-h4">Repository Recommendations</div>
+      <div class="mb-2 text-h4">
+        Repository Recommendations
+      </div>
       <div class="text-h5">
         Find the Best Repository for Your Research Products
       </div>
@@ -14,11 +26,12 @@
     <v-container>
       <div id="options-grid">
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ isHovering, props }">
             <v-card
               :class="`elevation-${
-                hover ? 12 : 2
+                isHovering ? 12 : 2
               } has-cursor-pointer transition-swing`"
+              v-bind="props"
             >
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
@@ -27,7 +40,7 @@
                 >
                   I have geospatial data
                 </div>
-                <p class="text--secondary text-center text-subtitle-1">
+                <p class="font-weight-light text-center text-subtitle-1">
                   Learn more about formats, best practices, and repositories for
                   geospatial data.
                 </p>
@@ -37,11 +50,12 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ isHovering, props }">
             <v-card
               :class="`elevation-${
-                hover ? 12 : 2
+                isHovering ? 12 : 2
               } has-cursor-pointer transition-swing`"
+              v-bind="props"
             >
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
@@ -50,7 +64,7 @@
                 >
                   My data are derived from physical samples
                 </div>
-                <p class="text--secondary text-center text-subtitle-1">
+                <p class="font-weight-light text-center text-subtitle-1">
                   Learn more about registering physical samples and submitting
                   data derived from samples.
                 </p>
@@ -60,11 +74,12 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ isHovering, props }">
             <v-card
               :class="`elevation-${
-                hover ? 12 : 2
+                isHovering ? 12 : 2
               } has-cursor-pointer transition-swing`"
+              v-bind="props"
             >
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
@@ -73,7 +88,7 @@
                 >
                   I want to submit multiple types of data together
                 </div>
-                <p class="text--secondary text-center text-subtitle-1">
+                <p class="font-weight-light text-center text-subtitle-1">
                   Learn more about best practices for assembling multiple
                   datasets for a project or publication.
                 </p>
@@ -83,11 +98,12 @@
         </v-hover>
 
         <v-hover>
-          <template v-slot:default="{ hover }">
+          <template #default="{ isHovering, props }">
             <v-card
               :class="`elevation-${
-                hover ? 12 : 2
-              } has-cursor-pointer transition-swing`"
+                isHovering ? 12 : 2
+              } has-cursor-pointer transition-swing`",
+              v-bind="props"
             >
               <v-card-text class="text-center">
                 <v-icon>mdi-plus-circle-outline</v-icon>
@@ -96,7 +112,7 @@
                 >
                   I have time series data from sensors
                 </div>
-                <p class="text--secondary text-center text-subtitle-1">
+                <p class="font-weight-light text-center text-subtitle-1">
                   Learn more about more about formats, best practices, and
                   repositories for geospatial data.
                 </p>
@@ -110,28 +126,20 @@
     <v-divider />
 
     <section class="d-flex flex-column align-center">
-      <div class="text-h4 mb-4">Not Sure? Let us Help You Decide</div>
-      <p class="text--secondary mb-4 text-center">
+      <div class="text-h4 mb-4">
+        Not Sure? Let us Help You Decide
+      </div>
+      <p class="font-weight-light mb-4 text-center">
         Click the button below to begin an interactive questionnaire that will
         help us identify which data formats, best practices, and repository is
         right for your data.
       </p>
-      <v-btn to="/resources/recommendations-questionnaire" color="primary"
-        >Repository Recommendations</v-btn
-      >
+      <v-btn to="/resources/recommendations-questionnaire" color="primary">
+        Repository Recommendations
+      </v-btn>
     </section>
   </div>
 </template>
-
-<script lang="ts">
-import { Component, Vue } from "vue-facing-decorator";
-
-@Component({
-  name: "cz-recommendations",
-  components: {},
-})
-export default class CzRecommendations extends Vue {}
-</script>
 
 <style lang="scss" scoped>
 #options-grid {

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Ref, Vue } from 'vue-facing-decorator'
+import { Component, Ref, mixins } from 'vue-facing-decorator'
 import type { ErrorObject } from 'ajv'
 import { Subscription } from 'rxjs'
 import { CzForm, Notifications } from '@cznethub/cznet-vue-core'
@@ -25,9 +25,8 @@ const initialData = {}
     CzNewSubmissionActions,
     CzForm,
   },
-  mixins: [ActiveRepositoryMixin],
 })
-export default class CzNewSubmission extends Vue {
+export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   @Ref('folderStructure') folderStructure!: InstanceType<
     typeof CzFolderStructure
   >

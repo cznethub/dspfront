@@ -5,6 +5,7 @@ import User from '~/models/user.model'
 @Component({
   name: 'cz-login',
   components: {},
+  emits: ['loggedIn'],
 })
 export default class CzLogin extends Vue {
   protected async openLogInDialog() {
@@ -16,7 +17,7 @@ export default class CzLogin extends Vue {
   }
 
   protected onLoggedIn() {
-    this.$emit('logged-in')
+    this.$emit('loggedIn')
   }
 }
 </script>
@@ -59,7 +60,7 @@ export default class CzLogin extends Vue {
 </template>
 
 <style lang="scss" scoped>
-:deep(.v-card__text img) {
+:deep(.v-card-text img) {
   max-width: 12rem;
 }
 </style>

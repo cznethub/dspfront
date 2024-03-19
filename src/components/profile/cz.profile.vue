@@ -17,11 +17,11 @@ export default class CzProfile extends Vue {
     <v-navigation-drawer permanent :mini-variant="$vuetify.display.mdAndDown" class="flex-shrink-0">
       <template #prepend>
         <v-list-item two-line>
-          <v-list-item-avatar>
+          <v-list-item-media>
             <v-icon left>
               fab fa-orcid
             </v-icon>
-          </v-list-item-avatar>
+          </v-list-item-media>
 
           <!-- <v-list-item-title>email address here</v-list-item-title> -->
           <v-list-item-subtitle>Logged In</v-list-item-subtitle>

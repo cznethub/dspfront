@@ -2,7 +2,7 @@ import { ViteSSG } from 'vite-ssg'
 import App from './App.vue'
 import type { UserModule } from './types'
 
-import './styles/main.css'
+import './assets/css/global.scss'
 import { routes } from './routes'
 
 // https://github.com/antfu/vite-ssg

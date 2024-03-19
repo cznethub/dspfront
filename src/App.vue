@@ -274,7 +274,7 @@ export default toNative(App)
             :alt="`${$t('portalName')} home`"
           >
         </router-link>
-        <div class="spacer" />
+        <v-spacer />
         <v-card
           v-if="!$vuetify.display.mdAndDown"
           class="nav-items mr-2 d-flex"
@@ -308,6 +308,7 @@ export default toNative(App)
           <v-btn
             v-if="!isLoggedIn"
             id="navbar-login"
+            variant="elevated"
             rounded
             @click="openLogInDialog()"
           >

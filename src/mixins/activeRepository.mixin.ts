@@ -7,9 +7,7 @@ import type {
 } from '~/components/submissions/types'
 import { getRepositoryFromKey } from '~/constants'
 
-@Component({
-
-})
+@Component
 export class ActiveRepositoryMixin extends Vue {
   protected authorizedSubject = new Subscription()
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, mixins } from 'vue-facing-decorator'
 import { repoMetadata } from '~/components/submit/constants'
 import type { IRepository } from '~/components/submissions/types'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
@@ -7,9 +7,8 @@ import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 @Component({
   name: 'cz-register-dataset-dialog',
   components: {},
-  mixins: [ActiveRepositoryMixin],
 })
-export default class CzRegisterDatasetDialog extends Vue {
+export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixin) {
   public active = false
 
   protected get repoCollection(): IRepository[] {
@@ -48,11 +47,12 @@ export default class CzRegisterDatasetDialog extends Vue {
         :class="{ 'is-xs-small': $vuetify.display.xs }"
       >
         <v-hover>
-          <template #default="{ hover }">
+          <template #default="{ isHovering, props }">
             <v-card
               class="transition-swing"
               :to="{ path: 'register' }"
-              :class="`elevation-${hover ? 2 : 0}`"
+              :class="`elevation-${isHovering ? 2 : 0}`"
+              v-bind="props"
               outlined
             >
               <v-card-text class="d-flex align-items-center gap-1">
@@ -74,10 +74,11 @@ export default class CzRegisterDatasetDialog extends Vue {
         </v-hover>
 
         <v-hover>
-          <template #default="{ hover }">
+          <template #default="{ isHovering, props }">
             <v-card
               class="transition-swing"
-              :class="`elevation-${hover ? 2 : 0}`"
+              :class="`elevation-${isHovering ? 2 : 0}`"
+              v-bind="props"
               outlined
               role="button"
               ripple
