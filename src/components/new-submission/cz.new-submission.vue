@@ -31,7 +31,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     typeof CzFolderStructure
   >
 
-  protected rootDirectory: IFolder = {
+  rootDirectory: IFolder = {
     name: 'root',
     children: [],
     parent: null,
@@ -39,24 +39,24 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     path: '',
   }
 
-  protected isValid = false
-  protected isLoading = false
-  protected isLoadingInitialFiles = false
-  protected isSaving = false
-  protected identifier = ''
-  protected data: any = initialData
-  protected usedUISchema = {}
-  protected repoMetadata = repoMetadata
-  protected uploads: (IFile | IFolder)[] = []
-  protected errors: ErrorObject[] = []
-  protected repositoryRecord: any = null
-  protected loggedInSubject = new Subscription()
-  protected timesChanged = 0
-  protected wasUnauthorized = false
-  protected allowFileUpload = true
-  protected repositoryKey: EnumRepositoryKeys = EnumRepositoryKeys.external
+  isValid = false
+  isLoading = false
+  isLoadingInitialFiles = false
+  isSaving = false
+  identifier = ''
+  data: any = initialData
+  usedUISchema = {}
+  repoMetadata = repoMetadata
+  uploads: (IFile | IFolder)[] = []
+  errors: ErrorObject[] = []
+  repositoryRecord: any = null
+  loggedInSubject = new Subscription()
+  timesChanged = 0
+  wasUnauthorized = false
+  allowFileUpload = true
+  repositoryKey: EnumRepositoryKeys = EnumRepositoryKeys.external
 
-  protected get config() {
+  get config() {
     return {
       restrict: true,
       trim: false,
@@ -81,28 +81,28 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     }
   }
 
-  protected get dbSubmission() {
-    const identifier = (this.$route as RouteLocationNormalized).params.id?.toString()
+  get dbSubmission() {
+    const identifier = this.$route.params.id?.toString()
     const submission = Submission.find([identifier, 'hydroshare'])
     return submission
   }
 
-  protected get isHsCollection(): boolean {
+  get isHsCollection(): boolean {
     return this.dbSubmission?.metadata.type === 'CollectionResource'
   }
 
-  protected get isHsComposite(): boolean {
+  get isHsComposite(): boolean {
     return this.dbSubmission?.metadata.type === 'CompositeResource'
   }
 
-  protected get isEclSubmitted(): boolean {
+  get isEclSubmitted(): boolean {
     return (
       this.activeRepository.entity === EnumRepositoryKeys.earthchem
       && this.dbSubmission?.metadata.status === 'submitted'
     )
   }
 
-  protected get isPublished(): boolean {
+  get isPublished(): boolean {
     if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare)
       return !!this.dbSubmission?.metadata.published
     else if (this.activeRepository.entity === EnumRepositoryKeys.earthchem)
@@ -111,72 +111,72 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     return false
   }
 
-  protected get repositoryUrl() {
+  get repositoryUrl() {
     return this.dbSubmission?.url
   }
 
-  protected get isEditMode() {
-    return (this.$route as RouteLocationNormalized).params.id !== undefined
+  get isEditMode() {
+    return this.$route.params.id.length
   }
 
-  protected get hasFolderStructure() {
+  get hasFolderStructure() {
     return this.wasLoaded && !this.isExternal && !this.isHsCollection
   }
 
-  protected get schema() {
-    return this.activeRepository?.get()?.schema
+  get schema() {
+    return this.activeRepository.schema
   }
 
-  protected get uiSchema() {
-    return this.activeRepository?.get()?.uischema || undefined
+  get uiSchema() {
+    return this.activeRepository.uischema || undefined
   }
 
-  protected get schemaDefaults() {
-    return this.activeRepository?.get()?.schemaDefaults
+  get schemaDefaults() {
+    return this.activeRepository.schemaDefaults
   }
 
-  protected get isDevMode() {
+  get isDevMode() {
     return false
     // TODO: uncomment when this env variable is properly setup in production
     // return import.meta.env.NODE_ENV === "development"
   }
 
-  protected get isExternal() {
+  get isExternal() {
     return this.repoMetadata[this.repositoryKey].isExternal
   }
 
-  protected get formTitle() {
+  get formTitle() {
     if (this.isExternal)
       return 'Register Dataset from External Repository'
 
     return this.isEditMode
       ? 'Edit Submission'
-      : `Submit to ${this.activeRepository.get()?.name}`
+      : `Submit to ${this.activeRepository.name}`
   }
 
-  protected get submitText() {
+  get submitText() {
     return this.isEditMode ? 'Save Changes' : 'Save'
   }
 
-  protected get wasLoaded() {
+  get wasLoaded() {
     return this.isEditMode ? !!this.repositoryRecord : true
   }
 
-  protected get hasUnsavedChanges(): boolean {
+  get hasUnsavedChanges(): boolean {
     return User.$state.hasUnsavedChanges
   }
 
-  protected get registeringSubmission(): Partial<Submission> | null {
+  get registeringSubmission(): Partial<Submission> | null {
     return User.$state.registeringSubmission
   }
 
-  protected set hasUnsavedChanges(value: boolean) {
+  set hasUnsavedChanges(value: boolean) {
     User.commit((state) => {
       state.hasUnsavedChanges = value
     })
   }
 
-  protected get isLoggedIn() {
+  get isLoggedIn() {
     return User.$state.isLoggedIn
   }
 
@@ -194,7 +194,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
     this.hasUnsavedChanges = false
     this.wasUnauthorized = false
-    this.repositoryKey = (this.$route as RouteLocationNormalized).params.repository as EnumRepositoryKeys
+    this.repositoryKey = this.$route.params.repository as EnumRepositoryKeys
 
     if (
       !this.activeRepository
@@ -207,7 +207,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
     if (this.isEditMode) {
       // `$route.params.id` will cast to a number. We need the identifier as a string.
-      this.identifier = (this.$route as RouteLocationNormalized).params.id?.toString()
+      this.identifier = this.$route.params.id?.toString()
       this.loadSavedSubmission()
     }
     else {
@@ -215,20 +215,20 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     }
   }
 
-  protected onLogIn() {
+  onLogIn() {
     User.logIn()
   }
 
-  protected goToSubmissions() {
+  goToSubmissions() {
     this.$router.push({
       name: 'submissions',
     })
   }
 
-  protected async loadSavedSubmission() {
+  async loadSavedSubmission() {
     console.info('CzNewSubmission: reading existing record...')
     const response
-      = (this.$route as RouteLocationNormalized).query.mode === 'register'
+      = this.$route.query.mode === 'register'
         ? this.registeringSubmission
           ? { metadata: this.registeringSubmission } // Load it from persistent state if we have it
           : await Repository.readExistingSubmission(
@@ -345,7 +345,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.isLoading = false
   }
 
-  protected onSaveAndFinish() {
+  onSaveAndFinish() {
     if (
       this.hasFolderStructure
       && (this.folderStructure?.hasInvalidFilesToUpload
@@ -398,7 +398,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     }
   }
 
-  protected onSave() {
+  onSave() {
     if (
       !this.isExternal
       && (this.folderStructure?.hasInvalidFilesToUpload
@@ -447,7 +447,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   private async _saveAndFinish() {
-    if (this.hasUnsavedChanges || (this.$route as RouteLocationNormalized).query.mode === 'register') {
+    if (this.hasUnsavedChanges || this.$route.query.mode === 'register') {
       const wasSaved = await this._save()
 
       if (wasSaved) {
@@ -522,7 +522,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     return wasSaved
   }
 
-  protected onDataChange(_data) {
+  onDataChange(_data) {
     // cz-form emits 'change' event multiple times during instantioation.
     const changesDuringInstantiation = 2
 
@@ -532,7 +532,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation
   }
 
-  protected async uploadFiles(files: (IFolder | IFile)[]) {
+  async uploadFiles(files: (IFolder | IFile)[]) {
     const repoUrls: IRepositoryUrls | undefined
       = this.activeRepository?.get()?.urls
 
@@ -667,7 +667,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       <template v-if="wasUnauthorized">
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
           elevation="2"
@@ -693,7 +693,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       <template v-else-if="!isLoggedIn">
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
           elevation="2"

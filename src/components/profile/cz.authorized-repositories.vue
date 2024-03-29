@@ -12,28 +12,28 @@ import Repository from '~/models/repository.model'
   components: {},
 })
 export default class CzAuthorizedRepositories extends mixins(ActiveRepositoryMixin) {
-  protected repoMetadata = repoMetadata
+  repoMetadata = repoMetadata
 
-  protected get supportedRepositories(): IRepository[] {
+  get supportedRepositories(): IRepository[] {
     return Object.keys(repoMetadata)
       .map(key => repoMetadata[key])
       .filter(repo => !repo.isExternal && repo.isSupported)
   }
 
-  protected getAccessToken(repositoryKey: string): string {
+  getAccessToken(repositoryKey: string): string {
     return getRepositoryFromKey(repositoryKey)?.$state.accessToken
   }
 
-  protected onCopy(repositoryKey: string) {
+  onCopy(repositoryKey: string) {
     navigator.clipboard.writeText(this.getAccessToken(repositoryKey))
     Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
   }
 
-  protected async openAuthorizePopup(repositoryKey: string) {
+  async openAuthorizePopup(repositoryKey: string) {
     Repository.openAuthorizeDialog(repositoryKey)
   }
 
-  protected openRevokeDialog(repositoryKey: string) {
+  openRevokeDialog(repositoryKey: string) {
     Repository.openRevokeDialog(
       getRepositoryFromKey(repositoryKey) as typeof Repository,
     )

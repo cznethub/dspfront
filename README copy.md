@@ -176,7 +176,7 @@ And, enjoy :)
 
 ### Development
 
-Just run and visit http://localhost:8080
+Just run and visit http://127.0.0.1:8080
 
 ```bash
 pnpm dev

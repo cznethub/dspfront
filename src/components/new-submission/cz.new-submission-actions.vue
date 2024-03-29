@@ -40,11 +40,10 @@ export default class CzNewSubmissionActions extends Vue {
       </v-btn>
 
       <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
-        <template #activator="{ on, attrs }">
+        <template #activator="{ props }">
           <div
-            v-bind="attrs"
+            v-bind="props"
             class="d-flex form-controls flex-column flex-sm-row"
-            v-on="on"
           >
             <template>
               <v-badge

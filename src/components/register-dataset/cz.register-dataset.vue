@@ -16,33 +16,33 @@ import User from '~/models/user.model'
   components: {},
 })
 export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
-  protected url = ''
-  protected step = 1
-  protected selectedRepository: IRepository | null = null
-  protected isFetching = false
-  protected isValid = false
-  protected submission: Partial<Submission> | null = null
-  protected apiSubmission: any = null
-  protected wasUnauthorized = false
-  protected isPublished = false
-  protected isRegistering = false
-  protected allowFileUpload = true
-  protected resourceType = ''
-  protected isHsCollection = false
+  url = ''
+  step = 1
+  selectedRepository: IRepository | null = null
+  isFetching = false
+  isValid = false
+  submission: Partial<Submission> | null = null
+  apiSubmission: any = null
+  wasUnauthorized = false
+  isPublished = false
+  isRegistering = false
+  allowFileUpload = true
+  resourceType = ''
+  isHsCollection = false
 
-  protected get repoCollection(): IRepository[] {
+  get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map(r => repoMetadata[r])
   }
 
-  protected get supportedRepoMetadata() {
+  get supportedRepoMetadata() {
     return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
   }
 
-  protected get canReadDataset(): boolean {
+  get canReadDataset(): boolean {
     return !this.isFetching && this.isValid && !!this.url
   }
 
-  protected get identifierFromUrl(): string {
+  get identifierFromUrl(): string {
     if (this.selectedRepository?.identifierPattern?.test(this.url)) {
       return this.url
     }
@@ -71,14 +71,14 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
     this.selectedRepository = this.repoCollection[0]
   }
 
-  protected onReadDataset() {
+  onReadDataset() {
     if (this.canReadDataset) {
       this.step++
       this._readDataset()
     }
   }
 
-  protected goToEditSubmission() {
+  goToEditSubmission() {
     // We cannot pass objects through routing, so we store it in ORM temporarily
     User.commit((state) => {
       state.registeringSubmission = this.apiSubmission
@@ -95,7 +95,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   }
 
   /** We register published submissions as they are because they can no longer be edited */
-  protected async registerSubmissionAsIs() {
+  async registerSubmissionAsIs() {
     this.isRegistering = true
     try {
       await Repository.readSubmission(
@@ -121,13 +121,13 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
     }
   }
 
-  protected getDateInLocalTime(date: number): string {
+  getDateInLocalTime(date: number): string {
     const offset = new Date(date).getTimezoneOffset() * 60 * 1000
     const localDateTime = date + offset
     return new Date(localDateTime).toLocaleString()
   }
 
-  protected isValidUrlOrIdentifier(): true | string {
+  isValidUrlOrIdentifier(): true | string {
     if (!this.url)
       return 'required'
 

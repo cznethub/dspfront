@@ -18,16 +18,16 @@ export const install: UserModule = ({ app }) => {
         key: `CZ Hub`,
       }),
     ],
-    state() {
-      return {
-        count: 0,
-      }
-    },
-    mutations: {
-      increment(state) {
-        state.count++
-      },
-    },
+    // state() {
+    //   return {
+    //     count: 0,
+    //   }
+    // },
+    // mutations: {
+    //   increment(state) {
+    //     state.count++
+    //   },
+    // },
   })
 
   // Install the store instance as a plugin

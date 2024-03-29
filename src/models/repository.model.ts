@@ -99,19 +99,16 @@ export default class Repository extends Model implements IRepository {
 
   static async init() {
     // Insert initial repo
+
     if (!this.get()) {
       console.info(
         `Repository: Initializing ${this.entity} for the first time...`,
       )
-      const newRepo: IRepository = {
-        ...repoMetadata[this.entity],
-      }
-
-      Repository.insertOrUpdate({ data: newRepo })
+      await Repository.insert({ data: repoMetadata[this.entity] })
     }
 
     // Fetch urls and schemas
-    console.info(`${this.entity}: fetching schemas...`)
+    console.info(`[${this.entity}]: fetching schemas...`)
     const urls: IRepositoryUrls | undefined = await this.getUrls()
 
     let results: PromiseSettledResult<any>[] = await Promise.allSettled([
@@ -131,7 +128,7 @@ export default class Repository extends Model implements IRepository {
     const uischema = results[1]
     const schemaDefaults = results[2]
 
-    this.update({
+    await this.update({
       where: this.entity,
       data: { urls, schema, uischema, schemaDefaults },
     })
@@ -148,7 +145,7 @@ export default class Repository extends Model implements IRepository {
     callback?: () => any,
   ) {
     const handleMessage = async (event: MessageEvent) => {
-      if (event.origin !== APP_URL || !event.data.hasOwnProperty('token'))
+      if (event.origin !== APP_URL || !Object.prototype.hasOwnProperty.call(!event.data, 'token'))
         return
 
       if (activeRepository && event.data?.token) {
@@ -254,7 +251,7 @@ export default class Repository extends Model implements IRepository {
 
   protected static async getUrls(): Promise<undefined | IRepositoryUrls> {
     try {
-      const response = await axios.get(`/api/urls/${this.get()?.key}`, {
+      const response = await axios.get(`/api/urls/${this.entity}`, {
         params: { access_token: User.$state.orcidAccessToken },
       })
 
@@ -318,6 +315,7 @@ export default class Repository extends Model implements IRepository {
   }
 
   static get(): Repository | null {
+    // console.log(Repository.query().all())
     return Repository.query().where('key', this.entity).withAll().first()
   }
 

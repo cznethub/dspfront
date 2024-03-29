@@ -135,4 +135,13 @@ export default defineConfig({
     // TODO: workaround until they support native ESM
     noExternal: ['workbox-window'],
   },
+
+  server: {
+    host: '127.0.0.1',
+    port: 8080,
+    hmr: {
+      host: '127.0.0.1',
+      protocol: 'ws',
+    },
+  },
 })

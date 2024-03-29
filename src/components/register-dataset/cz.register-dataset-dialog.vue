@@ -11,19 +11,19 @@ import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixin) {
   public active = false
 
-  protected get repoCollection(): IRepository[] {
+  get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map(r => repoMetadata[r])
   }
 
-  protected get supportedRepoMetadata() {
+  get supportedRepoMetadata() {
     return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
   }
 
-  protected get externalRepoMetadata() {
+  get externalRepoMetadata() {
     return this.repoCollection.find(r => r.isExternal)
   }
 
-  protected close() {
+  close() {
     this.$emit('close')
   }
 }

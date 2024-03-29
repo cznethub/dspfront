@@ -10,7 +10,7 @@ import External from '~/models/external.model'
 export function isRepositoryAuthorized(
   repository: EnumRepositoryKeys,
   promptAuthorize: boolean = true,
-) {
+): boolean {
   const activeRepository = supportedRepositoryModels[repository]
 
   if (

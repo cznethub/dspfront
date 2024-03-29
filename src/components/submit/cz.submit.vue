@@ -16,23 +16,23 @@ export default class CzSubmit extends mixins(ActiveRepositoryMixin) {
     typeof CzRegisterDatasetDialog
   >
 
-  protected get repoCollection(): IRepository[] {
+  get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map(r => repoMetadata[r])
   }
 
-  protected get supportedRepoMetadata() {
+  get supportedRepoMetadata() {
     return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
   }
 
-  protected get externalRepoMetadata() {
+  get externalRepoMetadata() {
     return this.repoCollection.find(r => r.isExternal)
   }
 
-  protected get isInSubmitLandingPage() {
+  get isInSubmitLandingPage() {
     return !(this.$route as RouteLocationNormalized).params.repository
   }
 
-  protected openRegisterDatasetDialog() {
+  openRegisterDatasetDialog() {
     this.registerDatasetDialog.active = true
   }
 }

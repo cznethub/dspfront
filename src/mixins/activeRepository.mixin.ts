@@ -35,7 +35,6 @@ export class ActiveRepositoryMixin extends Vue {
       this.setActiveRepository(repo.key)
       this.$router
         .push({ name: 'submit.repository', params: { repository: repo.key } })
-        .catch(() => {})
     }
     else {
       window.open(repo.url, '_blank')

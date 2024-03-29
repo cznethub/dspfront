@@ -11,27 +11,27 @@ import Repository from '~/models/repository.model'
 export default class CzAuthorize extends mixins(ActiveRepositoryMixin) {
   @Prop() repo!: string
 
-  protected get repository() {
+  get repository() {
     return getRepositoryFromKey(this.repo) as typeof Repository
   }
 
-  protected get authorizeUrl() {
+  get authorizeUrl() {
     return this.repository?.get()?.urls?.authorizeUrl
   }
 
-  protected get repoLogoSrc() {
+  get repoLogoSrc() {
     return this.repository.get()?.logoSrc
   }
 
-  protected get repoName() {
+  get repoName() {
     return this.repository.get()?.name
   }
 
-  protected async openAuthorizePopup() {
+  async openAuthorizePopup() {
     Repository.authorize(this.repository, this.onAuthorized)
   }
 
-  protected onAuthorized() {
+  onAuthorized() {
     this.$emit('authorized')
   }
 }

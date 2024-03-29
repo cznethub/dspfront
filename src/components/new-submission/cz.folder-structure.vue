@@ -16,9 +16,9 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
   @Prop({ default: true }) allowFileUpload!: boolean
   @Prop() identifier!: string // Use if isEditMode is true
   @Prop({ required: true }) rootDirectory!: IFolder
-  protected redraw = 0
+  redraw = 0
 
-  protected files = {
+  files = {
     html: 'mdi-language-html5',
     md: 'mdi-language-markdown',
     js: 'mdi-nodejs',
@@ -56,12 +56,12 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     default: 'mdi-file-outline',
   }
 
-  protected open: (IFolder | IFile)[] = []
-  protected selected: (IFolder | IFile)[] = []
-  protected dropFiles: File[] = []
-  protected isDeleting = false
-  protected fileReleaseDate = null
-  protected shiftAnchor: IFolder | IFile | null = null
+  open: (IFolder | IFile)[] = []
+  selected: (IFolder | IFile)[] = []
+  dropFiles: File[] = []
+  isDeleting = false
+  fileReleaseDate = null
+  shiftAnchor: IFolder | IFile | null = null
 
   public get hasInvalidFilesToUpload() {
     return this.allItems.some((item: IFile | IFolder) => {
@@ -77,7 +77,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     return !this.hasTooManyFiles && !this.isTotalUploadSizeTooBig
   }
 
-  protected get hasTooManyFiles() {
+  get hasTooManyFiles() {
     if (!this.repoMetadata.maxNumberOfFiles)
       return false
 
@@ -87,25 +87,25 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     return validFiles.length > this.repoMetadata.maxNumberOfFiles
   }
 
-  protected get isTotalUploadSizeTooBig() {
+  get isTotalUploadSizeTooBig() {
     if (!this.repoMetadata.maxTotalUploadSize)
       return false
 
     return this.totalUploadSize > this.repoMetadata.maxTotalUploadSize
   }
 
-  protected get itemsToCut(): (IFile | IFolder)[] {
+  get itemsToCut(): (IFile | IFolder)[] {
     return this._itemsToCutRecursive(this.rootDirectory)
   }
 
-  protected get activeDirectoryItem(): IFolder | IFile {
+  get activeDirectoryItem(): IFolder | IFile {
     if (this.selected.length !== 1)
       return this.rootDirectory
     else
       return this.selected[0]
   }
 
-  protected get canPaste() {
+  get canPaste() {
     const isValidTarget = this.selected.length <= 1
     const areItemsValid
       = this.itemsToCut.length
@@ -113,26 +113,26 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     return isValidTarget && areItemsValid
   }
 
-  protected get canCut() {
+  get canCut() {
     return this.selected.length && !this.isReadOnly
   }
 
-  protected get canRename() {
+  get canRename() {
     return (
       !(this.isEditMode && !this.canRenameUploadedFiles) && !this.isReadOnly
     )
   }
 
-  protected get canRenameUploadedFiles() {
+  get canRenameUploadedFiles() {
     return this.activeRepository.get()?.urls?.moveOrRenameUrl
   }
 
-  protected get allItems(): IFile[] {
+  get allItems(): IFile[] {
     return this._getDirectoryItems(this.rootDirectory)
   }
 
   /** @return total size of files uploaded and valid files pending to upload */
-  protected get totalUploadSize(): number {
+  get totalUploadSize(): number {
     const validFiles = this.allItems.filter(
       item => !this.isFileInvalid(item as IFile),
     )
@@ -150,7 +150,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
   }
 
   @Watch('rootDirectory.children', { deep: true })
-  protected onInput() {
+  onInput() {
     const items = this._getDirectoryItems(this.rootDirectory) as IFile[]
     // Update paths
     items.map(i => (i.path = this.getPathString(i.parent as IFolder)))
@@ -162,13 +162,11 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
   }
 
   @Watch('dropFiles')
-  protected onFilesDropped(newFiles: File[]) {
+  onFilesDropped(newFiles: File[]) {
     if (!newFiles.length)
       return
 
-    const targetFolder: IFolder = this.activeDirectoryItem.hasOwnProperty(
-      'children',
-    )
+    const targetFolder: IFolder = Object.prototype.hasOwnProperty.call(this.activeDirectoryItem, 'children')
       ? (this.activeDirectoryItem as IFolder)
       : (this.activeDirectoryItem.parent as IFolder)
 
@@ -200,11 +198,11 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     this.dropFiles = []
   }
 
-  protected selectAll() {
+  selectAll() {
     this.select(this.allItems)
   }
 
-  protected getPathString(item: IFolder | IFile) {
+  getPathString(item: IFolder | IFile) {
     if (item === this.rootDirectory)
       return ''
 
@@ -212,29 +210,29 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     return `${pre ? `${pre}/` : ''}${item.name}`
   }
 
-  protected isFolder(item: IFile | IFolder) {
-    return item.hasOwnProperty('children')
+  isFolder(item: IFile | IFolder) {
+    return Object.prototype.hasOwnProperty.call(item, 'children')
   }
 
-  protected isSelected(item: IFolder | IFile) {
+  isSelected(item: IFolder | IFile) {
     return this.selected.includes(item)
   }
 
-  protected select(items: (IFolder | IFile)[]) {
+  select(items: (IFolder | IFile)[]) {
     this.selected = [...new Set([...this.selected, ...items])]
   }
 
-  protected unselect(item: IFolder | IFile) {
+  unselect(item: IFolder | IFile) {
     const index = this.selected.indexOf(item)
     if (index >= 0)
       this.selected.splice(index, 1)
   }
 
-  protected unselectAll() {
+  unselectAll() {
     this.selected = []
   }
 
-  protected cut() {
+  cut() {
     this.uncutAll()
 
     this.selected.map((item) => {
@@ -243,13 +241,13 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     })
   }
 
-  protected uncutAll() {
+  uncutAll() {
     this.itemsToCut.map((item) => {
       item.isCutting = false
     })
   }
 
-  protected async paste() {
+  async paste() {
     const pastePromises: Promise<boolean>[] = []
     const itemsToCut = [...this.itemsToCut] // We make a copy because the original can change during iteration below
 
@@ -276,7 +274,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     this.redrawFileTree()
   }
 
-  protected moveItem(item: IFolder | IFile, destination: IFolder) {
+  moveItem(item: IFolder | IFile, destination: IFolder) {
     const previousParent = item.parent as IFolder
 
     // Remove from previous parent
@@ -289,23 +287,23 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     item.name = this._getAvailableName(item.name, item.parent)
     destination.children.push(item)
     destination.children = destination.children.sort((a, b) => {
-      return b.hasOwnProperty('children') ? 1 : -1
+      return Object.prototype.hasOwnProperty.call(b, 'children') ? 1 : -1
     })
     this._openRecursive(destination)
   }
 
-  protected onItemClick(item: IFolder | IFile) {
+  onItemClick(item: IFolder | IFile) {
     this.unselectAll()
     this.select([item])
     this.shiftAnchor = item
   }
 
-  protected onItemCtrlClick(item: IFolder | IFile) {
+  onItemCtrlClick(item: IFolder | IFile) {
     this.toggleSelect(item)
     this.shiftAnchor = item
   }
 
-  protected onItemShiftClick(item: IFolder | IFile) {
+  onItemShiftClick(item: IFolder | IFile) {
     const parent: IFolder = item.parent as IFolder
     const itemIndex = parent.children.indexOf(item)
     const anchorIndex = this.shiftAnchor
@@ -324,19 +322,19 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     this.select(itemsToSelect)
   }
 
-  protected toggleSelect(item: IFolder | IFile) {
+  toggleSelect(item: IFolder | IFile) {
     if (this.isSelected(item))
       this.unselect(item)
     else
       this.select([item])
   }
 
-  protected renameItem(item: IFile | IFolder) {
+  renameItem(item: IFile | IFolder) {
     this.clearRenaming()
     item.isRenaming = true
   }
 
-  protected isFileExtensionValid(file: IFile) {
+  isFileExtensionValid(file: IFile) {
     if (!this.repoMetadata.supportedFileTypes)
       return true
 
@@ -345,7 +343,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     return this.repoMetadata.supportedFileTypes.includes(extention)
   }
 
-  protected isFileNameValid(file: IFile) {
+  isFileNameValid(file: IFile) {
     if (!this.repoMetadata.fileNameRegex)
       return true
 
@@ -354,15 +352,15 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     return isValid
   }
 
-  protected isFileInvalid(file: IFile) {
+  isFileInvalid(file: IFile) {
     return !this.isFileExtensionValid(file) || this.isFileTooBig(file)
   }
 
-  protected hasFileWarnings(file: IFile) {
+  hasFileWarnings(file: IFile) {
     return !this.isFileNameValid(file)
   }
 
-  protected isFileTooBig(file: IFile) {
+  isFileTooBig(file: IFile) {
     if (!this.repoMetadata.maxUploadSizePerFile)
       return false
 
@@ -372,7 +370,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     )
   }
 
-  protected canRetryUpload(item: IFile | IFolder) {
+  canRetryUpload(item: IFile | IFolder) {
     return (
       this.isEditMode
       && !this.hasTooManyFiles
@@ -382,11 +380,11 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     )
   }
 
-  protected couldNotUploadFile(item: IFile) {
+  couldNotUploadFile(item: IFile) {
     return this.isEditMode && item.isUploaded === false && this.hasTooManyFiles
   }
 
-  protected showFileWarnings(item: IFile) {
+  showFileWarnings(item: IFile) {
     return (
       !this.isFolder(item)
       && (this.isFileInvalid(item)
@@ -395,7 +393,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     )
   }
 
-  protected async onRenamed(item: IFile | IFolder, name: string) {
+  async onRenamed(item: IFile | IFolder, name: string) {
     if (name.trim()) {
       const newName = this._getAvailableName(
         name,
@@ -432,7 +430,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     item.isRenaming = false
   }
 
-  protected async deleteSelected() {
+  async deleteSelected() {
     Notifications.openDialog({
       title: 'Remove files?',
       content: 'Are you sure you want to remove the selected files?',
@@ -521,19 +519,19 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     }
   }
 
-  protected onClickOutside() {
+  onClickOutside() {
     this.unselectAll()
   }
 
-  protected include() {
+  include() {
     return [...document.getElementsByClassName('files-container--included')]
   }
 
-  protected clearRenaming() {
+  clearRenaming() {
     this._clearRenamingRecursive(this.rootDirectory)
   }
 
-  protected empty() {
+  empty() {
     Notifications.openDialog({
       title: 'Remove all files?',
       content: 'Are you sure you want to remove all files from this list?',
@@ -547,7 +545,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     })
   }
 
-  protected updateFolderPath(folder: IFolder) {
+  updateFolderPath(folder: IFolder) {
     folder.path
       = folder.parent === this.rootDirectory
         ? ''
@@ -556,7 +554,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
           : folder.parent?.name || ''
   }
 
-  protected newFolder() {
+  newFolder() {
     if (!this.repoMetadata.hasFolderStructure)
       return
 
@@ -572,7 +570,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
       path: '',
     } as IFolder
 
-    if (this.activeDirectoryItem.hasOwnProperty('children')) {
+    if (Object.prototype.hasOwnProperty.call(this.activeDirectoryItem, 'children')) {
       // Selected item is a folder
       newFolder.parent = this.activeDirectoryItem as IFolder
       newFolder.name = this._getAvailableName(
@@ -596,7 +594,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
 
     newFolder.parent.children.push(newFolder)
     newFolder.parent.children = newFolder.parent.children.sort((a, b) => {
-      return b.hasOwnProperty('children') ? 1 : -1
+      return Object.prototype.hasOwnProperty.call(b, 'children') ? 1 : -1
     })
 
     this._openRecursive(newFolder)
@@ -661,7 +659,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
 
   private _clearRenamingRecursive(item: IFile | IFolder) {
     item.isRenaming = false
-    if (item.hasOwnProperty('children'))
+    if (Object.prototype.hasOwnProperty.call(item, 'children'))
       (item as IFolder).children.map(this._clearRenamingRecursive)
   }
 
@@ -724,14 +722,13 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
         bottom
         transition="fade"
       >
-        <template #activator="{ on, attrs }">
+        <template #activator="{ props }">
           <v-btn
             class="mr-4"
             small
             icon
-            v-bind="attrs"
+            v-bind="props"
             @click="newFolder"
-            v-on="on"
           >
             <v-icon>mdi-folder</v-icon>
           </v-btn>
@@ -746,15 +743,14 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
       <template v-if="!isReadOnly && allowFileUpload">
         <template>
           <v-tooltip bottom transition="fade">
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-btn
                 :disabled="!rootDirectory.children.length"
                 class="mr-1"
                 icon
                 small
-                v-bind="attrs"
+                v-bind="props"
                 @click="selectAll"
-                v-on="on"
               >
                 <v-icon>mdi-checkbox-marked-outline</v-icon>
               </v-btn>
@@ -765,14 +761,13 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
 
         <template>
           <v-tooltip bottom transition="fade">
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-btn
                 icon
                 small
                 :disabled="!selected.length"
-                v-bind="attrs"
+                v-bind="props"
                 @click="unselectAll"
-                v-on="on"
               >
                 <v-icon>mdi-checkbox-blank-off-outline</v-icon>
               </v-btn>
@@ -784,15 +779,14 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
 
         <template v-if="repoMetadata.hasFolderStructure">
           <v-tooltip bottom transition="fade">
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-btn
                 :disabled="!canCut"
                 class="mr-1"
                 icon
                 small
-                v-bind="attrs"
+                v-bind="props"
                 @click="cut"
-                v-on="on"
               >
                 <v-icon>mdi-content-cut</v-icon>
               </v-btn>
@@ -801,14 +795,13 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
           </v-tooltip>
 
           <v-tooltip v-if="!isReadOnly" bottom transition="fade">
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-btn
                 :disabled="!canPaste"
                 icon
                 small
-                v-bind="attrs"
+                v-bind="props"
                 @click="paste"
-                v-on="on"
               >
                 <v-icon>mdi-content-paste</v-icon>
               </v-btn>
@@ -820,14 +813,13 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
 
         <template>
           <v-tooltip bottom transition="fade">
-            <template #activator="{ on, attrs }">
+            <template #activator="{ props }">
               <v-btn
                 icon
                 small
                 :disabled="isDeleting || !selected.length"
-                v-bind="attrs"
+                v-bind="props"
                 @click="deleteSelected"
-                v-on="on"
               >
                 <v-icon>mdi-delete</v-icon>
               </v-btn>
@@ -996,8 +988,8 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
                       class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption font-weight-light align-center"
                     >
                       <v-menu open-on-hover bottom left offset-y>
-                        <template #activator="{ on, attrs }">
-                          <div v-bind="attrs" v-on="on">
+                        <template #activator="{ props }">
+                          <div v-bind="props">
                             <v-icon
                               :color="
                                 isFileInvalid(item) || couldNotUploadFile(item)
@@ -1091,8 +1083,8 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
             right
             offset-y
           >
-            <template #activator="{ on, attrs }">
-              <div class="ml-4 d-inline-block" v-bind="attrs" v-on="on">
+            <template #activator="{ props }">
+              <div class="ml-4 d-inline-block" v-bind="props">
                 <v-icon color="error">
                   mdi-alert-circle
                 </v-icon>

@@ -34,48 +34,48 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     typeof CzRegisterDatasetDialog
   >
 
-  protected isUpdating: { [key: string]: boolean } = {}
-  protected isDeleting: { [key: string]: boolean } = {}
-  protected isDeleteDialogActive = false
-  protected deleteDialogData: {
+  isUpdating: { [key: string]: boolean } = {}
+  isDeleting: { [key: string]: boolean } = {}
+  isDeleteDialogActive = false
+  deleteDialogData: {
     submission: ISubmission
     isExternal: boolean
   } | null = null
 
-  protected alsoDeleteInRepository = false
+  alsoDeleteInRepository = false
 
-  protected filters: {
+  filters: {
     repoOptions: string[]
     searchStr: string
   } = { repoOptions: [], searchStr: '' }
 
-  protected itemsPerPageArray = itemsPerPageArray
-  protected page = 1
-  protected repoMetadata = repoMetadata
-  protected enumRepositoryKeys = EnumRepositoryKeys
-  protected enumSubmissionSorts = EnumSubmissionSorts
-  protected enumSortDirections = EnumSortDirections
-  protected sortDirectionsOverrides = sortDirectionsOverrides
-  protected currentItems = []
-  protected loggedInSubject = new Subscription()
+  itemsPerPageArray = itemsPerPageArray
+  page = 1
+  repoMetadata = repoMetadata
+  enumRepositoryKeys = EnumRepositoryKeys
+  enumSubmissionSorts = EnumSubmissionSorts
+  enumSortDirections = EnumSortDirections
+  sortDirectionsOverrides = sortDirectionsOverrides
+  currentItems = []
+  loggedInSubject = new Subscription()
 
-  protected get repoCollection(): IRepository[] {
+  get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map(r => repoMetadata[r])
   }
 
-  protected get supportedRepoMetadata() {
+  get supportedRepoMetadata() {
     return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
   }
 
-  protected get externalRepoMetadata() {
+  get externalRepoMetadata() {
     return this.repoCollection.find(r => r.isExternal)
   }
 
-  protected get sortBy() {
+  get sortBy() {
     return Submission.$state.sortBy
   }
 
-  protected set sortBy(sortBy: { key: string, label: string }) {
+  set sortBy(sortBy: { key: string, label: string }) {
     Submission.commit((state) => {
       state.sortBy = sortBy
     })
@@ -83,47 +83,47 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     this._loadSortDirection()
   }
 
-  protected get sortDirection(): { key: string, label: string } {
+  get sortDirection(): { key: string, label: string } {
     return Submission.$state.sortDirection
   }
 
-  protected set sortDirection(sortDirection: { key: string, label: string }) {
+  set sortDirection(sortDirection: { key: string, label: string }) {
     Submission.commit((state) => {
       state.sortDirection = sortDirection
     })
   }
 
-  protected get itemsPerPage() {
+  get itemsPerPage() {
     return Submission.$state.itemsPerPage
   }
 
-  protected set itemsPerPage(itemsPerPage: number) {
+  set itemsPerPage(itemsPerPage: number) {
     Submission.commit((state) => {
       state.itemsPerPage = itemsPerPage
     })
   }
 
-  protected get isFetching() {
+  get isFetching() {
     return Submission.$state.isFetching
   }
 
-  protected get repoOptions() {
+  get repoOptions() {
     return Object.keys(repoMetadata).filter(
       key => repoMetadata[key].isSupported,
     )
   }
 
-  protected get sortOptions() {
+  get sortOptions() {
     return Object.keys(EnumSubmissionSorts).map((key) => {
       return { key, label: EnumSubmissionSorts[key] }
     })
   }
 
-  protected get isLoggedIn() {
+  get isLoggedIn() {
     return User.$state.isLoggedIn
   }
 
-  protected get sortDirectionOptions() {
+  get sortDirectionOptions() {
     return Object.keys(EnumSortDirections).map((key) => {
       return {
         key,
@@ -134,13 +134,13 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     })
   }
 
-  protected get isAnyFilterAcitve() {
+  get isAnyFilterAcitve() {
     return Object.keys(this.filters).find(
       key => this.filters[key] && this.filters[key].length,
     )
   }
 
-  protected get filteredSubmissions() {
+  get filteredSubmissions() {
     if (this.filters.repoOptions.length) {
       return Submission.all().filter(s =>
         this.filters.repoOptions.includes(s.repository),
@@ -150,11 +150,11 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     return Submission.all()
   }
 
-  protected get submissions(): ISubmission[] {
+  get submissions(): ISubmission[] {
     return Submission.all()
   }
 
-  protected get repoName(): string {
+  get repoName(): string {
     if (this.deleteDialogData) {
       return (
         getRepositoryFromKey(this.deleteDialogData.submission.repository)
@@ -165,14 +165,14 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     return ''
   }
 
-  protected get numberOfPages() {
+  get numberOfPages() {
     if (this.isAnyFilterAcitve)
       return Math.ceil(this.currentItems.length / this.itemsPerPage)
 
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
-  protected get sortDesc(): boolean {
+  get sortDesc(): boolean {
     return this.sortDirection.key === 'desc'
   }
 
@@ -191,17 +191,17 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     this.loggedInSubject.unsubscribe()
   }
 
-  protected nextPage() {
+  nextPage() {
     if (this.page + 1 <= this.numberOfPages)
       this.page += 1
   }
 
-  protected formerPage() {
+  formerPage() {
     if (this.page - 1 >= 1)
       this.page -= 1
   }
 
-  protected goToEditSubmission(submission: ISubmission) {
+  goToEditSubmission(submission: ISubmission) {
     const repo: IRepository = repoMetadata[submission.repository]
     this.$router.push({
       name: 'submit.repository',
@@ -209,7 +209,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     })
   }
 
-  // protected goToViewSubmission(submission: ISubmission) {
+  // goToViewSubmission(submission: ISubmission) {
   //   const repo: IRepository = repoMetadata[submission.repository];
   //   this.$router.push({
   //     name: "view-submission",
@@ -217,7 +217,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   //   });
   // }
 
-  protected getDateInLocalTime(date: number): string {
+  getDateInLocalTime(date: number): string {
     const offset = new Date(date).getTimezoneOffset() * 60 * 1000
     // TODO: subtracting offset because db stored dates seem to have the time shifted
     const localDateTime = date - offset
@@ -226,11 +226,11 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     return localizedDate
   }
 
-  protected openRegisterDatasetDialog() {
+  openRegisterDatasetDialog() {
     this.registerDatasetDialog.active = true
   }
 
-  protected async onUpdateRecord(submission: ISubmission) {
+  async onUpdateRecord(submission: ISubmission) {
     this.$set(
       this.isUpdating,
       `${submission.repository}-${submission.identifier}`,
@@ -247,7 +247,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     )
   }
 
-  protected exportSubmissions() {
+  exportSubmissions() {
     const parsedSubmissions = this.filteredSubmissions.map((s) => {
       return {
         authors: s.authors.join('; '),
@@ -291,18 +291,18 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     document.body.removeChild(element)
   }
 
-  protected isDeleteButtonDisabled(item) {
+  isDeleteButtonDisabled(item) {
     return this.isDeleting[`${item.repository}-${item.identifier}`]
   }
 
-  protected isItemHsCollection(submission: ISubmission) {
+  isItemHsCollection(submission: ISubmission) {
     return (
       submission.repository === EnumRepositoryKeys.hydroshare
       && submission.metadata.type === 'CollectionResource'
     )
   }
 
-  protected isItemPublished(submission): boolean {
+  isItemPublished(submission): boolean {
     if (submission.repository === EnumRepositoryKeys.hydroshare)
       return !!submission?.metadata.published
     else if (submission.repository === EnumRepositoryKeys.earthchem)
@@ -313,20 +313,20 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     return false
   }
 
-  protected isItemEclSubmitted(submission): boolean {
+  isItemEclSubmitted(submission): boolean {
     return (
       submission.repository === EnumRepositoryKeys.earthchem
       && submission?.metadata.status === 'submitted'
     )
   }
 
-  protected onDelete(submission: ISubmission, isExternal: boolean) {
+  onDelete(submission: ISubmission, isExternal: boolean) {
     this.deleteDialogData = { submission, isExternal }
     this.alsoDeleteInRepository = false // we want it unchecked initially
     this.isDeleteDialogActive = true
   }
 
-  protected async onDeleteSubmission() {
+  async onDeleteSubmission() {
     this.$set(
       this.isDeleting,
       `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
@@ -374,7 +374,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     this.deleteDialogData = null
   }
 
-  protected getRepositoryName(item: ISubmission) {
+  getRepositoryName(item: ISubmission) {
     // For external submissions, we return the provider name instead
     if (item.repository === EnumRepositoryKeys.external)
       return item.metadata.provider?.name || ''
@@ -384,7 +384,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
       : ''
   }
 
-  protected getItemResourceType(item: ISubmission) {
+  getItemResourceType(item: ISubmission) {
     // For hydroshare submissions, get the resource type
     if (item.repository === EnumRepositoryKeys.hydroshare) {
       if (item.metadata.type === 'CollectionResource')
@@ -480,14 +480,13 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
               <v-card-text>
                 <template v-for="repo of supportedRepoMetadata" :key="repo.name">
                   <v-tooltip left transition="fade">
-                    <template #activator="{ on, attrs }">
+                    <template #activator="{ props }">
                       <v-btn
                         v-if="!repo.isDisabled"
                         class="mx-0 my-4"
-                        v-bind="attrs"
+                        v-bind="props"
                         block
                         @click="submitTo(repo)"
-                        v-on="on"
                       >
                         {{ repo.name }}
                       </v-btn>
@@ -497,7 +496,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
                 </template>
 
                 <v-tooltip left transition="fade">
-                  <template #activator="{ on, attrs }">
+                  <template #activator="{ props }">
                     <v-btn
                       v-if="!externalRepoMetadata.isDisabled"
                       class="mx-0 my-4"
@@ -789,8 +788,8 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
                   <div>
                     <span class="grey--text text-body-2 mr-1">Items per page</span>
                     <v-menu offset-y>
-                      <template #activator="{ on, attrs }">
-                        <v-btn text v-bind="attrs" v-on="on">
+                      <template #activator="{ props }">
+                        <v-btn variant="text" v-bind="props">
                           {{ itemsPerPage }}
                           <v-icon>mdi-chevron-down</v-icon>
                         </v-btn>

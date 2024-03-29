@@ -6,7 +6,7 @@ import { Component, Vue } from 'vue-facing-decorator'
   components: { },
 })
 export default class CzProfile extends Vue {
-  protected logOut() {
+  logOut() {
     this.$emit('logout')
   }
 }

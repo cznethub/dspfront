@@ -27,19 +27,19 @@ interface CzStep {
   components: { CzRecommendationCard },
 })
 export default class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
-  protected currentStepIndex = 0
-  protected steps: CzStep[] = [mappings] as CzStep[]
-  protected selectedOption: CzStep | null = null
-  protected repoMetadata = repoMetadata
-  protected enumDataTemplateType = EnumDataTemplateType
-  protected guideUrls = guideUrls
-  protected externalRepoMetadata = repoMetadata[EnumRepositoryKeys.external]
+  currentStepIndex = 0
+  steps: CzStep[] = [mappings] as CzStep[]
+  selectedOption: CzStep | null = null
+  repoMetadata = repoMetadata
+  enumDataTemplateType = EnumDataTemplateType
+  guideUrls = guideUrls
+  externalRepoMetadata = repoMetadata[EnumRepositoryKeys.external]
 
-  protected get currentStep() {
+  get currentStep() {
     return this.steps[this.currentStepIndex]
   }
 
-  protected nextStep(option: CzStep) {
+  nextStep(option: CzStep) {
     this._trimFurtherSteps()
     this.currentStep.selectedOption = option
     this.steps.push(option)
@@ -49,7 +49,7 @@ export default class CzRecommendationsQuestionnaire extends mixins(ActiveReposit
     })
   }
 
-  protected getRepoMetadataFromKeys(repoKeys: string[]): IRepository[] {
+  getRepoMetadataFromKeys(repoKeys: string[]): IRepository[] {
     return (
       repoKeys
         .filter(key => !!this.repoMetadata[key])
@@ -64,7 +64,7 @@ export default class CzRecommendationsQuestionnaire extends mixins(ActiveReposit
     )
   }
 
-  protected onOptionChanged(option: CzStep) {
+  onOptionChanged(option: CzStep) {
     this._trimFurtherSteps()
   }
 

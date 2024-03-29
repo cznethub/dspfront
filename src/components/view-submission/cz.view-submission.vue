@@ -28,7 +28,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
     typeof CzFolderStructure
   >
 
-  protected rootDirectory: IFolder = {
+  rootDirectory: IFolder = {
     name: 'root',
     children: [],
     parent: null,
@@ -36,19 +36,19 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
     path: '',
   }
 
-  protected isLoading = false
-  protected isLoadingInitialFiles = false
-  protected data: any = initialData
-  protected usedUISchema = {}
-  protected repoMetadata = repoMetadata
-  protected uploads: (IFile | IFolder)[] = []
-  protected repositoryRecord: any = null
-  protected loggedInSubject = new Subscription()
-  protected wasUnauthorized = false
-  protected identifier = ''
-  protected repositoryKey: EnumRepositoryKeys = EnumRepositoryKeys.external
+  isLoading = false
+  isLoadingInitialFiles = false
+  data: any = initialData
+  usedUISchema = {}
+  repoMetadata = repoMetadata
+  uploads: (IFile | IFolder)[] = []
+  repositoryRecord: any = null
+  loggedInSubject = new Subscription()
+  wasUnauthorized = false
+  identifier = ''
+  repositoryKey: EnumRepositoryKeys = EnumRepositoryKeys.external
 
-  protected get config() {
+  get config() {
     return {
       restrict: true,
       trim: false,
@@ -73,7 +73,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
     }
   }
 
-  protected get dbSubmission() {
+  get dbSubmission() {
     const submission = Submission.find([
       this.identifier,
       this.activeRepository.entity,
@@ -81,18 +81,18 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
     return submission
   }
 
-  protected get isHsCollection(): boolean {
+  get isHsCollection(): boolean {
     return this.dbSubmission?.metadata.type === 'CollectionResource'
   }
 
-  protected get isEclSubmitted(): boolean {
+  get isEclSubmitted(): boolean {
     return (
       this.activeRepository.entity === EnumRepositoryKeys.earthchem
       && this.dbSubmission?.metadata.status === 'submitted'
     )
   }
 
-  protected get isPublished(): boolean {
+  get isPublished(): boolean {
     if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare)
       return !!this.dbSubmission?.metadata.published
     else if (this.activeRepository.entity === EnumRepositoryKeys.earthchem)
@@ -101,41 +101,41 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
     return false
   }
 
-  protected get repositoryUrl() {
+  get repositoryUrl() {
     return this.dbSubmission?.url
   }
 
-  protected get hasFolderStructure() {
+  get hasFolderStructure() {
     return this.wasLoaded && !this.isExternal && !this.isHsCollection
   }
 
-  protected get schema() {
+  get schema() {
     return this.activeRepository?.get()?.schema
   }
 
-  protected get uiSchema() {
+  get uiSchema() {
     return this.activeRepository?.get()?.uischema || undefined
   }
 
-  protected get schemaDefaults() {
+  get schemaDefaults() {
     return this.activeRepository?.get()?.schemaDefaults
   }
 
-  protected get isDevMode() {
+  get isDevMode() {
     // TODO: uncomment when this env variable is properly setup in production
     // return import.meta.env.NODE_ENV === "development"
     return false
   }
 
-  protected get isExternal() {
+  get isExternal() {
     return this.repoMetadata[this.repositoryKey].isExternal
   }
 
-  protected get wasLoaded() {
+  get wasLoaded() {
     return !!this.repositoryRecord
   }
 
-  protected get isLoggedIn() {
+  get isLoggedIn() {
     return User.$state.isLoggedIn
   }
 
@@ -166,24 +166,24 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
     this.isLoading = false
   }
 
-  protected onLogIn() {
+  onLogIn() {
     User.logIn()
   }
 
-  protected goToEditSubmission() {
+  goToEditSubmission() {
     this.$router.push({
       name: 'submit.repository',
       params: { repository: this.repositoryKey, id: this.identifier },
     })
   }
 
-  protected goToSubmissions() {
+  goToSubmissions() {
     this.$router.push({
       name: 'submissions',
     })
   }
 
-  protected async loadSavedSubmission() {
+  async loadSavedSubmission() {
     console.info('CzViewSubmission: reading existing record...')
     const response = await Repository.readSubmission(
       this.identifier,

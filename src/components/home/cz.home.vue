@@ -9,20 +9,20 @@ import User from '~/models/user.model'
   components: {},
 })
 export default class CzHome extends Vue {
-  protected repoMetadata = repoMetadata
-  protected discoverySiteUrl = DISCOVERY_SITE_URL
+  repoMetadata = repoMetadata
+  discoverySiteUrl = DISCOVERY_SITE_URL
 
-  protected get isLoggedIn() {
+  get isLoggedIn() {
     return User.$state.isLoggedIn
   }
 
-  protected get supportedRepositories() {
+  get supportedRepositories() {
     return Object.keys(repoMetadata)
       .map(key => repoMetadata[key])
       .filter(repo => !repo.isExternal && repo.isSupported)
   }
 
-  protected openLogInDialog() {
+  openLogInDialog() {
     User.openLogInDialog()
   }
 }

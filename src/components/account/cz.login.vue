@@ -8,15 +8,15 @@ import User from '~/models/user.model'
   emits: ['loggedIn'],
 })
 export default class CzLogin extends Vue {
-  protected async openLogInDialog() {
+  async openLogInDialog() {
     User.logIn(this.onLoggedIn)
   }
 
-  protected onCancel() {
+  onCancel() {
     this.$emit('cancel')
   }
 
-  protected onLoggedIn() {
+  onLoggedIn() {
     this.$emit('loggedIn')
   }
 }
@@ -47,12 +47,11 @@ export default class CzLogin extends Vue {
       </v-btn>
       <v-btn
         id="orcid_login_continue"
+        variant="elevated"
         color="primary"
         @click="openLogInDialog()"
       >
-        <v-icon class="mr-2">
-          fab fa-orcid
-        </v-icon>
+        <i class="fab fa-orcid fa-lg mr-2" aria-hidden="true" />
         <span>Log In Using ORCID</span>
       </v-btn>
     </v-card-actions>

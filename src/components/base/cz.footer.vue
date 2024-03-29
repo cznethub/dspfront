@@ -7,19 +7,19 @@ import User from '~/models/user.model'
   components: {},
 })
 export default class CzFooter extends Vue {
-  protected openLogInDialog() {
+  openLogInDialog() {
     User.openLogInDialog()
   }
 
-  protected get isLoggedIn() {
+  get isLoggedIn() {
     return User.$state.isLoggedIn
   }
 
-  protected get version() {
+  get version() {
     return import.meta.env.VITE_APP_VERSION || '0'
   }
 
-  protected get year() {
+  get year() {
     return new Date().getFullYear()
   }
 }

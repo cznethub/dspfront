@@ -58,8 +58,8 @@ const dataTemplates: IDataTemplate[] = [
   components: {},
 })
 export default class CzResources extends Vue {
-  protected dataTemplates!: IDataTemplate[]
-  protected guideUrls = guideUrls
+  dataTemplates!: IDataTemplate[]
+  guideUrls = guideUrls
 
   beforeCreate() {
     this.dataTemplates = dataTemplates

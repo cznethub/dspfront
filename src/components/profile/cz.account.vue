@@ -8,11 +8,11 @@ import User from '~/models/user.model'
   components: {},
 })
 export default class CzAccount extends Vue {
-  protected get token() {
+  get token() {
     return User.$state.orcidAccessToken
   }
 
-  protected onCopy() {
+  onCopy() {
     navigator.clipboard.writeText(this.token)
     Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
   }

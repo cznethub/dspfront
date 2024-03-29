@@ -21,9 +21,9 @@ export default class HydroShare extends Repository {
     createFolderUrl: string,
   ) {
     itemsToUpload.map(i => (i.isDisabled = true))
-    const filesToUpload = itemsToUpload.filter(i => i.hasOwnProperty('file'))
+    const filesToUpload = itemsToUpload.filter(i => Object.prototype.hasOwnProperty.call(i, 'file'))
     const foldersToUpload = itemsToUpload.filter(i =>
-      i.hasOwnProperty('children'),
+      Object.prototype.hasOwnProperty.call(i, 'children'),
     )
 
     let folderPaths = foldersToUpload.map(
@@ -175,7 +175,7 @@ export default class HydroShare extends Repository {
     item: IFile | IFolder,
   ): Promise<boolean> {
     const path = `${item.path ? `${item.path}/` : ''}${item.name}`
-    const isFolder = item.hasOwnProperty('children')
+    const isFolder = Object.prototype.hasOwnProperty.call(item, 'children')
     const url = isFolder
       ? this.get()?.urls?.folderDeleteUrl
       : this.get()?.urls?.fileDeleteUrl

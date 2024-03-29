@@ -44,40 +44,40 @@ const INITIAL_SNACKBAR = {
   components: { CzFooter, CzLogin, CzAuthorize, CzNotifications },
 })
 class App extends Vue {
-  protected isLoading = true
-  protected onToast!: Subscription
-  protected onOpenDialog!: Subscription
-  protected onOpenLogInDialog!: Subscription
-  protected onOpenAuthorizeDialog!: Subscription
-  protected showMobileNavigation = false
-  protected loggedInSubject = new Subscription()
-  // protected authorizedSubject = new Subscription();
-  protected isAppBarExtended = true
-  protected snackbarColors = {
+  isLoading = true
+  onToast!: Subscription
+  onOpenDialog!: Subscription
+  onOpenLogInDialog!: Subscription
+  onOpenAuthorizeDialog!: Subscription
+  showMobileNavigation = false
+  loggedInSubject = new Subscription()
+  // authorizedSubject = new Subscription();
+  isAppBarExtended = true
+  snackbarColors = {
     success: { snackbar: 'primary', actionButton: 'primary darken-2' },
     error: { snackbar: 'error darken-2', actionButton: 'error darken-3' },
     info: { snackbar: 'warning darken-2', actionButton: 'warning darken-4' },
     default: { snackbar: undefined, actionButton: undefined },
   }
 
-  protected snackbar: any & { isActive: boolean, isInfinite: boolean }
+  snackbar: any & { isActive: boolean, isInfinite: boolean }
     = INITIAL_SNACKBAR
 
-  protected dialog: any & { isActive: boolean } = INITIAL_DIALOG
-  protected logInDialog: any & { isActive: boolean } = {
+  dialog: any & { isActive: boolean } = INITIAL_DIALOG
+  logInDialog: any & { isActive: boolean } = {
     isActive: false,
     onLoggedIn: () => {},
     onCancel: () => {},
   }
 
-  protected authorizeDialog: any & { isActive: boolean } = {
+  authorizeDialog: any & { isActive: boolean } = {
     isActive: false,
     repo: '',
     onAuthorized: () => {},
     onCancel: () => {},
   }
 
-  protected paths = [
+  paths = [
     {
       attrs: { to: '/submissions' },
       label: 'My Submissions',
@@ -111,7 +111,7 @@ class App extends Vue {
     },
   ]
 
-  protected get isLoggedIn(): boolean {
+  get isLoggedIn(): boolean {
     return User.$state.isLoggedIn
   }
 
@@ -121,11 +121,11 @@ class App extends Vue {
   //   })
   // }
 
-  protected openLogInDialog() {
+  openLogInDialog() {
     User.openLogInDialog()
   }
 
-  protected logOut() {
+  logOut() {
     Notifications.openDialog({
       title: 'Log out?',
       content: 'Are you sure you want to log out?',
@@ -316,7 +316,7 @@ export default toNative(App)
           </v-btn>
           <template v-else>
             <v-menu bottom left>
-              <template #activator="{ on, attrs }">
+              <template #activator="{ props }">
                 <v-btn
                   :color="
                     $route.matched.some((p: RouteLocationMatched) => p.name === 'profile')
@@ -325,8 +325,7 @@ export default toNative(App)
                   "
                   elevation="2"
                   rounded
-                  v-bind="attrs"
-                  v-on="on"
+                  v-bind="props"
                 >
                   <v-icon>mdi-account-circle</v-icon>
                   <v-icon>mdi-menu-down</v-icon>

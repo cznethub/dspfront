@@ -60,8 +60,10 @@ export default class User extends Model {
 
   static async logIn(callback?: () => any) {
     const handleMessage = async (event: MessageEvent) => {
-      if (event.origin !== APP_URL || !event.data.hasOwnProperty('token'))
+      if (event.origin !== APP_URL || !Object.prototype.hasOwnProperty.call(event.data, 'token')) {
+        console.log(event.origin, APP_URL)
         return
+      }
 
       if (event.data.token) {
         Notifications.toast({
@@ -143,7 +145,7 @@ export default class User extends Model {
       type: 'info',
     })
 
-    if (useRouter().currentRoute.meta?.hasLoggedInGuard)
-      useRouter().push({ path: '/' })
+    // if (useRouter().currentRoute.meta?.hasLoggedInGuard)
+    //   useRouter().push({ path: '/' })
   }
 }

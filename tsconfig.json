@@ -3,6 +3,7 @@
     "target": "ESNext",
     "jsx": "preserve",
     "lib": ["DOM", "ESNext"],
+    "useDefineForClassFields": false, // @see https://github.com/vuex-orm/vuex-orm/issues/734#issuecomment-850002524
     "experimentalDecorators": true,
     "baseUrl": ".",
     "module": "ESNext",

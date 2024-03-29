@@ -16,27 +16,32 @@ export const hasNextRouteGuard: NavigationGuard = () => {
   }
 }
 
-export const hasLoggedInGuard: NavigationGuard = (to, from, _next) => {
-  if (to.meta?.hasLoggedInGuard && !User.$state.isLoggedIn) {
+export const hasLoggedInGuard: NavigationGuard = (to, from, next) => {
+  console.log('hasLoggedInGuard')
+  if (!User.$state.isLoggedIn) {
     User.openLogInDialog({ path: to.path })
     return from?.path ?? false
   }
-}
-
-export const hasAccessTokenGuard: NavigationGuard = (to, from, _next) => {
-  if (to.meta?.hasAccessTokenGuard) {
-    if (
-      !isRepositoryAuthorized(to.params.repository as EnumRepositoryKeys, false)
-      && User.$state.isLoggedIn
-    ) {
-      Repository.openAuthorizeDialog(to.params.repository as EnumRepositoryKeys, { path: to.path })
-      return from
-    }
+  else {
+    next()
   }
 }
 
-export const hasUnsavedChangesGuard: NavigationGuard = (to, from, _next) => {
-  if (from?.meta?.hasUnsavedChangesGuard && User.$state.hasUnsavedChanges) {
+export const hasAccessTokenGuard: NavigationGuard = (to, from, next) => {
+  console.log('hasAccessTokenGuard')
+  if (
+    !(isRepositoryAuthorized(to.params.repository as EnumRepositoryKeys, false))
+    && User.$state.isLoggedIn
+  )
+    Repository.openAuthorizeDialog(to.params.repository as EnumRepositoryKeys, { path: to.path })
+
+  else
+    next()
+}
+
+export const hasUnsavedChangesGuard: NavigationGuard = (to, from, next) => {
+  console.log('hasUnsavedChangesGuard')
+  if (User.$state.hasUnsavedChanges) {
     Notifications.openDialog({
       title: 'You have unsaved changes',
       content: 'Do you want to continue and discard your changes?',
@@ -50,6 +55,9 @@ export const hasUnsavedChangesGuard: NavigationGuard = (to, from, _next) => {
       },
     })
     return from
+  }
+  else {
+    next()
   }
 }
 
