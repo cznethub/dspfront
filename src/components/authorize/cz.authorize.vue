@@ -42,20 +42,21 @@ export default class CzAuthorize extends mixins(ActiveRepositoryMixin) {
     class="cz-authorize d-flex flex-column flex-md-row"
     :class="{ 'is-medium': $vuetify.display.mdAndUp }"
   >
-    <v-card class="d-flex flex-column darken-2" color="blue-grey" rounded="0">
-      <v-card-title class="white--text">
+    <v-card min-width="15rem" class="d-flex flex-column darken-2 flex-grow-1 flex-shrink-0 flex-md-shrink-1" color="blue-grey" rounded="0">
+      <v-card-title style="white-space: normal" class="white--text pb-4">
         <v-icon color="white" class="mr-4">
           mdi-alert-circle
         </v-icon>
         <div>You must have a {{ repoName }} account before proceeding</div>
       </v-card-title>
-      <v-card-text class="white--text">
+      <v-card-text class="white--text" style="flex: 1 1 auto">
         If you do not have a {{ repoName }} account yet, create one in
         {{ repoName }} and then come back here to submit your content through
         the {{ $t("portalName") }}.
       </v-card-text>
     </v-card>
-    <v-card elevation="0">
+
+    <v-card style="flex-basis: 30rem" class="flex-grow-1 flex-md-shrink-0">
       <div class="v-card-media py-4 px-8">
         <v-img
           :src="repoLogoSrc"

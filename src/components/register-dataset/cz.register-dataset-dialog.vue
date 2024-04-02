@@ -51,7 +51,7 @@ export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixi
             <v-card
               class="transition-swing"
               :to="{ path: 'register' }"
-              :class="`elevation-${isHovering ? 2 : 0}`"
+              :elevation="isHovering ? 4 : 2"
               v-bind="props"
               outlined
             >
@@ -77,7 +77,7 @@ export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixi
           <template #default="{ isHovering, props }">
             <v-card
               class="transition-swing"
-              :class="`elevation-${isHovering ? 2 : 0}`"
+              :elevation="isHovering ? 4 : 2"
               v-bind="props"
               outlined
               role="button"

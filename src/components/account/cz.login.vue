@@ -31,6 +31,7 @@ export default class CzLogin extends Vue {
         ORCID® iD. An ORCID iD is a persistent digital identifier that you own
         and control and that distinguishes you from every other researcher.
       </p>
+      <br>
       <p class="text-body-1">
         If you have an ORCID already, click the button below to get started. If
         you don't have an ORCID yet, getting one is easy. Visit

@@ -454,7 +454,7 @@ export default toNative(App)
       />
     </v-dialog>
 
-    <v-dialog v-model="authorizeDialog.isActive" width="650">
+    <v-dialog v-model="authorizeDialog.isActive" width="45rem">
       <cz-authorize
         :repo="authorizeDialog.repo"
         @authorized="authorizeDialog.onAuthorized"

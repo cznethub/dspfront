@@ -20,7 +20,7 @@ export const hasLoggedInGuard: NavigationGuard = (to, from, next) => {
   console.log('hasLoggedInGuard')
   if (!User.$state.isLoggedIn) {
     User.openLogInDialog({ path: to.path })
-    return from?.path ?? false
+    next(from.path)
   }
   else {
     next()
