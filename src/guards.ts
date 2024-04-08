@@ -54,7 +54,7 @@ export const hasUnsavedChangesGuard: NavigationGuard = (to, from, next) => {
         await useRouter().push(to.path)
       },
     })
-    return from
+    next(from.path)
   }
   else {
     next()
