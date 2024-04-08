@@ -20,7 +20,7 @@ export const hasLoggedInGuard: NavigationGuard = (to, from, next) => {
   console.log('hasLoggedInGuard')
   if (!User.$state.isLoggedIn) {
     User.openLogInDialog({ path: to.path })
-    next(from.path)
+    // next(from.path)
   }
   else {
     next()
@@ -54,7 +54,6 @@ export const hasUnsavedChangesGuard: NavigationGuard = (to, from, next) => {
         await useRouter().push(to.path)
       },
     })
-    next(from.path)
   }
   else {
     next()

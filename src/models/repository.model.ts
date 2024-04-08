@@ -108,7 +108,7 @@ export default class Repository extends Model implements IRepository {
     }
 
     // Fetch urls and schemas
-    console.info(`[${this.entity}]: fetching schemas...`)
+    console.info(`[${this.entity}]: Fetching schemas...`)
     const urls: IRepositoryUrls | undefined = await this.getUrls()
 
     let results: PromiseSettledResult<any>[] = await Promise.allSettled([
@@ -237,7 +237,7 @@ export default class Repository extends Model implements IRepository {
     })
   }
 
-  protected static async getJson(jsonUrl: string | undefined) {
+  static async getJson(jsonUrl: string | undefined) {
     if (!jsonUrl)
       return undefined
 
@@ -249,7 +249,7 @@ export default class Repository extends Model implements IRepository {
       return resp.data
   }
 
-  protected static async getUrls(): Promise<undefined | IRepositoryUrls> {
+  static async getUrls(): Promise<undefined | IRepositoryUrls> {
     try {
       const response = await axios.get(`/api/urls/${this.entity}`, {
         params: { access_token: User.$state.orcidAccessToken },
@@ -285,7 +285,7 @@ export default class Repository extends Model implements IRepository {
   private static async fetchAccessToken() {
     const accessTokenUrl = this.get()?.urls?.accessTokenUrl
     if (accessTokenUrl) {
-      console.info(`${this.get()?.key}: Fetching access token...`)
+      console.info(`[${this.get()?.key}]: Fetching access token...`)
       try {
         const resp = await axios.get(accessTokenUrl, {
           params: { access_token: User.$state.orcidAccessToken },

@@ -9,25 +9,25 @@ import { getRepositoryFromKey } from '~/constants'
 
 @Component
 export class ActiveRepositoryMixin extends Vue {
-  protected authorizedSubject = new Subscription()
+  authorizedSubject = new Subscription()
 
-  protected get activeRepository() {
+  get activeRepository() {
     const key = Repository.$state.submittingTo
     return getRepositoryFromKey(key) as typeof Repository
   }
 
-  protected async openAuthorizePopup(repositoryKey: string) {
+  async openAuthorizePopup(repositoryKey: string) {
     const repository = getRepositoryFromKey(repositoryKey) as typeof Repository
     Repository.authorize(repository) // We don't need to provide a callback because we already have a subject set
   }
 
-  protected setActiveRepository(key: EnumRepositoryKeys) {
+  setActiveRepository(key: EnumRepositoryKeys) {
     Repository.commit((state) => {
       state.submittingTo = key
     })
   }
 
-  protected submitTo(repo: IRepository) {
+  submitTo(repo: IRepository) {
     if (repo.isDisabled)
       return
 

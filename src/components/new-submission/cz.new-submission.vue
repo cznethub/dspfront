@@ -1,6 +1,5 @@
 <script lang="ts">
 import { Component, Ref, mixins } from 'vue-facing-decorator'
-import type { ErrorObject } from 'ajv'
 import { Subscription } from 'rxjs'
 import { CzForm, Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
@@ -48,7 +47,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   usedUISchema = {}
   repoMetadata = repoMetadata
   uploads: (IFile | IFolder)[] = []
-  errors: ErrorObject[] = []
+  errors: { title: string; message: string }[] = []
   repositoryRecord: any = null
   loggedInSubject = new Subscription()
   timesChanged = 0
@@ -116,7 +115,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   get isEditMode() {
-    return this.$route.params.id.length
+    return this.$route.params.id?.length
   }
 
   get hasFolderStructure() {
@@ -124,15 +123,15 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   get schema() {
-    return this.activeRepository.schema
+    return this.activeRepository?.get()?.schema
   }
 
   get uiSchema() {
-    return this.activeRepository.uischema || undefined
+    return this.activeRepository?.get()?.uischema || undefined
   }
 
   get schemaDefaults() {
-    return this.activeRepository.schemaDefaults
+    return this.activeRepository?.get()?.schemaDefaults
   }
 
   get isDevMode() {
@@ -190,18 +189,19 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
   init() {
     this.isLoading = true
-    this.data = this.schemaDefaults
+    this.data = this.schemaDefaults || {}
     this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
     this.hasUnsavedChanges = false
     this.wasUnauthorized = false
     this.repositoryKey = this.$route.params.repository as EnumRepositoryKeys
-
+    
     if (
       !this.activeRepository
       || this.activeRepository.get()?.key !== this.repositoryKey
     ) {
       // Check that the key from the url is actually a EnumRepositoryKeys
-      if (EnumRepositoryKeys[this.repositoryKey])
+      this.repositoryKey
+      if (Object.values(EnumRepositoryKeys).includes(this.repositoryKey))
         this.setActiveRepository(this.repositoryKey)
     }
 
@@ -522,7 +522,11 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     return wasSaved
   }
 
-  onDataChange(_data) {
+  onUpdateErrors(errors: { title: string; message: string }[]) {
+    this.errors = errors;
+  }
+
+  onDataChange(_data: any) {
     // cz-form emits 'change' event multiple times during instantioation.
     const changesDuringInstantiation = 2
 
@@ -540,7 +544,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       const url = sprintf(repoUrls.fileCreateUrl, this.identifier)
 
       const createFolderUrl = sprintf(
-        repoUrls.folderCreateUrl,
+        repoUrls.folderCreateUrl || '',
         this.identifier,
         '%s', // replaced file by file inside repo model
       )
@@ -562,7 +566,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       v-if="!isLoading && wasLoaded"
       id="instructions"
       class="text-subtitle-1 my-8"
-      border="left"
+      border="start"
       colored-border
       type="info"
       elevation="2"
@@ -622,14 +626,15 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
         <template v-if="wasLoaded">
           <cz-form
-            ref="form"
-            v-model:errors="errors"
-            v-model:is-valid="isValid"
-            v-model:data="data"
             :schema="schema"
             :uischema="uiSchema"
+            :errors.sync="errors"
+            @update:errors="onUpdateErrors"
+            :isValid.sync="isValid"
+            v-model="data"
+            @update:model-value="onDataChange"
             :config="config"
-            @update:data="onDataChange"
+            ref="form"
           />
         </template>
       </div>
@@ -723,7 +728,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       <template v-else>
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="error"
           elevation="2"

@@ -8,11 +8,11 @@ import EarthChem from './earthchem.model'
 
 export const persistedPaths = [
   `entities.${User.entity}`,
-  // `entities.${Repository.entity}`,
-  // `entities.${Zenodo.entity}`,
-  // `entities.${HydroShare.entity}`,
-  // `entities.${EarthChem.entity}`,
-  // `entities.${External.entity}`,
+  `entities.${Repository.entity}`,
+  `entities.${Zenodo.entity}`,
+  `entities.${HydroShare.entity}`,
+  `entities.${EarthChem.entity}`,
+  `entities.${External.entity}`,
   `entities.${Submission.entity}.sortBy`,
   `entities.${Submission.entity}.sortDirection`,
   `entities.${Submission.entity}.itemsPerPage`,
