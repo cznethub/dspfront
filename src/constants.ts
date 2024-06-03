@@ -18,6 +18,7 @@ export const DISCOVERY_SITE_URL
 export const DEFAULT_TOAST_DURATION = 3500
 export const APP_URL = import.meta.env.VITE_APP_URL || ''
 export const API_BASE = import.meta.env.VITE_APP_API_URL || ''
+export const APP_NAME = 'CZ Hub'
 
 export function getRepositoryFromKey(
   key: string,

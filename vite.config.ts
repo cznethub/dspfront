@@ -20,7 +20,10 @@ export default defineConfig({
 
   // https://vitejs.dev/config/dep-optimization-options#optimizedeps-include
   optimizeDeps: {
-    include: ['@cznethub/cznet-vue-core', '@fortawesome/fontawesome-free'],
+    include: [
+      '@cznethub/cznet-vue-core',
+      '@fortawesome/fontawesome-free',
+    ],
   },
 
   plugins: [
@@ -137,11 +140,18 @@ export default defineConfig({
   },
 
   server: {
-    host: '127.0.0.1',
+    host: true,
     port: 8080,
+    proxy: {
+      '/sockjs-node': {
+        target: 'ws://127.0.0.1:8081',
+        ws: true,
+      },
+    },
     hmr: {
-      host: '127.0.0.1',
-      protocol: 'ws',
+      path: '/sockjs-node',
+      port: 8081,
+      clientPort: 443,
     },
   },
 })

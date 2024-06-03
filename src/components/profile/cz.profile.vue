@@ -30,7 +30,7 @@ export default class CzProfile extends Vue {
 
       <v-divider />
 
-      <v-list dense>
+      <v-list density="compact">
         <v-list-item link :to="{ path: '/profile/account' }" prepend-icon="mdi-account-circle" active-class="active">
           <v-list-item-title>Account</v-list-item-title>
         </v-list-item>

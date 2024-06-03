@@ -1,7 +1,6 @@
 <script lang="ts">
 import { Component, Watch, mixins } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
-import type { VTextField } from 'vuetify/lib/components/index.mjs'
 import { repoMetadata } from '~/components/submit/constants'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
 import type { IRepository } from '~/components/submissions/types'
@@ -216,7 +215,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
 
     <v-alert
       class="mt-2"
-      border="left"
+      border="start"
       colored-border
       type="info"
       elevation="1"
@@ -292,7 +291,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
             type="url"
             hide-details="auto"
             persistent-hint
-            outlined
+            variant="outlined"
             @keypress.enter="onReadDataset"
           />
 
@@ -326,7 +325,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
       </v-stepper-step>
 
       <v-stepper-content step="3">
-        <v-card v-if="isFetching" elevation="2" outlined>
+        <v-card v-if="isFetching" elevation="2" variant="outlined">
           <div class="table-item">
             <table
               class="text-body-1"
@@ -383,11 +382,11 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
           <v-alert
             v-if="isPublished"
             class="my-8"
-            outlined
+            variant="outlined"
             icon="mdi-lock"
             type="info"
             prominent
-            border="left"
+            border="start"
           >
             This resource is published and is not editable in the Data
             Submission Portal. If you need to modify this resource once
@@ -400,11 +399,11 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
           <v-alert
             v-if="isHsCollection"
             class="my-8"
-            outlined
+            variant="outlined"
             icon="mdi-lock"
             type="info"
             prominent
-            border="left"
+            border="start"
           >
             This resource is a HydroShare Collection and is not editable in the
             {{ $t("portalName") }}. If you need to modify this resource once
@@ -467,7 +466,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
                       v-if="submission.metadata.status !== 'incomplete'"
                       color="orange"
                       small
-                      outlined
+                      variant="outlined"
                     >
                       <v-icon left small>
                         mdi-lock
@@ -522,7 +521,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
               Continue & Edit...
             </v-btn>
 
-            <v-btn color="default" :disabled="isFetching" text @click="step--">
+            <v-btn color="default" :disabled="isFetching" variant="text" @click="step--">
               Back
             </v-btn>
           </div>
@@ -531,7 +530,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
         <template v-else-if="wasUnauthorized">
           <v-alert
             class="text-subtitle-1 ma-1"
-            border="left"
+            border="start"
             colored-border
             type="info"
             elevation="2"
@@ -556,7 +555,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
         <template v-else>
           <v-alert
             class="text-subtitle-1 ma-2"
-            border="left"
+            border="start"
             colored-border
             type="warning"
             elevation="2"

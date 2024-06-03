@@ -58,7 +58,7 @@ export default class CzAuthorizedRepositories extends mixins(ActiveRepositoryMix
         <span class="repo-name">{{ repo.name }}</span>
         <template v-if="getAccessToken(repo.key)">
           <div>
-            <v-chip small color="green" outlined class="pl-0">
+            <v-chip small color="green" variant="outlined" class="pl-0">
               <v-icon left class="ml-0">
                 mdi-check-circle
               </v-icon>
@@ -75,7 +75,7 @@ export default class CzAuthorizedRepositories extends mixins(ActiveRepositoryMix
         </template>
         <template v-else>
           <div>
-            <v-chip small color="red" outlined>
+            <v-chip small color="red" variant="outlined">
               Unauthorized
             </v-chip>
           </div>
@@ -92,11 +92,11 @@ export default class CzAuthorizedRepositories extends mixins(ActiveRepositoryMix
           <v-text-field
             :label="`${repo.name} access token`"
             :value="getAccessToken(repo.key)"
-            outlined
+            variant="outlined"
             readonly
             append-icon="mdi-content-copy"
-            dense
-            hide-details=""
+            density="compact"
+            hide-details
             @click:append="onCopy(repo.key)"
           />
         </v-card-text>

@@ -146,7 +146,7 @@ export const routes: RouteRecordRaw[] = [
         components: {
           default: CzNewSubmission,
         },
-        beforeEnter: [hasLoggedInGuard, hasAccessTokenGuard, hasUnsavedChangesGuard],
+        beforeEnter: [hasLoggedInGuard, hasAccessTokenGuard],
       },
     ],
   },
@@ -176,6 +176,10 @@ export const routes: RouteRecordRaw[] = [
 
   },
   /** @see https://router.vuejs.org/guide/migration/#removed-star-or-catch-all-routes */
-  { path: '/:pathMatch(.*)*', name: 'not-found', component: CzHome },
-  { path: '/:pathMatch(.*)', name: 'bad-not-found', component: CzHome },
+  { path: '/:pathMatch(.*)*', name: 'not-found', redirect: { name: 'home' } },
+  {
+    path: '/:pathMatch(.*)',
+    name: 'bad-not-found',
+    redirect: { name: 'home' },
+  },
 ]

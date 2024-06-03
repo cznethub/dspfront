@@ -7,6 +7,7 @@ import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 @Component({
   name: 'cz-register-dataset-dialog',
   components: {},
+  emits: ['close'],
 })
 export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixin) {
   public active = false
@@ -19,7 +20,7 @@ export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixi
     return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
   }
 
-  get externalRepoMetadata() {
+  get externalRepoMetadata(): IRepository | undefined {
     return this.repoCollection.find(r => r.isExternal)
   }
 
@@ -53,7 +54,7 @@ export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixi
               :to="{ path: 'register' }"
               :elevation="isHovering ? 4 : 2"
               v-bind="props"
-              outlined
+              variant="elevated"
             >
               <v-card-text class="d-flex align-items-center gap-1">
                 <v-icon large color="#87AAAA">
@@ -73,20 +74,19 @@ export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixi
           </template>
         </v-hover>
 
-        <v-hover>
+        <v-hover v-if="externalRepoMetadata">
           <template #default="{ isHovering, props }">
             <v-card
               class="transition-swing"
               :elevation="isHovering ? 4 : 2"
               v-bind="props"
-              outlined
+              variant="elevated"
               role="button"
               ripple
             >
               <v-card-text
                 class="d-flex align-items-center gap-1"
                 @click="
-                  close();
                   submitTo(externalRepoMetadata);
                 "
               >

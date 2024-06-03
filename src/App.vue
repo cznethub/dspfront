@@ -376,7 +376,7 @@ export default toNative(App)
       temporary
       app
     >
-      <v-list nav dense class="nav-items">
+      <v-list nav density="compact" class="nav-items">
         <v-list-item class="text-body-1">
           <v-list-item
             id="drawer-nav-home"

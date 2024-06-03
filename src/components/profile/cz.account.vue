@@ -35,7 +35,7 @@ export default class CzAccount extends Vue {
     <v-text-field
       label="Access token"
       :value="token"
-      outlined
+      variant="outlined"
       readonly
       append-icon="mdi-content-copy"
       @click:append="onCopy"

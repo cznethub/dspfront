@@ -15,8 +15,8 @@ import { itemsPerPageArray } from '~/components/submissions/constants'
 import { getRepositoryFromKey } from '~/constants'
 
 export interface ISubmisionState {
-  sortBy: { key: string, label: string }
-  sortDirection: { key: string, label: string }
+  sortBy: { key: string, order?: boolean | 'asc' | 'desc' }
+  // sortDirection: { key: string, label: string }
   itemsPerPage: number
   isFetching: boolean
 }
@@ -39,8 +39,8 @@ export default class Submission extends Model implements ISubmission {
 
   static state() {
     return {
-      sortBy: { key: 'date', label: EnumSubmissionSorts.date },
-      sortDirection: { key: 'desc', label: EnumSortDirections.desc },
+      sortBy: { key: 'date', label: EnumSubmissionSorts.date, order: 'asc' },
+      // sortDirection: { key: 'desc', label: EnumSortDirections.desc },
       itemsPerPage: itemsPerPageArray[0],
       isFetching: false,
     }
@@ -54,7 +54,6 @@ export default class Submission extends Model implements ISubmission {
       title: this.attr(''),
       repository: this.attr(''),
       authors: this.attr([]),
-      // @ts-expect-error
       date: this.number(0),
       identifier: this.attr(''),
       url: this.attr(''),

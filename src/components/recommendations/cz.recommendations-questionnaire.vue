@@ -98,7 +98,7 @@ export default class CzRecommendationsQuestionnaire extends mixins(ActiveReposit
       before using this guide.
     </p>
 
-    <v-stepper v-model="currentStepIndex" flat outlined>
+    <v-stepper v-model="currentStepIndex" flat variant="outlined">
       <v-stepper-header>
         <template v-for="(step, index) in steps" :key="`${index}-step`">
           <v-stepper-item
@@ -126,7 +126,7 @@ export default class CzRecommendationsQuestionnaire extends mixins(ActiveReposit
           :step="index"
         >
           <template v-if="step.options">
-            <v-card class="mb-12 pa-4" outlined min-height="300px">
+            <v-card class="mb-12 pa-4" variant="outlined" min-height="300px">
               <div class="text-heading-5">
                 {{ step.next }}
               </div>
@@ -156,7 +156,7 @@ export default class CzRecommendationsQuestionnaire extends mixins(ActiveReposit
           <template v-if="step.finish">
             <v-alert
               class="my-8"
-              outlined
+              variant="outlined"
               type="warning"
               color="warning darken-2"
               prominent

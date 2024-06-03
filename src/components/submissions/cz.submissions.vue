@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Ref, mixins } from 'vue-facing-decorator'
+import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
 import type {
   IRepository,
@@ -29,7 +29,7 @@ import { isRepositoryAuthorized } from '~/util'
   name: 'cz-submissions',
   components: { CzRegisterDatasetDialog },
 })
-export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
+class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   @Ref('registerDatasetDialog') registerDatasetDialog!: InstanceType<
     typeof CzRegisterDatasetDialog
   >
@@ -53,9 +53,6 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   page = 1
   repoMetadata = repoMetadata
   enumRepositoryKeys = EnumRepositoryKeys
-  enumSubmissionSorts = EnumSubmissionSorts
-  enumSortDirections = EnumSortDirections
-  sortDirectionsOverrides = sortDirectionsOverrides
   currentItems = []
   loggedInSubject = new Subscription()
 
@@ -69,28 +66,6 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
 
   get externalRepoMetadata() {
     return this.repoCollection.find(r => r.isExternal)
-  }
-
-  get sortBy() {
-    return Submission.$state.sortBy
-  }
-
-  set sortBy(sortBy: { key: string, label: string }) {
-    Submission.commit((state) => {
-      state.sortBy = sortBy
-    })
-
-    this._loadSortDirection()
-  }
-
-  get sortDirection(): { key: string, label: string } {
-    return Submission.$state.sortDirection
-  }
-
-  set sortDirection(sortDirection: { key: string, label: string }) {
-    Submission.commit((state) => {
-      state.sortDirection = sortDirection
-    })
   }
 
   get itemsPerPage() {
@@ -114,24 +89,13 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   }
 
   get sortOptions() {
-    return Object.keys(EnumSubmissionSorts).map((key) => {
-      return { key, label: EnumSubmissionSorts[key] }
+    return Object.entries(EnumSubmissionSorts).map((key, value) => {
+      return { key, order: 'asc', label: value }
     })
   }
 
   get isLoggedIn() {
     return User.$state.isLoggedIn
-  }
-
-  get sortDirectionOptions() {
-    return Object.keys(EnumSortDirections).map((key) => {
-      return {
-        key,
-        label:
-          sortDirectionsOverrides[this.sortBy.key]?.[key]
-          || EnumSortDirections[key],
-      }
-    })
   }
 
   get isAnyFilterAcitve() {
@@ -172,10 +136,6 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     return Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
-  get sortDesc(): boolean {
-    return this.sortDirection.key === 'desc'
-  }
-
   created() {
     if (User.$state.isLoggedIn)
       Submission.fetchSubmissions()
@@ -184,7 +144,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
       Submission.fetchSubmissions()
     })
 
-    this._loadSortDirection()
+    // this._loadSortDirection()
   }
 
   beforeDestroy() {
@@ -393,16 +353,8 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     }
     return ''
   }
-
-  /** Use this function to load the correct sort option in case we have mutaded the entries to override the labels */
-  private _loadSortDirection() {
-    const selectedOption = this.sortDirectionOptions.find(
-      s => s.key === this.sortDirection.key,
-    )
-    if (selectedOption)
-      this.sortDirection = selectedOption
-  }
 }
+export default toNative(CzSubmissions)
 </script>
 
 <template>
@@ -422,9 +374,9 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
               id="my_submissions_search"
               v-model="filters.searchStr"
               class="ma-1 my-2 my-sm-0"
-              dense
+              density="compact"
               clearable
-              outlined
+              variant="outlined"
               hide-details
               prepend-inner-icon="mdi-magnify"
               label="Search..."
@@ -441,8 +393,8 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
               hide-details
               chips
               multiple
-              dense
-              outlined
+              density="compact"
+              variant="outlined"
             >
               <template #item="data">
                 <v-list-item-action>
@@ -538,13 +490,6 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
               v-model:page="page"
               :items="filteredSubmissions"
               :search="filters.searchStr"
-              :sort-by="
-                sortBy.key
-                  || Object.keys(enumSubmissionSorts).find(
-                    (k) => enumSubmissionSorts[k] === sortBy,
-                  )
-              "
-              :sort-desc="sortDesc"
               item-key="identifier"
               hide-default-footer
               @current-items="currentItems = $event"
@@ -566,26 +511,22 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
                     <div class="sort-controls d-flex flex-column flex-sm-row">
                       <v-select
                         id="sort-by"
-                        v-model="sortBy"
-                        :items="sortOptions"
                         item-text="label"
                         return-object
                         class="mr-1 sort-control my-md-0 my-2"
-                        outlined
-                        dense
+                        variant="outlined"
+                        density="compact"
                         hide-details="auto"
                         label="Sort by"
                       />
 
                       <v-select
                         id="sort-order"
-                        v-model="sortDirection"
-                        :items="sortDirectionOptions"
                         item-text="label"
                         return-object
                         class="sort-control my-md-0 my-2"
-                        outlined
-                        dense
+                        variant="outlined"
+                        density="compact"
                         hide-details="auto"
                         label="Order"
                       />
@@ -669,7 +610,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
                               v-if="item.metadata.status !== 'incomplete'"
                               color="orange"
                               small
-                              outlined
+                              variant="outlined"
                             >
                               <v-icon left small>
                                 mdi-lock
@@ -677,7 +618,7 @@ export default class CzSubmissions extends mixins(ActiveRepositoryMixin) {
                               {{ item.metadata.status }}
                             </v-chip>
 
-                            <v-chip v-else small outlined>
+                            <v-chip v-else small variant="outlined">
                               <v-icon left small>
                                 mdi-pencil
                               </v-icon>

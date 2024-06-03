@@ -61,8 +61,8 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
       hideArraySummaryValidation: false,
       vuetify: {
         commonAttrs: {
-          'dense': true,
-          'outlined': true,
+          'density': 'compact',
+          'variant': 'outlined',
           'persistent-hint': true,
           'hide-details': false,
         },
@@ -295,11 +295,11 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
       <v-alert
         v-if="isPublished"
         class="my-8"
-        outlined
+        variant="outlined"
         icon="mdi-lock"
         type="info"
         prominent
-        border="left"
+        border="start"
       >
         <div
           class="d-flex flex-wrap-wrap justify-space-between align-center flex-column flex-md-row"
@@ -325,11 +325,11 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
       <v-alert
         v-if="isEclSubmitted"
         class="my-8"
-        outlined
+        variant="outlined"
         icon="mdi-lock"
         type="info"
         prominent
-        border="left"
+        border="start"
       >
         <div
           class="d-flex flex-wrap-wrap justify-space-between align-center flex-column flex-md-row"
@@ -352,11 +352,11 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
       <v-alert
         v-if="isHsCollection"
         class="my-8"
-        outlined
+        variant="outlined"
         icon="mdi-lock"
         type="info"
         prominent
-        border="left"
+        border="start"
       >
         <div
           class="d-flex flex-wrap-wrap justify-space-between align-center flex-column flex-md-row"
@@ -437,7 +437,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
         <v-alert
           v-if="wasUnauthorized"
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
           elevation="2"
@@ -462,7 +462,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
         <template v-else-if="!isLoggedIn">
           <v-alert
             class="text-subtitle-1"
-            border="left"
+            border="start"
             colored-border
             type="info"
             elevation="2"
@@ -496,7 +496,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
         <template v-else>
           <v-alert
             class="text-subtitle-1"
-            border="left"
+            border="start"
             colored-border
             type="error"
             elevation="2"

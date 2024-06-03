@@ -857,7 +857,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
       <v-alert
         v-if="isEditMode && !isReadOnly && allowFileUpload"
         class="text-subtitle-1"
-        border="left"
+        border="start"
         colored-border
         type="info"
         elevation="1"
@@ -867,7 +867,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
         click the Save Changes button for your changes to be effective.
       </v-alert>
 
-      <v-card v-if="rootDirectory.children.length" flat outlined class="mb-4">
+      <v-card v-if="rootDirectory.children.length" flat variant="outlined" class="mb-4">
         <v-card-text class="files-container" style="height: 15rem">
           <v-row class="flex-grow-1">
             <v-col
@@ -884,7 +884,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
                 multiple-active
                 transition
                 item-key="key"
-                dense
+                density="compact"
                 open-on-click
                 class="files-container--included"
               >
@@ -915,7 +915,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
                     v-click-outside="onClickOutside"
                     :value="item.name"
                     append-icon="mdi-cancel"
-                    dense
+                    density="compact"
                     hide-details="auto"
                     autofocus
                     @change="onRenamed(item, $event)"
@@ -1111,7 +1111,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
       <v-alert
         v-if="hasTooManyFiles"
         class="text-subtitle-1"
-        border="left"
+        border="start"
         colored-border
         type="error"
         elevation="1"
@@ -1124,7 +1124,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
         v-if="!isReadOnly && allowFileUpload"
         class="upload-drop-area files-container--included"
       >
-        <b-upload
+        <!-- <b-upload
           v-model="dropFiles"
           type="file"
           multiple
@@ -1141,7 +1141,7 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
           >
             <span class="text-subtitle-1">Drop your files here or click to upload</span>
           </v-alert>
-        </b-upload>
+        </b-upload> -->
       </div>
     </v-card-text>
   </v-card>

@@ -1,41 +1,39 @@
 <script lang="ts">
-import { Component, Ref, mixins } from 'vue-facing-decorator'
+import { Component, Hook, mixins } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
-import { CzForm, Notifications } from '@cznethub/cznet-vue-core'
+import { CzFileExplorer, CzForm, Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import type { IRepositoryUrls } from '../submissions/types'
 import { EnumRepositoryKeys } from '../submissions/types'
 import { repoMetadata } from '../submit/constants'
-import type { IFile, IFolder } from '~/components/new-submission/types'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 import { DELETED_RESOURCE_STATUS_CODES } from '~/constants'
 import Repository from '~/models/repository.model'
-import CzFolderStructure from '~/components/new-submission/cz.folder-structure.vue'
 import CzNewSubmissionActions from '~/components/new-submission/cz.new-submission-actions.vue'
 import User from '~/models/user.model'
 import Submission from '~/models/submission.model'
+import { hasUnsavedChangesGuard } from '~/guards'
 
 const initialData = {}
 
 @Component({
   name: 'cz-new-submission',
   components: {
-    CzFolderStructure,
     CzNewSubmissionActions,
     CzForm,
+    CzFileExplorer,
   },
 })
 export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
-  @Ref('folderStructure') folderStructure!: InstanceType<
-    typeof CzFolderStructure
-  >
+  // @Ref('folderStructure') folderStructure!: InstanceType<
+  //   typeof CzFolderStructure
+  // >
 
-  rootDirectory: IFolder = {
+  rootDirectory: any = {
     name: 'root',
-    children: [],
-    parent: null,
-    key: '',
-    path: '',
+    children: [
+    ],
   }
 
   isValid = false
@@ -46,8 +44,8 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   data: any = initialData
   usedUISchema = {}
   repoMetadata = repoMetadata
-  uploads: (IFile | IFolder)[] = []
-  errors: { title: string; message: string }[] = []
+  uploads = []
+  errors: { title: string, message: string }[] = []
   repositoryRecord: any = null
   loggedInSubject = new Subscription()
   timesChanged = 0
@@ -68,8 +66,8 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       hideArraySummaryValidation: false,
       vuetify: {
         commonAttrs: {
-          'dense': true,
-          'outlined': true,
+          'density': 'compact',
+          'variant': 'outlined',
           'persistent-hint': true,
           'hide-details': false,
         },
@@ -78,6 +76,11 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       isReadOnly: this.isPublished || this.isHsCollection,
       // isDisabled: false,
     }
+  }
+
+  fileExplorerConfig = {
+    isReadOnly: false,
+    hasFolders: true,
   }
 
   get dbSubmission() {
@@ -118,7 +121,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     return this.$route.params.id?.length
   }
 
-  get hasFolderStructure() {
+  get hasFileExplorer() {
     return this.wasLoaded && !this.isExternal && !this.isHsCollection
   }
 
@@ -194,7 +197,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.hasUnsavedChanges = false
     this.wasUnauthorized = false
     this.repositoryKey = this.$route.params.repository as EnumRepositoryKeys
-    
+
     if (
       !this.activeRepository
       || this.activeRepository.get()?.key !== this.repositoryKey
@@ -295,7 +298,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     }
 
     if (this.repositoryRecord) {
-      Object.keys(this.repositoryRecord).map((key) => {
+      Object.keys(this.repositoryRecord).forEach((key) => {
         if (this.repositoryRecord[key] === null)
           this.repositoryRecord[key] = undefined
       })
@@ -304,24 +307,24 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare)
         this.allowFileUpload = this.isHsComposite
 
-      if (this.hasFolderStructure) {
+      if (this.hasFileExplorer)
         console.info('CzNewSubmission: reading existing files...')
-        try {
-          const initialStructure: (IFile | IFolder)[]
+      try {
+        const initialStructure
             = await this.activeRepository.readRootFolder(
               this.identifier,
               '',
               this.rootDirectory,
             )
-          this.rootDirectory.children = initialStructure
-        }
-        catch (e) {
-          Notifications.toast({
-            message: 'Failed to load existing files.',
-            type: 'error',
-          })
-        }
+        this.rootDirectory.children = initialStructure
       }
+      catch (e) {
+        Notifications.toast({
+          message: 'Failed to load existing files.',
+          type: 'error',
+        })
+      }
+
       this.isLoadingInitialFiles = false
 
       this.data = {
@@ -347,9 +350,9 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
   onSaveAndFinish() {
     if (
-      this.hasFolderStructure
-      && (this.folderStructure?.hasInvalidFilesToUpload
-      || !this.folderStructure?.canUploadFiles)
+      this.hasFileExplorer
+      // && (this.folderStructure?.hasInvalidFilesToUpload
+      // || !this.folderStructure?.canUploadFiles)
     ) {
       Notifications.openDialog({
         title: 'Some of your files cannot be uploaded',
@@ -401,8 +404,8 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   onSave() {
     if (
       !this.isExternal
-      && (this.folderStructure?.hasInvalidFilesToUpload
-      || !this.folderStructure?.canUploadFiles)
+      // && (this.folderStructure?.hasInvalidFilesToUpload
+      // || !this.folderStructure?.canUploadFiles)
     ) {
       Notifications.openDialog({
         title: 'Some of your files cannot be uploaded',
@@ -522,8 +525,8 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     return wasSaved
   }
 
-  onUpdateErrors(errors: { title: string; message: string }[]) {
-    this.errors = errors;
+  onUpdateErrors(errors: { title: string, message: string }[]) {
+    this.errors = errors
   }
 
   onDataChange(_data: any) {
@@ -536,7 +539,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation
   }
 
-  async uploadFiles(files: (IFolder | IFile)[]) {
+  async uploadFiles(files: any[]) {
     const repoUrls: IRepositoryUrls | undefined
       = this.activeRepository?.get()?.urls
 
@@ -550,8 +553,17 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       )
       files.map(f => (f.isDisabled = true))
       await this.activeRepository?.uploadFiles(url, files, createFolderUrl)
-      this.folderStructure.redrawFileTree()
+      // this.folderStructure.redrawFileTree()
     }
+  }
+
+  @Hook
+  beforeRouteLeave(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext,
+  ) {
+    hasUnsavedChangesGuard(to, from, next)
   }
 }
 </script>
@@ -610,8 +622,8 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
     <div>
       <div v-if="!isLoading">
-        <cz-folder-structure
-          v-if="hasFolderStructure"
+        <!-- <cz-folder-structure
+          v-if="hasFileExplorer"
           id="cz-folder-structure"
           ref="folderStructure"
           v-model="uploads"
@@ -622,19 +634,33 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
           :is-edit-mode="isEditMode"
           :identifier="identifier"
           @upload="uploadFiles($event)"
-        />
+        /> -->
+
+        <cz-file-explorer
+          v-if="hasFileExplorer"
+          id="cz-folder-structure"
+          :root-directory="rootDirectory"
+          :has-folders="fileExplorerConfig.hasFolders"
+          :is-read-only="fileExplorerConfig.isReadOnly"
+          :has-file-metadata="() => true"
+        >
+          <template #prepend>
+            <span />
+          </template>
+        </cz-file-explorer>
 
         <template v-if="wasLoaded">
           <cz-form
+            v-if="schema"
+            ref="form"
+            v-model:errors="errors"
+            v-model:is-valid="isValid"
+            v-model="data"
             :schema="schema"
             :uischema="uiSchema"
-            :errors.sync="errors"
-            @update:errors="onUpdateErrors"
-            :isValid.sync="isValid"
-            v-model="data"
-            @update:model-value="onDataChange"
             :config="config"
-            ref="form"
+            @update:errors="onUpdateErrors"
+            @update:model-value="onDataChange"
           />
         </template>
       </div>

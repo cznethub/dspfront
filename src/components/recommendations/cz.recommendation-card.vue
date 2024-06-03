@@ -19,6 +19,7 @@ export default class CzRecommendationCard extends mixins(ActiveRepositoryMixin) 
     class="cz-recommendation-card"
     :disabled="repo.isDisabled"
     :outlined="!repo.isSupported"
+    :variant="!repo.isSupported ? 'outlined' : 'elevated'"
   >
     <v-card-title>
       {{ repo.name }}

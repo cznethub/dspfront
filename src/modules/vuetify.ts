@@ -1,4 +1,4 @@
-// import '@mdi/font/css/materialdesignicons.css'
+import '@mdi/font/css/materialdesignicons.css'
 import '@fortawesome/fontawesome-free/css/all.css'
 
 import 'vuetify/styles'
@@ -46,6 +46,11 @@ export const install: UserModule = ({ app }) => {
       themes: {
         lightTheme,
         darkTheme,
+      },
+      variations: {
+        colors: ['primary', 'secondary'],
+        lighten: 4,
+        darken: 4,
       },
     },
     icons: {
