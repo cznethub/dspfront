@@ -1,11 +1,11 @@
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-facing-decorator'
+import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
 
 @Component({
   name: 'cz-new-submission-actions',
   components: {},
 })
-export default class CzNewSubmissionActions extends Vue {
+class CzNewSubmissionActions extends Vue {
   @Prop() isEditMode!: boolean
   @Prop() repositoryUrl!: string
   @Prop() isDevMode!: boolean
@@ -14,6 +14,7 @@ export default class CzNewSubmissionActions extends Vue {
   @Prop() confirmText!: string
   @Prop() errors!: any[]
 }
+export default toNative(CzNewSubmissionActions)
 </script>
 
 <template>

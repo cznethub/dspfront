@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, mixins } from 'vue-facing-decorator'
+import { Component, mixins, toNative } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import type { IRepository } from '../submissions/types'
 import { repoMetadata } from '~/components/submit/constants'
@@ -11,7 +11,7 @@ import Repository from '~/models/repository.model'
   name: 'cz-authorized-repositories',
   components: {},
 })
-export default class CzAuthorizedRepositories extends mixins(ActiveRepositoryMixin) {
+class CzAuthorizedRepositories extends mixins(ActiveRepositoryMixin) {
   repoMetadata = repoMetadata
 
   get supportedRepositories(): IRepository[] {
@@ -39,6 +39,7 @@ export default class CzAuthorizedRepositories extends mixins(ActiveRepositoryMix
     )
   }
 }
+export default toNative(CzAuthorizedRepositories)
 </script>
 
 <template>

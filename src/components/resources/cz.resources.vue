@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator'
 import { guideUrls } from '~/components/recommendations/constants'
 
 interface IDataTemplate {
@@ -57,7 +57,7 @@ const dataTemplates: IDataTemplate[] = [
   name: 'cz-resources',
   components: {},
 })
-export default class CzResources extends Vue {
+class CzResources extends Vue {
   dataTemplates!: IDataTemplate[]
   guideUrls = guideUrls
 
@@ -65,6 +65,7 @@ export default class CzResources extends Vue {
     this.dataTemplates = dataTemplates
   }
 }
+export default toNative(CzResources)
 </script>
 
 <template>

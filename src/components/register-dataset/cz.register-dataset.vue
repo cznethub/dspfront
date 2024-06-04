@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Watch, mixins } from 'vue-facing-decorator'
+import { Component, Watch, mixins, toNative } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import { repoMetadata } from '~/components/submit/constants'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
@@ -14,7 +14,7 @@ import User from '~/models/user.model'
   name: 'cz-register-dataset',
   components: {},
 })
-export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
+class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   url = ''
   step = 1
   selectedRepository: IRepository | null = null
@@ -204,6 +204,7 @@ export default class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
     }
   }
 }
+export default toNative(CzRegisterDataset)
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator'
 import { repoMetadata } from '../submit/constants'
 import { DISCOVERY_SITE_URL } from '~/constants'
 import User from '~/models/user.model'
@@ -8,7 +8,7 @@ import User from '~/models/user.model'
   name: 'cz-home',
   components: {},
 })
-export default class CzHome extends Vue {
+class CzHome extends Vue {
   repoMetadata = repoMetadata
   discoverySiteUrl = DISCOVERY_SITE_URL
 
@@ -26,6 +26,7 @@ export default class CzHome extends Vue {
     User.openLogInDialog()
   }
 }
+export default toNative(CzHome)
 </script>
 
 <template>

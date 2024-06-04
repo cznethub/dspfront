@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator'
 import User from '~/models/user.model'
 
 @Component({
@@ -7,7 +7,7 @@ import User from '~/models/user.model'
   components: {},
   emits: ['loggedIn'],
 })
-export default class CzLogin extends Vue {
+class CzLogin extends Vue {
   async openLogInDialog() {
     User.logIn(this.onLoggedIn)
   }
@@ -20,6 +20,7 @@ export default class CzLogin extends Vue {
     this.$emit('loggedIn')
   }
 }
+export default toNative(CzLogin)
 </script>
 
 <template>

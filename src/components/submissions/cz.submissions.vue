@@ -191,20 +191,15 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   }
 
   async onUpdateRecord(submission: ISubmission) {
-    this.$set(
-      this.isUpdating,
-      `${submission.repository}-${submission.identifier}`,
-      true,
-    )
+    const key = `${submission.repository}-${submission.identifier}`
+    this.isUpdating[key] = true
+
     await Repository.refetchSubmission(
       submission.identifier,
       submission.repository,
     )
-    this.$set(
-      this.isUpdating,
-      `${submission.repository}-${submission.identifier}`,
-      false,
-    )
+
+    this.isUpdating[key] = false
   }
 
   exportSubmissions() {
@@ -228,7 +223,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
 
     const headerRow = `${columnLabels.join(',')}\n`
     const rows = parsedSubmissions.map((s) => {
-      return Object.keys(s).map(key => `"${s[key]}"`)
+      return Object.keys(s).map((key: string) => `"${s[key]}"`)
     })
 
     const csvContent = headerRow + rows.map(c => c.join(',')).join('\n')
@@ -287,11 +282,8 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   }
 
   async onDeleteSubmission() {
-    this.$set(
-      this.isDeleting,
-      `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
-      true,
-    )
+    const key = `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`
+    this.isDeleting[key] = true
 
     if (this.deleteDialogData) {
       const deleteInRepo
@@ -302,14 +294,9 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
         if (
           !isRepositoryAuthorized(this.deleteDialogData.submission.repository)
         ) {
-          this.$set(
-            this.isDeleting,
-            `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
-            false,
-          )
-
+          this.isDeleting[key] = false
           this.authorizedSubject = Repository.authorized$.subscribe(
-            async (repositoryKey: EnumRepositoryKeys) => {
+            async (_repositoryKey: EnumRepositoryKeys) => {
               // try again when the repository has been authorized
               await this.onDeleteSubmission()
             },
@@ -325,12 +312,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
       )
     }
 
-    this.$set(
-      this.isDeleting,
-      `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`,
-      false,
-    )
-
+    this.isDeleting[key] = false
     this.deleteDialogData = null
   }
 
@@ -417,12 +399,11 @@ export default toNative(CzSubmissions)
           <v-spacer />
 
           <v-speed-dial
-            transition="slide-y-reverse-transition"
             origin="center"
             direction="bottom"
           >
-            <template #activator>
-              <v-btn color="primary" rounded block>
+            <template #activator="{ props: activatorProps }">
+              <v-btn color="primary" rounded block v-bind="activatorProps">
                 <v-icon>mdi-plus</v-icon>
                 New Submission
               </v-btn>
@@ -431,7 +412,7 @@ export default toNative(CzSubmissions)
             <v-card color="secondary">
               <v-card-text>
                 <template v-for="repo of supportedRepoMetadata" :key="repo.name">
-                  <v-tooltip left transition="fade">
+                  <v-tooltip left>
                     <template #activator="{ props }">
                       <v-btn
                         v-if="!repo.isDisabled"
@@ -447,15 +428,14 @@ export default toNative(CzSubmissions)
                   </v-tooltip>
                 </template>
 
-                <v-tooltip left transition="fade">
+                <v-tooltip left>
                   <template #activator="{ props }">
                     <v-btn
                       v-if="!externalRepoMetadata.isDisabled"
                       class="mx-0 my-4"
-                      v-bind="attrs"
+                      v-bind="props"
                       block
                       @click="openRegisterDatasetDialog"
-                      v-on="on"
                     >
                       {{ externalRepoMetadata.name }}
                     </v-btn>
@@ -540,7 +520,7 @@ export default toNative(CzSubmissions)
                 <div
                   v-for="(item, index) in items"
                   :id="`submission-${index}`"
-                  :key="index"
+                  :key="item.raw.identifier"
                 >
                   <div
                     class="table-item d-flex justify-space-between flex-column flex-md-row"

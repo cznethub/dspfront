@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, mixins } from 'vue-facing-decorator'
+import { Component, mixins, toNative } from 'vue-facing-decorator'
 import { repoMetadata } from '~/components/submit/constants'
 import type { IRepository } from '~/components/submissions/types'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
@@ -9,7 +9,7 @@ import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
   components: {},
   emits: ['close'],
 })
-export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixin) {
+class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixin) {
   public active = false
 
   get repoCollection(): IRepository[] {
@@ -28,6 +28,7 @@ export default class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixi
     this.$emit('close')
   }
 }
+export default toNative(CzRegisterDatasetDialog)
 </script>
 
 <template>

@@ -1,13 +1,14 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator'
 
 @Component({
   name: 'cz-contact',
   components: { },
 })
-export default class CzContact extends Vue {
+class CzContact extends Vue {
 
 }
+export default toNative(CzContact)
 </script>
 
 <template>

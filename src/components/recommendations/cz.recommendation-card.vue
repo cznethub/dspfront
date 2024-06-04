@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Prop, mixins } from 'vue-facing-decorator'
+import { Component, Prop, mixins, toNative } from 'vue-facing-decorator'
 import type { IRepository } from '~/components/submissions/types'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 
@@ -7,10 +7,11 @@ import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
   name: 'cz-recommendation-card',
   components: {},
 })
-export default class CzRecommendationCard extends mixins(ActiveRepositoryMixin) {
+class CzRecommendationCard extends mixins(ActiveRepositoryMixin) {
   @Prop({ required: true }) repo!: IRepository
   @Prop() hideLogo!: boolean
 }
+export default toNative(CzRecommendationCard)
 </script>
 
 <template>

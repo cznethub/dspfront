@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Prop, mixins } from 'vue-facing-decorator'
+import { Component, Prop, mixins, toNative } from 'vue-facing-decorator'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 import { getRepositoryFromKey } from '~/constants'
 import Repository from '~/models/repository.model'
@@ -8,7 +8,7 @@ import Repository from '~/models/repository.model'
   name: 'cz-authorize',
   components: {},
 })
-export default class CzAuthorize extends mixins(ActiveRepositoryMixin) {
+class CzAuthorize extends mixins(ActiveRepositoryMixin) {
   @Prop() repo!: string
 
   get repository() {
@@ -35,6 +35,7 @@ export default class CzAuthorize extends mixins(ActiveRepositoryMixin) {
     this.$emit('authorized')
   }
 }
+export default toNative(CzAuthorize)
 </script>
 
 <template>

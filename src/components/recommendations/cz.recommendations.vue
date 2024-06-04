@@ -1,11 +1,12 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator'
 
 @Component({
   name: 'cz-recommendations',
   components: {},
 })
-export default class CzRecommendations extends Vue {}
+class CzRecommendations extends Vue {}
+export default toNative(CzRecommendations)
 </script>
 
 <template>

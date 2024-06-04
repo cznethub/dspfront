@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Hook, mixins } from 'vue-facing-decorator'
+import { Component, Hook, mixins, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
 import { CzFileExplorer, CzForm, Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
@@ -25,7 +25,7 @@ const initialData = {}
     CzFileExplorer,
   },
 })
-export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
+class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   // @Ref('folderStructure') folderStructure!: InstanceType<
   //   typeof CzFolderStructure
   // >
@@ -566,6 +566,7 @@ export default class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     hasUnsavedChangesGuard(to, from, next)
   }
 }
+export default toNative(CzNewSubmission)
 </script>
 
 <template>

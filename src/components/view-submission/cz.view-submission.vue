@@ -1,11 +1,10 @@
 <script lang="ts">
-import { Component, Ref, mixins } from 'vue-facing-decorator'
+import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
 import { CzForm, Notifications } from '@cznethub/cznet-vue-core'
 import { EnumRepositoryKeys } from '../submissions/types'
 import { repoMetadata } from '../submit/constants'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import type { IFile, IFolder } from '~/components/new-submission/types'
 import { DELETED_RESOURCE_STATUS_CODES } from '~/constants'
 import Repository from '~/models/repository.model'
 import CzFolderStructure from '~/components/new-submission/cz.folder-structure.vue'
@@ -21,14 +20,12 @@ const initialData = {}
     CzForm,
   },
 })
-export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin,
-) {
+class CzViewSubmission extends mixins(ActiveRepositoryMixin) {
   @Ref('folderStructure') folderStructure!: InstanceType<
     typeof CzFolderStructure
   >
 
-  rootDirectory: IFolder = {
+  rootDirectory: any = {
     name: 'root',
     children: [],
     parent: null,
@@ -41,7 +38,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
   data: any = initialData
   usedUISchema = {}
   repoMetadata = repoMetadata
-  uploads: (IFile | IFolder)[] = []
+  uploads = []
   repositoryRecord: any = null
   loggedInSubject = new Subscription()
   wasUnauthorized = false
@@ -244,7 +241,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
       if (this.hasFolderStructure) {
         console.info('CzViewSubmission: reading existing files...')
         try {
-          const initialStructure: (IFile | IFolder)[]
+          const initialStructure: any[]
             = await this.activeRepository.readRootFolder(
               this.identifier,
               '',
@@ -270,6 +267,7 @@ export default class CzViewSubmission extends mixins<ActiveRepositoryMixin>(
     this.isLoading = false
   }
 }
+export default toNative(CzViewSubmission)
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, mixins } from 'vue-facing-decorator'
+import { Component, mixins, toNative } from 'vue-facing-decorator'
 import type { IRepository } from '../submissions/types'
 import { EnumRepositoryKeys } from '../submissions/types'
 import { repoMetadata } from '~/components/submit/constants'
@@ -26,7 +26,7 @@ interface CzStep {
   name: 'cz-recommendations-questionnaire',
   components: { CzRecommendationCard },
 })
-export default class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
+class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
   currentStepIndex = 0
   steps: CzStep[] = [mappings] as CzStep[]
   selectedOption: CzStep | null = null
@@ -72,6 +72,7 @@ export default class CzRecommendationsQuestionnaire extends mixins(ActiveReposit
     this.steps = this.steps.slice(0, this.currentStepIndex + 1)
   }
 }
+export default toNative(CzRecommendationsQuestionnaire)
 </script>
 
 <template>

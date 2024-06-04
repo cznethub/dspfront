@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import User from '~/models/user.model'
 
@@ -7,7 +7,7 @@ import User from '~/models/user.model'
   name: 'cz-account',
   components: {},
 })
-export default class CzAccount extends Vue {
+class CzAccount extends Vue {
   get token() {
     return User.$state.orcidAccessToken
   }
@@ -17,6 +17,7 @@ export default class CzAccount extends Vue {
     Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
   }
 }
+export default toNative(CzAccount)
 </script>
 
 <template>

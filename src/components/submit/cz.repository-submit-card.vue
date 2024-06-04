@@ -1,14 +1,15 @@
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-facing-decorator'
+import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
 import type { IRepository } from '../submissions/types'
 
 @Component({
   name: 'cz-repository-submit-card',
 })
-export default class CzRepositorySubmitCard extends Vue {
+class CzRepositorySubmitCard extends Vue {
   @Prop({ required: true }) repo!: IRepository
   @Prop() hideLogo!: boolean
 }
+export default toNative(CzRepositorySubmitCard)
 </script>
 
 <template>

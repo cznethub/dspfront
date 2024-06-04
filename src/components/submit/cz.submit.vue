@@ -1,5 +1,5 @@
 <script lang="ts">
-import { Component, Ref, mixins } from 'vue-facing-decorator'
+import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
 import type { RouteLocationNormalized } from 'vue-router'
 import type { IRepository } from '../submissions/types'
 import { repoMetadata } from '~/components/submit/constants'
@@ -11,7 +11,7 @@ import CzRegisterDatasetDialog from '~/components/register-dataset/cz.register-d
   name: 'cz-submit',
   components: { CzRepositorySubmitCard, CzRegisterDatasetDialog },
 })
-export default class CzSubmit extends mixins(ActiveRepositoryMixin) {
+class CzSubmit extends mixins(ActiveRepositoryMixin) {
   @Ref('registerDatasetDialog') registerDatasetDialog!: InstanceType<
     typeof CzRegisterDatasetDialog
   >
@@ -36,6 +36,7 @@ export default class CzSubmit extends mixins(ActiveRepositoryMixin) {
     this.registerDatasetDialog.active = true
   }
 }
+export default toNative(CzSubmit)
 </script>
 
 <template>

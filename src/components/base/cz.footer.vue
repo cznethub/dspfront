@@ -1,12 +1,12 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator'
 import User from '~/models/user.model'
 
 @Component({
   name: 'cz-footer',
   components: {},
 })
-export default class CzFooter extends Vue {
+class CzFooter extends Vue {
   openLogInDialog() {
     User.openLogInDialog()
   }
@@ -23,6 +23,7 @@ export default class CzFooter extends Vue {
     return new Date().getFullYear()
   }
 }
+export default toNative(CzFooter)
 </script>
 
 <template>

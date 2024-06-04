@@ -1,15 +1,16 @@
 <script lang="ts">
-import { Component, Vue } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from 'vue-facing-decorator'
 
 @Component({
   name: 'cz-profile',
   components: { },
 })
-export default class CzProfile extends Vue {
+class CzProfile extends Vue {
   logOut() {
     this.$emit('logout')
   }
 }
+export default toNative(CzProfile)
 </script>
 
 <template>
