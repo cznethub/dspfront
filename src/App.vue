@@ -1,267 +1,9 @@
-<script lang="ts">
-import { Component, Vue, Watch, toNative } from 'vue-facing-decorator'
-import { Subscription } from 'rxjs'
-import type { RouteLocationMatched, RouteLocationNormalized, RouteLocationRaw } from 'vue-router'
-import { CzNotifications, Notifications } from '@cznethub/cznet-vue-core'
-
-// import { setupRouteGuards } from './router'
-import type { IDialog, IToast } from '@cznethub/cznet-vue-core/dist/types'
-import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from './constants'
-import { EnumRepositoryKeys } from './components/submissions/types'
-import HydroShare from './models/hydroshare.model'
-import Submission from './models/submission.model'
-import Repository from './models/repository.model'
-import External from './models/external.model'
-import EarthChem from './models/earthchem.model'
-import CzFooter from '~/components/base/cz.footer.vue'
-import CzLogin from '~/components/account/cz.login.vue'
-import CzAuthorize from '~/components/authorize/cz.authorize.vue'
-import User from '~/models/user.model'
-import Zenodo from '~/models/zenodo.model'
-
-const INITIAL_DIALOG = {
-  title: '',
-  content: '',
-  confirmText: '',
-  cancelText: '',
-  isActive: false,
-  onConfirm: () => {},
-  onCancel: () => {},
-}
-
-const INITIAL_SNACKBAR = {
-  message: '',
-  duration: DEFAULT_TOAST_DURATION,
-  position: 'center' as 'center' | 'left' | undefined,
-  type: 'default' as 'default' | 'success' | 'error' | 'info',
-  isActive: false,
-  isInfinite: false,
-  // isPersistent: false,
-}
-
-@Component({
-  name: 'app',
-  components: { CzFooter, CzLogin, CzAuthorize, CzNotifications },
-})
-class App extends Vue {
-  isLoading = true
-  onToast!: Subscription
-  onOpenDialog!: Subscription
-  onOpenLogInDialog!: Subscription
-  onOpenAuthorizeDialog!: Subscription
-  showMobileNavigation = false
-  loggedInSubject = new Subscription()
-  // authorizedSubject = new Subscription();
-  isAppBarExtended = true
-  snackbarColors = {
-    success: { snackbar: 'primary', actionButton: 'primary darken-2' },
-    error: { snackbar: 'error darken-2', actionButton: 'error darken-3' },
-    info: { snackbar: 'warning darken-2', actionButton: 'warning darken-4' },
-    default: { snackbar: undefined, actionButton: undefined },
-  }
-
-  snackbar: any & { isActive: boolean, isInfinite: boolean }
-    = INITIAL_SNACKBAR
-
-  dialog: any & { isActive: boolean } = INITIAL_DIALOG
-  logInDialog: any & { isActive: boolean } = {
-    isActive: false,
-    onLoggedIn: () => {},
-    onCancel: () => {},
-  }
-
-  authorizeDialog: any & { isActive: boolean } = {
-    isActive: false,
-    repo: '',
-    onAuthorized: () => {},
-    onCancel: () => {},
-  }
-
-  paths = [
-    {
-      attrs: { to: '/submissions' },
-      label: 'My Submissions',
-      icon: 'mdi-bookmark-multiple',
-      // isActive: () => (this.$route as RouteLocationNormalized).name === "view-submission",
-    },
-    {
-      attrs: { to: '/resources' },
-      label: 'Resources',
-      icon: 'mdi-library',
-    },
-    {
-      attrs: { to: '/submit' },
-      label: 'Submit Data',
-      icon: 'mdi-book-plus',
-      isActive: () => {
-        return this.$route?.name === 'register'
-      },
-    },
-    {
-      attrs: { href: DISCOVERY_SITE_URL },
-      label: 'Discover Data',
-      icon: 'mdi-card-search',
-      isExternal: true,
-    },
-    { attrs: { to: '/about' }, label: 'About', icon: 'mdi-help' },
-    {
-      attrs: { to: '/contact' },
-      label: 'Contact',
-      icon: 'mdi-book-open-blank-variant',
-    },
-  ]
-
-  get isLoggedIn(): boolean {
-    return User.$state.isLoggedIn
-  }
-
-  // mounted() {
-  //   this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
-  //     this.isAppBarExtended = newValue > oldValue
-  //   })
-  // }
-
-  openLogInDialog() {
-    User.openLogInDialog()
-  }
-
-  logOut() {
-    Notifications.openDialog({
-      title: 'Log out?',
-      content: 'Are you sure you want to log out?',
-      confirmText: 'Log Out',
-      cancelText: 'Cancel',
-      onConfirm: () => {
-        User.logOut()
-      },
-    })
-  }
-
-  /** Check if the user is still logged in after being idle for a while */
-  @Watch('isAppIdle')
-  onIdleChange(_wasActive: boolean, isActive: boolean) {
-    if (isActive)
-      User.checkAuthorization()
-  }
-
-  async created() {
-    document.title = `${this.$t('hubName')}`
-
-    if ((this.$route as RouteLocationNormalized).name !== 'submissions') {
-      // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
-      Submission.fetchSubmissions()
-    }
-
-    this.onToast = Notifications.toast$.subscribe((toast: IToast) => {
-      this.snackbar = { ...this.snackbar, ...toast }
-      this.snackbar.isActive = true
-    })
-
-    this.onOpenDialog = Notifications.dialog$.subscribe((dialog: IDialog) => {
-      this.dialog = { ...INITIAL_DIALOG, ...dialog }
-      this.dialog.isActive = true
-    })
-
-    this.onOpenLogInDialog = User.logInDialog$.subscribe(
-      (redirectTo?: RouteLocationRaw) => {
-        this.logInDialog.isActive = true
-
-        this.logInDialog.onLoggedIn = () => {
-          if (redirectTo)
-
-            this.$router.push(redirectTo).catch(() => {})
-
-          this.logInDialog.isActive = false
-        }
-      },
-    )
-
-    this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe(
-      (params: {
-        repository: string
-        redirectTo?: RouteLocationRaw | undefined
-      }) => {
-        this.authorizeDialog.repo = params.repository
-        this.authorizeDialog.isActive = true
-        this.authorizeDialog.onAuthorized = async () => {
-          if (params.redirectTo) {
-            if (params.repository === EnumRepositoryKeys.hydroshare)
-              await HydroShare.init()
-            else if (params.repository === EnumRepositoryKeys.zenodo)
-              await Zenodo.init()
-            else if (params.repository === EnumRepositoryKeys.earthchem)
-              await EarthChem.init()
-
-            this.$router.push(params.redirectTo).catch(() => {})
-          }
-          this.authorizeDialog.isActive = false
-        }
-      },
-    )
-
-    // Check for Authorization cookie instead.
-    // const isAuthorized = this.$cookies.get('Authorization')
-
-    // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
-    // Reproducible if the server is restarted
-
-    // if (isAuthorized && !User.$state.isLoggedIn) {
-    await User.checkAuthorization()
-    // }
-
-    if (User.$state.isLoggedIn) {
-      await this._initRepositories()
-    }
-    else {
-      this.loggedInSubject = User.loggedIn$.subscribe(async () => {
-        await this._initRepositories()
-      })
-    }
-
-    // this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
-    //   if (repository === EnumRepositoryKeys.hydroshare) {
-    //     await HydroShare.init()
-    //   }
-    //   else if (repository === EnumRepositoryKeys.zenodo) {
-    //     await Zenodo.init()
-    //   }
-    // })
-
-    // Guards are setup after checking authorization and loading access tokens
-    // because they depend on user logged in status
-    // setupRouteGuards()
-
-    this.isLoading = false
-  }
-
-  private _initRepositories() {
-    return Promise.all([
-      HydroShare.init(),
-      EarthChem.init(),
-      Zenodo.init(),
-      External.init(),
-    ])
-  }
-
-  beforeDestroy() {
-    // Good practice
-    this.onToast.unsubscribe()
-    this.onOpenDialog.unsubscribe()
-    this.onOpenLogInDialog.unsubscribe()
-    this.onOpenAuthorizeDialog.unsubscribe()
-    this.loggedInSubject.unsubscribe()
-  }
-}
-
-export default toNative(App)
-</script>
-
 <template>
   <v-app app>
     <v-app-bar
       id="app-bar"
       color="navbar"
-      elevate-on-scroll
+      scroll-behavior="elevate"
       fixed
       app
     >
@@ -321,11 +63,11 @@ export default toNative(App)
                   :color="
                     $route.matched.some((p: RouteLocationMatched) => p.name === 'profile')
                       ? 'primary'
-                      : ''
+                      : 'white'
                   "
-                  elevation="2"
-                  rounded
                   v-bind="props"
+                  variant="elevated"
+                  rounded
                 >
                   <v-icon>mdi-account-circle</v-icon>
                   <v-icon>mdi-menu-down</v-icon>
@@ -361,7 +103,7 @@ export default toNative(App)
     <v-main app>
       <v-container id="main-container">
         <v-sheet :elevation="$route.meta.hideMainSheet ? 0 : 2">
-          <router-view v-if="!isLoading" name="content" @logout="logOut" />
+          <router-view v-if="!isLoading" :key="route.fullPath" name="content" @logout="logOut" />
         </v-sheet>
       </v-container>
     </v-main>
@@ -470,6 +212,238 @@ export default toNative(App)
     >
   </v-app>
 </template>
+
+<script lang="ts">
+import { Component, Vue, Watch, toNative } from 'vue-facing-decorator'
+import { Subscription } from 'rxjs'
+import type { RouteLocationMatched, RouteLocationNormalized, RouteLocationRaw } from 'vue-router'
+import { CzNotifications, Notifications } from '@cznethub/cznet-vue-core'
+
+// import { setupRouteGuards } from './router'
+import { useRoute } from 'vue-router'
+import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from './constants'
+import { EnumRepositoryKeys } from './components/submissions/types'
+import HydroShare from './models/hydroshare.model'
+import Submission from './models/submission.model'
+import Repository from './models/repository.model'
+import External from './models/external.model'
+import EarthChem from './models/earthchem.model'
+import CzFooter from '~/components/base/cz.footer.vue'
+import CzLogin from '~/components/account/cz.login.vue'
+import CzAuthorize from '~/components/authorize/cz.authorize.vue'
+import User from '~/models/user.model'
+import Zenodo from '~/models/zenodo.model'
+
+const INITIAL_DIALOG = {
+  title: '',
+  content: '',
+  confirmText: '',
+  cancelText: '',
+  isActive: false,
+  onConfirm: () => {},
+  onCancel: () => {},
+}
+
+const INITIAL_SNACKBAR = {
+  message: '',
+  duration: DEFAULT_TOAST_DURATION,
+  position: 'center' as 'center' | 'left' | undefined,
+  type: 'default' as 'default' | 'success' | 'error' | 'info',
+  isActive: false,
+  isInfinite: false,
+  // isPersistent: false,
+}
+
+@Component({
+  name: 'app',
+  components: { CzFooter, CzLogin, CzAuthorize, CzNotifications },
+})
+class App extends Vue {
+  isLoading = true
+  onOpenLogInDialog!: Subscription
+  onOpenAuthorizeDialog!: Subscription
+  showMobileNavigation = false
+  loggedInSubject = new Subscription()
+  // authorizedSubject = new Subscription();
+  isAppBarExtended = true
+
+  snackbar: any & { isActive: boolean, isInfinite: boolean }
+    = INITIAL_SNACKBAR
+
+  route = useRoute()
+  dialog: any & { isActive: boolean } = INITIAL_DIALOG
+  logInDialog: any & { isActive: boolean } = {
+    isActive: false,
+    onLoggedIn: () => {},
+    onCancel: () => {},
+  }
+
+  authorizeDialog: any & { isActive: boolean } = {
+    isActive: false,
+    repo: '',
+    onAuthorized: () => {},
+    onCancel: () => {},
+  }
+
+  paths = [
+    {
+      attrs: { to: '/submissions' },
+      label: 'My Submissions',
+      icon: 'mdi-bookmark-multiple',
+      // isActive: () => (this.$route as RouteLocationNormalized).name === "view-submission",
+    },
+    {
+      attrs: { to: '/resources' },
+      label: 'Resources',
+      icon: 'mdi-library',
+    },
+    {
+      attrs: { to: '/submit' },
+      label: 'Submit Data',
+      icon: 'mdi-book-plus',
+      isActive: () => {
+        return this.$route?.name === 'register'
+      },
+    },
+    {
+      attrs: { href: DISCOVERY_SITE_URL },
+      label: 'Discover Data',
+      icon: 'mdi-card-search',
+      isExternal: true,
+    },
+    { attrs: { to: '/about' }, label: 'About', icon: 'mdi-help' },
+    {
+      attrs: { to: '/contact' },
+      label: 'Contact',
+      icon: 'mdi-book-open-blank-variant',
+    },
+  ]
+
+  get isLoggedIn(): boolean {
+    return User.$state.isLoggedIn
+  }
+
+  // mounted() {
+  //   this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
+  //     this.isAppBarExtended = newValue > oldValue
+  //   })
+  // }
+
+  openLogInDialog() {
+    User.openLogInDialog()
+  }
+
+  logOut() {
+    Notifications.openDialog({
+      title: 'Log out?',
+      content: 'Are you sure you want to log out?',
+      confirmText: 'Log Out',
+      cancelText: 'Cancel',
+      onConfirm: () => {
+        User.logOut()
+      },
+    })
+  }
+
+  /** Check if the user is still logged in after being idle for a while */
+  @Watch('isAppIdle')
+  onIdleChange(_wasActive: boolean, isActive: boolean) {
+    if (isActive)
+      User.checkAuthorization()
+  }
+
+  async created() {
+    document.title = `${this.$t('hubName')}`
+
+    if ((this.$route as RouteLocationNormalized).name !== 'submissions') {
+      // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
+      Submission.fetchSubmissions()
+    }
+
+    this.onOpenLogInDialog = User.logInDialog$.subscribe(
+      (redirectTo?: RouteLocationRaw) => {
+        this.logInDialog.isActive = true
+
+        this.logInDialog.onLoggedIn = () => {
+          if (redirectTo)
+
+            this.$router.push(redirectTo).catch(() => {})
+
+          this.logInDialog.isActive = false
+        }
+      },
+    )
+
+    this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe(
+      (params: {
+        repository: string
+        redirectTo?: RouteLocationRaw | undefined
+      }) => {
+        this.authorizeDialog.repo = params.repository
+        this.authorizeDialog.isActive = true
+        this.authorizeDialog.onAuthorized = async () => {
+          if (params.redirectTo) {
+            if (params.repository === EnumRepositoryKeys.hydroshare)
+              await HydroShare.init()
+            else if (params.repository === EnumRepositoryKeys.zenodo)
+              await Zenodo.init()
+            else if (params.repository === EnumRepositoryKeys.earthchem)
+              await EarthChem.init()
+
+            this.$router.push(params.redirectTo).catch(() => {})
+          }
+          this.authorizeDialog.isActive = false
+        }
+      },
+    )
+
+    // Check for Authorization cookie instead.
+    // const isAuthorized = this.$cookies.get('Authorization')
+
+    // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
+    // Reproducible if the server is restarted
+
+    // if (isAuthorized && !User.$state.isLoggedIn) {
+    await User.checkAuthorization()
+    // }
+
+    User.$state.isLoggedIn
+      ? await this._initRepositories()
+      : this.loggedInSubject = User.loggedIn$.subscribe(async () => {
+        await this._initRepositories()
+      })
+
+    // this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
+    //   if (repository === EnumRepositoryKeys.hydroshare) {
+    //     await HydroShare.init()
+    //   }
+    //   else if (repository === EnumRepositoryKeys.zenodo) {
+    //     await Zenodo.init()
+    //   }
+    // })
+
+    this.isLoading = false
+  }
+
+  private _initRepositories() {
+    return Promise.all([
+      HydroShare.init(),
+      EarthChem.init(),
+      Zenodo.init(),
+      External.init(),
+    ])
+  }
+
+  beforeDestroy() {
+    // Good practice
+    this.onOpenLogInDialog.unsubscribe()
+    this.onOpenAuthorizeDialog.unsubscribe()
+    this.loggedInSubject.unsubscribe()
+  }
+}
+
+export default toNative(App)
+</script>
 
 <style lang="scss" scoped>
 .logo {

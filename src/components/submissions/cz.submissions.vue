@@ -1,3 +1,492 @@
+<template>
+  <div class="cz-submissions">
+    <div class="cz-submissions--header">
+      <div class="text-h4">
+        My Submissions
+      </div>
+      <v-divider class="mb-2" />
+      <div>
+        <div class="d-flex align-sm-center flex-column flex-sm-row">
+          <div
+            v-if="!isFetching && submissions.length"
+            class="d-flex flex-column flex-sm-row flex-grow-1"
+          >
+            <v-text-field
+              id="my_submissions_search"
+              v-model="filters.searchStr"
+              class="ma-1 my-2 my-sm-0"
+              density="compact"
+              clearable
+              variant="outlined"
+              hide-details
+              prepend-inner-icon="mdi-magnify"
+              label="Search..."
+            />
+
+            <v-select
+              v-model="filters.repoOptions"
+              :items="repoOptions"
+              class="ma-1 my-2 my-sm-0"
+              small-chips
+              deletable-chips
+              clearable
+              label="Repository"
+              hide-details
+              chips
+              multiple
+              density="compact"
+              variant="outlined"
+            >
+              <!-- <template #item="{ item, props }">
+                <v-list-item v-bind="props">
+                  <v-list-item-action>
+                    <v-icon v-if="props.inputValue">
+                      mdi-checkbox-marked
+                    </v-icon>
+                    <v-icon v-else>
+                      mdi-checkbox-blank-outline
+                    </v-icon>
+                  </v-list-item-action>
+                  <v-list-item-title>
+                    {{
+                      repoMetadata[item].dropdownName
+                        || repoMetadata[item].name
+                    }}
+                  </v-list-item-title>
+                </v-list-item>
+              </template> -->
+            </v-select>
+          </div>
+
+          <v-spacer />
+
+          <v-speed-dial
+            location="bottom center"
+          >
+            <template #activator="{ props }">
+              <v-btn color="primary" rounded v-bind="props">
+                <v-icon>mdi-plus</v-icon>
+                New Submission
+              </v-btn>
+            </template>
+
+            <v-card key="0">
+              <v-card-text>
+                <template v-for="repo of supportedRepoMetadata" :key="repo.name">
+                  <v-tooltip v-if="!repo.isDisabled" left>
+                    <template #activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        class="mx-0 mb-4"
+                        block
+                        color="white"
+                        @click="submitTo(repo)"
+                      >
+                        {{ repo.name }}
+                      </v-btn>
+                    </template>
+                    <span>{{ repo.submitTooltip }}</span>
+                  </v-tooltip>
+                </template>
+
+                <v-tooltip v-if="!externalRepoMetadata?.isDisabled" left>
+                  <template #activator="{ props }">
+                    <v-btn
+                      class="mx-0"
+                      v-bind="props"
+                      color="white"
+                      block
+                      @click="openRegisterDatasetDialog"
+                    >
+                      {{ externalRepoMetadata?.name }}
+                    </v-btn>
+                  </template>
+                  <span>{{ externalRepoMetadata?.submitTooltip }}</span>
+                </v-tooltip>
+              </v-card-text>
+            </v-card>
+          </v-speed-dial>
+        </div>
+      </div>
+    </div>
+
+    <template v-if="isFetching">
+      <v-progress-circular indeterminate color="primary" />
+    </template>
+    <template v-else>
+      <div v-if="submissions.length" class="mt-4">
+        <div>
+          <div id="total_submissions" class="mb-2 text-h6">
+            {{ submissions.length }} Total Submissions
+          </div>
+          <p v-if="isAnyFilterAcitve" class="font-weight-light">
+            {{ currentItems.length }} Results
+          </p>
+        </div>
+
+        <v-card>
+          <div v-if="!isFetching">
+            <v-data-iterator
+              v-model:items-per-page="itemsPerPage"
+              v-model:page="page"
+              :items="filteredSubmissions"
+              :search="filters.searchStr"
+              item-key="identifier"
+              hide-default-footer
+              @update:current-items="currentItems = $event"
+            >
+              <template #header>
+                <div elevation="0" class="has-bg-light-gray pa-4">
+                  <div
+                    class="d-flex justify-space-between full-width flex-column flex-md-row"
+                  >
+                    <v-btn
+                      class="mb-md-0 mb-4"
+                      rounded
+                      :disabled="!filteredSubmissions.length"
+                      @click="exportSubmissions"
+                    >
+                      Export Submissions
+                    </v-btn>
+                    <v-spacer />
+                    <div class="sort-controls d-flex flex-column flex-sm-row">
+                      <v-select
+                        id="sort-by"
+                        v-model="sortBy.key"
+                        :items="sortOptions"
+                        item-title="label"
+                        item-value="key"
+                        class="sort-control mr-2"
+                        variant="outlined"
+                        density="compact"
+                        hide-details="auto"
+                        label="Sort by"
+                      />
+
+                      <v-select
+                        id="sort-order"
+                        v-model="sortBy.order"
+                        :items="sortDirectionOptions"
+                        item-title="label"
+                        item-value="key"
+                        variant="outlined"
+                        density="compact"
+                        hide-details="auto"
+                        label="Order"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <template #default="{ items }">
+                <v-divider />
+                <div
+                  v-for="(item, index) in items"
+                  :id="`submission-${index}`"
+                  :key="item.raw.identifier"
+                >
+                  <div
+                    class="table-item d-flex justify-space-between flex-column flex-md-row"
+                  >
+                    <div class="flex-grow-1 mr-4">
+                      <table
+                        class="text-body-1"
+                        :class="{ 'is-xs-small': $vuetify.display.xs }"
+                      >
+                        <tr>
+                          <td
+                            :id="`sub-${index}-title`"
+                            colspan="2"
+                            class="text-h6 title"
+                          >
+                            {{ item.title }}
+                          </td>
+                        </tr>
+                        <tr v-if="item.authors.length">
+                          <th class="pr-4 body-2">
+                            Authors:
+                          </th>
+                          <td>{{ item.authors.join(" | ") }}</td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4 body-2">
+                            Submission Repository:
+                          </th>
+                          <td>{{ getRepositoryName(item) }}</td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4 body-2">
+                            Submission Date:
+                          </th>
+                          <td :id="`sub-${index}-date`">
+                            {{ getDateInLocalTime(item.date) }}
+                          </td>
+                        </tr>
+                        <tr>
+                          <th class="pr-4 body-2">
+                            Identifier:
+                          </th>
+                          <td>{{ item.identifier }}</td>
+                        </tr>
+                        <tr
+                          v-if="
+                            item.repository === enumRepositoryKeys.hydroshare
+                          "
+                        >
+                          <th class="pr-4 body-2">
+                            Type:
+                          </th>
+                          <td>{{ getItemResourceType(item) }}</td>
+                        </tr>
+                        <tr
+                          v-if="
+                            item.metadata.status
+                              && item.repository === enumRepositoryKeys.earthchem
+                          "
+                        >
+                          <th class="pr-4 body-2">
+                            Status:
+                          </th>
+
+                          <td>
+                            <v-chip
+                              v-if="item.metadata.status !== 'incomplete'"
+                              color="orange"
+                              small
+                              variant="outlined"
+                            >
+                              <v-icon left small>
+                                mdi-lock
+                              </v-icon>
+                              {{ item.metadata.status }}
+                            </v-chip>
+
+                            <v-chip v-else small variant="outlined">
+                              <v-icon left small>
+                                mdi-pencil
+                              </v-icon>
+                              {{ item.metadata.status }}
+                            </v-chip>
+                          </td>
+                        </tr>
+                      </table>
+                    </div>
+
+                    <div class="d-flex flex-column mt-4 mt-md-0 actions">
+                      <v-btn
+                        :id="`sub-${index}-view`"
+                        :href="item.url"
+                        target="_blank"
+                        color="blue-grey lighten-4"
+                        rounded
+                      >
+                        <v-icon class="mr-1">
+                          mdi-open-in-new
+                        </v-icon> View In
+                        Repository
+                      </v-btn>
+                      <v-btn
+                        v-if="
+                          !(
+                            isItemHsCollection(item)
+                            || isItemPublished(item)
+                            || isItemEclSubmitted(item)
+                          )
+                        "
+                        :id="`sub-${index}-edit`"
+                        rounded
+                        @click="goToEditSubmission(item)"
+                      >
+                        <v-icon class="mr-1">
+                          mdi-pencil-outline
+                        </v-icon> Edit
+                      </v-btn>
+                      <v-btn
+                        v-if="!repoMetadata[item.repository]?.isExternal"
+                        :id="`sub-${index}-update`"
+                        :disabled="
+                          isUpdating[`${item.repository}-${item.identifier}`]
+                        "
+                        rounded
+                        @click="onUpdateRecord(item)"
+                      >
+                        <v-icon
+                          v-if="
+                            isUpdating[`${item.repository}-${item.identifier}`]
+                          "
+                        >
+                          fas fa-circle-notch fa-spin
+                        </v-icon>
+                        <v-icon v-else>
+                          mdi-sync
+                        </v-icon><span class="ml-1">
+                          {{
+                            isUpdating[`${item.repository}-${item.identifier}`]
+                              ? "Updating Record..."
+                              : "Update Record"
+                          }}</span>
+                      </v-btn>
+                      <v-btn
+                        :id="`sub-${index}-delete`"
+                        :disabled="isDeleteButtonDisabled(item)"
+                        rounded
+                        @click="
+                          onDelete(
+                            item,
+                            repoMetadata[item.repository]?.isExternal,
+                          )
+                        "
+                      >
+                        <v-icon
+                          v-if="
+                            isDeleting[`${item.repository}-${item.identifier}`]
+                          "
+                        >
+                          fas fa-circle-notch fa-spin
+                        </v-icon>
+                        <v-icon v-else>
+                          mdi-delete-outline
+                        </v-icon><span class="ml-1">
+                          {{
+                            isDeleting[`${item.repository}-${item.identifier}`]
+                              ? "Deleting..."
+                              : "Delete"
+                          }}</span>
+                      </v-btn>
+                    </div>
+                  </div>
+                  <v-divider />
+                </div>
+              </template> -->
+              <!--
+              <template #footer>
+                <div class="footer d-flex justify-space-between align-center">
+                  <div>
+                    <span class="grey--text text-body-2 mr-1">Items per page</span>
+                    <v-menu offset-y>
+                      <template #activator="{ props }">
+                        <v-btn variant="text" v-bind="props">
+                          {{ itemsPerPage }}
+                          <v-icon>mdi-chevron-down</v-icon>
+                        </v-btn>
+                      </template>
+                      <v-list>
+                        <v-list-item
+                          v-for="(number, index) in itemsPerPageArray"
+                          :key="index"
+                          @click="itemsPerPage = number"
+                        >
+                          <v-list-item-title>{{ number }}</v-list-item-title>
+                        </v-list-item>
+                      </v-list>
+                    </v-menu>
+                  </div>
+
+                  <div
+                    v-if="numberOfPages"
+                    class="d-flex flex-sm-row flex-column align-center justify-center"
+                    style="gap: 0.5rem"
+                  >
+                    <span class="grey--text text-body-2 text-center">
+                      Page {{ page }} of {{ numberOfPages }}
+                    </span>
+                    <div>
+                      <v-btn
+                        class="mr-2"
+                        small
+                        fab
+                        :disabled="page <= 1"
+                        @click="formerPage"
+                      >
+                        <v-icon>mdi-chevron-left</v-icon>
+                      </v-btn>
+                      <v-btn
+                        small
+                        fab
+                        :disabled="page >= numberOfPages"
+                        @click="nextPage"
+                      >
+                        <v-icon>mdi-chevron-right</v-icon>
+                      </v-btn>
+                    </div>
+                  </div>
+                </div>
+              </template>
+
+              <template #no-data>
+                <div class="text-subtitle-1 font-weight-light ma-4">
+                  You don't have any submissions that match the selected
+                  criteria.
+                </div>
+              </template>
+            </v-data-iterator>
+          </div>
+        </v-card>
+      </div>
+      <div v-else class="text-body-2 text-center mt-4 d-flex flex-column">
+        <template v-if="!submissions.length">
+          <v-icon style="font-size: 6rem" class="mb-4">
+            mdi-text-box-remove
+          </v-icon>
+          You have not created any submissions yet
+        </template>
+        <template v-if="!isLoggedIn">
+          You need to log in to view this page
+        </template>
+      </div>
+    </template>
+
+    <v-dialog
+      id="dialog-delete-submission"
+      v-model="isDeleteDialogActive"
+      persistent
+      width="500"
+    >
+      <v-card>
+        <v-card-title>Delete this submission?</v-card-title>
+        <v-card-text v-if="deleteDialogData" class="text-body-1">
+          <p>
+            This action will delete the metadata for this submission in the data
+            submission Portal.
+          </p>
+          <v-checkbox
+            v-if="!deleteDialogData.isExternal"
+            v-model="alsoDeleteInRepository"
+            color="red"
+            label="Also attempt to delete this resource and its content files from the repository. If the resource is permanently published (i.e., it has been assigned a DOI), we will not be able to remove it from the repository."
+            hide-details
+          />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn
+            class="dialog-cancel"
+            variant="text"
+            @click="isDeleteDialogActive = false"
+          >
+            Cancel
+          </v-btn>
+
+          <v-btn
+            class="dialog-confirm"
+            color="red darken-1"
+            variant="text"
+            @click="
+              isDeleteDialogActive = false;
+              onDeleteSubmission();
+            "
+          >
+            Delete
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <cz-register-dataset-dialog ref="registerDatasetDialog" />
+  </div>
+</template>
+
 <script lang="ts">
 import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
@@ -91,6 +580,16 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   get sortOptions() {
     return Object.entries(EnumSubmissionSorts).map((key, value) => {
       return { key, order: 'asc', label: value }
+    })
+  }
+
+  get sortBy() {
+    return Submission.$state.sortBy
+  }
+
+  set sortBy(sortBy: { key: string, order: 'asc' | 'desc' }) {
+    Submission.commit((state) => {
+      state.sortBy = sortBy
     })
   }
 
@@ -338,505 +837,6 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
 }
 export default toNative(CzSubmissions)
 </script>
-
-<template>
-  <div class="cz-submissions">
-    <div class="cz-submissions--header">
-      <div class="text-h4">
-        My Submissions
-      </div>
-      <v-divider class="mb-2" />
-      <div>
-        <div class="d-flex align-sm-center flex-column flex-sm-row">
-          <div
-            v-if="!isFetching && submissions.length"
-            class="d-flex flex-column flex-sm-row"
-          >
-            <v-text-field
-              id="my_submissions_search"
-              v-model="filters.searchStr"
-              class="ma-1 my-2 my-sm-0"
-              density="compact"
-              clearable
-              variant="outlined"
-              hide-details
-              prepend-inner-icon="mdi-magnify"
-              label="Search..."
-            />
-
-            <v-select
-              v-model="filters.repoOptions"
-              :items="repoOptions"
-              class="ma-1 my-2 my-sm-0"
-              small-chips
-              deletable-chips
-              clearable
-              label="Repository"
-              hide-details
-              chips
-              multiple
-              density="compact"
-              variant="outlined"
-            >
-              <template #item="data">
-                <v-list-item-action>
-                  <v-icon v-if="data.attrs.inputValue">
-                    mdi-checkbox-marked
-                  </v-icon>
-                  <v-icon v-else>
-                    mdi-checkbox-blank-outline
-                  </v-icon>
-                </v-list-item-action>
-                <v-list-item-title>
-                  {{
-                    repoMetadata[data.item].dropdownName
-                      || repoMetadata[data.item].name
-                  }}
-                </v-list-item-title>
-              </template>
-            </v-select>
-          </div>
-          <v-spacer />
-
-          <v-speed-dial
-            origin="center"
-            direction="bottom"
-          >
-            <template #activator="{ props: activatorProps }">
-              <v-btn color="primary" rounded block v-bind="activatorProps">
-                <v-icon>mdi-plus</v-icon>
-                New Submission
-              </v-btn>
-            </template>
-
-            <v-card color="secondary">
-              <v-card-text>
-                <template v-for="repo of supportedRepoMetadata" :key="repo.name">
-                  <v-tooltip left>
-                    <template #activator="{ props }">
-                      <v-btn
-                        v-if="!repo.isDisabled"
-                        class="mx-0 my-4"
-                        v-bind="props"
-                        block
-                        @click="submitTo(repo)"
-                      >
-                        {{ repo.name }}
-                      </v-btn>
-                    </template>
-                    <span>{{ repo.submitTooltip }}</span>
-                  </v-tooltip>
-                </template>
-
-                <v-tooltip left>
-                  <template #activator="{ props }">
-                    <v-btn
-                      v-if="!externalRepoMetadata.isDisabled"
-                      class="mx-0 my-4"
-                      v-bind="props"
-                      block
-                      @click="openRegisterDatasetDialog"
-                    >
-                      {{ externalRepoMetadata.name }}
-                    </v-btn>
-                  </template>
-                  <span>{{ externalRepoMetadata.submitTooltip }}</span>
-                </v-tooltip>
-              </v-card-text>
-            </v-card>
-          </v-speed-dial>
-        </div>
-      </div>
-    </div>
-
-    <template v-if="isFetching">
-      <v-progress-circular indeterminate color="primary" />
-    </template>
-    <template v-else>
-      <div v-if="submissions.length" class="mt-4">
-        <div>
-          <div id="total_submissions" class="mb-2 text-h6">
-            {{ submissions.length }} Total Submissions
-          </div>
-          <p v-if="isAnyFilterAcitve" class="font-weight-light">
-            {{ currentItems.length }} Results
-          </p>
-        </div>
-
-        <v-card>
-          <div v-if="!isFetching">
-            <v-data-iterator
-              v-model:items-per-page="itemsPerPage"
-              v-model:page="page"
-              :items="filteredSubmissions"
-              :search="filters.searchStr"
-              item-key="identifier"
-              hide-default-footer
-              @current-items="currentItems = $event"
-            >
-              <template #header>
-                <div elevation="0" class="has-bg-light-gray pa-4">
-                  <div
-                    class="d-flex justify-space-between full-width flex-column flex-md-row"
-                  >
-                    <v-btn
-                      class="mb-md-0 mb-4"
-                      rounded
-                      :disabled="!filteredSubmissions.length"
-                      @click="exportSubmissions"
-                    >
-                      Export Submissions
-                    </v-btn>
-                    <v-spacer />
-                    <div class="sort-controls d-flex flex-column flex-sm-row">
-                      <v-select
-                        id="sort-by"
-                        item-text="label"
-                        return-object
-                        class="mr-1 sort-control my-md-0 my-2"
-                        variant="outlined"
-                        density="compact"
-                        hide-details="auto"
-                        label="Sort by"
-                      />
-
-                      <v-select
-                        id="sort-order"
-                        item-text="label"
-                        return-object
-                        class="sort-control my-md-0 my-2"
-                        variant="outlined"
-                        density="compact"
-                        hide-details="auto"
-                        label="Order"
-                      />
-                    </div>
-                  </div>
-                </div>
-              </template>
-
-              <template #default="{ items }">
-                <v-divider />
-                <div
-                  v-for="(item, index) in items"
-                  :id="`submission-${index}`"
-                  :key="item.raw.identifier"
-                >
-                  <div
-                    class="table-item d-flex justify-space-between flex-column flex-md-row"
-                  >
-                    <div class="flex-grow-1 mr-4">
-                      <table
-                        class="text-body-1"
-                        :class="{ 'is-xs-small': $vuetify.display.xs }"
-                      >
-                        <tr>
-                          <td
-                            :id="`sub-${index}-title`"
-                            colspan="2"
-                            class="text-h6 title"
-                          >
-                            {{ item.title }}
-                          </td>
-                        </tr>
-                        <tr v-if="item.authors.length">
-                          <th class="pr-4 body-2">
-                            Authors:
-                          </th>
-                          <td>{{ item.authors.join(" | ") }}</td>
-                        </tr>
-                        <tr>
-                          <th class="pr-4 body-2">
-                            Submission Repository:
-                          </th>
-                          <td>{{ getRepositoryName(item) }}</td>
-                        </tr>
-                        <tr>
-                          <th class="pr-4 body-2">
-                            Submission Date:
-                          </th>
-                          <td :id="`sub-${index}-date`">
-                            {{ getDateInLocalTime(item.date) }}
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="pr-4 body-2">
-                            Identifier:
-                          </th>
-                          <td>{{ item.identifier }}</td>
-                        </tr>
-                        <tr
-                          v-if="
-                            item.repository === enumRepositoryKeys.hydroshare
-                          "
-                        >
-                          <th class="pr-4 body-2">
-                            Type:
-                          </th>
-                          <td>{{ getItemResourceType(item) }}</td>
-                        </tr>
-                        <tr
-                          v-if="
-                            item.metadata.status
-                              && item.repository === enumRepositoryKeys.earthchem
-                          "
-                        >
-                          <th class="pr-4 body-2">
-                            Status:
-                          </th>
-
-                          <td>
-                            <v-chip
-                              v-if="item.metadata.status !== 'incomplete'"
-                              color="orange"
-                              small
-                              variant="outlined"
-                            >
-                              <v-icon left small>
-                                mdi-lock
-                              </v-icon>
-                              {{ item.metadata.status }}
-                            </v-chip>
-
-                            <v-chip v-else small variant="outlined">
-                              <v-icon left small>
-                                mdi-pencil
-                              </v-icon>
-                              {{ item.metadata.status }}
-                            </v-chip>
-                          </td>
-                        </tr>
-                      </table>
-                    </div>
-
-                    <div class="d-flex flex-column mt-4 mt-md-0 actions">
-                      <v-btn
-                        :id="`sub-${index}-view`"
-                        :href="item.url"
-                        target="_blank"
-                        color="blue-grey lighten-4"
-                        rounded
-                      >
-                        <v-icon class="mr-1">
-                          mdi-open-in-new
-                        </v-icon> View In
-                        Repository
-                      </v-btn>
-                      <!-- <v-btn
-                        :id="`sub-${index}-view`"
-                        @click="goToViewSubmission(item)"
-                        rounded
-                      >
-                        <v-icon class="mr-1">mdi-file-document-outline</v-icon>
-                        View
-                      </v-btn> -->
-                      <v-btn
-                        v-if="
-                          !(
-                            isItemHsCollection(item)
-                            || isItemPublished(item)
-                            || isItemEclSubmitted(item)
-                          )
-                        "
-                        :id="`sub-${index}-edit`"
-                        rounded
-                        @click="goToEditSubmission(item)"
-                      >
-                        <v-icon class="mr-1">
-                          mdi-pencil-outline
-                        </v-icon> Edit
-                      </v-btn>
-                      <v-btn
-                        v-if="!repoMetadata[item.repository]?.isExternal"
-                        :id="`sub-${index}-update`"
-                        :disabled="
-                          isUpdating[`${item.repository}-${item.identifier}`]
-                        "
-                        rounded
-                        @click="onUpdateRecord(item)"
-                      >
-                        <v-icon
-                          v-if="
-                            isUpdating[`${item.repository}-${item.identifier}`]
-                          "
-                        >
-                          fas fa-circle-notch fa-spin
-                        </v-icon>
-                        <v-icon v-else>
-                          mdi-sync
-                        </v-icon><span class="ml-1">
-                          {{
-                            isUpdating[`${item.repository}-${item.identifier}`]
-                              ? "Updating Record..."
-                              : "Update Record"
-                          }}</span>
-                      </v-btn>
-                      <v-btn
-                        :id="`sub-${index}-delete`"
-                        :disabled="isDeleteButtonDisabled(item)"
-                        rounded
-                        @click="
-                          onDelete(
-                            item,
-                            repoMetadata[item.repository]?.isExternal,
-                          )
-                        "
-                      >
-                        <v-icon
-                          v-if="
-                            isDeleting[`${item.repository}-${item.identifier}`]
-                          "
-                        >
-                          fas fa-circle-notch fa-spin
-                        </v-icon>
-                        <v-icon v-else>
-                          mdi-delete-outline
-                        </v-icon><span class="ml-1">
-                          {{
-                            isDeleting[`${item.repository}-${item.identifier}`]
-                              ? "Deleting..."
-                              : "Delete"
-                          }}</span>
-                      </v-btn>
-                    </div>
-                  </div>
-                  <v-divider />
-                </div>
-              </template>
-
-              <template #footer>
-                <div class="footer d-flex justify-space-between align-center">
-                  <div>
-                    <span class="grey--text text-body-2 mr-1">Items per page</span>
-                    <v-menu offset-y>
-                      <template #activator="{ props }">
-                        <v-btn variant="text" v-bind="props">
-                          {{ itemsPerPage }}
-                          <v-icon>mdi-chevron-down</v-icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item
-                          v-for="(number, index) in itemsPerPageArray"
-                          :key="index"
-                          @click="itemsPerPage = number"
-                        >
-                          <v-list-item-title>{{ number }}</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-                  </div>
-
-                  <div
-                    v-if="numberOfPages"
-                    class="d-flex flex-sm-row flex-column align-center justify-center"
-                    style="gap: 0.5rem"
-                  >
-                    <span class="grey--text text-body-2 text-center">
-                      Page {{ page }} of {{ numberOfPages }}
-                    </span>
-                    <div>
-                      <v-btn
-                        class="mr-2"
-                        small
-                        fab
-                        :disabled="page <= 1"
-                        @click="formerPage"
-                      >
-                        <v-icon>mdi-chevron-left</v-icon>
-                      </v-btn>
-                      <v-btn
-                        small
-                        fab
-                        :disabled="page >= numberOfPages"
-                        @click="nextPage"
-                      >
-                        <v-icon>mdi-chevron-right</v-icon>
-                      </v-btn>
-                    </div>
-                  </div>
-                </div>
-              </template>
-
-              <template #no-data>
-                <div class="text-subtitle-1 font-weight-light ma-4">
-                  You don't have any submissions that match the selected
-                  criteria.
-                </div>
-              </template>
-
-              <template #no-results>
-                <div class="text-subtitle-1 font-weight-light ma-4">
-                  You don't have any submissions that match the selected
-                  criteria.
-                </div>
-              </template>
-            </v-data-iterator>
-          </div>
-        </v-card>
-      </div>
-      <div v-else class="text-body-2 text-center mt-4 d-flex flex-column">
-        <template v-if="!submissions.length">
-          <v-icon style="font-size: 6rem" class="mb-4">
-            mdi-text-box-remove
-          </v-icon>
-          You have not created any submissions yet
-        </template>
-        <template v-if="!isLoggedIn">
-          You need to log in to view this page
-        </template>
-      </div>
-    </template>
-
-    <v-dialog
-      id="dialog-delete-submission"
-      v-model="isDeleteDialogActive"
-      persistent
-      width="500"
-    >
-      <v-card>
-        <v-card-title>Delete this submission?</v-card-title>
-        <v-card-text v-if="deleteDialogData" class="text-body-1">
-          <p>
-            This action will delete the metadata for this submission in the data
-            submission Portal.
-          </p>
-          <v-checkbox
-            v-if="!deleteDialogData.isExternal"
-            v-model="alsoDeleteInRepository"
-            color="red"
-            label="Also attempt to delete this resource and its content files from the repository. If the resource is permanently published (i.e., it has been assigned a DOI), we will not be able to remove it from the repository."
-            hide-details
-          />
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn
-            class="dialog-cancel"
-            text
-            @click="isDeleteDialogActive = false"
-          >
-            Cancel
-          </v-btn>
-
-          <v-btn
-            class="dialog-confirm"
-            color="red darken-1"
-            text
-            @click="
-              isDeleteDialogActive = false;
-              onDeleteSubmission();
-            "
-          >
-            Delete
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <cz-register-dataset-dialog ref="registerDatasetDialog" />
-  </div>
-</template>
 
 <style lang="scss" scoped>
 .cz-submissions {

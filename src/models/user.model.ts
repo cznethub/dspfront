@@ -99,7 +99,7 @@ export default class User extends Model {
     window.addEventListener('message', handleMessage, {
       signal: this.controller.signal, // Used to remove the listener
     })
-    console.info(`User: listening to login window...`)
+    console.info(`[User]: Listening to login window...`)
   }
 
   static async checkAuthorization() {

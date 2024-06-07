@@ -15,7 +15,7 @@ import { itemsPerPageArray } from '~/components/submissions/constants'
 import { getRepositoryFromKey } from '~/constants'
 
 export interface ISubmisionState {
-  sortBy: { key: string, order?: boolean | 'asc' | 'desc' }
+  sortBy: { key: string, label: string, order: 'asc' | 'desc' }
   // sortDirection: { key: string, label: string }
   itemsPerPage: number
   isFetching: boolean
@@ -62,7 +62,7 @@ export default class Submission extends Model implements ISubmission {
     }
   }
 
-  static getInsertDataFromDb(dbSubmission) {
+  static getInsertDataFromDb(dbSubmission: any) {
     return {
       title: dbSubmission.title,
       authors: dbSubmission.authors,
@@ -77,7 +77,7 @@ export default class Submission extends Model implements ISubmission {
   // Note: Do not override the date we stored on creation unless specified. Submissions fetched from repositories might return dates localized to another timezone.
   /** Used to transform submission data that comes from the repository API */
   static getInsertData(
-    apiSubmission,
+    apiSubmission: any,
     repository: EnumRepositoryKeys,
     identifier: string,
     overrideDate?: boolean,

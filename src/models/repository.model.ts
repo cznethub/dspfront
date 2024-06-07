@@ -187,7 +187,7 @@ export default class Repository extends Model implements IRepository {
     window.addEventListener('message', handleMessage, {
       signal: this.controller.signal, // Used to remove the listener
     })
-    console.info(`Listening to authorization window...`)
+    console.info(`[User]: Listening to authorization window...`)
   }
 
   static openRevokeDialog(repository: typeof Repository) {
