@@ -27,7 +27,6 @@ export const hasLoggedInGuard: NavigationGuard = (to, _from, next) => {
 }
 
 export const hasUnsavedChangesGuard: NavigationGuard = (to, _from, next) => {
-  console.log(User.$state.hasUnsavedChanges)
   if (User.$state.hasUnsavedChanges) {
     Notifications.openDialog({
       title: 'You have unsaved changes',
@@ -51,9 +50,11 @@ export const hasAccessTokenGuard: NavigationGuard = (to, _from, next) => {
   if (
     !(isRepositoryAuthorized(to.params.repository as EnumRepositoryKeys, false))
     && User.$state.isLoggedIn
-  )
+  ) {
     Repository.openAuthorizeDialog(to.params.repository as EnumRepositoryKeys, { path: to.path })
+  }
 
-  else
+  else {
     next()
+  }
 }

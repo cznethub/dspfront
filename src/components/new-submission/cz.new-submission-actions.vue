@@ -1,22 +1,3 @@
-<script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
-
-@Component({
-  name: 'cz-new-submission-actions',
-  components: {},
-})
-class CzNewSubmissionActions extends Vue {
-  @Prop() isEditMode!: boolean
-  @Prop() repositoryUrl!: string
-  @Prop() isDevMode!: boolean
-  @Prop() hasUnsavedChanges!: boolean
-  @Prop() isSaving!: boolean
-  @Prop() confirmText!: string
-  @Prop() errors!: any[]
-}
-export default toNative(CzNewSubmissionActions)
-</script>
-
 <template>
   <div class="cz-new-submission-actions d-flex align-center my-4">
     <v-spacer class="d-none d-sm-block" />
@@ -27,10 +8,11 @@ export default toNative(CzNewSubmissionActions)
         v-if="isDevMode"
         class="my-1 my-sm-0"
         rounded
-        @click="$emit('show-ui-schema')"
+        @click="$emit('showUiSchema')"
       >
         UI Schema
       </v-btn>
+
       <v-btn
         v-if="isEditMode"
         rounded
@@ -46,63 +28,91 @@ export default toNative(CzNewSubmissionActions)
             v-bind="props"
             class="d-flex form-controls flex-column flex-sm-row"
           >
-            <template>
-              <v-badge
-                :value="!!errors.length"
-                bordered
-                color="error"
-                icon="mdi-exclamation-thick"
-                overlap
+            <v-badge
+              :model-value="!isValid"
+              bordered
+              color="error"
+              icon="mdi-exclamation-thick"
+              overlap
+            >
+              <v-btn
+                :color="canConfirm ? 'primary' : 'default'"
+                class="submission-save my-1 my-sm-0"
+                :disabled="!canConfirm || !hasUnsavedChanges"
+                rounded
+                block
+                @click="$emit('save')"
               >
-                <v-btn
-                  color="primary"
-                  class="submission-save my-1 my-sm-0"
-                  :disabled="isSaving || !!errors.length || !hasUnsavedChanges"
-                  rounded
-                  block
-                  @click="$emit('save')"
-                >
-                  {{ isSaving ? "Saving..." : confirmText }}
-                </v-btn>
-              </v-badge>
+                {{ isSaving ? "Saving..." : confirmText }}
+              </v-btn>
+            </v-badge>
 
-              <v-badge
-                :value="!!errors.length"
-                bordered
-                color="error"
-                icon="mdi-exclamation-thick"
-                overlap
+            <v-badge
+              :model-value="!isValid"
+              bordered
+              color="error"
+              icon="mdi-exclamation-thick"
+              overlap
+            >
+              <v-btn
+                class="ml-sm-2 my-1 my-sm-0 submission-finish"
+                :color="canConfirm ? 'primary' : 'default'"
+                :disabled="!canConfirm"
+                rounded
+                block
+                @click="$emit('saveAndFinish')"
               >
-                <v-btn
-                  class="ml-sm-2 my-1 my-sm-0 submission-finish"
-                  color="primary"
-                  :disabled="isSaving || !!errors.length"
-                  rounded
-                  block
-                  @click="$emit('save-and-finish')"
-                >
-                  Finish
-                </v-btn>
-              </v-badge>
-            </template>
+                Finish
+              </v-btn>
+            </v-badge>
           </div>
         </template>
 
-        <div class="pa-4 has-bg-white">
-          <ul
-            v-for="(error, index) of errors"
-            :key="index"
-            class="text-subtitle-1"
-          >
-            <li>
-              <b>{{ error.title }}</b> {{ error.message }}.
-            </li>
-          </ul>
-        </div>
+        <v-card class="bg-white">
+          <v-card-text>
+            <ul
+              v-for="(error, index) of errors"
+              :key="index"
+              class="text-subtitle-1 ml-4"
+            >
+              <li>
+                <b>{{ error.title }}</b> {{ error.message }}.
+              </li>
+            </ul>
+          </v-card-text>
+        </v-card>
       </v-menu>
     </div>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
+
+@Component({
+  name: 'cz-new-submission-actions',
+  components: {},
+  emits: ['showUiSchema', 'saveAndFinish', 'cancel', 'save'],
+})
+class CzNewSubmissionActions extends Vue {
+  @Prop() isEditMode!: boolean
+  @Prop() repositoryUrl!: string
+  @Prop() isDevMode!: boolean
+  @Prop() hasUnsavedChanges!: boolean
+  @Prop() isSaving!: boolean
+  @Prop() confirmText!: string
+  @Prop() errors!: any[]
+
+  get canConfirm() {
+    return !this.isSaving && !this.errors.length
+  }
+
+  get isValid() {
+    return !this.errors.length
+  }
+}
+export default toNative(CzNewSubmissionActions)
+</script>
 
 <style lang="scss" scoped>
 .form-controls {

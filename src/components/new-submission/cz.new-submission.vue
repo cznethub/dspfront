@@ -1,3 +1,232 @@
+<template>
+  <v-container id="cz-new-submission" class="cz-new-submission px-4">
+    <h1 class="text-h4">
+      {{ formTitle }}
+    </h1>
+    <v-divider class="mb-4" />
+    <v-alert
+      v-if="!isLoading && wasLoaded"
+      id="instructions"
+      class="text-subtitle-1 my-8"
+      border="start"
+      border-color="primary"
+      type="info"
+      variant="text"
+      density="compact"
+      elevation="1"
+    >
+      <div
+        class="d-flex flex-wrap-wrap justify-space-between flex-column flex-md-row text-black"
+      >
+        <div>
+          <div><b>Instructions</b></div>
+          <p>
+            Fill in the required fields (marked with * and highlighted in red).
+            Press the "Save / Finish" button to upload your submission.
+          </p>
+        </div>
+
+        <v-img
+          class="my-4 flex-grow-0 ml-md-4 ml-0"
+          :src="activeRepository.get()?.logoSrc"
+          :alt="activeRepository.get()?.name"
+          width="350px"
+          contain
+        />
+      </div>
+    </v-alert>
+
+    <cz-new-submission-actions
+      v-if="!isLoading && wasLoaded"
+      id="cz-new-submission-actions-top"
+      :repository-url="repositoryUrl"
+      :is-edit-mode="isEditMode"
+      :allow-file-upload="allowFileUpload"
+      :is-dev-mode="isDevMode"
+      :is-saving="isSaving"
+      :confirm-text="submitText"
+      :errors="errors"
+      :has-unsaved-changes="hasUnsavedChanges"
+      @save-and-finish="onSaveAndFinish"
+      @save="onSave"
+      @cancel="goToSubmissions"
+    />
+
+    <div>
+      <div v-if="!isLoading">
+        <!-- <cz-folder-structure
+          v-if="hasFileExplorer"
+          id="cz-folder-structure"
+          ref="folderStructure"
+          v-model="uploads"
+          v-model:root-directory="rootDirectory"
+          :is-read-only="config.isReadOnly"
+          :allow-file-upload="allowFileUpload"
+          :repo-metadata="repoMetadata[repositoryKey]"
+          :is-edit-mode="isEditMode"
+          :identifier="identifier"
+          @upload="uploadFiles($event)"
+        /> -->
+
+        <cz-file-explorer
+          v-if="hasFileExplorer"
+          id="cz-folder-structure"
+          :root-directory="rootDirectory"
+          :has-folders="fileExplorerConfig.hasFolders"
+          :is-read-only="fileExplorerConfig.isReadOnly"
+          :has-file-metadata="() => true"
+        >
+          <template #prepend>
+            <span />
+          </template>
+        </cz-file-explorer>
+
+        <template v-if="wasLoaded">
+          <cz-form
+            v-if="schema"
+            ref="form"
+            v-model="data"
+            v-model:isValid="isValid"
+            :schema="schema"
+            :uischema="uiSchema"
+            :config="config"
+            @update:errors="onUpdateErrors"
+            @update:model-value="onDataChange"
+          />
+        </template>
+      </div>
+
+      <div v-else class="d-flex justify-center mt-8">
+        <v-progress-circular
+          id="progress-circular"
+          indeterminate
+          color="primary"
+        />
+      </div>
+
+      <cz-new-submission-actions
+        v-if="!isLoading && wasLoaded"
+        id="cz-new-submission-actions-bottom"
+        :repository-url="repositoryUrl"
+        :is-edit-mode="isEditMode"
+        :allow-file-upload="allowFileUpload"
+        :is-dev-mode="isDevMode"
+        :is-saving="isSaving"
+        :confirm-text="submitText"
+        :errors="errors"
+        :has-unsaved-changes="hasUnsavedChanges"
+        @save-and-finish="onSaveAndFinish"
+        @save="onSave"
+        @cancel="goToSubmissions"
+      />
+    </div>
+
+    <v-container v-if="isLoading">
+      <v-skeleton-loader type="actions, article, actions" />
+    </v-container>
+
+    <template v-if="!isLoading && !wasLoaded">
+      <template v-if="wasUnauthorized">
+        <v-alert
+          class="text-subtitle-1"
+          border="start"
+          colored-border
+          type="info"
+          elevation="2"
+        >
+          <v-row>
+            <v-col class="flex-grow-1">
+              We need your authorization to load this submission from the
+              repository.
+            </v-col>
+            <v-col class="flex-grow-0">
+              <v-btn
+                color="primary"
+                class="mb-4"
+                @click="openAuthorizePopup(repositoryKey)"
+              >
+                <i class="fas fa-key mr-2" />Authorize
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+      </template>
+
+      <template v-else-if="!isLoggedIn">
+        <v-alert
+          class="text-subtitle-1"
+          border="start"
+          colored-border
+          type="info"
+          elevation="2"
+        >
+          <v-row>
+            <v-col class="flex-grow-1">
+              You need to log in to access this submission.
+            </v-col>
+            <v-col class="flex-grow-0">
+              <v-btn id="orcid_login_continue" color="primary" @click="onLogIn">
+                <v-icon class="mr-2">
+                  fab fa-orcid
+                </v-icon>
+                <span>Log In Using ORCID</span>
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-alert>
+
+        <div class="d-flex justify-center mt-8">
+          <v-icon style="font-size: 8rem" class="text--disabled">
+            mdi-login
+          </v-icon>
+        </div>
+      </template>
+
+      <template v-else>
+        <v-alert
+          class="text-subtitle-1"
+          border="start"
+          colored-border
+          type="error"
+          elevation="2"
+        >
+          We could not load this submission. The service might be unavailable or
+          the submission might have been deleted.
+        </v-alert>
+
+        <div class="d-flex justify-center mt-8">
+          <v-icon style="font-size: 8rem" class="text--disabled">
+            mdi-database-off-outline
+          </v-icon>
+        </div>
+      </template>
+    </template>
+
+    <v-dialog
+      :value="isSaving"
+      no-click-animation
+      hide-overlay
+      persistent
+      width="300"
+      attach="#cz-new-submission"
+    >
+      <v-card class="py-4" color="primary" dark>
+        <v-card-text>
+          <p id="new-submission-saving">
+            Saving...
+          </p>
+          <v-progress-linear
+            indeterminate
+            color="white"
+            class="mb-0"
+          />
+        </v-card-text>
+      </v-card>
+    </v-dialog>
+    <v-overlay v-if="isSaving" class="backdrop" absolute />
+  </v-container>
+</template>
+
 <script lang="ts">
 import { Component, Hook, mixins, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
@@ -203,7 +432,6 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       || this.activeRepository.get()?.key !== this.repositoryKey
     ) {
       // Check that the key from the url is actually a EnumRepositoryKeys
-      this.repositoryKey
       if (Object.values(EnumRepositoryKeys).includes(this.repositoryKey))
         this.setActiveRepository(this.repositoryKey)
     }
@@ -307,22 +535,23 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare)
         this.allowFileUpload = this.isHsComposite
 
-      if (this.hasFileExplorer)
+      if (this.hasFileExplorer) {
         console.info('CzNewSubmission: reading existing files...')
-      try {
-        const initialStructure
+        try {
+          const initialStructure
             = await this.activeRepository.readRootFolder(
               this.identifier,
               '',
               this.rootDirectory,
             )
-        this.rootDirectory.children = initialStructure
-      }
-      catch (e) {
-        Notifications.toast({
-          message: 'Failed to load existing files.',
-          type: 'error',
-        })
+          this.rootDirectory.children = initialStructure
+        }
+        catch (e) {
+          Notifications.toast({
+            message: 'Failed to load existing files.',
+            type: 'error',
+          })
+        }
       }
 
       this.isLoadingInitialFiles = false
@@ -569,234 +798,6 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 export default toNative(CzNewSubmission)
 </script>
 
-<template>
-  <v-container id="cz-new-submission" class="cz-new-submission px-4">
-    <h1 class="text-h4">
-      {{ formTitle }}
-    </h1>
-    <v-divider class="mb-4" />
-    <v-alert
-      v-if="!isLoading && wasLoaded"
-      id="instructions"
-      class="text-subtitle-1 my-8"
-      border="start"
-      colored-border
-      type="info"
-      elevation="2"
-    >
-      <div
-        class="d-flex flex-wrap-wrap justify-space-between flex-column flex-md-row"
-      >
-        <div>
-          <div><b>Instructions</b></div>
-          <p>
-            Fill in the required fields (marked with * and highlighted in red).
-            Press the "Save / Finish" button to upload your submission.
-          </p>
-        </div>
-
-        <v-img
-          class="my-4 flex-grow-0 ml-md-4 ml-0"
-          :src="activeRepository.get()?.logoSrc"
-          :alt="activeRepository.get()?.name"
-          width="350px"
-          contain
-        />
-      </div>
-    </v-alert>
-
-    <cz-new-submission-actions
-      v-if="!isLoading && wasLoaded"
-      id="cz-new-submission-actions-top"
-      :repository-url="repositoryUrl"
-      :is-edit-mode="isEditMode"
-      :allow-file-upload="allowFileUpload"
-      :is-dev-mode="isDevMode"
-      :is-saving="isSaving"
-      :confirm-text="submitText"
-      :errors="errors"
-      :has-unsaved-changes="hasUnsavedChanges"
-      @save-and-finish="onSaveAndFinish"
-      @save="onSave"
-      @cancel="goToSubmissions"
-    />
-
-    <div>
-      <div v-if="!isLoading">
-        <!-- <cz-folder-structure
-          v-if="hasFileExplorer"
-          id="cz-folder-structure"
-          ref="folderStructure"
-          v-model="uploads"
-          v-model:root-directory="rootDirectory"
-          :is-read-only="config.isReadOnly"
-          :allow-file-upload="allowFileUpload"
-          :repo-metadata="repoMetadata[repositoryKey]"
-          :is-edit-mode="isEditMode"
-          :identifier="identifier"
-          @upload="uploadFiles($event)"
-        /> -->
-
-        <cz-file-explorer
-          v-if="hasFileExplorer"
-          id="cz-folder-structure"
-          :root-directory="rootDirectory"
-          :has-folders="fileExplorerConfig.hasFolders"
-          :is-read-only="fileExplorerConfig.isReadOnly"
-          :has-file-metadata="() => true"
-        >
-          <template #prepend>
-            <span />
-          </template>
-        </cz-file-explorer>
-
-        <template v-if="wasLoaded">
-          <cz-form
-            v-if="schema"
-            ref="form"
-            v-model:errors="errors"
-            v-model:is-valid="isValid"
-            v-model="data"
-            :schema="schema"
-            :uischema="uiSchema"
-            :config="config"
-            @update:errors="onUpdateErrors"
-            @update:model-value="onDataChange"
-          />
-        </template>
-      </div>
-
-      <div v-else class="d-flex justify-center mt-8">
-        <v-progress-circular
-          id="progress-circular"
-          indeterminate
-          color="primary"
-        />
-      </div>
-
-      <cz-new-submission-actions
-        v-if="!isLoading && wasLoaded"
-        id="cz-new-submission-actions-bottom"
-        :repository-url="repositoryUrl"
-        :is-edit-mode="isEditMode"
-        :allow-file-upload="allowFileUpload"
-        :is-dev-mode="isDevMode"
-        :is-saving="isSaving"
-        :confirm-text="submitText"
-        :errors="errors"
-        :has-unsaved-changes="hasUnsavedChanges"
-        @save-and-finish="onSaveAndFinish"
-        @save="onSave"
-        @cancel="goToSubmissions"
-      />
-    </div>
-
-    <v-container v-if="isLoading">
-      <v-skeleton-loader type="actions, article, actions" />
-    </v-container>
-
-    <template v-if="!isLoading && !wasLoaded">
-      <template v-if="wasUnauthorized">
-        <v-alert
-          class="text-subtitle-1"
-          border="start"
-          colored-border
-          type="info"
-          elevation="2"
-        >
-          <v-row>
-            <v-col class="flex-grow-1">
-              We need your authorization to load this submission from the
-              repository.
-            </v-col>
-            <v-col class="flex-grow-0">
-              <v-btn
-                color="primary"
-                class="mb-4"
-                @click="openAuthorizePopup(repositoryKey)"
-              >
-                <i class="fas fa-key mr-2" />Authorize
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-alert>
-      </template>
-
-      <template v-else-if="!isLoggedIn">
-        <v-alert
-          class="text-subtitle-1"
-          border="start"
-          colored-border
-          type="info"
-          elevation="2"
-        >
-          <v-row>
-            <v-col class="flex-grow-1">
-              You need to log in to access this submission.
-            </v-col>
-            <v-col class="flex-grow-0">
-              <v-btn id="orcid_login_continue" color="primary" @click="onLogIn">
-                <v-icon class="mr-2">
-                  fab fa-orcid
-                </v-icon>
-                <span>Log In Using ORCID</span>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-alert>
-
-        <div class="d-flex justify-center mt-8">
-          <v-icon style="font-size: 8rem" class="text--disabled">
-            mdi-login
-          </v-icon>
-        </div>
-      </template>
-
-      <template v-else>
-        <v-alert
-          class="text-subtitle-1"
-          border="start"
-          colored-border
-          type="error"
-          elevation="2"
-        >
-          We could not load this submission. The service might be unavailable or
-          the submission might have been deleted.
-        </v-alert>
-
-        <div class="d-flex justify-center mt-8">
-          <v-icon style="font-size: 8rem" class="text--disabled">
-            mdi-database-off-outline
-          </v-icon>
-        </div>
-      </template>
-    </template>
-
-    <v-dialog
-      :value="isSaving"
-      no-click-animation
-      hide-overlay
-      persistent
-      width="300"
-      attach="#cz-new-submission"
-    >
-      <v-card class="py-4" color="primary" dark>
-        <v-card-text>
-          <p id="new-submission-saving">
-            Saving...
-          </p>
-          <v-progress-linear
-            indeterminate
-            color="white"
-            class="mb-0"
-          />
-        </v-card-text>
-      </v-card>
-    </v-dialog>
-    <v-overlay v-if="isSaving" class="backdrop" absolute />
-  </v-container>
-</template>
-
 <style lang="scss" scoped>
 .form-controls {
   button + button {
@@ -810,9 +811,5 @@ export default toNative(CzNewSubmission)
 
 :deep(.v-overlay.backdrop) {
   z-index: 4 !important;
-}
-
-:deep(.v-alert__content) {
-  width: 0;
 }
 </style>
