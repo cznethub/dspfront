@@ -158,7 +158,7 @@ export default class Submission extends Model implements ISubmission {
   }
 
   static async fetchSubmissions() {
-    console.log('Fetching submissions...')
+    console.log('[Submission]: Fetching submissions...')
     try {
       this.commit((state) => {
         return (state.isFetching = true)

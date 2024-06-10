@@ -24,11 +24,12 @@
             />
 
             <v-select
-              v-model="filters.repoOptions"
+              v-model="filters.repository"
               :items="repoOptions"
+              item-value="key"
+              item-title="label"
               class="ma-1 my-2 my-sm-0"
               small-chips
-              deletable-chips
               clearable
               label="Repository"
               hide-details
@@ -36,26 +37,7 @@
               multiple
               density="compact"
               variant="outlined"
-            >
-              <!-- <template #item="{ item, props }">
-                <v-list-item v-bind="props">
-                  <v-list-item-action>
-                    <v-icon v-if="props.inputValue">
-                      mdi-checkbox-marked
-                    </v-icon>
-                    <v-icon v-else>
-                      mdi-checkbox-blank-outline
-                    </v-icon>
-                  </v-list-item-action>
-                  <v-list-item-title>
-                    {{
-                      repoMetadata[item].dropdownName
-                        || repoMetadata[item].name
-                    }}
-                  </v-list-item-title>
-                </v-list-item>
-              </template> -->
-            </v-select>
+            />
           </div>
 
           <v-spacer />
@@ -120,20 +102,20 @@
             {{ submissions.length }} Total Submissions
           </div>
           <p v-if="isAnyFilterAcitve" class="font-weight-light">
-            {{ currentItems.length }} Results
+            {{ filteredSubmissions.length }} Results
           </p>
         </div>
 
         <v-card>
           <div v-if="!isFetching">
             <v-data-iterator
-              v-model:items-per-page="itemsPerPage"
               v-model:page="page"
+              v-model:items-per-page="itemsPerPage"
               :items="filteredSubmissions"
               :search="filters.searchStr"
+              :sort-by="[sortBy]"
               item-key="identifier"
               hide-default-footer
-              @update:current-items="currentItems = $event"
             >
               <template #header>
                 <div elevation="0" class="has-bg-light-gray pa-4">
@@ -200,49 +182,49 @@
                             colspan="2"
                             class="text-h6 title"
                           >
-                            {{ item.title }}
+                            {{ item.raw.title }}
                           </td>
                         </tr>
-                        <tr v-if="item.authors.length">
+                        <tr v-if="item.raw.authors.length">
                           <th class="pr-4 body-2">
                             Authors:
                           </th>
-                          <td>{{ item.authors.join(" | ") }}</td>
+                          <td>{{ item.raw.authors.join(" | ") }}</td>
                         </tr>
                         <tr>
                           <th class="pr-4 body-2">
                             Submission Repository:
                           </th>
-                          <td>{{ getRepositoryName(item) }}</td>
+                          <td>{{ getRepositoryName(item.raw) }}</td>
                         </tr>
                         <tr>
                           <th class="pr-4 body-2">
                             Submission Date:
                           </th>
                           <td :id="`sub-${index}-date`">
-                            {{ getDateInLocalTime(item.date) }}
+                            {{ getDateInLocalTime(item.raw.date) }}
                           </td>
                         </tr>
                         <tr>
                           <th class="pr-4 body-2">
                             Identifier:
                           </th>
-                          <td>{{ item.identifier }}</td>
+                          <td>{{ item.raw.identifier }}</td>
                         </tr>
                         <tr
                           v-if="
-                            item.repository === enumRepositoryKeys.hydroshare
+                            item.raw.repository === enumRepositoryKeys.hydroshare
                           "
                         >
                           <th class="pr-4 body-2">
                             Type:
                           </th>
-                          <td>{{ getItemResourceType(item) }}</td>
+                          <td>{{ getItemResourceType(item.raw) }}</td>
                         </tr>
                         <tr
                           v-if="
-                            item.metadata.status
-                              && item.repository === enumRepositoryKeys.earthchem
+                            item.raw.metadata.status
+                              && item.raw.repository === enumRepositoryKeys.earthchem
                           "
                         >
                           <th class="pr-4 body-2">
@@ -251,22 +233,22 @@
 
                           <td>
                             <v-chip
-                              v-if="item.metadata.status !== 'incomplete'"
+                              v-if="item.raw.metadata.status !== 'incomplete'"
                               color="orange"
-                              small
-                              variant="outlined"
+                              density="compact"
+                              size="small"
                             >
-                              <v-icon left small>
+                              <v-icon size="small" class="mr-1">
                                 mdi-lock
                               </v-icon>
-                              {{ item.metadata.status }}
+                              {{ item.raw.metadata.status }}
                             </v-chip>
 
-                            <v-chip v-else small variant="outlined">
-                              <v-icon left small>
+                            <v-chip v-else size="small">
+                              <v-icon size="small" class="mr-1">
                                 mdi-pencil
                               </v-icon>
-                              {{ item.metadata.status }}
+                              {{ item.raw.metadata.status }}
                             </v-chip>
                           </td>
                         </tr>
@@ -276,7 +258,7 @@
                     <div class="d-flex flex-column mt-4 mt-md-0 actions">
                       <v-btn
                         :id="`sub-${index}-view`"
-                        :href="item.url"
+                        :href="item.raw.url"
                         target="_blank"
                         color="blue-grey lighten-4"
                         rounded
@@ -289,31 +271,31 @@
                       <v-btn
                         v-if="
                           !(
-                            isItemHsCollection(item)
-                            || isItemPublished(item)
-                            || isItemEclSubmitted(item)
+                            isItemHsCollection(item.raw)
+                            || isItemPublished(item.raw)
+                            || isItemEclSubmitted(item.raw)
                           )
                         "
                         :id="`sub-${index}-edit`"
                         rounded
-                        @click="goToEditSubmission(item)"
+                        @click="goToEditSubmission(item.raw)"
                       >
                         <v-icon class="mr-1">
                           mdi-pencil-outline
                         </v-icon> Edit
                       </v-btn>
                       <v-btn
-                        v-if="!repoMetadata[item.repository]?.isExternal"
+                        v-if="!repoMetadata[item.raw.repository]?.isExternal"
                         :id="`sub-${index}-update`"
                         :disabled="
-                          isUpdating[`${item.repository}-${item.identifier}`]
+                          isUpdating[`${item.raw.repository}-${item.raw.identifier}`]
                         "
                         rounded
-                        @click="onUpdateRecord(item)"
+                        @click="onUpdateRecord(item.raw)"
                       >
                         <v-icon
                           v-if="
-                            isUpdating[`${item.repository}-${item.identifier}`]
+                            isUpdating[`${item.raw.repository}-${item.raw.identifier}`]
                           "
                         >
                           fas fa-circle-notch fa-spin
@@ -322,7 +304,7 @@
                           mdi-sync
                         </v-icon><span class="ml-1">
                           {{
-                            isUpdating[`${item.repository}-${item.identifier}`]
+                            isUpdating[`${item.raw.repository}-${item.raw.identifier}`]
                               ? "Updating Record..."
                               : "Update Record"
                           }}</span>
@@ -333,14 +315,14 @@
                         rounded
                         @click="
                           onDelete(
-                            item,
-                            repoMetadata[item.repository]?.isExternal,
+                            item.raw,
+                            repoMetadata[item.raw.repository]?.isExternal,
                           )
                         "
                       >
                         <v-icon
                           v-if="
-                            isDeleting[`${item.repository}-${item.identifier}`]
+                            isDeleting[`${item.raw.repository}-${item.raw.identifier}`]
                           "
                         >
                           fas fa-circle-notch fa-spin
@@ -349,7 +331,7 @@
                           mdi-delete-outline
                         </v-icon><span class="ml-1">
                           {{
-                            isDeleting[`${item.repository}-${item.identifier}`]
+                            isDeleting[`${item.raw.repository}-${item.raw.identifier}`]
                               ? "Deleting..."
                               : "Delete"
                           }}</span>
@@ -358,12 +340,13 @@
                   </div>
                   <v-divider />
                 </div>
-              </template> -->
-              <!--
+              </template>
+
               <template #footer>
                 <div class="footer d-flex justify-space-between align-center">
                   <div>
                     <span class="grey--text text-body-2 mr-1">Items per page</span>
+
                     <v-menu offset-y>
                       <template #activator="{ props }">
                         <v-btn variant="text" v-bind="props">
@@ -371,10 +354,12 @@
                           <v-icon>mdi-chevron-down</v-icon>
                         </v-btn>
                       </template>
+
                       <v-list>
+                        <!-- TODO: this is causing recursive updates -->
                         <v-list-item
-                          v-for="(number, index) in itemsPerPageArray"
-                          :key="index"
+                          v-for="number in itemsPerPageArray"
+                          :key="number"
                           @click="itemsPerPage = number"
                         >
                           <v-list-item-title>{{ number }}</v-list-item-title>
@@ -534,15 +519,14 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   alsoDeleteInRepository = false
 
   filters: {
-    repoOptions: string[]
+    repository: string[]
     searchStr: string
-  } = { repoOptions: [], searchStr: '' }
+  } = { repository: [], searchStr: '' }
 
   itemsPerPageArray = itemsPerPageArray
   page = 1
   repoMetadata = repoMetadata
   enumRepositoryKeys = EnumRepositoryKeys
-  currentItems = []
   loggedInSubject = new Subscription()
 
   get repoCollection(): IRepository[] {
@@ -571,15 +555,15 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     return Submission.$state.isFetching
   }
 
-  get repoOptions() {
-    return Object.keys(repoMetadata).filter(
-      key => repoMetadata[key].isSupported,
-    )
+  get repoOptions(): { key: string, label: string }[] {
+    return Object.keys(repoMetadata)
+      .filter(key => repoMetadata[key].isSupported)
+      .map(key => ({ key, label: repoMetadata[key].name }))
   }
 
   get sortOptions() {
-    return Object.entries(EnumSubmissionSorts).map((key, value) => {
-      return { key, order: 'asc', label: value }
+    return Object.keys(EnumSubmissionSorts).map((key) => {
+      return { key, label: EnumSubmissionSorts[key as keyof typeof EnumSubmissionSorts] }
     })
   }
 
@@ -603,10 +587,20 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     )
   }
 
+  get sortDirectionOptions() {
+    return Object.keys(EnumSortDirections).map((key) => {
+      return {
+        key,
+        label: sortDirectionsOverrides[this.sortBy.key]?.[key as keyof typeof EnumSortDirections]
+        || EnumSortDirections[key as keyof typeof EnumSortDirections],
+      }
+    })
+  }
+
   get filteredSubmissions() {
-    if (this.filters.repoOptions.length) {
+    if (this.filters.repository.length) {
       return Submission.all().filter(s =>
-        this.filters.repoOptions.includes(s.repository),
+        this.filters.repository.includes(s.repository),
       )
     }
 
@@ -629,10 +623,9 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   }
 
   get numberOfPages() {
-    if (this.isAnyFilterAcitve)
-      return Math.ceil(this.currentItems.length / this.itemsPerPage)
-
-    return Math.ceil(this.submissions.length / this.itemsPerPage)
+    return this.isAnyFilterAcitve
+      ? Math.ceil(this.filteredSubmissions.length / this.itemsPerPage)
+      : Math.ceil(this.submissions.length / this.itemsPerPage)
   }
 
   created() {
@@ -642,8 +635,6 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     this.loggedInSubject = User.loggedIn$.subscribe(() => {
       Submission.fetchSubmissions()
     })
-
-    // this._loadSortDirection()
   }
 
   beforeDestroy() {
@@ -667,14 +658,6 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
       params: { repository: repo.key, id: submission.identifier },
     })
   }
-
-  // goToViewSubmission(submission: ISubmission) {
-  //   const repo: IRepository = repoMetadata[submission.repository];
-  //   this.$router.push({
-  //     name: "view-submission",
-  //     params: { repository: repo.key, id: submission.identifier },
-  //   });
-  // }
 
   getDateInLocalTime(date: number): string {
     const offset = new Date(date).getTimezoneOffset() * 60 * 1000
@@ -875,6 +858,7 @@ export default toNative(CzSubmissions)
       text-align: right;
       width: 11rem;
       font-weight: normal;
+      text-wrap: nowrap;
     }
 
     td {
