@@ -71,10 +71,13 @@
         <cz-file-explorer
           v-if="hasFileExplorer"
           id="cz-folder-structure"
+          ref="fileExplorer"
           :root-directory="rootDirectory"
           :has-folders="fileExplorerConfig.hasFolders"
           :is-read-only="fileExplorerConfig.isReadOnly"
           :has-file-metadata="() => true"
+          :upload="isEditMode ? uploadFiles : undefined"
+          :delete-file-or-older="deleteFileOrFolder"
         >
           <template #prepend>
             <span />
@@ -203,7 +206,7 @@
     </template>
 
     <v-dialog
-      :value="isSaving"
+      v-model="isSaving"
       no-click-animation
       hide-overlay
       persistent
@@ -212,7 +215,7 @@
     >
       <v-card class="py-4" color="primary" dark>
         <v-card-text>
-          <p id="new-submission-saving">
+          <p id="new-submission-saving" class="mb-2 text-center">
             Saving...
           </p>
           <v-progress-linear
@@ -228,7 +231,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Hook, mixins, toNative } from 'vue-facing-decorator'
+import { Component, Hook, Ref, mixins, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
 import { CzFileExplorer, CzForm, Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
@@ -255,9 +258,9 @@ const initialData = {}
   },
 })
 class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
-  // @Ref('folderStructure') folderStructure!: InstanceType<
-  //   typeof CzFolderStructure
-  // >
+  @Ref('fileExplorer') fileExplorer!: InstanceType<
+    typeof CzFileExplorer
+  >
 
   rootDirectory: any = {
     name: 'root',
@@ -536,13 +539,12 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
         this.allowFileUpload = this.isHsComposite
 
       if (this.hasFileExplorer) {
-        console.info('CzNewSubmission: reading existing files...')
+        console.info('[CzNewSubmission]: Reading existing files...')
         try {
           const initialStructure
             = await this.activeRepository.readRootFolder(
               this.identifier,
               '',
-              this.rootDirectory,
             )
           this.rootDirectory.children = initialStructure
         }
@@ -580,8 +582,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   onSaveAndFinish() {
     if (
       this.hasFileExplorer
-      // && (this.folderStructure?.hasInvalidFilesToUpload
-      // || !this.folderStructure?.canUploadFiles)
+      && (this.fileExplorer?.hasTooManyFiles || this.fileExplorer?.isTotalUploadSizeTooBig || this.fileExplorer?.hasInvalidFilesToUpload)
     ) {
       Notifications.openDialog({
         title: 'Some of your files cannot be uploaded',
@@ -633,8 +634,8 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   onSave() {
     if (
       !this.isExternal
-      // && (this.folderStructure?.hasInvalidFilesToUpload
-      // || !this.folderStructure?.canUploadFiles)
+      && this.hasFileExplorer
+      && (this.fileExplorer?.hasTooManyFiles || this.fileExplorer?.isTotalUploadSizeTooBig || this.fileExplorer?.hasInvalidFilesToUpload)
     ) {
       Notifications.openDialog({
         title: 'Some of your files cannot be uploaded',
@@ -726,7 +727,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     }
 
     if (!this.isEditMode) {
-      if (this.folderStructure?.canUploadFiles)
+      if (!this.fileExplorer.hasTooManyFiles && !this.fileExplorer.isTotalUploadSizeTooBig)
         await this.uploadFiles(this.uploads)
     }
     // If we are in edit mode, files have already been saved
@@ -768,7 +769,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation
   }
 
-  async uploadFiles(files: any[]) {
+  async uploadFiles(files: any[]): Promise<boolean[]> {
     const repoUrls: IRepositoryUrls | undefined
       = this.activeRepository?.get()?.urls
 
@@ -780,10 +781,17 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
         this.identifier,
         '%s', // replaced file by file inside repo model
       )
-      files.map(f => (f.isDisabled = true))
-      await this.activeRepository?.uploadFiles(url, files, createFolderUrl)
-      // this.folderStructure.redrawFileTree()
+      files.forEach(f => (f.isDisabled = true))
+      return this.activeRepository?.uploadFiles(url, files, createFolderUrl)
     }
+    return []
+  }
+
+  async deleteFileOrFolder(item: any): Promise<boolean> {
+    return this.activeRepository.deleteFileOrFolder(
+      this.identifier,
+      item,
+    )
   }
 
   @Hook

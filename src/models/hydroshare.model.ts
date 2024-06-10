@@ -19,13 +19,14 @@ export default class HydroShare extends Repository {
     bucketUrl: string,
     itemsToUpload: (IFile | IFolder)[] | any[],
     createFolderUrl: string,
-  ) {
+  ): Promise<boolean[]> {
     itemsToUpload.map(i => (i.isDisabled = true))
     const filesToUpload = itemsToUpload.filter(i => Object.prototype.hasOwnProperty.call(i, 'file'))
     const foldersToUpload = itemsToUpload.filter(i =>
       Object.prototype.hasOwnProperty.call(i, 'children'),
     )
 
+    // TODO: compute folder path
     let folderPaths = foldersToUpload.map(
       f => `${f.path ? `${f.path}/` : ''}${f.name}`,
     )
@@ -37,18 +38,19 @@ export default class HydroShare extends Repository {
     // HydroShare can only create multiple folders at a time if the parent folder already exists
     // So we traverse the tree by depth and create folders in each depth at a time
     const that = this
+    let responses
 
     if (folderPaths.length) {
       // Create folders
-      await _createFoldersByDepth(folderPaths, 1)
+      responses = await _createFoldersByDepth(folderPaths, 1)
     }
     else {
       // No folders to create. Just upload files directly.
-      await _uploadFiles()
+      responses = await _uploadFiles()
     }
     itemsToUpload.map(i => (i.isDisabled = false))
 
-    async function _createFoldersByDepth(paths: string[], depth: number) {
+    async function _createFoldersByDepth(paths: string[], depth: number): Promise<boolean[]> {
       const depthPaths = paths.filter(p => p.split('/').length === depth)
 
       const folderCreatePromises = depthPaths.map((path: string) => {
@@ -68,16 +70,13 @@ export default class HydroShare extends Repository {
       })
       await Promise.allSettled(folderCreatePromises)
       const remaining = paths.filter(p => p.split('/').length > depth)
-      if (remaining.length) {
-        _createFoldersByDepth(remaining, depth + 1)
-      }
-      else {
-        // Finished creating folders. Files can be added.
-        _uploadFiles()
-      }
+
+      return remaining.length
+        ? _createFoldersByDepth(remaining, depth + 1)
+        : _uploadFiles() // Finished creating folders. Files can be added.
     }
 
-    async function _uploadFiles() {
+    async function _uploadFiles(): Promise<boolean[]> {
       const fileUploadPromises = filesToUpload.map((file: IFile) => {
         let url = bucketUrl
         const form = new window.FormData()
@@ -101,7 +100,7 @@ export default class HydroShare extends Repository {
       )
 
       // HydroShare replaces spaces with '_' when uploading files. We must update the name here with their changes.
-      filesToUpload.map((f, index) => {
+      filesToUpload.forEach((f, index) => {
         // @ts-expect-error
         const uploadedFileName = response[index].value.data.file_name
         if (response[index].status === 'fulfilled' && uploadedFileName) {
@@ -124,15 +123,18 @@ export default class HydroShare extends Repository {
           type: 'error',
         })
       }
+
+      return response.map(r => r.status === 'fulfilled')
     }
+
+    return responses
   }
 
   static async readRootFolder(
     identifier: string,
     path: string,
-    rootDirectory: IFolder,
   ): Promise<(IFile | IFolder)[]> {
-    return this._readFolderRecursive(identifier, path, rootDirectory)
+    return this._readFolderRecursive(identifier, path)
   }
 
   static async renameFileOrFolder(
@@ -141,7 +143,7 @@ export default class HydroShare extends Repository {
     newPath: string,
   ): Promise<boolean> {
     const pathPrefix = 'data/contents/'
-    const url = this.get()?.urls?.moveOrRenameUrl
+    const url = this.get()?.urls?.moveOrRenameUrl || ''
     const renameUrl = sprintf(url, identifier)
 
     const form = new window.FormData()
@@ -202,9 +204,8 @@ export default class HydroShare extends Repository {
   private static async _readFolderRecursive(
     identifier: string,
     path: string,
-    folder: IFolder,
   ): Promise<(IFile | IFolder)[]> {
-    const url = this.get()?.urls?.folderReadUrl
+    const url = this.get()?.urls?.folderReadUrl || ''
     const folderReadUrl = sprintf(
       url,
       identifier,
@@ -219,31 +220,19 @@ export default class HydroShare extends Repository {
       if (response.status === 200) {
         // TODO: Request file metadata to be returned in HydroShare API. Use it to populate file uploaded size below.
         const files: IFile[] = response.data.files.map(
-          (fileName: string, index: number): IFile => {
+          (fileName: string, _index: number): IFile => {
             return {
               name: fileName,
-              parent: folder,
-              isRenaming: false,
-              isCutting: false,
-              isDisabled: false,
               isUploaded: true,
-              key: `${Date.now().toString()}-a-${index}`,
-              path,
               file: null,
             }
           },
         )
 
         const folders: IFolder[] = response.data.folders.map(
-          (folderName: string, index: number): IFolder => {
+          (folderName: string, _index: number): IFolder => {
             return {
               name: folderName,
-              parent: folder,
-              isRenaming: false,
-              isCutting: false,
-              isDisabled: false,
-              key: `${Date.now().toString()}-b-${index}`,
-              path,
               children: [],
             }
           },
@@ -253,13 +242,13 @@ export default class HydroShare extends Repository {
           const readSubfolderPromises: Promise<(IFile | IFolder)[]>[]
             = folders.map((f: IFolder) => {
               const newPath = path ? `${path}/${f.name}` : f.name
-              return this._readFolderRecursive(identifier, newPath, f)
+              return this._readFolderRecursive(identifier, newPath)
             })
           const responses: (IFile | IFolder)[][] = await Promise.all(
             readSubfolderPromises,
           )
 
-          folders.map((f, i) => {
+          folders.forEach((f, i) => {
             f.children = responses[i] || []
           })
         }

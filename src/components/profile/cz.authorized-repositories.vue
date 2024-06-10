@@ -1,47 +1,3 @@
-<script lang="ts">
-import { Component, mixins, toNative } from 'vue-facing-decorator'
-import { Notifications } from '@cznethub/cznet-vue-core'
-import type { IRepository } from '../submissions/types'
-import { repoMetadata } from '~/components/submit/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import { getRepositoryFromKey } from '~/constants'
-import Repository from '~/models/repository.model'
-
-@Component({
-  name: 'cz-authorized-repositories',
-  components: {},
-})
-class CzAuthorizedRepositories extends mixins(ActiveRepositoryMixin) {
-  repoMetadata = repoMetadata
-
-  get supportedRepositories(): IRepository[] {
-    return Object.keys(repoMetadata)
-      .map(key => repoMetadata[key])
-      .filter(repo => !repo.isExternal && repo.isSupported)
-  }
-
-  getAccessToken(repositoryKey: string): string {
-    return getRepositoryFromKey(repositoryKey)?.$state.accessToken
-  }
-
-  onCopy(repositoryKey: string) {
-    navigator.clipboard.writeText(this.getAccessToken(repositoryKey))
-    Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
-  }
-
-  async openAuthorizePopup(repositoryKey: string) {
-    Repository.openAuthorizeDialog(repositoryKey)
-  }
-
-  openRevokeDialog(repositoryKey: string) {
-    Repository.openRevokeDialog(
-      getRepositoryFromKey(repositoryKey) as typeof Repository,
-    )
-  }
-}
-export default toNative(CzAuthorizedRepositories)
-</script>
-
 <template>
   <div class="cz-authorized-repositories">
     <div class="text-h4">
@@ -105,6 +61,50 @@ export default toNative(CzAuthorizedRepositories)
     </v-card>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, mixins, toNative } from 'vue-facing-decorator'
+import { Notifications } from '@cznethub/cznet-vue-core'
+import type { IRepository } from '../submissions/types'
+import { repoMetadata } from '~/components/submit/constants'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import { getRepositoryFromKey } from '~/constants'
+import Repository from '~/models/repository.model'
+
+@Component({
+  name: 'cz-authorized-repositories',
+  components: {},
+})
+class CzAuthorizedRepositories extends mixins(ActiveRepositoryMixin) {
+  repoMetadata = repoMetadata
+
+  get supportedRepositories(): IRepository[] {
+    return Object.keys(repoMetadata)
+      .map(key => repoMetadata[key])
+      .filter(repo => !repo.isExternal && repo.isSupported)
+  }
+
+  getAccessToken(repositoryKey: string): string {
+    return getRepositoryFromKey(repositoryKey)?.$state.accessToken
+  }
+
+  onCopy(repositoryKey: string) {
+    navigator.clipboard.writeText(this.getAccessToken(repositoryKey))
+    Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
+  }
+
+  async openAuthorizePopup(repositoryKey: string) {
+    Repository.openAuthorizeDialog(repositoryKey)
+  }
+
+  openRevokeDialog(repositoryKey: string) {
+    Repository.openRevokeDialog(
+      getRepositoryFromKey(repositoryKey) as typeof Repository,
+    )
+  }
+}
+export default toNative(CzAuthorizedRepositories)
+</script>
 
 <style lang="scss" scoped>
 .v-card {

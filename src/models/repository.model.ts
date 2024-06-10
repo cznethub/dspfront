@@ -721,12 +721,11 @@ export default class Repository extends Model implements IRepository {
     bucketUrl: string,
     itemsToUpload: (IFile | IFolder)[] | any[],
     createFolderUrl: string
-  ) => Promise<any>
+  ) => Promise<boolean[]>
 
   static readRootFolder: (
     identifier: string,
-    path: string,
-    rootDirectory: IFolder
+    path: string
   ) => Promise<(IFile | IFolder)[]>
 
   static deleteFileOrFolder: (

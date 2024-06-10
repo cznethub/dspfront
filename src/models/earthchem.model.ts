@@ -49,10 +49,8 @@ export default class EarthChem extends Repository {
 
   static async readRootFolder(
     identifier: string,
-    path: string,
-    rootDirectory: IFolder,
   ): Promise<(IFile | IFolder)[]> {
-    const url = this.get()?.urls?.fileReadUrl
+    const url = this.get()?.urls?.fileReadUrl || ''
     const folderReadUrl = sprintf(
       url,
       identifier,
@@ -66,17 +64,11 @@ export default class EarthChem extends Repository {
     })
 
     if (response.status === 200) {
-      const files: IFile[] = response.data.map((file: any, index: number): IFile => {
+      const files: IFile[] = response.data.map((file: any): IFile => {
         return {
           name: file.name,
           serverName: file.serverName,
-          parent: rootDirectory,
-          isRenaming: false,
-          isCutting: false,
-          isDisabled: false,
           isUploaded: true,
-          key: `${Date.now().toString()}-${index}`, // EarthChem does not use file ids for operations. They use the serverName instead.
-          path,
           file: null,
           uploadedSize: file.size,
         }

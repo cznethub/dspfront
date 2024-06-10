@@ -69,14 +69,11 @@ export default class Zenodo extends Repository {
 
   static async readRootFolder(
     identifier: string,
-    path: string,
-    rootDirectory: IFolder,
   ): Promise<(IFile | IFolder)[]> {
-    const url = this.get()?.urls?.fileReadUrl
+    const url = this.get()?.urls?.fileReadUrl || ''
     const folderReadUrl = sprintf(
       url,
       identifier,
-      // encodeURIComponent(path || '')
     )
 
     const response = await axios.get(folderReadUrl, {
@@ -86,13 +83,7 @@ export default class Zenodo extends Repository {
       const files: IFile[] = response.data.map((file: any): IFile => {
         return {
           name: file.filename,
-          parent: rootDirectory,
-          isRenaming: false,
-          isCutting: false,
-          isDisabled: false,
           isUploaded: true,
-          key: file.id,
-          path,
           uploadedSize: file.filesize,
           file: null,
         }
