@@ -26,7 +26,7 @@ export default class HydroShare extends Repository {
       Object.prototype.hasOwnProperty.call(i, 'children'),
     )
 
-    // TODO: compute folder path
+    // TODO: compute folder paths
     let folderPaths = foldersToUpload.map(
       f => `${f.path ? `${f.path}/` : ''}${f.name}`,
     )

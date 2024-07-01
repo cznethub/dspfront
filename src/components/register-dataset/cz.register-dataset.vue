@@ -1,6 +1,416 @@
+<template>
+  <v-container class="cz-register-dataset">
+    <div class="text-h4">
+      Register Dataset
+    </div>
+    <v-divider class="mb-2" />
+
+    <v-alert
+      class="text-subtitle-1 my-8"
+      border="start"
+      border-color="primary"
+      type="info"
+      variant="text"
+      density="compact"
+      elevation="1"
+    >
+      You should only use this form to register existing datasets from
+      HydroShare, EarthChem, or Zenodo that were not submitted through the Data
+      Submission Portal
+    </v-alert>
+
+    <v-stepper-vertical flat>
+      <template #default="{ step }">
+        <v-stepper-vertical-item
+          :complete="step > 1"
+          value="1"
+          :editable="!isFetching && step > 1"
+          edit-icon="mdi-check"
+          title="What repository is the resource in?"
+          :subtitle="selectedRepository?.name"
+        >
+          <template #title="{ title }">
+            <p class="text-h6">
+              {{ title }}
+            </p>
+          </template>
+          <template #subtitle="{ subtitle, hasCompleted }">
+            <v-chip
+              v-if="selectedRepository && hasCompleted"
+              class="mt-2"
+              color="success"
+            >
+              {{ subtitle }}
+            </v-chip>
+          </template>
+
+          <v-radio-group v-model="selectedRepository">
+            <v-radio
+              v-for="repo of supportedRepoMetadata"
+              :key="repo.key"
+              :value="repo"
+              :label="repo.name"
+            />
+          </v-radio-group>
+
+          <template #next="{ next }">
+            <v-btn color="primary" @click="next">
+              Continue
+            </v-btn>
+          </template>
+          <template #prev />
+        </v-stepper-vertical-item>
+
+        <v-stepper-vertical-item
+          :complete="step > 2"
+          value="2"
+          :editable="!isFetching && step > 2"
+          edit-icon="mdi-check"
+          title="What is the URL to or identifier for the resource?"
+          :subtitle="url"
+        >
+          <template #title="{ title }">
+            <p class="text-h6">
+              {{ title }}
+            </p>
+          </template>
+
+          <template #subtitle="{ subtitle, hasCompleted }">
+            <v-chip v-if="url && hasCompleted" class="mt-2" color="success">
+              {{ subtitle }}
+            </v-chip>
+          </template>
+          <!-- <v-chip v-if="url && step > 2" class="mt-2" color="success">
+            {{ url }}
+          </v-chip> -->
+
+          <v-form
+            ref="form"
+            v-model="isValid"
+            lazy-validation
+            class="pb-2"
+            @submit.prevent
+          >
+            <v-text-field
+              ref="txtIdentifier"
+              v-model.trim="url"
+              :disabled="isFetching"
+              :required="true"
+              :rules="[isValidUrlOrIdentifier()]"
+              clearable
+              class="mt-4"
+              label="URL or identifier*"
+              type="url"
+              hide-details="auto"
+              persistent-hint
+              variant="outlined"
+              @keypress.enter="onReadDataset"
+            />
+
+            <div class="text-subtitle-1 font-weight-light pl-3 mb-4 mt-1">
+              {{
+                `e.g. '${selectedRepository.exampleUrl}' or '${selectedRepository.exampleIdentifier}'`
+              }}
+            </div>
+          </v-form>
+
+          <template #next="{ next }">
+            <v-btn
+              color="primary"
+              class="mr-4"
+              :disabled="!canReadDataset"
+              @click="onReadDataset(); next()"
+            >
+              Continue
+            </v-btn>
+          </template>
+
+          <template #prev="{ prev }">
+            <v-btn color="default" :disabled="isFetching" variant="text" @click="prev">
+              Back
+            </v-btn>
+          </template>
+        </v-stepper-vertical-item>
+
+        <v-stepper-vertical-item
+          :complete="step > 3"
+          value="3"
+          :editable="step > 3"
+          edit-icon="mdi-check"
+          title="Preview"
+        >
+          <template #title="{ title }">
+            <p class="text-h6">
+              {{ title }}
+            </p>
+          </template>
+
+          <v-card v-if="isFetching" elevation="2">
+            <div class="table-item">
+              <table
+                class="text-body-1"
+                :class="{ 'is-xs-small': $vuetify.display.xs }"
+              >
+                <tr>
+                  <td colspan="2" class="text-h6 title">
+                    <v-skeleton-loader type="heading" />
+                  </td>
+                </tr>
+              </table>
+            </div>
+
+            <div
+              class="table-item d-flex justify-space-between flex-column flex-md-row gap-1"
+            >
+              <table
+                class="text-body-1"
+                :class="{ 'is-xs-small': $vuetify.display.xs }"
+              >
+                <tr>
+                  <th class="pr-4 body-2 text-right">
+                    <v-skeleton-loader type="text" />
+                  </th>
+                  <td><v-skeleton-loader type="text" /></td>
+                </tr>
+                <tr>
+                  <th class="pr-4 body-2 text-right">
+                    <v-skeleton-loader type="text" />
+                  </th>
+                  <td><v-skeleton-loader type="text" /></td>
+                </tr>
+                <tr>
+                  <th class="pr-4 body-2 text-right">
+                    <v-skeleton-loader type="text" />
+                  </th>
+                  <td><v-skeleton-loader type="text" /></td>
+                </tr>
+                <tr>
+                  <th class="pr-4 body-2 text-right">
+                    <v-skeleton-loader type="text" />
+                  </th>
+                  <td><v-skeleton-loader type="text" /></td>
+                </tr>
+              </table>
+
+              <div class="text-right">
+                <v-skeleton-loader type="heading" width="300" />
+              </div>
+            </div>
+          </v-card>
+
+          <template v-else-if="submission">
+            <v-alert
+              v-if="isPublished"
+              class="my-8"
+              variant="outlined"
+              icon="mdi-lock"
+              type="info"
+              prominent
+              border="start"
+            >
+              This resource is published and is not editable in the Data
+              Submission Portal. If you need to modify this resource once
+              registered, navigate to the resource in the repository where it is
+              hosted and modify it there (if possible). You can refresh the
+              metadata for this resource by clicking the "Update Record" button on
+              the My Submissions page.
+            </v-alert>
+
+            <v-alert
+              v-if="isHsCollection"
+              class="my-8"
+              variant="outlined"
+              icon="mdi-lock"
+              type="info"
+              prominent
+              border="start"
+            >
+              This resource is a HydroShare Collection and is not editable in the
+              {{ $t("portalName") }}. If you need to modify this resource once
+              registered, navigate to the resource in the repository where it is
+              hosted and modify it there (if possible). You can refresh the
+              metadata for this resource by clicking the "Update Record" button on
+              the My Submissions page.
+            </v-alert>
+
+            <v-card elevation="2" outlined class="mb-6">
+              <div
+                class="table-item d-flex justify-space-between flex-column flex-md-row"
+              >
+                <table
+                  class="text-body-1"
+                  :class="{ 'is-xs-small': $vuetify.display.xs }"
+                >
+                  <tr>
+                    <td colspan="2" class="text-h6 title">
+                      {{ submission.title }}
+                    </td>
+                  </tr>
+                  <tr v-if="submission.authors && submission.authors.length">
+                    <th class="pr-4 body-2">
+                      Authors:
+                    </th>
+                    <td>{{ submission.authors.join(" | ") }}</td>
+                  </tr>
+                  <tr>
+                    <th class="pr-4 body-2">
+                      Submission Repository:
+                    </th>
+                    <td>{{ selectedRepository.name }}</td>
+                  </tr>
+                  <tr>
+                    <th class="pr-4 body-2">
+                      Submission Date:
+                    </th>
+                    <td>{{ getDateInLocalTime(submission.date) }}</td>
+                  </tr>
+                  <tr>
+                    <th class="pr-4 body-2">
+                      Identifier:
+                    </th>
+                    <td>{{ submission.identifier }}</td>
+                  </tr>
+                  <tr v-if="selectedRepository.name == 'HydroShare'">
+                    <th class="pr-4 body-2">
+                      Type:
+                    </th>
+                    <td>{{ resourceType }}</td>
+                  </tr>
+                  <tr v-if="submission.metadata && submission.metadata.status">
+                    <th class="pr-4 body-2">
+                      Status:
+                    </th>
+
+                    <td>
+                      <v-chip
+                        v-if="submission.metadata.status !== 'incomplete'"
+                        color="orange"
+                        small
+                        variant="outlined"
+                      >
+                        <v-icon left small>
+                          mdi-lock
+                        </v-icon>
+                        {{ submission.metadata.status }}
+                      </v-chip>
+
+                      <v-chip v-else small outlined>
+                        <v-icon left small>
+                          mdi-pencil
+                        </v-icon>
+                        {{ submission.metadata.status }}
+                      </v-chip>
+                    </td>
+                  </tr>
+                </table>
+
+                <div class="d-flex flex-column mt-4 mt-md-0 actions">
+                  <v-btn
+                    :href="submission.url"
+                    target="_blank"
+                    color="blue-grey lighten-4"
+                    rounded
+                  >
+                    <v-icon class="mr-1">
+                      mdi-open-in-new
+                    </v-icon> View In
+                    Repository
+                  </v-btn>
+                </div>
+              </div>
+            </v-card>
+          </template>
+
+          <template v-else-if="wasUnauthorized">
+            <v-alert
+              class="text-subtitle-1 ma-1"
+              border="start"
+              colored-border
+              type="info"
+              elevation="2"
+            >
+              <v-row>
+                <v-col class="flex-grow-1">
+                  We need your authorization to load this submission from the
+                  repository.
+                </v-col>
+                <v-col class="flex-grow-0">
+                  <v-btn
+                    color="primary"
+                    @click="openAuthorizePopup(selectedRepository.key)"
+                  >
+                    <i class="fas fa-key mr-2" />Authorize
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-alert>
+          </template>
+
+          <template v-else>
+            <v-alert
+              class="text-subtitle-1 ma-2"
+              border="start"
+              type="warning"
+              elevation="2"
+              icon="mdi-magnify-remove-outline"
+
+              border-color="warning"
+              variant="text"
+              density="compact"
+            >
+              We could not find a resource matching the criteria above. Please
+              make sure that you have selected the correct repository and that the
+              URL or identifier is correct and try again.
+            </v-alert>
+          </template>
+
+          <template #next>
+            <template v-if="submission">
+              <div class="mb-2">
+                <v-btn
+                  v-if="isPublished || isHsCollection"
+                  color="primary"
+                  class="mr-4"
+                  :disabled="isFetching || !isValid || !url || isRegistering"
+                  @click="registerSubmissionAsIs"
+                >
+                  {{ isRegistering ? "Registering..." : "Register Dataset" }}
+                </v-btn>
+
+                <v-btn
+                  v-else
+                  color="primary"
+                  class="mr-4"
+                  :disabled="isFetching || !isValid || !url"
+                  @click="goToEditSubmission"
+                >
+                  Continue & Edit...
+                </v-btn>
+              </div>
+            </template>
+          </template>
+
+          <template #prev="{ prev }">
+            <v-btn
+              color="default"
+              class="mb-2"
+              :disabled="isFetching"
+              variant="text"
+              @click="prev"
+            >
+              Back
+            </v-btn>
+          </template>
+        </v-stepper-vertical-item>
+      </template>
+    </v-stepper-vertical>
+  </v-container>
+</template>
+
 <script lang="ts">
 import { Component, Watch, mixins, toNative } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
+import { VStepperVertical, VStepperVerticalItem } from 'vuetify/labs/VStepperVertical'
 import { repoMetadata } from '~/components/submit/constants'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
 import type { IRepository } from '~/components/submissions/types'
@@ -12,7 +422,7 @@ import User from '~/models/user.model'
 
 @Component({
   name: 'cz-register-dataset',
-  components: {},
+  components: { VStepperVertical, VStepperVerticalItem },
 })
 class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   url = ''
@@ -206,381 +616,6 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
 }
 export default toNative(CzRegisterDataset)
 </script>
-
-<template>
-  <v-container class="cz-register-dataset">
-    <div class="text-h4">
-      Register Dataset
-    </div>
-    <v-divider class="mb-2" />
-
-    <v-alert
-      class="mt-2"
-      border="start"
-      colored-border
-      type="info"
-      elevation="1"
-    >
-      You should only use this form to register existing datasets from
-      HydroShare, EarthChem, or Zenodo that were not submitted through the Data
-      Submission Portal
-    </v-alert>
-
-    <v-stepper v-model="step" vertical flat>
-      <v-stepper-step
-        :complete="step > 1"
-        step="1"
-        :editable="!isFetching && step > 1"
-        edit-icon="mdi-check"
-      >
-        <div>What repository is the resource in?</div>
-        <v-chip
-          v-if="selectedRepository && step > 1"
-          class="mt-2"
-          color="success"
-        >
-          {{ selectedRepository.name }}
-        </v-chip>
-      </v-stepper-step>
-
-      <v-stepper-content step="1">
-        <v-radio-group v-model="selectedRepository">
-          <v-radio
-            v-for="repo of supportedRepoMetadata"
-            :key="repo.key"
-            :value="repo"
-            :label="repo.name"
-          />
-        </v-radio-group>
-
-        <v-btn color="primary" @click="step = 2">
-          Continue
-        </v-btn>
-      </v-stepper-content>
-
-      <v-stepper-step
-        :complete="step > 2"
-        step="2"
-        :editable="!isFetching && step > 2"
-        edit-icon="mdi-check"
-      >
-        <div>What is the URL to or identifier for the resource?</div>
-        <v-chip v-if="url && step > 2" class="mt-2" color="success">
-          {{
-            url
-          }}
-        </v-chip>
-      </v-stepper-step>
-
-      <v-stepper-content step="2">
-        <v-form
-          ref="form"
-          v-model="isValid"
-          lazy-validation
-          class="pb-2"
-          @submit.prevent
-        >
-          <v-text-field
-            ref="txtIdentifier"
-            v-model.trim="url"
-            :disabled="isFetching"
-            :required="true"
-            :rules="[isValidUrlOrIdentifier()]"
-            clearable
-            class="mt-4"
-            label="URL or identifier*"
-            type="url"
-            hide-details="auto"
-            persistent-hint
-            variant="outlined"
-            @keypress.enter="onReadDataset"
-          />
-
-          <div class="text-subtitle-1 font-weight-light pl-3 mb-4 mt-1">
-            {{
-              `e.g. '${selectedRepository.exampleUrl}' or '${selectedRepository.exampleIdentifier}'`
-            }}
-          </div>
-
-          <v-btn
-            color="primary"
-            class="mr-4"
-            :disabled="!canReadDataset"
-            @click="onReadDataset"
-          >
-            Continue
-          </v-btn>
-          <v-btn color="default" :disabled="isFetching" text @click="step--">
-            Back
-          </v-btn>
-        </v-form>
-      </v-stepper-content>
-
-      <v-stepper-step
-        :complete="step > 3"
-        step="3"
-        :editable="step > 3"
-        edit-icon="mdi-check"
-      >
-        Preview
-      </v-stepper-step>
-
-      <v-stepper-content step="3">
-        <v-card v-if="isFetching" elevation="2" variant="outlined">
-          <div class="table-item">
-            <table
-              class="text-body-1"
-              :class="{ 'is-xs-small': $vuetify.display.xs }"
-            >
-              <tr>
-                <td colspan="2" class="text-h6 title">
-                  <v-skeleton-loader type="heading" />
-                </td>
-              </tr>
-            </table>
-          </div>
-
-          <div
-            class="table-item d-flex justify-space-between flex-column flex-md-row gap-1"
-          >
-            <table
-              class="text-body-1"
-              :class="{ 'is-xs-small': $vuetify.display.xs }"
-            >
-              <tr>
-                <th class="pr-4 body-2 text-right">
-                  <v-skeleton-loader type="text" />
-                </th>
-                <td><v-skeleton-loader type="text" /></td>
-              </tr>
-              <tr>
-                <th class="pr-4 body-2 text-right">
-                  <v-skeleton-loader type="text" />
-                </th>
-                <td><v-skeleton-loader type="text" /></td>
-              </tr>
-              <tr>
-                <th class="pr-4 body-2 text-right">
-                  <v-skeleton-loader type="text" />
-                </th>
-                <td><v-skeleton-loader type="text" /></td>
-              </tr>
-              <tr>
-                <th class="pr-4 body-2 text-right">
-                  <v-skeleton-loader type="text" />
-                </th>
-                <td><v-skeleton-loader type="text" /></td>
-              </tr>
-            </table>
-
-            <div class="text-right">
-              <v-skeleton-loader type="heading" width="300" />
-            </div>
-          </div>
-        </v-card>
-
-        <template v-else-if="submission">
-          <v-alert
-            v-if="isPublished"
-            class="my-8"
-            variant="outlined"
-            icon="mdi-lock"
-            type="info"
-            prominent
-            border="start"
-          >
-            This resource is published and is not editable in the Data
-            Submission Portal. If you need to modify this resource once
-            registered, navigate to the resource in the repository where it is
-            hosted and modify it there (if possible). You can refresh the
-            metadata for this resource by clicking the "Update Record" button on
-            the My Submissions page.
-          </v-alert>
-
-          <v-alert
-            v-if="isHsCollection"
-            class="my-8"
-            variant="outlined"
-            icon="mdi-lock"
-            type="info"
-            prominent
-            border="start"
-          >
-            This resource is a HydroShare Collection and is not editable in the
-            {{ $t("portalName") }}. If you need to modify this resource once
-            registered, navigate to the resource in the repository where it is
-            hosted and modify it there (if possible). You can refresh the
-            metadata for this resource by clicking the "Update Record" button on
-            the My Submissions page.
-          </v-alert>
-
-          <v-card elevation="2" outlined class="mb-6">
-            <div
-              class="table-item d-flex justify-space-between flex-column flex-md-row"
-            >
-              <table
-                class="text-body-1"
-                :class="{ 'is-xs-small': $vuetify.display.xs }"
-              >
-                <tr>
-                  <td colspan="2" class="text-h6 title">
-                    {{ submission.title }}
-                  </td>
-                </tr>
-                <tr v-if="submission.authors && submission.authors.length">
-                  <th class="pr-4 body-2">
-                    Authors:
-                  </th>
-                  <td>{{ submission.authors.join(" | ") }}</td>
-                </tr>
-                <tr>
-                  <th class="pr-4 body-2">
-                    Submission Repository:
-                  </th>
-                  <td>{{ selectedRepository.name }}</td>
-                </tr>
-                <tr>
-                  <th class="pr-4 body-2">
-                    Submission Date:
-                  </th>
-                  <td>{{ getDateInLocalTime(submission.date) }}</td>
-                </tr>
-                <tr>
-                  <th class="pr-4 body-2">
-                    Identifier:
-                  </th>
-                  <td>{{ submission.identifier }}</td>
-                </tr>
-                <tr v-if="selectedRepository.name == 'HydroShare'">
-                  <th class="pr-4 body-2">
-                    Type:
-                  </th>
-                  <td>{{ resourceType }}</td>
-                </tr>
-                <tr v-if="submission.metadata && submission.metadata.status">
-                  <th class="pr-4 body-2">
-                    Status:
-                  </th>
-
-                  <td>
-                    <v-chip
-                      v-if="submission.metadata.status !== 'incomplete'"
-                      color="orange"
-                      small
-                      variant="outlined"
-                    >
-                      <v-icon left small>
-                        mdi-lock
-                      </v-icon>
-                      {{ submission.metadata.status }}
-                    </v-chip>
-
-                    <v-chip v-else small outlined>
-                      <v-icon left small>
-                        mdi-pencil
-                      </v-icon>
-                      {{ submission.metadata.status }}
-                    </v-chip>
-                  </td>
-                </tr>
-              </table>
-
-              <div class="d-flex flex-column mt-4 mt-md-0 actions">
-                <v-btn
-                  :href="submission.url"
-                  target="_blank"
-                  color="blue-grey lighten-4"
-                  rounded
-                >
-                  <v-icon class="mr-1">
-                    mdi-open-in-new
-                  </v-icon> View In
-                  Repository
-                </v-btn>
-              </div>
-            </div>
-          </v-card>
-
-          <div class="mb-2">
-            <v-btn
-              v-if="isPublished || isHsCollection"
-              color="primary"
-              class="mr-4"
-              :disabled="isFetching || !isValid || !url || isRegistering"
-              @click="registerSubmissionAsIs"
-            >
-              {{ isRegistering ? "Registering..." : "Register Dataset" }}
-            </v-btn>
-
-            <v-btn
-              v-else
-              color="primary"
-              class="mr-4"
-              :disabled="isFetching || !isValid || !url"
-              @click="goToEditSubmission"
-            >
-              Continue & Edit...
-            </v-btn>
-
-            <v-btn color="default" :disabled="isFetching" variant="text" @click="step--">
-              Back
-            </v-btn>
-          </div>
-        </template>
-
-        <template v-else-if="wasUnauthorized">
-          <v-alert
-            class="text-subtitle-1 ma-1"
-            border="start"
-            colored-border
-            type="info"
-            elevation="2"
-          >
-            <v-row>
-              <v-col class="flex-grow-1">
-                We need your authorization to load this submission from the
-                repository.
-              </v-col>
-              <v-col class="flex-grow-0">
-                <v-btn
-                  color="primary"
-                  @click="openAuthorizePopup(selectedRepository.key)"
-                >
-                  <i class="fas fa-key mr-2" />Authorize
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-alert>
-        </template>
-
-        <template v-else>
-          <v-alert
-            class="text-subtitle-1 ma-2"
-            border="start"
-            colored-border
-            type="warning"
-            elevation="2"
-            icon="mdi-magnify-remove-outline"
-          >
-            We could not find a resource matching the criteria above. Please
-            make sure that you have selected the correct repository and that the
-            URL or identifier is correct and try again.
-          </v-alert>
-
-          <v-btn
-            color="default"
-            class="mb-2"
-            :disabled="isFetching"
-            text
-            @click="step--"
-          >
-            Back
-          </v-btn>
-        </template>
-      </v-stepper-content>
-    </v-stepper>
-  </v-container>
-</template>
 
 <style lang="scss" scoped>
 .table-item {

@@ -1,34 +1,3 @@
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-import { repoMetadata } from '../submit/constants'
-import { DISCOVERY_SITE_URL } from '~/constants'
-import User from '~/models/user.model'
-
-@Component({
-  name: 'cz-home',
-  components: {},
-})
-class CzHome extends Vue {
-  repoMetadata = repoMetadata
-  discoverySiteUrl = DISCOVERY_SITE_URL
-
-  get isLoggedIn() {
-    return User.$state.isLoggedIn
-  }
-
-  get supportedRepositories() {
-    return Object.keys(repoMetadata)
-      .map(key => repoMetadata[key])
-      .filter(repo => !repo.isExternal && repo.isSupported)
-  }
-
-  openLogInDialog() {
-    User.openLogInDialog()
-  }
-}
-export default toNative(CzHome)
-</script>
-
 <template>
   <div class="cz-home">
     <v-parallax
@@ -232,6 +201,37 @@ export default toNative(CzHome)
     </section>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Vue, toNative } from 'vue-facing-decorator'
+import { repoMetadata } from '../submit/constants'
+import { DISCOVERY_SITE_URL } from '~/constants'
+import User from '~/models/user.model'
+
+@Component({
+  name: 'cz-home',
+  components: {},
+})
+class CzHome extends Vue {
+  repoMetadata = repoMetadata
+  discoverySiteUrl = DISCOVERY_SITE_URL
+
+  get isLoggedIn() {
+    return User.$state.isLoggedIn
+  }
+
+  get supportedRepositories() {
+    return Object.keys(repoMetadata)
+      .map(key => repoMetadata[key])
+      .filter(repo => !repo.isExternal && repo.isSupported)
+  }
+
+  openLogInDialog() {
+    User.openLogInDialog()
+  }
+}
+export default toNative(CzHome)
+</script>
 
 <style lang="scss" scoped>
 p {

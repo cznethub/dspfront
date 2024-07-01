@@ -1,31 +1,3 @@
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-import User from '~/models/user.model'
-
-@Component({
-  name: 'cz-footer',
-  components: {},
-})
-class CzFooter extends Vue {
-  openLogInDialog() {
-    User.openLogInDialog()
-  }
-
-  get isLoggedIn() {
-    return User.$state.isLoggedIn
-  }
-
-  get version() {
-    return import.meta.env.VITE_APP_VERSION || '0'
-  }
-
-  get year() {
-    return new Date().getFullYear()
-  }
-}
-export default toNative(CzFooter)
-</script>
-
 <template>
   <v-container
     flat
@@ -84,7 +56,7 @@ export default toNative(CzFooter)
 
     <div class="text-center d-flex flex-column align-center mt-4">
       <p>
-        (c) {{ year }} CUAHSI. ﻿This material is based upon work supported by
+        (c) {{ year }} CUAHSI. This material is based upon work supported by
         the National Science Foundation (NSF) under awards 2012893, 2012593, and
         2012748.<br>
         Any opinions, findings, conclusions, or recommendations expressed in
@@ -94,6 +66,34 @@ export default toNative(CzFooter)
     </div>
   </v-container>
 </template>
+
+<script lang="ts">
+import { Component, Vue, toNative } from 'vue-facing-decorator'
+import User from '~/models/user.model'
+
+@Component({
+  name: 'cz-footer',
+  components: {},
+})
+class CzFooter extends Vue {
+  openLogInDialog() {
+    User.openLogInDialog()
+  }
+
+  get isLoggedIn() {
+    return User.$state.isLoggedIn
+  }
+
+  get version() {
+    return import.meta.env.VITE_APP_VERSION || '0'
+  }
+
+  get year() {
+    return new Date().getFullYear()
+  }
+}
+export default toNative(CzFooter)
+</script>
 
 <style lang="scss" scoped>
 .cz-footer {
