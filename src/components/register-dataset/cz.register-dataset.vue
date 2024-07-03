@@ -375,8 +375,7 @@
 
                 <v-btn
                   v-else
-                  color="primary"
-                  class="mr-4"
+                  class="mr-4 bg-primary"
                   :disabled="isFetching || !isValid || !url"
                   @click="goToEditSubmission"
                 >
@@ -559,7 +558,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
           this.selectedRepository.key,
         )
 
-        if (response && Number.isNaN(response)) {
+        if (response && isNaN(response)) {
           this.submission = Submission.getInsertData(
             response.metadata,
             this.selectedRepository.key,

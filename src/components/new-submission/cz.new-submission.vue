@@ -214,7 +214,7 @@
     >
       <v-card class="py-4" color="primary" dark>
         <v-card-text>
-          <p id="new-submission-saving" class="mb-2 text-center">
+          <p id="new-submission-saving" class="mb-4 text-center text-body-2">
             Saving...
           </p>
           <v-progress-linear

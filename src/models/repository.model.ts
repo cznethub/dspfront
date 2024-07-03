@@ -145,7 +145,7 @@ export default class Repository extends Model implements IRepository {
     callback?: () => any,
   ) {
     const handleMessage = async (event: MessageEvent) => {
-      if (event.origin !== APP_URL || !Object.prototype.hasOwnProperty.call(!event.data, 'token'))
+      if (event.origin !== APP_URL || !Object.prototype.hasOwnProperty.call(event.data, 'token'))
         return
 
       if (activeRepository && event.data?.token) {
