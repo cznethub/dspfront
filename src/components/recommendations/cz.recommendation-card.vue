@@ -1,26 +1,11 @@
-<script lang="ts">
-import { Component, Prop, mixins, toNative } from 'vue-facing-decorator'
-import type { IRepository } from '~/components/submissions/types'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-
-@Component({
-  name: 'cz-recommendation-card',
-  components: {},
-})
-class CzRecommendationCard extends mixins(ActiveRepositoryMixin) {
-  @Prop({ required: true }) repo!: IRepository
-  @Prop() hideLogo!: boolean
-}
-export default toNative(CzRecommendationCard)
-</script>
-
 <template>
   <v-card
     :id="`${repo.name.replaceAll(` `, ``)}-card`"
     class="cz-recommendation-card"
     :disabled="repo.isDisabled"
     :outlined="!repo.isSupported"
-    :variant="!repo.isSupported ? 'outlined' : 'elevated'"
+    :flat="!repo.isSupported"
+    variant="elevated"
   >
     <v-card-title>
       {{ repo.name }}
@@ -46,37 +31,50 @@ export default toNative(CzRecommendationCard)
       </div>
     </v-list-item>
 
-    <v-divider />
+    <v-divider v-if="repo.isSupported" />
 
     <v-card-actions class="d-flex flex-column flex-md-row flex-wrap-wrap">
       <v-btn
         v-if="repo.isSupported"
         :disabled="repo.isComingSoon"
-        text
+        variant="text"
         color="primary"
         @click="submitTo(repo)"
       >
         Submit to {{ repo.name }}
       </v-btn>
-      <v-btn text :href="repo.url" target="_blank">
-        <v-icon left>
-          mdi-open-in-new
-        </v-icon>Visit {{ repo.name }}
+      <v-btn variant="text" :href="repo.url" target="_blank" prepend-icon="mdi-open-in-new">
+        Visit {{ repo.name }}
       </v-btn>
       <v-btn
         v-if="repo.isSupported"
-        text
+        variant="text"
         :href="repo.supportUrl"
         target="_blank"
+        prepend-icon="mdi-open-in-new"
       >
-        <v-icon left>
-          mdi-open-in-new
-        </v-icon>Learn more about
+        Learn more about
         {{ repo.name }}
       </v-btn>
     </v-card-actions>
   </v-card>
 </template>
+
+<script lang="ts">
+import { Component, Prop, mixins, toNative } from 'vue-facing-decorator'
+import type { IRepository } from '~/components/submissions/types'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+
+@Component({
+  name: 'cz-recommendation-card',
+  components: {},
+})
+class CzRecommendationCard extends mixins(ActiveRepositoryMixin) {
+  @Prop({ required: true }) repo!: IRepository
+  @Prop() hideLogo!: boolean
+}
+export default toNative(CzRecommendationCard)
+</script>
 
 <style lang="scss" scoped>
 .v-card {

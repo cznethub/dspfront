@@ -15,10 +15,7 @@
         <span class="repo-name">{{ repo.name }}</span>
         <template v-if="getAccessToken(repo.key)">
           <div>
-            <v-chip small color="green" variant="outlined" class="pl-0">
-              <v-icon left class="ml-0">
-                mdi-check-circle
-              </v-icon>
+            <v-chip small color="green" variant="outlined" prepend-icon="mdi-check-circle">
               Authorized
             </v-chip>
           </div>
@@ -111,7 +108,7 @@ export default toNative(CzAuthorizedRepositories)
   max-width: 40rem;
 }
 
-.v-card__title {
+.v-card-title {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: space-between;

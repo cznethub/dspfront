@@ -10,18 +10,20 @@
       border="start"
       border-color="primary"
       type="info"
-      variant="text"
       density="compact"
-      elevation="1"
+      variant="outlined"
     >
-      You should only use this form to register existing datasets from
-      HydroShare, EarthChem, or Zenodo that were not submitted through the Data
-      Submission Portal
+      <p>
+        You should only use this form to register existing datasets from
+        HydroShare, EarthChem, or Zenodo that were not submitted through the Data
+        Submission Portal
+      </p>
     </v-alert>
 
     <v-stepper-vertical flat>
       <template #default="{ step }">
         <v-stepper-vertical-item
+          color="primary"
           :complete="step > 1"
           value="1"
           :editable="!isFetching && step > 1"
@@ -54,7 +56,7 @@
           </v-radio-group>
 
           <template #next="{ next }">
-            <v-btn color="primary" @click="next">
+            <v-btn class="bg-primary" @click="next">
               Continue
             </v-btn>
           </template>
@@ -63,6 +65,7 @@
 
         <v-stepper-vertical-item
           :complete="step > 2"
+          color="primary"
           value="2"
           :editable="!isFetching && step > 2"
           edit-icon="mdi-check"
@@ -80,9 +83,6 @@
               {{ subtitle }}
             </v-chip>
           </template>
-          <!-- <v-chip v-if="url && step > 2" class="mt-2" color="success">
-            {{ url }}
-          </v-chip> -->
 
           <v-form
             ref="form"
@@ -116,8 +116,7 @@
 
           <template #next="{ next }">
             <v-btn
-              color="primary"
-              class="mr-4"
+              class="bg-primary mr-4"
               :disabled="!canReadDataset"
               @click="onReadDataset(); next()"
             >
@@ -126,7 +125,7 @@
           </template>
 
           <template #prev="{ prev }">
-            <v-btn color="default" :disabled="isFetching" variant="text" @click="prev">
+            <v-btn color="default" :disabled="isFetching" variant="outlined" @click="prev">
               Back
             </v-btn>
           </template>
@@ -134,6 +133,7 @@
 
         <v-stepper-vertical-item
           :complete="step > 3"
+          color="primary"
           value="3"
           :editable="step > 3"
           edit-icon="mdi-check"
@@ -205,7 +205,6 @@
               variant="outlined"
               icon="mdi-lock"
               type="info"
-              prominent
               border="start"
             >
               This resource is published and is not editable in the Data
@@ -222,7 +221,6 @@
               variant="outlined"
               icon="mdi-lock"
               type="info"
-              prominent
               border="start"
             >
               This resource is a HydroShare Collection and is not editable in the
@@ -327,7 +325,7 @@
               border="start"
               colored-border
               type="info"
-              elevation="2"
+              variant="outlined"
             >
               <v-row>
                 <v-col class="flex-grow-1">
@@ -351,11 +349,9 @@
               class="text-subtitle-1 ma-2"
               border="start"
               type="warning"
-              elevation="2"
               icon="mdi-magnify-remove-outline"
-
               border-color="warning"
-              variant="text"
+              variant="outlined"
               density="compact"
             >
               We could not find a resource matching the criteria above. Please
@@ -395,7 +391,7 @@
               color="default"
               class="mb-2"
               :disabled="isFetching"
-              variant="text"
+              variant="outlined"
               @click="prev"
             >
               Back
@@ -411,6 +407,7 @@
 import { Component, Watch, mixins, toNative } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import { VStepperVertical, VStepperVerticalItem } from 'vuetify/labs/VStepperVertical'
+import type { VTextField } from 'vuetify/lib/components/index.mjs'
 import { repoMetadata } from '~/components/submit/constants'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
 import type { IRepository } from '~/components/submissions/types'

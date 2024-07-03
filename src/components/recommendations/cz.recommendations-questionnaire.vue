@@ -1,3 +1,169 @@
+<template>
+  <div class="cz-recommendations-questionnaire pa-4">
+    <div class="text-h4">
+      Repository Recommendations
+    </div>
+    <v-divider class="mb-2" />
+    <p class="text-body-1 mb-8">
+      Use the questionnaire below to identify repository options for different
+      types of data. If you cannot find guidance for your particular data or
+      still have questions, please
+      <router-link to="/contact">
+        contact us
+      </router-link>.
+    </p>
+
+    <p class="text-body-1 mb-8">
+      <b>Important</b>: Some partnership agreements for data collection or
+      journals to which you submit papers may require that associated data be
+      deposited in a specific repository. We hope the repository recommendations
+      provided here are helpful, but realize that they may be superseded by
+      other requirements. We recommend that you adress any of these issues
+      before using this guide.
+    </p>
+
+    <v-stepper v-model="currentStepIndex" flat variant="outlined">
+      <v-stepper-header>
+        <template v-for="(step, index) in steps" :key="`${index}-step`">
+          <v-stepper-item
+            :complete="currentStepIndex > index"
+            :step="index"
+            editable
+            edit-icon="mdi-check"
+          >
+            <div>{{ step.next || "Recommendations" }}</div>
+            <v-chip v-if="step.selectedOption" class="mt-2" color="success">
+              {{
+                step.selectedOption.label
+              }}
+            </v-chip>
+          </v-stepper-item>
+
+          <v-divider v-if="index < steps.length" :key="index" />
+        </template>
+      </v-stepper-header>
+
+      <v-stepper-window>
+        <v-stepper-window-item
+          v-for="(step, index) in steps"
+          :key="`${index}-content`"
+          :step="index"
+        >
+          <template v-if="step.options">
+            <v-card class="mb-12 pa-4" flat min-height="300px">
+              <div class="text-heading-5">
+                {{ step.next }}
+              </div>
+              <v-radio-group
+                v-model="step.selectedOption"
+                @change="onOptionChanged"
+              >
+                <v-radio
+                  v-for="(option, rIndex) of step.options"
+                  :key="rIndex"
+                  :label="option.label"
+                  :value="option"
+                  color="success"
+                />
+              </v-radio-group>
+            </v-card>
+
+            <v-btn
+              v-if="step.selectedOption"
+              color="primary"
+              :disabled="!step.selectedOption"
+              @click="nextStep(step.selectedOption)"
+            >
+              Continue
+            </v-btn>
+          </template>
+
+          <template v-if="step.finish">
+            <v-alert
+              class="my-8"
+              variant="outlined"
+              type="warning"
+              border="start"
+            >
+              <div class="text-body-1">
+                If you are a CZ Net data manager or investigator and you choose
+                to submit data to a repository other than HydroShare, EarthChem,
+                or Zenodo, please use the
+                <a @click="submitTo(externalRepoMetadata)">Register Dataset</a>
+                form to provide metadata about those datasets. If you submit to
+                HydroShare, EarthChem or Zenodo through the Data Submission
+                Portal, we will automatically harvest your metadata for you to
+                support CZ Net data discovery services.
+              </div>
+            </v-alert>
+
+            <v-alert
+              v-if="step.finish.linkToGuide"
+              class="my-8"
+              border="start"
+              colored-border
+              type="info"
+              variant="outlined"
+            >
+              <div class="text-body-1">
+                View guidance and best practices for "{{
+                  enumDataTemplateType[step.finish.linkToGuide]
+                }}" data
+                <a :href="guideUrls[step.finish.linkToGuide]" target="_blank">here</a>.
+              </div>
+            </v-alert>
+
+            <div class="text-heading-5 mb-8">
+              Recommended Repositories:
+            </div>
+            <template v-if="getRepoMetadataFromKeys(step.finish.prefer).length">
+              <div class="repositories justify-space-around px-1">
+                <cz-recommendation-card
+                  v-for="preferred in getRepoMetadataFromKeys(
+                    step.finish.prefer,
+                  )"
+                  :key="preferred.key"
+                  :repo="preferred"
+                  :hide-logo="false"
+                  class="mb-4"
+                />
+              </div>
+            </template>
+            <div v-else class="text-subtitle-1 font-weight-light">
+              We have nothing specific to recommend for this query.
+            </div>
+
+            <div
+              v-if="
+                step.finish.consider
+                  && getRepoMetadataFromKeys(step.finish.consider).length
+              "
+            >
+              <div class="text-heading-5 my-8">
+                Also consider:
+              </div>
+
+              <ul class="repositories pl-4">
+                <li
+                  v-for="considered in getRepoMetadataFromKeys(
+                    step.finish.consider,
+                  )" :key="considered.key"
+                >
+                  <cz-recommendation-card
+                    :repo="considered"
+                    :hide-logo="false"
+                    class="mb-4"
+                  />
+                </li>
+              </ul>
+            </div>
+          </template>
+        </v-stepper-window-item>
+      </v-stepper-window>
+    </v-stepper>
+  </div>
+</template>
+
 <script lang="ts">
 import { Component, mixins, toNative } from 'vue-facing-decorator'
 import type { IRepository } from '../submissions/types'
@@ -64,7 +230,7 @@ class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
     )
   }
 
-  onOptionChanged(option: CzStep) {
+  onOptionChanged(_option: CzStep) {
     this._trimFurtherSteps()
   }
 
@@ -75,203 +241,10 @@ class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
 export default toNative(CzRecommendationsQuestionnaire)
 </script>
 
-<template>
-  <div class="cz-recommendations-questionnaire pa-4">
-    <div class="text-h4">
-      Repository Recommendations
-    </div>
-    <v-divider class="mb-2" />
-    <p class="text-body-1 mb-8">
-      Use the questionnaire below to identify repository options for different
-      types of data. If you cannot find guidance for your particular data or
-      still have questions, please
-      <router-link to="/contact">
-        contact us
-      </router-link>.
-    </p>
-
-    <p class="text-body-1 mb-8">
-      <b>Important</b>: Some partnership agreements for data collection or
-      journals to which you submit papers may require that associated data be
-      deposited in a specific repository. We hope the repository recommendations
-      provided here are helpful, but realize that they may be superseded by
-      other requirements. We recommend that you adress any of these issues
-      before using this guide.
-    </p>
-
-    <v-stepper v-model="currentStepIndex" flat variant="outlined">
-      <v-stepper-header>
-        <template v-for="(step, index) in steps" :key="`${index}-step`">
-          <v-stepper-item
-            :complete="currentStepIndex > index"
-            :step="index"
-            editable
-            edit-icon="mdi-check"
-          >
-            <div>{{ step.next || "Recommendations" }}</div>
-            <v-chip v-if="step.selectedOption" class="mt-2" color="success">
-              {{
-                step.selectedOption.label
-              }}
-            </v-chip>
-          </v-stepper-item>
-
-          <v-divider v-if="index < steps.length" :key="index" />
-        </template>
-      </v-stepper-header>
-
-      <v-stepper-window>
-        <v-stepper-window-item
-          v-for="(step, index) in steps"
-          :key="`${index}-content`"
-          :step="index"
-        >
-          <template v-if="step.options">
-            <v-card class="mb-12 pa-4" variant="outlined" min-height="300px">
-              <div class="text-heading-5">
-                {{ step.next }}
-              </div>
-              <v-radio-group
-                v-model="step.selectedOption"
-                @change="onOptionChanged"
-              >
-                <v-radio
-                  v-for="(option, rIndex) of step.options"
-                  :key="rIndex"
-                  :label="option.label"
-                  :value="option"
-                  color="success"
-                />
-              </v-radio-group>
-            </v-card>
-
-            <v-btn
-              color="primary"
-              :disabled="!step.selectedOption"
-              @click="nextStep(step.selectedOption)"
-            >
-              Continue
-            </v-btn>
-          </template>
-
-          <template v-if="step.finish">
-            <v-alert
-              class="my-8"
-              variant="outlined"
-              type="warning"
-              color="warning darken-2"
-              prominent
-              border="start"
-            >
-              <div class="text-body-1">
-                If you are a CZ Net data manager or investigator and you choose
-                to submit data to a repository other than HydroShare, EarthChem,
-                or Zenodo, please use the
-                <a @click="submitTo(externalRepoMetadata)">Register Dataset</a>
-                form to provide metadata about those datasets. If you submit to
-                HydroShare, EarthChem or Zenodo through the Data Submission
-                Portal, we will automatically harvest your metadata for you to
-                support CZ Net data discovery services.
-              </div>
-            </v-alert>
-
-            <v-alert
-              v-if="step.finish.linkToGuide"
-              class="my-8"
-              border="start"
-              colored-border
-              type="info"
-              elevation="2"
-            >
-              <div class="text-body-1">
-                View guidance and best practices for "{{
-                  enumDataTemplateType[step.finish.linkToGuide]
-                }}" data
-                <a :href="guideUrls[step.finish.linkToGuide]" target="_blank">here</a>.
-              </div>
-            </v-alert>
-
-            <div class="text-heading-5 mb-8">
-              Recommended Repositories:
-            </div>
-            <template v-if="getRepoMetadataFromKeys(step.finish.prefer).length">
-              <div class="repositories justify-space-around px-1">
-                <cz-recommendation-card
-                  v-for="preferred in getRepoMetadataFromKeys(
-                    step.finish.prefer,
-                  )"
-                  :key="preferred.key"
-                  :repo="preferred"
-                  :hide-logo="false"
-                  class="mb-4"
-                />
-              </div>
-            </template>
-            <div v-else class="text-subtitle-1 font-weight-light">
-              We have nothing specific to recommend for this query.
-            </div>
-
-            <div
-              v-if="
-                step.finish.consider
-                  && getRepoMetadataFromKeys(step.finish.consider).length
-              "
-            >
-              <div class="text-heading-5 my-8">
-                Also consider:
-              </div>
-              <ul class="repositories px-1">
-                <template
-                  v-for="considered in getRepoMetadataFromKeys(
-                    step.finish.consider,
-                  )"
-                >
-                  <template v-if="considered.isSupported">
-                    <li :key="considered.key">
-                      <cz-recommendation-card :repo="considered" class="mb-4" />
-                    </li>
-                  </template>
-                  <template v-else>
-                    <li :key="considered.key" class="my-2">
-                      <div>{{ considered.name }}</div>
-                      <div class="text-subtitle-1 font-weight-light">
-                        {{ considered.description }}
-                      </div>
-                      <v-icon class="mr-2">
-                        mdi-open-in-new
-                      </v-icon><a
-                        class="text-subtitle-1"
-                        :href="considered.url"
-                        target="_blank"
-                      >Visit {{ considered.name }}</a>
-                    </li>
-                  </template>
-                </template>
-              </ul>
-            </div>
-          </template>
-        </v-stepper-window-item>
-      </v-stepper-window>
-    </v-stepper>
-  </div>
-</template>
-
 <style lang="scss" scoped>
 .v-stepper-header {
   .v-stepper-item {
     align-items: baseline;
-
-    :deep(.v-stepper__step__step) {
-      color: transparent;
-    }
-  }
-
-  .v-stepper-item--selected {
-    background: rgba(0, 0, 0, 0.05);
-  }
-
-  :deep(.v-stepper-item__content) {
-    text-align: left;
   }
 }
 

@@ -23,21 +23,13 @@
           :elevation="2"
         >
           <v-btn
-            id="navbar-nav-home"
-            to="/"
-            :elevation="0"
-            active-class="primary"
-          >
-            Home
-          </v-btn>
-          <v-btn
             v-for="path of paths"
             v-bind="path.attrs"
             :id="`navbar-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
             :key="path.attrs.to || path.attrs.href"
             :elevation="0"
+            :class="path.isActive && path.isActive() ? 'bg-primary' : ''"
             active-class="primary"
-            :class="path.isActive && path.isActive() ? 'primary' : ''"
           >
             {{ path.label }}
             <v-icon v-if="path.isExternal" small class="ml-2" right>
@@ -61,7 +53,7 @@
               <template #activator="{ props }">
                 <v-btn
                   :color="
-                    $route.matched.some((p: RouteLocationMatched) => p.name === 'profile')
+                    route.matched.some((p: RouteLocationMatched) => p.name === 'profile')
                       ? 'primary'
                       : 'white'
                   "
@@ -77,10 +69,12 @@
               <v-list class="pa-0">
                 <v-list-item
                   :to="{ path: '/profile' }"
-                  active-class="primary white--text"
+                  active-class="bg-primary"
                   prepend-icon="mdi-account-circle"
                 >
-                  <v-list-item-title>Account & Settings</v-list-item-title>
+                  <v-list-item-title>
+                    Account & Settings
+                  </v-list-item-title>
                 </v-list-item>
 
                 <v-divider />
@@ -102,7 +96,7 @@
 
     <v-main app>
       <v-container id="main-container">
-        <v-sheet :elevation="$route.meta.hideMainSheet ? 0 : 2">
+        <v-sheet :elevation="route.meta.hideMainSheet ? 0 : 2">
           <router-view v-if="!isLoading" :key="route.fullPath" name="content" @logout="logOut" />
         </v-sheet>
       </v-container>
@@ -121,23 +115,11 @@
       <v-list nav density="compact" class="nav-items">
         <v-list-item class="text-body-1">
           <v-list-item
-            id="drawer-nav-home"
-            to="/"
-            active-class="primary white--text"
-            @click="showMobileNavigation = false"
-          >
-            <v-icon class="mr-2">
-              mdi-home
-            </v-icon>
-            <span>Home</span>
-          </v-list-item>
-
-          <v-list-item
             v-for="path of paths"
             :id="`drawer-nav-${path.label.replaceAll(/[\/\s]/g, ``)}`"
             :key="path.attrs.to || path.attrs.href"
             v-bind="path.attrs"
-            active-class="primary white--text"
+            active-class="bg-primary"
             :class="path.isActive && path.isActive() ? 'primary' : ''"
             @click="showMobileNavigation = false"
           >
@@ -169,17 +151,11 @@
           </v-list-item>
 
           <template v-else>
-            <v-list-item :to="{ path: '/profile' }">
-              <v-icon class="mr-2">
-                mdi-account-circle
-              </v-icon>
+            <v-list-item :to="{ path: '/profile' }" prepend-icon="mdi-account-circle">
               <span>Account & Settings</span>
             </v-list-item>
 
-            <v-list-item id="drawer-nav-logout" @click="logOut()">
-              <v-icon class="mr-2">
-                mdi-logout
-              </v-icon>
+            <v-list-item id="drawer-nav-logout" prepend-icon="mdi-logout" @click="logOut()">
               <span>Log Out</span>
             </v-list-item>
           </template>
@@ -216,11 +192,11 @@
 <script lang="ts">
 import { Component, Vue, Watch, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
-import type { RouteLocationMatched, RouteLocationNormalized, RouteLocationRaw } from 'vue-router'
+import type { RouteLocationMatched, RouteLocationRaw } from 'vue-router'
 import { CzNotifications, Notifications } from '@cznethub/cznet-vue-core'
 
 // import { setupRouteGuards } from './router'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from './constants'
 import { EnumRepositoryKeys } from './components/submissions/types'
 import HydroShare from './models/hydroshare.model'
@@ -265,12 +241,12 @@ class App extends Vue {
   showMobileNavigation = false
   loggedInSubject = new Subscription()
   // authorizedSubject = new Subscription();
-  isAppBarExtended = true
 
   snackbar: any & { isActive: boolean, isInfinite: boolean }
     = INITIAL_SNACKBAR
 
   route = useRoute()
+  router = useRouter()
   dialog: any & { isActive: boolean } = INITIAL_DIALOG
   logInDialog: any & { isActive: boolean } = {
     isActive: false,
@@ -287,22 +263,35 @@ class App extends Vue {
 
   paths = [
     {
+      attrs: { to: '/' },
+      label: 'Home',
+      icon: 'mdi-home',
+      isActive: () => {
+        return this.route?.name === 'home'
+      },
+    },
+    {
       attrs: { to: '/submissions' },
       label: 'My Submissions',
       icon: 'mdi-bookmark-multiple',
-      // isActive: () => (this.$route as RouteLocationNormalized).name === "view-submission",
+      isActive: () => {
+        return this.route?.name === 'submissions'
+      },
     },
     {
       attrs: { to: '/resources' },
       label: 'Resources',
       icon: 'mdi-library',
+      isActive: () => {
+        return ['resources', 'quick-start-guide', 'recommendations'].includes(this.route?.name?.toString() || '')
+      },
     },
     {
       attrs: { to: '/submit' },
       label: 'Submit Data',
       icon: 'mdi-book-plus',
       isActive: () => {
-        return this.$route?.name === 'register'
+        return ['submit', 'submit.repository', 'register'].includes(this.route?.name?.toString() || '')
       },
     },
     {
@@ -311,23 +300,23 @@ class App extends Vue {
       icon: 'mdi-card-search',
       isExternal: true,
     },
-    { attrs: { to: '/about' }, label: 'About', icon: 'mdi-help' },
+    { attrs: { to: '/about' }, label: 'About', icon: 'mdi-help', isActive: () => {
+      return this.route?.name === 'about'
+    } },
+
     {
       attrs: { to: '/contact' },
       label: 'Contact',
       icon: 'mdi-book-open-blank-variant',
+      isActive: () => {
+        return this.route?.name === 'contact'
+      },
     },
   ]
 
   get isLoggedIn(): boolean {
     return User.$state.isLoggedIn
   }
-
-  // mounted() {
-  //   this.$watch('$refs.appBar.computedHeight', (newValue, oldValue) => {
-  //     this.isAppBarExtended = newValue > oldValue
-  //   })
-  // }
 
   openLogInDialog() {
     User.openLogInDialog()
@@ -355,7 +344,7 @@ class App extends Vue {
   async created() {
     document.title = `${this.$t('hubName')}`
 
-    if ((this.$route as RouteLocationNormalized).name !== 'submissions') {
+    if ((this.route).name !== 'submissions') {
       // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
       Submission.fetchSubmissions()
     }
@@ -367,7 +356,7 @@ class App extends Vue {
         this.logInDialog.onLoggedIn = () => {
           if (redirectTo)
 
-            this.$router.push(redirectTo).catch(() => {})
+            this.router.push(redirectTo).catch(() => {})
 
           this.logInDialog.isActive = false
         }
@@ -390,7 +379,7 @@ class App extends Vue {
             else if (params.repository === EnumRepositoryKeys.earthchem)
               await EarthChem.init()
 
-            this.$router.push(params.redirectTo).catch(() => {})
+            this.router.push(params.redirectTo).catch(() => {})
           }
           this.authorizeDialog.isActive = false
         }

@@ -11,9 +11,8 @@
       border="start"
       border-color="primary"
       type="info"
-      variant="text"
+      variant="outlined"
       density="compact"
-      elevation="1"
     >
       <div
         class="d-flex flex-wrap-wrap justify-space-between flex-column flex-md-row text-black"
@@ -135,7 +134,7 @@
           border="start"
           colored-border
           type="info"
-          elevation="2"
+          variant="outlined"
         >
           <v-row>
             <v-col class="flex-grow-1">
@@ -161,7 +160,7 @@
           border="start"
           colored-border
           type="info"
-          elevation="2"
+          variant="outlined"
         >
           <v-row>
             <v-col class="flex-grow-1">
@@ -191,7 +190,7 @@
           border="start"
           colored-border
           type="error"
-          elevation="2"
+          variant="outlined"
         >
           We could not load this submission. The service might be unavailable or
           the submission might have been deleted.

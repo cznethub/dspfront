@@ -1,14 +1,3 @@
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-
-@Component({
-  name: 'cz-quick-start-guide',
-  components: {},
-})
-class CzQuickStartGuide extends Vue {}
-export default toNative(CzQuickStartGuide)
-</script>
-
 <template>
   <v-container class="cz-quick-start-guide">
     <div class="text-h4">
@@ -97,7 +86,7 @@ export default toNative(CzQuickStartGuide)
       have data content to submit, you can submit it directly to these
       repositories through the DSP.
     </p>
-    <ul class="text-body-1">
+    <ul class="text-body-1 pl-4">
       <li>
         <strong>EarthChem: </strong>EarthChem is a repository that specializes
         in publishing data derived from physical samples.
@@ -140,5 +129,16 @@ export default toNative(CzQuickStartGuide)
     </p>
   </v-container>
 </template>
+
+<script lang="ts">
+import { Component, Vue, toNative } from 'vue-facing-decorator'
+
+@Component({
+  name: 'cz-quick-start-guide',
+  components: {},
+})
+class CzQuickStartGuide extends Vue {}
+export default toNative(CzQuickStartGuide)
+</script>
 
 <style lang="scss" scoped></style>

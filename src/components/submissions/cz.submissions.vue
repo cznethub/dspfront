@@ -411,10 +411,10 @@
       </div>
       <div v-else class="text-body-2 text-center mt-4 d-flex flex-column">
         <template v-if="!submissions.length">
-          <v-icon style="font-size: 6rem" class="mb-4">
-            mdi-text-box-remove
-          </v-icon>
-          You have not created any submissions yet
+          <v-empty-state
+            title="You have not created any submissions yet"
+            icon="mdi-text-box-remove"
+          />
         </template>
         <template v-if="!isLoggedIn">
           You need to log in to view this page

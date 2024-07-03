@@ -24,7 +24,6 @@
         variant="outlined"
         icon="mdi-lock"
         type="info"
-        prominent
         border="start"
       >
         <div
@@ -54,7 +53,6 @@
         variant="outlined"
         icon="mdi-lock"
         type="info"
-        prominent
         border="start"
       >
         <div
@@ -81,7 +79,6 @@
         variant="outlined"
         icon="mdi-lock"
         type="info"
-        prominent
         border="start"
       >
         <div
@@ -166,7 +163,7 @@
           border="start"
           colored-border
           type="info"
-          elevation="2"
+          variant="outlined"
         >
           <v-row>
             <v-col class="flex-grow-1">
@@ -191,7 +188,7 @@
             border="start"
             colored-border
             type="info"
-            elevation="2"
+            variant="outlined"
           >
             <v-row>
               <v-col class="flex-grow-1">
@@ -225,7 +222,7 @@
             border="start"
             colored-border
             type="error"
-            elevation="2"
+            variant="outlined"
           >
             We could not load this submission. The service might be unavailable
             or the submission might have been deleted.
@@ -557,9 +554,5 @@ export default toNative(CzViewSubmission)
 
 :deep(.v-overlay.backdrop) {
   z-index: 4 !important;
-}
-
-:deep(.v-alert__content) {
-  width: 0;
 }
 </style>

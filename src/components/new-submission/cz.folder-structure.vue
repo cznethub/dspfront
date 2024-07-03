@@ -1,3 +1,438 @@
+<template>
+  <v-card class="mb-8">
+    <v-sheet
+      class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included flex-wrap"
+    >
+      <v-tooltip
+        v-if="repoMetadata.hasFolderStructure && !isReadOnly && allowFileUpload"
+        bottom
+        transition="fade"
+      >
+        <template #activator="{ props }">
+          <v-btn
+            class="mr-4"
+            small
+            icon
+            v-bind="props"
+            @click="newFolder"
+          >
+            <v-icon>mdi-folder</v-icon>
+          </v-btn>
+        </template>
+        New Folder
+      </v-tooltip>
+
+      <div v-else class="text-subtitle-1 mr-4">
+        Files
+      </div>
+
+      <template v-if="!isReadOnly && allowFileUpload">
+        <template>
+          <v-tooltip bottom transition="fade">
+            <template #activator="{ props }">
+              <v-btn
+                :disabled="!rootDirectory.children.length"
+                class="mr-1"
+                icon
+                small
+                v-bind="props"
+                @click="selectAll"
+              >
+                <v-icon>mdi-checkbox-marked-outline</v-icon>
+              </v-btn>
+            </template>
+            <span>Select All</span>
+          </v-tooltip>
+        </template>
+
+        <template>
+          <v-tooltip bottom transition="fade">
+            <template #activator="{ props }">
+              <v-btn
+                icon
+                small
+                :disabled="!selected.length"
+                v-bind="props"
+                @click="unselectAll"
+              >
+                <v-icon>mdi-checkbox-blank-off-outline</v-icon>
+              </v-btn>
+            </template>
+            <span>Unselect All</span>
+          </v-tooltip>
+          <v-divider class="mx-4" vertical />
+        </template>
+
+        <template v-if="repoMetadata.hasFolderStructure">
+          <v-tooltip bottom transition="fade">
+            <template #activator="{ props }">
+              <v-btn
+                :disabled="!canCut"
+                class="mr-1"
+                icon
+                small
+                v-bind="props"
+                @click="cut"
+              >
+                <v-icon>mdi-content-cut</v-icon>
+              </v-btn>
+            </template>
+            Cut
+          </v-tooltip>
+
+          <v-tooltip v-if="!isReadOnly" bottom transition="fade">
+            <template #activator="{ props }">
+              <v-btn
+                :disabled="!canPaste"
+                icon
+                small
+                v-bind="props"
+                @click="paste"
+              >
+                <v-icon>mdi-content-paste</v-icon>
+              </v-btn>
+            </template>
+            Paste
+          </v-tooltip>
+          <v-divider class="mx-4" vertical />
+        </template>
+
+        <template>
+          <v-tooltip bottom transition="fade">
+            <template #activator="{ props }">
+              <v-btn
+                icon
+                small
+                :disabled="isDeleting || !selected.length"
+                v-bind="props"
+                @click="deleteSelected"
+              >
+                <v-icon>mdi-delete</v-icon>
+              </v-btn>
+            </template>
+            <span>Discard</span>
+          </v-tooltip>
+        </template>
+      </template>
+
+      <template v-if="selected.length">
+        <v-divider class="mx-4" vertical />
+        <span class="text-subtitle-2">{{ selected.length }} item{{
+          selected.length !== 1 ? "s" : ""
+        }}
+          selected</span>
+      </template>
+
+      <v-spacer />
+
+      <template
+        v-if="
+          rootDirectory.children.length
+            && !isEditMode
+            && !isReadOnly
+            && allowFileUpload
+        "
+      >
+        <v-btn small depressed class="primary lighten-2" @click="empty">
+          Discard All
+        </v-btn>
+      </template>
+    </v-sheet>
+
+    <v-card-text style="min-height: 10rem">
+      <v-alert
+        v-if="isEditMode && !isReadOnly && allowFileUpload"
+        class="text-subtitle-1"
+        border="start"
+        colored-border
+        type="info"
+        variant="outlined"
+      >
+        These are your files as they appear in the repository. Any changes you
+        make here will be immediately applied to your files. You do not need to
+        click the Save Changes button for your changes to be effective.
+      </v-alert>
+
+      <v-card v-if="rootDirectory.children.length" flat variant="outlined" class="mb-4">
+        <v-card-text class="files-container" style="height: 15rem">
+          <v-row class="flex-grow-1">
+            <v-col
+              v-click-outside="{ handler: onClickOutside, include }"
+              :cols="$vuetify.display.smAndUp ? 9 : 11"
+            >
+              <v-treeview
+                :key="redraw"
+                v-model:open="open"
+                v-model:active="selected"
+                item-disabled="isDisabled"
+                :items="rootDirectory.children"
+                return-object
+                multiple-active
+                transition
+                item-key="key"
+                density="compact"
+                open-on-click
+                class="files-container--included"
+              >
+                <template #prepend="{ item, open }">
+                  <v-icon
+                    v-if="item.children"
+                    :disabled="item.isDisabled"
+                    :color="item.isCutting ? 'grey' : ''"
+                    @click.exact="onItemClick(item)"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.meta.exact="onItemCtrlClick(item)"
+                    @click.shift.exact="onItemShiftClick(item)"
+                  >
+                    {{ open ? "mdi-folder-open" : "mdi-folder" }}
+                  </v-icon>
+                  <v-icon
+                    v-else
+                    :disabled="item.isDisabled"
+                    :color="item.isCutting ? 'grey' : ''"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
+                  >
+                    {{ files[item.name.split(".").pop()] || files.default }}
+                  </v-icon>
+                </template>
+                <template #label="{ item }">
+                  <v-text-field
+                    v-if="item.isRenaming"
+                    v-click-outside="onClickOutside"
+                    :value="item.name"
+                    append-icon="mdi-cancel"
+                    density="compact"
+                    hide-details="auto"
+                    autofocus
+                    @change="onRenamed(item, $event)"
+                    @keydown.enter="item.isRenaming = false"
+                    @click.exact="onItemClick(item)"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.meta.exact="onItemCtrlClick(item)"
+                    @click.shift.exact="onItemShiftClick(item)"
+                    @click:append="item.isRenaming = false"
+                  />
+                  <v-row
+                    v-else
+                    :class="{ 'font-weight-light': item.isCutting }"
+                    class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column"
+                    @click.exact="onItemClick(item)"
+                    @click.ctrl.exact="onItemCtrlClick(item)"
+                    @click.meta.exact="onItemCtrlClick(item)"
+                    @click.shift.exact="onItemShiftClick(item)"
+                  >
+                    <v-col
+                      class="d-flex flex-column flex-sm-row align-start align-sm-center"
+                    >
+                      <div class="item-name flex-grow-1 flex-shrink-1">
+                        {{ item.name }}
+                      </div>
+                      <div
+                        v-if="item.file"
+                        class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption font-weight-light"
+                      >
+                        {{ item.file.size | prettyBytes(2, false) }}
+                      </div>
+                      <div
+                        v-else-if="item.uploadedSize"
+                        class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption font-weight-light"
+                      >
+                        {{ item.uploadedSize | prettyBytes(2, false) }}
+                      </div>
+                    </v-col>
+                  </v-row>
+                </template>
+                <template #append="{ item, active }">
+                  <v-row v-if="!item.isRenaming">
+                    <v-col
+                      v-if="!isFolder(item) && item.isUploaded"
+                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 align-center"
+                    >
+                      <v-icon class="text--disabled" small>
+                        mdi-cloud-check
+                      </v-icon>
+                    </v-col>
+                    <v-col
+                      v-if="canRetryUpload(item)"
+                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 align-center"
+                    >
+                      <v-btn
+                        color="info"
+                        :disabled="item.isDisabled"
+                        small
+                        depressed
+                        @click="$emit('upload', [item])"
+                      >
+                        <v-icon left>
+                          mdi-cloud-upload
+                        </v-icon>
+                        Retry
+                      </v-btn>
+                    </v-col>
+                    <v-col
+                      v-if="showFileWarnings(item)"
+                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption font-weight-light align-center"
+                    >
+                      <v-menu open-on-hover bottom left offset-y>
+                        <template #activator="{ props }">
+                          <div v-bind="props">
+                            <v-icon
+                              :color="
+                                isFileInvalid(item) || couldNotUploadFile(item)
+                                  ? 'error'
+                                  : 'warning'
+                              "
+                            >
+                              mdi-alert-circle
+                            </v-icon>
+                          </div>
+                        </template>
+                        <div class="pa-4 has-bg-white">
+                          <div
+                            v-if="
+                              isFileInvalid(item) || couldNotUploadFile(item)
+                            "
+                            class="text-body-2 mb-4"
+                          >
+                            <b>This file cannot be uploaded</b>
+                          </div>
+                          <ul class="text-subtitle-1">
+                            <li v-if="couldNotUploadFile(item)">
+                              Maximum number of files exceeded.
+                            </li>
+                            <li v-if="!isFileExtensionValid(item)">
+                              This file extension is not allowed for upload.
+                            </li>
+                            <li v-if="!isFileNameValid(item)">
+                              This file name contains invalid characters.
+                            </li>
+                            <li v-if="isFileTooBig(item)">
+                              Files cannot be larger than
+                              <b>{{
+                                repoMetadata.maxUploadSizePerFile |
+                                  prettyBytes(2, false)
+                              }}</b>.
+                            </li>
+                          </ul>
+                        </div>
+                      </v-menu>
+                    </v-col>
+                    <v-col
+                      v-if="
+                        active && !item.isDisabled && canRename && !isReadOnly
+                      "
+                    >
+                      <template>
+                        <v-btn
+                          v-if="!item.isRenaming"
+                          fab
+                          small
+                          text
+                          @click.stop="renameItem(item)"
+                        >
+                          <v-icon>mdi-pencil-outline</v-icon>
+                        </v-btn>
+                      </template>
+                    </v-col>
+                    <v-col v-if="item.isDisabled">
+                      <v-icon small>
+                        fas fa-circle-notch fa-spin
+                      </v-icon>
+                    </v-col>
+                  </v-row>
+                </template>
+              </v-treeview>
+            </v-col>
+            <v-col v-if="$vuetify.display.smAndUp" cols="3" />
+          </v-row>
+        </v-card-text>
+        <v-divider />
+
+        <div v-if="rootDirectory.children.length" class="py-2 px-4">
+          <span>{{ allItems.length }} file{{
+            allItems.length > 1 ? "s" : ""
+          }}</span>
+          <v-divider class="mx-4" vertical />
+          <span
+            v-if="totalUploadSize"
+            :class="
+              isTotalUploadSizeTooBig
+                ? 'red--text text--lighten-1 font-weight-bold'
+                : ''
+            "
+          >{{ totalUploadSize | prettyBytes(2, false) }}
+          </span>
+          <v-menu
+            v-if="isTotalUploadSizeTooBig"
+            open-on-hover
+            top
+            right
+            offset-y
+          >
+            <template #activator="{ props }">
+              <div class="ml-4 d-inline-block" v-bind="props">
+                <v-icon color="error">
+                  mdi-alert-circle
+                </v-icon>
+              </div>
+            </template>
+
+            <div class="pa-4 has-bg-white text-subtitle-1">
+              The total upload size cannot exceed
+              <b>{{
+                repoMetadata.maxTotalUploadSize | prettyBytes(2, false)
+              }}</b>
+            </div>
+          </v-menu>
+        </div>
+      </v-card>
+
+      <div
+        v-else-if="isReadOnly || !rootDirectory.children.length"
+        class="pa-2 text-body-1 font-weight-light mb-2"
+      >
+        No files have been included in this submission.
+      </div>
+
+      <v-alert
+        v-if="hasTooManyFiles"
+        class="text-subtitle-1"
+        border="start"
+        colored-border
+        type="error"
+        variant="outlined"
+      >
+        The maximum number of files cannot exceed
+        <b>{{ repoMetadata.maxNumberOfFiles }}</b>
+      </v-alert>
+
+      <div
+        v-if="!isReadOnly && allowFileUpload"
+        class="upload-drop-area files-container--included"
+      >
+        <!-- <b-upload
+          v-model="dropFiles"
+          type="file"
+          multiple
+          drag-drop
+          expanded
+          class="has-bg-light-gray"
+        >
+          <v-alert
+            class="ma-4 has-cursor-pointer transparent"
+            type="info"
+            prominent
+            colored-border
+            icon="mdi-paperclip"
+          >
+            <span class="text-subtitle-1">Drop your files here or click to upload</span>
+          </v-alert>
+        </b-upload> -->
+      </div>
+    </v-card-text>
+  </v-card>
+</template>
+
 <script lang="ts">
 import { Component, Prop, Watch, mixins } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
@@ -710,441 +1145,6 @@ export default class CzFolderStructure extends mixins(ActiveRepositoryMixin) {
     return wasMoved
   }
 }
-</script>
-
-<template>
-  <v-card class="mb-8">
-    <v-sheet
-      class="pa-4 d-flex align-center has-bg-light-gray primary lighten-4 files-container--included flex-wrap"
-    >
-      <v-tooltip
-        v-if="repoMetadata.hasFolderStructure && !isReadOnly && allowFileUpload"
-        bottom
-        transition="fade"
-      >
-        <template #activator="{ props }">
-          <v-btn
-            class="mr-4"
-            small
-            icon
-            v-bind="props"
-            @click="newFolder"
-          >
-            <v-icon>mdi-folder</v-icon>
-          </v-btn>
-        </template>
-        New Folder
-      </v-tooltip>
-
-      <div v-else class="text-subtitle-1 mr-4">
-        Files
-      </div>
-
-      <template v-if="!isReadOnly && allowFileUpload">
-        <template>
-          <v-tooltip bottom transition="fade">
-            <template #activator="{ props }">
-              <v-btn
-                :disabled="!rootDirectory.children.length"
-                class="mr-1"
-                icon
-                small
-                v-bind="props"
-                @click="selectAll"
-              >
-                <v-icon>mdi-checkbox-marked-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>Select All</span>
-          </v-tooltip>
-        </template>
-
-        <template>
-          <v-tooltip bottom transition="fade">
-            <template #activator="{ props }">
-              <v-btn
-                icon
-                small
-                :disabled="!selected.length"
-                v-bind="props"
-                @click="unselectAll"
-              >
-                <v-icon>mdi-checkbox-blank-off-outline</v-icon>
-              </v-btn>
-            </template>
-            <span>Unselect All</span>
-          </v-tooltip>
-          <v-divider class="mx-4" vertical />
-        </template>
-
-        <template v-if="repoMetadata.hasFolderStructure">
-          <v-tooltip bottom transition="fade">
-            <template #activator="{ props }">
-              <v-btn
-                :disabled="!canCut"
-                class="mr-1"
-                icon
-                small
-                v-bind="props"
-                @click="cut"
-              >
-                <v-icon>mdi-content-cut</v-icon>
-              </v-btn>
-            </template>
-            Cut
-          </v-tooltip>
-
-          <v-tooltip v-if="!isReadOnly" bottom transition="fade">
-            <template #activator="{ props }">
-              <v-btn
-                :disabled="!canPaste"
-                icon
-                small
-                v-bind="props"
-                @click="paste"
-              >
-                <v-icon>mdi-content-paste</v-icon>
-              </v-btn>
-            </template>
-            Paste
-          </v-tooltip>
-          <v-divider class="mx-4" vertical />
-        </template>
-
-        <template>
-          <v-tooltip bottom transition="fade">
-            <template #activator="{ props }">
-              <v-btn
-                icon
-                small
-                :disabled="isDeleting || !selected.length"
-                v-bind="props"
-                @click="deleteSelected"
-              >
-                <v-icon>mdi-delete</v-icon>
-              </v-btn>
-            </template>
-            <span>Discard</span>
-          </v-tooltip>
-        </template>
-      </template>
-
-      <template v-if="selected.length">
-        <v-divider class="mx-4" vertical />
-        <span class="text-subtitle-2">{{ selected.length }} item{{
-          selected.length !== 1 ? "s" : ""
-        }}
-          selected</span>
-      </template>
-
-      <v-spacer />
-
-      <template
-        v-if="
-          rootDirectory.children.length
-            && !isEditMode
-            && !isReadOnly
-            && allowFileUpload
-        "
-      >
-        <v-btn small depressed class="primary lighten-2" @click="empty">
-          Discard All
-        </v-btn>
-      </template>
-    </v-sheet>
-
-    <v-card-text style="min-height: 10rem">
-      <v-alert
-        v-if="isEditMode && !isReadOnly && allowFileUpload"
-        class="text-subtitle-1"
-        border="start"
-        colored-border
-        type="info"
-        elevation="1"
-      >
-        These are your files as they appear in the repository. Any changes you
-        make here will be immediately applied to your files. You do not need to
-        click the Save Changes button for your changes to be effective.
-      </v-alert>
-
-      <v-card v-if="rootDirectory.children.length" flat variant="outlined" class="mb-4">
-        <v-card-text class="files-container" style="height: 15rem">
-          <v-row class="flex-grow-1">
-            <v-col
-              v-click-outside="{ handler: onClickOutside, include }"
-              :cols="$vuetify.display.smAndUp ? 9 : 11"
-            >
-              <v-treeview
-                :key="redraw"
-                v-model:open="open"
-                v-model:active="selected"
-                item-disabled="isDisabled"
-                :items="rootDirectory.children"
-                return-object
-                multiple-active
-                transition
-                item-key="key"
-                density="compact"
-                open-on-click
-                class="files-container--included"
-              >
-                <template #prepend="{ item, open }">
-                  <v-icon
-                    v-if="item.children"
-                    :disabled="item.isDisabled"
-                    :color="item.isCutting ? 'grey' : ''"
-                    @click.exact="onItemClick(item)"
-                    @click.ctrl.exact="onItemCtrlClick(item)"
-                    @click.meta.exact="onItemCtrlClick(item)"
-                    @click.shift.exact="onItemShiftClick(item)"
-                  >
-                    {{ open ? "mdi-folder-open" : "mdi-folder" }}
-                  </v-icon>
-                  <v-icon
-                    v-else
-                    :disabled="item.isDisabled"
-                    :color="item.isCutting ? 'grey' : ''"
-                    @click.ctrl.exact="onItemCtrlClick(item)"
-                  >
-                    {{ files[item.name.split(".").pop()] || files.default }}
-                  </v-icon>
-                </template>
-                <template #label="{ item }">
-                  <v-text-field
-                    v-if="item.isRenaming"
-                    v-click-outside="onClickOutside"
-                    :value="item.name"
-                    append-icon="mdi-cancel"
-                    density="compact"
-                    hide-details="auto"
-                    autofocus
-                    @change="onRenamed(item, $event)"
-                    @keydown.enter="item.isRenaming = false"
-                    @click.exact="onItemClick(item)"
-                    @click.ctrl.exact="onItemCtrlClick(item)"
-                    @click.meta.exact="onItemCtrlClick(item)"
-                    @click.shift.exact="onItemShiftClick(item)"
-                    @click:append="item.isRenaming = false"
-                  />
-                  <v-row
-                    v-else
-                    :class="{ 'font-weight-light': item.isCutting }"
-                    class="item-row flex-wrap flex-sm-nowrap ma-0 flex-sm-row flex-column"
-                    @click.exact="onItemClick(item)"
-                    @click.ctrl.exact="onItemCtrlClick(item)"
-                    @click.meta.exact="onItemCtrlClick(item)"
-                    @click.shift.exact="onItemShiftClick(item)"
-                  >
-                    <v-col
-                      class="d-flex flex-column flex-sm-row align-start align-sm-center"
-                    >
-                      <div class="item-name flex-grow-1 flex-shrink-1">
-                        {{ item.name }}
-                      </div>
-                      <div
-                        v-if="item.file"
-                        class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption font-weight-light"
-                      >
-                        {{ item.file.size | prettyBytes(2, false) }}
-                      </div>
-                      <div
-                        v-else-if="item.uploadedSize"
-                        class="flex-grow-0 flex-shrink-0 mx-0 mx-sm-3 pa-0 text-caption font-weight-light"
-                      >
-                        {{ item.uploadedSize | prettyBytes(2, false) }}
-                      </div>
-                    </v-col>
-                  </v-row>
-                </template>
-                <template #append="{ item, active }">
-                  <v-row v-if="!item.isRenaming">
-                    <v-col
-                      v-if="!isFolder(item) && item.isUploaded"
-                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 align-center"
-                    >
-                      <v-icon class="text--disabled" small>
-                        mdi-cloud-check
-                      </v-icon>
-                    </v-col>
-                    <v-col
-                      v-if="canRetryUpload(item)"
-                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 align-center"
-                    >
-                      <v-btn
-                        color="info"
-                        :disabled="item.isDisabled"
-                        small
-                        depressed
-                        @click="$emit('upload', [item])"
-                      >
-                        <v-icon left>
-                          mdi-cloud-upload
-                        </v-icon>
-                        Retry
-                      </v-btn>
-                    </v-col>
-                    <v-col
-                      v-if="showFileWarnings(item)"
-                      class="d-flex flex-grow-0 flex-shrink-0 ma-3 ml-2 pa-0 text-caption font-weight-light align-center"
-                    >
-                      <v-menu open-on-hover bottom left offset-y>
-                        <template #activator="{ props }">
-                          <div v-bind="props">
-                            <v-icon
-                              :color="
-                                isFileInvalid(item) || couldNotUploadFile(item)
-                                  ? 'error'
-                                  : 'warning'
-                              "
-                            >
-                              mdi-alert-circle
-                            </v-icon>
-                          </div>
-                        </template>
-                        <div class="pa-4 has-bg-white">
-                          <div
-                            v-if="
-                              isFileInvalid(item) || couldNotUploadFile(item)
-                            "
-                            class="text-body-2 mb-4"
-                          >
-                            <b>This file cannot be uploaded</b>
-                          </div>
-                          <ul class="text-subtitle-1">
-                            <li v-if="couldNotUploadFile(item)">
-                              Maximum number of files exceeded.
-                            </li>
-                            <li v-if="!isFileExtensionValid(item)">
-                              This file extension is not allowed for upload.
-                            </li>
-                            <li v-if="!isFileNameValid(item)">
-                              This file name contains invalid characters.
-                            </li>
-                            <li v-if="isFileTooBig(item)">
-                              Files cannot be larger than
-                              <b>{{
-                                repoMetadata.maxUploadSizePerFile |
-                                  prettyBytes(2, false)
-                              }}</b>.
-                            </li>
-                          </ul>
-                        </div>
-                      </v-menu>
-                    </v-col>
-                    <v-col
-                      v-if="
-                        active && !item.isDisabled && canRename && !isReadOnly
-                      "
-                    >
-                      <template>
-                        <v-btn
-                          v-if="!item.isRenaming"
-                          fab
-                          small
-                          text
-                          @click.stop="renameItem(item)"
-                        >
-                          <v-icon>mdi-pencil-outline</v-icon>
-                        </v-btn>
-                      </template>
-                    </v-col>
-                    <v-col v-if="item.isDisabled">
-                      <v-icon small>
-                        fas fa-circle-notch fa-spin
-                      </v-icon>
-                    </v-col>
-                  </v-row>
-                </template>
-              </v-treeview>
-            </v-col>
-            <v-col v-if="$vuetify.display.smAndUp" cols="3" />
-          </v-row>
-        </v-card-text>
-        <v-divider />
-
-        <div v-if="rootDirectory.children.length" class="py-2 px-4">
-          <span>{{ allItems.length }} file{{
-            allItems.length > 1 ? "s" : ""
-          }}</span>
-          <v-divider class="mx-4" vertical />
-          <span
-            v-if="totalUploadSize"
-            :class="
-              isTotalUploadSizeTooBig
-                ? 'red--text text--lighten-1 font-weight-bold'
-                : ''
-            "
-          >{{ totalUploadSize | prettyBytes(2, false) }}
-          </span>
-          <v-menu
-            v-if="isTotalUploadSizeTooBig"
-            open-on-hover
-            top
-            right
-            offset-y
-          >
-            <template #activator="{ props }">
-              <div class="ml-4 d-inline-block" v-bind="props">
-                <v-icon color="error">
-                  mdi-alert-circle
-                </v-icon>
-              </div>
-            </template>
-
-            <div class="pa-4 has-bg-white text-subtitle-1">
-              The total upload size cannot exceed
-              <b>{{
-                repoMetadata.maxTotalUploadSize | prettyBytes(2, false)
-              }}</b>
-            </div>
-          </v-menu>
-        </div>
-      </v-card>
-
-      <div
-        v-else-if="isReadOnly || !rootDirectory.children.length"
-        class="pa-2 text-body-1 font-weight-light mb-2"
-      >
-        No files have been included in this submission.
-      </div>
-
-      <v-alert
-        v-if="hasTooManyFiles"
-        class="text-subtitle-1"
-        border="start"
-        colored-border
-        type="error"
-        elevation="1"
-      >
-        The maximum number of files cannot exceed
-        <b>{{ repoMetadata.maxNumberOfFiles }}</b>
-      </v-alert>
-
-      <div
-        v-if="!isReadOnly && allowFileUpload"
-        class="upload-drop-area files-container--included"
-      >
-        <!-- <b-upload
-          v-model="dropFiles"
-          type="file"
-          multiple
-          drag-drop
-          expanded
-          class="has-bg-light-gray"
-        >
-          <v-alert
-            class="ma-4 has-cursor-pointer transparent"
-            type="info"
-            prominent
-            colored-border
-            icon="mdi-paperclip"
-          >
-            <span class="text-subtitle-1">Drop your files here or click to upload</span>
-          </v-alert>
-        </b-upload> -->
-      </div>
-    </v-card-text>
-  </v-card>
 </template>
 
 <style lang="scss" scoped>
