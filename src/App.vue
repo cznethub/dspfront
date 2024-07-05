@@ -194,8 +194,6 @@ import { Component, Vue, Watch, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
 import type { RouteLocationMatched, RouteLocationRaw } from 'vue-router'
 import { CzNotifications, Notifications } from '@cznethub/cznet-vue-core'
-
-// import { setupRouteGuards } from './router'
 import { useRoute, useRouter } from 'vue-router'
 import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from './constants'
 import { EnumRepositoryKeys } from './components/submissions/types'

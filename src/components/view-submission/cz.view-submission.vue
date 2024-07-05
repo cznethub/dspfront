@@ -274,6 +274,7 @@
 import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
 import { CzForm, Notifications } from '@cznethub/cznet-vue-core'
+import { useRoute } from 'vue-router'
 import { EnumRepositoryKeys } from '../submissions/types'
 import { repoMetadata } from '../submit/constants'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
@@ -296,6 +297,8 @@ class CzViewSubmission extends mixins(ActiveRepositoryMixin) {
   @Ref('folderStructure') folderStructure!: InstanceType<
     typeof CzFolderStructure
   >
+
+  route = useRoute()
 
   rootDirectory: any = {
     name: 'root',
@@ -419,8 +422,8 @@ class CzViewSubmission extends mixins(ActiveRepositoryMixin) {
   async init() {
     this.isLoading = true
     this.data = this.schemaDefaults
-    this.repositoryKey = (this.$route as RouteLocationNormalized).params.repository as EnumRepositoryKeys
-    this.identifier = (this.$route as RouteLocationNormalized).params.id?.toString()
+    this.repositoryKey = (this.route).params.repository as EnumRepositoryKeys
+    this.identifier = (this.route).params.id?.toString()
 
     if (
       !this.activeRepository
@@ -440,14 +443,14 @@ class CzViewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   goToEditSubmission() {
-    this.$router.push({
+    this.router.push({
       name: 'submit.repository',
       params: { repository: this.repositoryKey, id: this.identifier },
     })
   }
 
   goToSubmissions() {
-    this.$router.push({
+    this.router.push({
       name: 'submissions',
     })
   }
@@ -495,7 +498,7 @@ class CzViewSubmission extends mixins(ActiveRepositoryMixin) {
             this.identifier,
             this.repositoryKey,
           )
-          this.$router.push({ name: 'submissions' })
+          this.router.push({ name: 'submissions' })
         },
       })
     }

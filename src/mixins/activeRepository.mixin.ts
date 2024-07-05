@@ -1,5 +1,6 @@
 import { Component, Vue } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
+import { useRoute, useRouter } from 'vue-router'
 import Repository from '~/models/repository.model'
 import type {
   EnumRepositoryKeys,
@@ -10,6 +11,7 @@ import { getRepositoryFromKey } from '~/constants'
 @Component
 export class ActiveRepositoryMixin extends Vue {
   authorizedSubject = new Subscription()
+  router = useRouter()
 
   get activeRepository() {
     const key = Repository.$state.submittingTo
@@ -33,7 +35,7 @@ export class ActiveRepositoryMixin extends Vue {
 
     if (repo.isSupported && !repo.isComingSoon) {
       this.setActiveRepository(repo.key)
-      this.$router
+      this.router
         .push({ name: 'submit.repository', params: { repository: repo.key } })
     }
     else {

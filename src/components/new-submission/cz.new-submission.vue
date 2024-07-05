@@ -67,16 +67,22 @@
           @upload="uploadFiles($event)"
         /> -->
 
+        <!-- <template v-for="f of toUpload">
+          <pre>{{ rootDirectory }}</pre>
+        </template> -->
+
         <cz-file-explorer
           v-if="hasFileExplorer"
           id="cz-folder-structure"
           ref="fileExplorer"
+          v-model:valid-items="toUpload"
           :root-directory="rootDirectory"
           :has-folders="fileExplorerConfig.hasFolders"
           :is-read-only="fileExplorerConfig.isReadOnly"
           :has-file-metadata="() => true"
           :upload="isEditMode ? uploadFiles : undefined"
-          :delete-file-or-older="deleteFileOrFolder"
+          :delete-file-or-folder="isEditMode ? deleteFileOrFolder : undefined"
+          :rename-file-or-folder="isEditMode ? renameFileOrFolder : undefined"
         >
           <template #prepend>
             <span />
@@ -235,6 +241,7 @@ import { Subscription } from 'rxjs'
 import { CzFileExplorer, CzForm, Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import type { IRepositoryUrls } from '../submissions/types'
 import { EnumRepositoryKeys } from '../submissions/types'
 import { repoMetadata } from '../submit/constants'
@@ -261,6 +268,9 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     typeof CzFileExplorer
   >
 
+  route = useRoute()
+  router = useRouter()
+
   rootDirectory: any = {
     name: 'root',
     children: [
@@ -275,7 +285,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   data: any = initialData
   usedUISchema = {}
   repoMetadata = repoMetadata
-  uploads = []
+  toUpload = []
   errors: { title: string, message: string }[] = []
   repositoryRecord: any = null
   loggedInSubject = new Subscription()
@@ -315,7 +325,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   get dbSubmission() {
-    const identifier = this.$route.params.id?.toString()
+    const identifier = this.route.params.id?.toString()
     const submission = Submission.find([identifier, 'hydroshare'])
     return submission
   }
@@ -349,7 +359,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   get isEditMode() {
-    return this.$route.params.id?.length
+    return this.route.params.id?.length
   }
 
   get hasFileExplorer() {
@@ -427,7 +437,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
     this.hasUnsavedChanges = false
     this.wasUnauthorized = false
-    this.repositoryKey = this.$route.params.repository as EnumRepositoryKeys
+    this.repositoryKey = this.route.params.repository as EnumRepositoryKeys
 
     if (
       !this.activeRepository
@@ -439,8 +449,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     }
 
     if (this.isEditMode) {
-      // `$route.params.id` will cast to a number. We need the identifier as a string.
-      this.identifier = this.$route.params.id?.toString()
+      this.identifier = this.route.params.id?.toString()
       this.loadSavedSubmission()
     }
     else {
@@ -453,7 +462,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   goToSubmissions() {
-    this.$router.push({
+    this.router.push({
       name: 'submissions',
     })
   }
@@ -461,7 +470,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   async loadSavedSubmission() {
     console.info('CzNewSubmission: reading existing record...')
     const response
-      = this.$route.query.mode === 'register'
+      = this.route.query.mode === 'register'
         ? this.registeringSubmission
           ? { metadata: this.registeringSubmission } // Load it from persistent state if we have it
           : await Repository.readExistingSubmission(
@@ -507,7 +516,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
             this.identifier,
             this.repositoryKey,
           )
-          this.$router.push({ name: 'submissions' })
+          this.router.push({ name: 'submissions' })
         },
       })
     }
@@ -517,7 +526,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
       // // Redirect to view page if submission is not editable
       // if (this.isPublished || this.isHsCollection || this.isEclSubmitted) {
-      //   this.$router.push({
+      //   this.router.push({
       //     name: "view-submission",
       //     params: {
       //       id: this.identifier,
@@ -662,7 +671,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
       if (!this.isEditMode) {
         // If creating, redirect to the edit page
-        this.$router.push({
+        this.router.push({
           name: 'submit.repository',
           params: {
             repository: this.activeRepository.entity,
@@ -679,17 +688,17 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   private async _saveAndFinish() {
-    if (this.hasUnsavedChanges || this.$route.query.mode === 'register') {
+    if (this.hasUnsavedChanges || this.route.query.mode === 'register') {
       const wasSaved = await this._save()
 
       if (wasSaved) {
         this.hasUnsavedChanges = false
-        this.$router.push({ name: 'submissions' })
+        this.router.push({ name: 'submissions' })
       }
     }
     // If nothing to save, just redirect to submissions page
     else {
-      this.$router.push({ name: 'submissions' })
+      this.router.push({ name: 'submissions' })
     }
   }
 
@@ -718,7 +727,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       }
     }
     else {
-      console.info('CzNewSubmission: Saving to existing record...')
+      console.info('[NewSubmission]: Saving to existing record...')
       wasSaved = await this.activeRepository?.updateSubmission(
         this.identifier,
         this.data,
@@ -726,8 +735,10 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     }
 
     if (!this.isEditMode) {
-      if (!this.fileExplorer.hasTooManyFiles && !this.fileExplorer.isTotalUploadSizeTooBig)
-        await this.uploadFiles(this.uploads)
+      // TODO: integration changes
+      if (this.hasFileExplorer && !this.fileExplorer.hasTooManyFiles && !this.fileExplorer.isTotalUploadSizeTooBig) {
+        await this.uploadFiles(this.toUpload)
+      }
     }
     // If we are in edit mode, files have already been saved
 
@@ -780,7 +791,11 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
         this.identifier,
         '%s', // replaced file by file inside repo model
       )
-      files.forEach(f => (f.isDisabled = true))
+      // Annotate file paths before uploading
+      files.forEach((f) => {
+        f.isDisabled = true
+        f.path = this.fileExplorer.getPathString(f)
+      })
       return this.activeRepository?.uploadFiles(url, files, createFolderUrl)
     }
     return []
@@ -790,6 +805,14 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     return this.activeRepository.deleteFileOrFolder(
       this.identifier,
       item,
+    )
+  }
+
+  async renameFileOrFolder(item: any, newPath: string): Promise<boolean> {
+    return this.activeRepository.renameFileOrFolder(
+      this.identifier,
+      item,
+      newPath,
     )
   }
 

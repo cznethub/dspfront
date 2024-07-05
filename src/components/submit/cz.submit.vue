@@ -1,44 +1,3 @@
-<script lang="ts">
-import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
-import type { RouteLocationNormalized } from 'vue-router'
-import type { IRepository } from '../submissions/types'
-import { repoMetadata } from '~/components/submit/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import CzRepositorySubmitCard from '~/components/submit/cz.repository-submit-card.vue'
-import CzRegisterDatasetDialog from '~/components/register-dataset/cz.register-dataset-dialog.vue'
-
-@Component({
-  name: 'cz-submit',
-  components: { CzRepositorySubmitCard, CzRegisterDatasetDialog },
-})
-class CzSubmit extends mixins(ActiveRepositoryMixin) {
-  @Ref('registerDatasetDialog') registerDatasetDialog!: InstanceType<
-    typeof CzRegisterDatasetDialog
-  >
-
-  get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map(r => repoMetadata[r])
-  }
-
-  get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
-  }
-
-  get externalRepoMetadata() {
-    return this.repoCollection.find(r => r.isExternal)
-  }
-
-  get isInSubmitLandingPage() {
-    return !(this.$route as RouteLocationNormalized).params.repository
-  }
-
-  openRegisterDatasetDialog() {
-    this.registerDatasetDialog.active = true
-  }
-}
-export default toNative(CzSubmit)
-</script>
-
 <template>
   <div class="cz-submit">
     <template v-if="isInSubmitLandingPage">
@@ -93,6 +52,50 @@ export default toNative(CzSubmit)
     </template>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
+import type { RouteLocationNormalized } from 'vue-router'
+import { useRoute } from 'vue-router'
+import type { IRepository } from '../submissions/types'
+import { repoMetadata } from '~/components/submit/constants'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import CzRepositorySubmitCard from '~/components/submit/cz.repository-submit-card.vue'
+import CzRegisterDatasetDialog from '~/components/register-dataset/cz.register-dataset-dialog.vue'
+
+@Component({
+  name: 'cz-submit',
+  components: { CzRepositorySubmitCard, CzRegisterDatasetDialog },
+})
+class CzSubmit extends mixins(ActiveRepositoryMixin) {
+  @Ref('registerDatasetDialog') registerDatasetDialog!: InstanceType<
+    typeof CzRegisterDatasetDialog
+  >
+
+  route = useRoute()
+
+  get repoCollection(): IRepository[] {
+    return Object.keys(repoMetadata).map(r => repoMetadata[r])
+  }
+
+  get supportedRepoMetadata() {
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+  }
+
+  get externalRepoMetadata() {
+    return this.repoCollection.find(r => r.isExternal)
+  }
+
+  get isInSubmitLandingPage() {
+    return !(this.route as RouteLocationNormalized).params.repository
+  }
+
+  openRegisterDatasetDialog() {
+    this.registerDatasetDialog.active = true
+  }
+}
+export default toNative(CzSubmit)
+</script>
 
 <style lang="scss" scoped>
 .repositories {

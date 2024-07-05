@@ -311,7 +311,7 @@
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-delete`"
-                        :disabled="isDeleteButtonDisabled(item)"
+                        :disabled="isDeleteButtonDisabled(item.raw)"
                         rounded
                         @click="
                           onDelete(
@@ -431,7 +431,7 @@
       <v-card>
         <v-card-title>Delete this submission?</v-card-title>
         <v-card-text v-if="deleteDialogData" class="text-body-1">
-          <p>
+          <p class="mb-2">
             This action will delete the metadata for this submission in the data
             submission Portal.
           </p>
@@ -653,7 +653,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
 
   goToEditSubmission(submission: ISubmission) {
     const repo: IRepository = repoMetadata[submission.repository]
-    this.$router.push({
+    this.router.push({
       name: 'submit.repository',
       params: { repository: repo.key, id: submission.identifier },
     })

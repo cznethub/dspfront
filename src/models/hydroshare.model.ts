@@ -3,7 +3,6 @@ import { Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
 import Repository from './repository.model'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
-import type { IFile, IFolder } from '~/components/new-submission/types'
 
 export default class HydroShare extends Repository {
   static entity = EnumRepositoryKeys.hydroshare
@@ -17,7 +16,7 @@ export default class HydroShare extends Repository {
 
   static async uploadFiles(
     bucketUrl: string,
-    itemsToUpload: (IFile | IFolder)[] | any[],
+    itemsToUpload: any[],
     createFolderUrl: string,
   ): Promise<boolean[]> {
     itemsToUpload.map(i => (i.isDisabled = true))
@@ -28,7 +27,7 @@ export default class HydroShare extends Repository {
 
     // TODO: compute folder paths
     let folderPaths = foldersToUpload.map(
-      f => `${f.path ? `${f.path}/` : ''}${f.name}`,
+      f => f.path,
     )
     // Get unique paths
     folderPaths = [...new Set(folderPaths)].sort(
@@ -39,6 +38,7 @@ export default class HydroShare extends Repository {
     // So we traverse the tree by depth and create folders in each depth at a time
     const that = this
     let responses
+    itemsToUpload.map(i => (i.isDisabled = false))
 
     if (folderPaths.length) {
       // Create folders
@@ -48,7 +48,6 @@ export default class HydroShare extends Repository {
       // No folders to create. Just upload files directly.
       responses = await _uploadFiles()
     }
-    itemsToUpload.map(i => (i.isDisabled = false))
 
     async function _createFoldersByDepth(paths: string[], depth: number): Promise<boolean[]> {
       const depthPaths = paths.filter(p => p.split('/').length === depth)
@@ -77,15 +76,19 @@ export default class HydroShare extends Repository {
     }
 
     async function _uploadFiles(): Promise<boolean[]> {
-      const fileUploadPromises = filesToUpload.map((file: IFile) => {
+      const fileUploadPromises = filesToUpload.map((file: any) => {
         let url = bucketUrl
         const form = new window.FormData()
         if (file.file)
           form.append('file', file.file, file.name)
 
         // Check if the file is in a folder
-        if (file.path)
-          url = `${url}${encodeURIComponent(file.path)}/`
+        if (file.path.includes('/')) {
+          // We need the file path without its file name
+          const pos = (file.path as string).lastIndexOf('/')
+          const path = (file.path as string).substring(0, pos)
+          url = `${url}${encodeURIComponent(path)}/`
+        }
 
         return axios.post(url, form, {
           headers: {
@@ -145,12 +148,11 @@ export default class HydroShare extends Repository {
     const pathPrefix = 'data/contents/'
     const url = this.get()?.urls?.moveOrRenameUrl || ''
     const renameUrl = sprintf(url, identifier)
-
     const form = new window.FormData()
 
     form.append(
       'source_path',
-      pathPrefix + (item.path ? `${item.path}/${item.name}` : item.name),
+      pathPrefix + (item.path),
     )
     form.append('target_path', pathPrefix + newPath)
     try {

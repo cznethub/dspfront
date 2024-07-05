@@ -125,7 +125,7 @@
           </template>
 
           <template #prev="{ prev }">
-            <v-btn color="default" :disabled="isFetching" variant="outlined" @click="prev">
+            <v-btn color="default" :disabled="isFetching" variant="text" @click="prev">
               Back
             </v-btn>
           </template>
@@ -390,7 +390,7 @@
               color="default"
               class="mb-2"
               :disabled="isFetching"
-              variant="outlined"
+              variant="text"
               @click="prev"
             >
               Back
@@ -407,6 +407,7 @@ import { Component, Watch, mixins, toNative } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import { VStepperVertical, VStepperVerticalItem } from 'vuetify/labs/VStepperVertical'
 import type { VTextField } from 'vuetify/lib/components/index.mjs'
+import { useRoute, useRouter } from 'vue-router'
 import { repoMetadata } from '~/components/submit/constants'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
 import type { IRepository } from '~/components/submissions/types'
@@ -434,6 +435,8 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   allowFileUpload = true
   resourceType = ''
   isHsCollection = false
+  route = useRoute()
+  router = useRouter()
 
   get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map(r => repoMetadata[r])
@@ -489,7 +492,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
       state.registeringSubmission = this.apiSubmission
     })
 
-    this.$router.push({
+    this.router.push({
       name: 'submit.repository',
       params: {
         repository: (this.selectedRepository as IRepository).key,
@@ -513,7 +516,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
         message: 'Your dataset has been registered!',
         type: 'success',
       })
-      this.$router.push({
+      this.router.push({
         name: 'submissions',
       })
     }
