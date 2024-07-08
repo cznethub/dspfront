@@ -4,7 +4,7 @@ ROOT_DIR=/dspfront
 
 # Replace env vars in JavaScript files
 echo "Replacing env constants in JS"
-for file in $ROOT_DIR/js/app.*.js* $ROOT_DIR/index.html;
+for file in $ROOT_DIR/assets/index*.js $ROOT_DIR/index.html;
 do
   echo "Processing $file ...";
 
