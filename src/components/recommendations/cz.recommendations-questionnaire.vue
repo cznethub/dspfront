@@ -80,12 +80,12 @@
 
           <template v-if="step.finish">
             <v-alert
-              class="my-8"
+              class="my-8 text-subtitle-1"
               variant="outlined"
               type="warning"
               border="start"
             >
-              <div class="text-body-1">
+              <p>
                 If you are a CZ Net data manager or investigator and you choose
                 to submit data to a repository other than HydroShare, EarthChem,
                 or Zenodo, please use the
@@ -94,23 +94,23 @@
                 HydroShare, EarthChem or Zenodo through the Data Submission
                 Portal, we will automatically harvest your metadata for you to
                 support CZ Net data discovery services.
-              </div>
+              </p>
             </v-alert>
 
             <v-alert
               v-if="step.finish.linkToGuide"
-              class="my-8"
+              class="my-8 text-subtitle-1"
               border="start"
               colored-border
               type="info"
               variant="outlined"
             >
-              <div class="text-body-1">
+              <p>
                 View guidance and best practices for "{{
                   enumDataTemplateType[step.finish.linkToGuide]
                 }}" data
                 <a :href="guideUrls[step.finish.linkToGuide]" target="_blank">here</a>.
-              </div>
+              </p>
             </v-alert>
 
             <div class="text-heading-5 mb-8">
