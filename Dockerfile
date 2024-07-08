@@ -1,4 +1,4 @@
-FROM node:14 as build-stage
+FROM node:22 as build-stage
 WORKDIR /dspfront
 COPY package*.json ./
 RUN npm install
