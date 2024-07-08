@@ -1,4 +1,3 @@
-
 ### Component testing
 
 Create tests interactively using Cypress by running `npx cypress open`

@@ -1,18 +1,21 @@
 <template>
   <v-container id="cz-new-submission" class="cz-new-submission px-4">
-    <h1 class="text-h4">{{ formTitle }}</h1>
-    <v-divider class="mb-4"></v-divider>
+    <h1 class="text-h4">
+      {{ formTitle }}
+    </h1>
+    <v-divider class="mb-4" />
     <v-alert
-      id="instructions"
       v-if="!isLoading && wasLoaded"
+      id="instructions"
       class="text-subtitle-1 my-8"
-      border="left"
-      colored-border
+      border="start"
+      border-color="primary"
       type="info"
-      elevation="2"
+      variant="outlined"
+      density="compact"
     >
       <div
-        class="d-flex flex-wrap-wrap justify-space-between flex-column flex-md-row"
+        class="d-flex flex-wrap-wrap justify-space-between flex-column flex-md-row text-black"
       >
         <div>
           <div><b>Instructions</b></div>
@@ -33,16 +36,16 @@
     </v-alert>
 
     <cz-new-submission-actions
-      id="cz-new-submission-actions-top"
       v-if="!isLoading && wasLoaded"
-      :repositoryUrl="repositoryUrl"
-      :isEditMode="isEditMode"
-      :allowFileUpload="allowFileUpload"
-      :isDevMode="isDevMode"
-      :isSaving="isSaving"
-      :confirmText="submitText"
+      id="cz-new-submission-actions-top"
+      :repository-url="repositoryUrl"
+      :is-edit-mode="isEditMode"
+      :allow-file-upload="allowFileUpload"
+      :is-dev-mode="isDevMode"
+      :is-saving="isSaving"
+      :confirm-text="submitText"
       :errors="errors"
-      :hasUnsavedChanges="hasUnsavedChanges"
+      :has-unsaved-changes="hasUnsavedChanges"
       @save-and-finish="onSaveAndFinish"
       @save="onSave"
       @cancel="goToSubmissions"
@@ -50,30 +53,53 @@
 
     <div>
       <div v-if="!isLoading">
-        <cz-folder-structure
+        <!-- <cz-folder-structure
+          v-if="hasFileExplorer"
           id="cz-folder-structure"
-          v-if="hasFolderStructure"
           ref="folderStructure"
           v-model="uploads"
-          @upload="uploadFiles($event)"
-          :isReadOnly="config.isReadOnly"
-          :allowFileUpload="allowFileUpload"
-          :rootDirectory.sync="rootDirectory"
-          :repoMetadata="repoMetadata[repositoryKey]"
-          :isEditMode="isEditMode"
+          v-model:root-directory="rootDirectory"
+          :is-read-only="config.isReadOnly"
+          :allow-file-upload="allowFileUpload"
+          :repo-metadata="repoMetadata[repositoryKey]"
+          :is-edit-mode="isEditMode"
           :identifier="identifier"
-        />
+          @upload="uploadFiles($event)"
+        /> -->
+
+        <!-- <template v-for="f of toUpload">
+          <pre>{{ rootDirectory }}</pre>
+        </template> -->
+
+        <cz-file-explorer
+          v-if="hasFileExplorer"
+          id="cz-folder-structure"
+          ref="fileExplorer"
+          v-model:valid-items="toUpload"
+          :root-directory="rootDirectory"
+          :has-folders="fileExplorerConfig.hasFolders"
+          :is-read-only="fileExplorerConfig.isReadOnly"
+          :has-file-metadata="() => true"
+          :upload="isEditMode ? uploadFiles : undefined"
+          :delete-file-or-folder="isEditMode ? deleteFileOrFolder : undefined"
+          :rename-file-or-folder="isEditMode ? renameFileOrFolder : undefined"
+        >
+          <template #prepend>
+            <span />
+          </template>
+        </cz-file-explorer>
 
         <template v-if="wasLoaded">
           <cz-form
+            v-if="schema"
+            ref="form"
+            v-model="data"
+            v-model:isValid="isValid"
             :schema="schema"
             :uischema="uiSchema"
-            :errors.sync="errors"
-            :isValid.sync="isValid"
-            :data.sync="data"
             :config="config"
-            @update:data="onDataChange"
-            ref="form"
+            @update:errors="onUpdateErrors"
+            @update:model-value="onDataChange"
           />
         </template>
       </div>
@@ -87,16 +113,16 @@
       </div>
 
       <cz-new-submission-actions
-        id="cz-new-submission-actions-bottom"
         v-if="!isLoading && wasLoaded"
-        :repositoryUrl="repositoryUrl"
-        :isEditMode="isEditMode"
-        :allowFileUpload="allowFileUpload"
-        :isDevMode="isDevMode"
-        :isSaving="isSaving"
-        :confirmText="submitText"
+        id="cz-new-submission-actions-bottom"
+        :repository-url="repositoryUrl"
+        :is-edit-mode="isEditMode"
+        :allow-file-upload="allowFileUpload"
+        :is-dev-mode="isDevMode"
+        :is-saving="isSaving"
+        :confirm-text="submitText"
         :errors="errors"
-        :hasUnsavedChanges="hasUnsavedChanges"
+        :has-unsaved-changes="hasUnsavedChanges"
         @save-and-finish="onSaveAndFinish"
         @save="onSave"
         @cancel="goToSubmissions"
@@ -104,28 +130,27 @@
     </div>
 
     <v-container v-if="isLoading">
-      <v-skeleton-loader type="actions, article, actions"></v-skeleton-loader>
+      <v-skeleton-loader type="actions, article, actions" />
     </v-container>
 
     <template v-if="!isLoading && !wasLoaded">
       <template v-if="wasUnauthorized">
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
-          elevation="2"
+          variant="outlined"
         >
           <v-row>
-            <v-col class="flex-grow-1"
-              >We need your authorization to load this submission from the
-              repository.</v-col
-            >
+            <v-col class="flex-grow-1 text-black">
+              We need your authorization to load this submission from the
+              repository.
+            </v-col>
             <v-col class="flex-grow-0">
               <v-btn
-                @click="openAuthorizePopup(repositoryKey)"
                 color="primary"
-                class="mb-4"
+                @click="openAuthorizePopup(repositoryKey)"
               >
                 <i class="fas fa-key mr-2" />Authorize
               </v-btn>
@@ -137,18 +162,20 @@
       <template v-else-if="!isLoggedIn">
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="info"
-          elevation="2"
+          variant="outlined"
         >
           <v-row>
-            <v-col class="flex-grow-1"
-              >You need to log in to access this submission.</v-col
-            >
+            <v-col class="flex-grow-1 text-black">
+              You need to log in to access this submission.
+            </v-col>
             <v-col class="flex-grow-0">
-              <v-btn id="orcid_login_continue" @click="onLogIn" color="primary">
-                <v-icon class="mr-2">fab fa-orcid</v-icon>
+              <v-btn id="orcid_login_continue" color="primary" @click="onLogIn">
+                <v-icon class="mr-2">
+                  fab fa-orcid
+                </v-icon>
                 <span>Log In Using ORCID</span>
               </v-btn>
             </v-col>
@@ -156,34 +183,34 @@
         </v-alert>
 
         <div class="d-flex justify-center mt-8">
-          <v-icon style="font-size: 8rem" class="text--disabled"
-            >mdi-login</v-icon
-          >
+          <v-icon style="font-size: 8rem" class="text-disabled">
+            mdi-login
+          </v-icon>
         </div>
       </template>
 
       <template v-else>
         <v-alert
           class="text-subtitle-1"
-          border="left"
+          border="start"
           colored-border
           type="error"
-          elevation="2"
+          variant="outlined"
         >
           We could not load this submission. The service might be unavailable or
           the submission might have been deleted.
         </v-alert>
 
         <div class="d-flex justify-center mt-8">
-          <v-icon style="font-size: 8rem" class="text--disabled"
-            >mdi-database-off-outline</v-icon
-          >
+          <v-icon style="font-size: 8rem" class="text--disabled">
+            mdi-database-off-outline
+          </v-icon>
         </div>
       </template>
     </template>
 
     <v-dialog
-      :value="isSaving"
+      v-model="isSaving"
       no-click-animation
       hide-overlay
       persistent
@@ -192,79 +219,82 @@
     >
       <v-card class="py-4" color="primary" dark>
         <v-card-text>
-          <p id="new-submission-saving">Saving...</p>
+          <p id="new-submission-saving" class="mb-4 text-center text-body-2">
+            Saving...
+          </p>
           <v-progress-linear
             indeterminate
             color="white"
             class="mb-0"
-          ></v-progress-linear>
+          />
         </v-card-text>
       </v-card>
     </v-dialog>
-    <v-overlay class="backdrop" absolute v-if="isSaving" />
+    <v-overlay v-if="isSaving" class="backdrop" absolute />
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Ref } from "vue-property-decorator";
-import { EnumRepositoryKeys, IRepositoryUrls } from "../submissions/types";
-import { mixins } from "vue-class-component";
-import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
-import { repoMetadata } from "../submit/constants";
-import { IFile, IFolder } from "@/components/new-submission/types";
-import { ErrorObject } from "ajv";
-import { Subscription } from "rxjs";
-import { Notifications, CzForm } from "@cznethub/cznet-vue-core";
-import { DELETED_RESOURCE_STATUS_CODES } from "@/constants";
-import Repository from "@/models/repository.model";
-import CzFolderStructure from "@/components/new-submission/cz.folder-structure.vue";
-import CzNewSubmissionActions from "@/components/new-submission/cz.new-submission-actions.vue";
-import User from "@/models/user.model";
-import Submission from "@/models/submission.model";
-const sprintf = require("sprintf-js").sprintf;
+import { Component, Hook, Ref, mixins, toNative } from 'vue-facing-decorator'
+import { Subscription } from 'rxjs'
+import { CzFileExplorer, CzForm, Notifications } from '@cznethub/cznet-vue-core'
+import { sprintf } from 'sprintf-js'
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
+import type { IRepositoryUrls } from '../submissions/types'
+import { EnumRepositoryKeys } from '../submissions/types'
+import { repoMetadata } from '../submit/constants'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import { DELETED_RESOURCE_STATUS_CODES } from '~/constants'
+import Repository from '~/models/repository.model'
+import CzNewSubmissionActions from '~/components/new-submission/cz.new-submission-actions.vue'
+import User from '~/models/user.model'
+import Submission from '~/models/submission.model'
+import { hasUnsavedChangesGuard } from '~/guards'
 
-const initialData = {};
+const initialData = {}
 
 @Component({
-  name: "cz-new-submission",
+  name: 'cz-new-submission',
   components: {
-    CzFolderStructure,
     CzNewSubmissionActions,
     CzForm,
+    CzFileExplorer,
   },
 })
-export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
-  @Ref("folderStructure") folderStructure!: InstanceType<
-    typeof CzFolderStructure
-  >;
+class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
+  @Ref('fileExplorer') fileExplorer!: InstanceType<
+    typeof CzFileExplorer
+  >
 
-  protected rootDirectory: IFolder = {
-    name: "root",
-    children: [],
-    parent: null,
-    key: "",
-    path: "",
-  };
-  protected isValid = false;
-  protected isLoading = false;
-  protected isLoadingInitialFiles = false;
-  protected isSaving = false;
-  protected identifier = "";
-  protected data: any = initialData;
-  protected usedUISchema = {};
-  protected repoMetadata = repoMetadata;
-  protected uploads: (IFile | IFolder)[] = [];
-  protected errors: ErrorObject[] = [];
-  protected repositoryRecord: any = null;
-  protected loggedInSubject = new Subscription();
-  protected timesChanged = 0;
-  protected wasUnauthorized = false;
-  protected allowFileUpload = true;
-  protected repositoryKey: EnumRepositoryKeys = EnumRepositoryKeys.external;
+  route = useRoute()
+  router = useRouter()
 
-  protected get config() {
+  rootDirectory: Partial<IFolder> = {
+    name: 'root',
+    children: [
+    ],
+  }
+
+  isValid = false
+  isLoading = false
+  isLoadingInitialFiles = false
+  isSaving = false
+  identifier = ''
+  data: Partial<IFolder> = initialData
+  usedUISchema = {}
+  repoMetadata = repoMetadata
+  toUpload = []
+  errors: { title: string, message: string }[] = []
+  repositoryRecord: any = null
+  loggedInSubject = new Subscription()
+  timesChanged = 0
+  wasUnauthorized = false
+  allowFileUpload = true
+  repositoryKey: EnumRepositoryKeys = EnumRepositoryKeys.external
+
+  get config() {
     return {
       restrict: true,
       trim: false,
@@ -277,221 +307,226 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
       hideArraySummaryValidation: false,
       vuetify: {
         commonAttrs: {
-          dense: true,
-          outlined: true,
-          "persistent-hint": true,
-          "hide-details": false,
+          'density': 'compact',
+          'variant': 'outlined',
+          'persistent-hint': true,
+          'hide-details': false,
         },
       },
       // isViewMode: true,
       isReadOnly: this.isPublished || this.isHsCollection,
       // isDisabled: false,
-    };
+    }
   }
 
-  protected get dbSubmission() {
-    const identifier = this.$route.params.id?.toString();
-    const submission = Submission.find([identifier, "hydroshare"]);
-    return submission;
+  fileExplorerConfig = {
+    isReadOnly: false,
+    hasFolders: true,
   }
 
-  protected get isHsCollection(): boolean {
-    return this.dbSubmission?.metadata.type === "CollectionResource";
+  get dbSubmission() {
+    const identifier = this.route.params.id?.toString()
+    const submission = Submission.find([identifier, 'hydroshare'])
+    return submission
   }
 
-  protected get isHsComposite(): boolean {
-    return this.dbSubmission?.metadata.type === "CompositeResource";
+  get isHsCollection(): boolean {
+    return this.dbSubmission?.metadata.type === 'CollectionResource'
   }
 
-  protected get isEclSubmitted(): boolean {
+  get isHsComposite(): boolean {
+    return this.dbSubmission?.metadata.type === 'CompositeResource'
+  }
+
+  get isEclSubmitted(): boolean {
     return (
-      this.activeRepository.entity === EnumRepositoryKeys.earthchem &&
-      this.dbSubmission?.metadata.status === "submitted"
-    );
+      this.activeRepository.entity === EnumRepositoryKeys.earthchem
+      && this.dbSubmission?.metadata.status === 'submitted'
+    )
   }
 
-  protected get isPublished(): boolean {
-    if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare) {
-      return !!this.dbSubmission?.metadata.published;
-    } else if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
-      return this.dbSubmission?.metadata.status === "published";
-    }
+  get isPublished(): boolean {
+    if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare)
+      return !!this.dbSubmission?.metadata.published
+    else if (this.activeRepository.entity === EnumRepositoryKeys.earthchem)
+      return this.dbSubmission?.metadata.status === 'published'
 
-    return false;
+    return false
   }
 
-  protected get repositoryUrl() {
-    return this.dbSubmission?.url;
+  get repositoryUrl() {
+    return this.dbSubmission?.url
   }
 
-  protected get isEditMode() {
-    return this.$route.params.id !== undefined;
+  get isEditMode() {
+    return this.route.params.id?.length
   }
 
-  protected get hasFolderStructure() {
-    return this.wasLoaded && !this.isExternal && !this.isHsCollection;
+  get hasFileExplorer() {
+    return this.wasLoaded && !this.isExternal && !this.isHsCollection
   }
 
-  protected get schema() {
-    return this.activeRepository?.get()?.schema;
+  get schema() {
+    return this.activeRepository?.get()?.schema
   }
 
-  protected get uiSchema() {
-    return this.activeRepository?.get()?.uischema || undefined;
+  get uiSchema() {
+    return this.activeRepository?.get()?.uischema || undefined
   }
 
-  protected get schemaDefaults() {
-    return this.activeRepository?.get()?.schemaDefaults;
+  get schemaDefaults() {
+    return this.activeRepository?.get()?.schemaDefaults
   }
 
-  protected get isDevMode() {
-    return false;
+  get isDevMode() {
+    return false
     // TODO: uncomment when this env variable is properly setup in production
-    // return process.env.NODE_ENV === "development"
+    // return import.meta.env.NODE_ENV === "development"
   }
 
-  protected get isExternal() {
-    return this.repoMetadata[this.repositoryKey].isExternal;
+  get isExternal() {
+    return this.repoMetadata[this.repositoryKey].isExternal
   }
 
-  protected get formTitle() {
-    if (this.isExternal) {
-      return "Register Dataset from External Repository";
-    }
+  get formTitle() {
+    if (this.isExternal)
+      return 'Register Dataset from External Repository'
 
     return this.isEditMode
-      ? "Edit Submission"
-      : `Submit to ${this.activeRepository.get()?.name}`;
+      ? 'Edit Submission'
+      : `Submit to ${this.activeRepository.name}`
   }
 
-  protected get submitText() {
-    return this.isEditMode ? "Save Changes" : "Save";
+  get submitText() {
+    return this.isEditMode ? 'Save Changes' : 'Save'
   }
 
-  protected get wasLoaded() {
-    return this.isEditMode ? !!this.repositoryRecord : true;
+  get wasLoaded() {
+    return this.isEditMode ? !!this.repositoryRecord : true
   }
 
-  protected get hasUnsavedChanges(): boolean {
-    return User.$state.hasUnsavedChanges;
+  get hasUnsavedChanges(): boolean {
+    return User.$state.hasUnsavedChanges
   }
 
-  protected get registeringSubmission(): Partial<Submission> | null {
-    return User.$state.registeringSubmission;
+  get registeringSubmission(): Partial<Submission> | null {
+    return User.$state.registeringSubmission
   }
 
-  protected set hasUnsavedChanges(value: boolean) {
+  set hasUnsavedChanges(value: boolean) {
     User.commit((state) => {
-      state.hasUnsavedChanges = value;
-    });
+      state.hasUnsavedChanges = value
+    })
   }
 
-  protected get isLoggedIn() {
-    return User.$state.isLoggedIn;
+  get isLoggedIn() {
+    return User.$state.isLoggedIn
   }
 
   created() {
-    this.init();
+    this.init()
   }
 
   beforeDestroy() {
-    this.loggedInSubject.unsubscribe();
+    this.loggedInSubject.unsubscribe()
   }
 
   init() {
-    this.isLoading = true;
-    this.data = this.schemaDefaults;
-    this.timesChanged = 0; // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
-    this.hasUnsavedChanges = false;
-    this.wasUnauthorized = false;
-    this.repositoryKey = this.$route.params.repository as EnumRepositoryKeys;
+    this.isLoading = true
+    this.data = this.schemaDefaults || {}
+    this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
+    this.hasUnsavedChanges = false
+    this.wasUnauthorized = false
+    this.repositoryKey = this.route.params.repository as EnumRepositoryKeys
 
     if (
-      !this.activeRepository ||
-      this.activeRepository.get()?.key !== this.repositoryKey
+      !this.activeRepository
+      || this.activeRepository.get()?.key !== this.repositoryKey
     ) {
       // Check that the key from the url is actually a EnumRepositoryKeys
-      if (EnumRepositoryKeys[this.repositoryKey]) {
-        this.setActiveRepository(this.repositoryKey);
-      }
+      if (Object.values(EnumRepositoryKeys).includes(this.repositoryKey))
+        this.setActiveRepository(this.repositoryKey)
     }
 
     if (this.isEditMode) {
-      // `$route.params.id` will cast to a number. We need the identifier as a string.
-      this.identifier = this.$route.params.id?.toString();
-      this.loadSavedSubmission();
-    } else {
-      this.isLoading = false;
+      this.identifier = this.route.params.id?.toString()
+      this.loadSavedSubmission()
+    }
+    else {
+      this.isLoading = false
     }
   }
 
-  protected onLogIn() {
-    User.logIn();
+  onLogIn() {
+    User.logIn()
   }
 
-  protected goToSubmissions() {
-    this.$router.push({
-      name: "submissions",
-    });
+  goToSubmissions() {
+    this.router.push({
+      name: 'submissions',
+    })
   }
 
-  protected async loadSavedSubmission() {
-    console.info("CzNewSubmission: reading existing record...");
-    const response =
-      this.$route.query.mode === "register"
+  async loadSavedSubmission() {
+    console.info('[CzNewSubmission]: Reading existing record...')
+    const response
+      = this.route.query.mode === 'register'
         ? this.registeringSubmission
           ? { metadata: this.registeringSubmission } // Load it from persistent state if we have it
           : await Repository.readExistingSubmission(
-              this.identifier,
-              this.repositoryKey
-            ) // Otherwise, refetch from repository
-        : await Repository.readSubmission(this.identifier, this.repositoryKey);
+            this.identifier,
+            this.repositoryKey,
+          ) // Otherwise, refetch from repository
+        : await Repository.readSubmission(this.identifier, this.repositoryKey)
     if (response === 401) {
       // Repository was unauthorized
-      this.wasUnauthorized = true;
+      this.wasUnauthorized = true
 
       // Try again when user has authorized the repository
       this.authorizedSubject = Repository.authorized$.subscribe(
         async (_repositoryKey: EnumRepositoryKeys) => {
-          this.isLoading = true;
-          await this.loadSavedSubmission();
-        }
-      );
-    } else if (response === 403) {
+          this.isLoading = true
+          await this.loadSavedSubmission()
+        },
+      )
+    }
+    else if (response === 403) {
       // Submission not found or service unavailable
-      this.repositoryRecord = null;
+      this.repositoryRecord = null
 
       if (!this.isLoggedIn) {
         this.loggedInSubject = User.loggedIn$.subscribe(async () => {
-          this.isLoading = true;
-          await this.loadSavedSubmission();
-        });
+          this.isLoading = true
+          await this.loadSavedSubmission()
+        })
       }
-    } else if (DELETED_RESOURCE_STATUS_CODES.includes(response)) {
+    }
+    else if (DELETED_RESOURCE_STATUS_CODES.includes(response)) {
       // Resource has been deleted in repository
-      this.repositoryRecord = null;
+      this.repositoryRecord = null
       Notifications.openDialog({
-        title: "This resource has been deleted",
+        title: 'This resource has been deleted',
         content: `The resource you requested does not exist in the remote repository. It may have been deleted outside of the ${this.$t(
-          "portalName"
+          'portalName',
         )}. Do you want to remove it from your list of submissions?`,
-        confirmText: "Remove",
-        cancelText: "Cancel",
+        confirmText: 'Remove',
+        cancelText: 'Cancel',
         onConfirm: async () => {
           await Repository.deleteSubmission(
             this.identifier,
-            this.repositoryKey
-          );
-          this.$router.push({ name: "submissions" });
+            this.repositoryKey,
+          )
+          this.router.push({ name: 'submissions' })
         },
-      });
-    } else {
-      this.repositoryRecord = response?.metadata;
-      this.wasUnauthorized = false;
+      })
+    }
+    else {
+      this.repositoryRecord = response?.metadata
+      this.wasUnauthorized = false
 
       // // Redirect to view page if submission is not editable
       // if (this.isPublished || this.isHsCollection || this.isEclSubmitted) {
-      //   this.$router.push({
+      //   this.router.push({
       //     name: "view-submission",
       //     params: {
       //       id: this.identifier,
@@ -502,202 +537,207 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
     }
 
     if (this.repositoryRecord) {
-      Object.keys(this.repositoryRecord).map((key) => {
-        if (this.repositoryRecord[key] === null) {
-          this.repositoryRecord[key] = undefined;
-        }
-      });
+      Object.keys(this.repositoryRecord).forEach((key) => {
+        if (this.repositoryRecord[key] === null)
+          this.repositoryRecord[key] = undefined
+      })
 
       // For HydroShare, only allow file upload for Composite Resources
-      if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare) {
-        this.allowFileUpload = this.isHsComposite;
-      }
+      if (this.activeRepository.entity === EnumRepositoryKeys.hydroshare)
+        this.allowFileUpload = this.isHsComposite
 
-      if (this.hasFolderStructure) {
-        console.info("CzNewSubmission: reading existing files...");
+      if (this.hasFileExplorer) {
+        console.info('[CzNewSubmission]: Reading existing files...')
         try {
-          const initialStructure: (IFile | IFolder)[] =
-            await this.activeRepository.readRootFolder(
+          const initialStructure
+            = await this.activeRepository.readRootFolder(
               this.identifier,
-              "",
-              this.rootDirectory
-            );
-          this.rootDirectory.children = initialStructure;
-        } catch (e) {
+              '',
+            )
+          this.rootDirectory.children = initialStructure
+        }
+        catch (e) {
           Notifications.toast({
-            message: "Failed to load existing files.",
-            type: "error",
-          });
+            message: 'Failed to load existing files.',
+            type: 'error',
+          })
         }
       }
-      this.isLoadingInitialFiles = false;
+
+      this.isLoadingInitialFiles = false
 
       this.data = {
         ...this.data,
         ...this.repositoryRecord,
-      };
+      }
 
       // Nexttick doesn't work. We use setTimeout instead.
       setTimeout(() => {
-        this.hasUnsavedChanges = false;
-      });
+        this.hasUnsavedChanges = false
+      })
     }
 
     // clean up
     if (this.registeringSubmission) {
       User.commit((state) => {
-        state.registeringSubmission = null;
-      });
+        state.registeringSubmission = null
+      })
     }
 
-    this.isLoading = false;
+    this.isLoading = false
   }
 
-  protected onSaveAndFinish() {
+  onSaveAndFinish() {
     if (
-      this.hasFolderStructure &&
-      (this.folderStructure?.hasInvalidFilesToUpload ||
-        !this.folderStructure?.canUploadFiles)
+      this.hasFileExplorer
+      && (this.fileExplorer?.hasTooManyFiles || this.fileExplorer?.isTotalUploadSizeTooBig || this.fileExplorer?.hasInvalidFilesToUpload)
     ) {
       Notifications.openDialog({
-        title: "Some of your files cannot be uploaded",
+        title: 'Some of your files cannot be uploaded',
         content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
-        confirmText: "Continue",
-        cancelText: "Cancel",
+        confirmText: 'Continue',
+        cancelText: 'Cancel',
         onConfirm: async () => {
-          this._onSaveAndFinish();
+          this._onSaveAndFinish()
         },
         onCancel: () => {
-          return false;
+          return false
         },
-      });
-    } else {
-      this._onSaveAndFinish();
+      })
+    }
+    else {
+      this._onSaveAndFinish()
     }
   }
 
   private async _onSaveAndFinish() {
     // In earthchem, we want to confirm if the user wants to mark the status as complete before navigating away
     if (this.activeRepository.entity === EnumRepositoryKeys.earthchem) {
-      if (this.data.status === "incomplete") {
+      if (this.data.status === 'incomplete') {
         Notifications.openDialog({
-          title: "Are you finished with this submission?",
+          title: 'Are you finished with this submission?',
           content: `Do you want to submit this resource for review? If so, you will not be able to make further changes.`,
-          confirmText: "Submit for review",
-          secondaryActionText: "Finish later",
-          cancelText: "Cancel",
+          confirmText: 'Submit for review',
+          secondaryActionText: 'Finish later',
+          cancelText: 'Cancel',
           onConfirm: async () => {
-            this.data.status = "submitted";
-            this.hasUnsavedChanges = true;
-            this._saveAndFinish();
+            this.data.status = 'submitted'
+            this.hasUnsavedChanges = true
+            this._saveAndFinish()
           },
           onSecondaryAction: () => {
-            this._saveAndFinish();
+            this._saveAndFinish()
           },
-        });
-      } else {
-        this._saveAndFinish();
+        })
       }
-    } else {
-      this._saveAndFinish();
+      else {
+        this._saveAndFinish()
+      }
+    }
+    else {
+      this._saveAndFinish()
     }
   }
 
-  protected onSave() {
+  onSave() {
     if (
-      !this.isExternal &&
-      (this.folderStructure?.hasInvalidFilesToUpload ||
-        !this.folderStructure?.canUploadFiles)
+      !this.isExternal
+      && this.hasFileExplorer
+      && (this.fileExplorer?.hasTooManyFiles || this.fileExplorer?.isTotalUploadSizeTooBig || this.fileExplorer?.hasInvalidFilesToUpload)
     ) {
       Notifications.openDialog({
-        title: "Some of your files cannot be uploaded",
+        title: 'Some of your files cannot be uploaded',
         content: `You have selected files for upload that are invalid or cannot be uploaded at this time. Please correct any errors indicated or confirm below to ignore them and continue.`,
-        confirmText: "Continue",
-        cancelText: "Cancel",
+        confirmText: 'Continue',
+        cancelText: 'Cancel',
         onConfirm: async () => {
-          this._onSave();
+          this._onSave()
         },
         onCancel: () => {
-          return false;
+          return false
         },
-      });
-    } else {
-      this._onSave();
+      })
+    }
+    else {
+      this._onSave()
     }
   }
 
   private async _onSave() {
-    const wasSaved = await this._save();
+    const wasSaved = await this._save()
 
     if (wasSaved) {
-      this.hasUnsavedChanges = false;
+      this.hasUnsavedChanges = false
 
       if (!this.isEditMode) {
         // If creating, redirect to the edit page
-        this.$router.push({
-          name: "submit.repository",
+        this.router.push({
+          name: 'submit.repository',
           params: {
             repository: this.activeRepository.entity,
             id: this.identifier,
           },
-        });
+        })
         // Vue-router does not reload components when redirecting the same route.
         // The only way to do it is using a `key` in a `router-view`, but we do not use a `router-view` in this page.
         // We reset the state ourselves instead
-        this.init();
+        this.init()
       }
     }
-    this.isSaving = false;
+    this.isSaving = false
   }
 
   private async _saveAndFinish() {
-    if (this.hasUnsavedChanges || this.$route.query.mode === "register") {
-      const wasSaved = await this._save();
+    if (this.hasUnsavedChanges || this.route.query.mode === 'register') {
+      const wasSaved = await this._save()
 
       if (wasSaved) {
-        this.hasUnsavedChanges = false;
-        this.$router.push({ name: "submissions" });
+        this.hasUnsavedChanges = false
+        this.router.push({ name: 'submissions' })
       }
     }
     // If nothing to save, just redirect to submissions page
     else {
-      this.$router.push({ name: "submissions" });
+      this.router.push({ name: 'submissions' })
     }
   }
 
   private async _save() {
-    this.isSaving = true;
-    let wasSaved = false;
-    let submission;
+    this.isSaving = true
+    let wasSaved = false
+    let submission
 
     // If first time saving, create a new record
     if (!this.identifier) {
-      console.info("CzNewSubmission: creating new record...");
+      console.info('CzNewSubmission: creating new record...')
       try {
         submission = await this.activeRepository?.createSubmission(
           this.data,
-          this.repositoryKey
-        );
-      } catch (e) {
-        this.isSaving = false;
-        return false;
+          this.repositoryKey,
+        )
+      }
+      catch (e) {
+        this.isSaving = false
+        return false
       }
 
       if (submission?.identifier) {
-        this.identifier = submission.identifier;
-        wasSaved = true;
+        this.identifier = submission.identifier
+        wasSaved = true
       }
-    } else {
-      console.info("CzNewSubmission: Saving to existing record...");
+    }
+    else {
+      console.info('[NewSubmission]: Saving to existing record...')
       wasSaved = await this.activeRepository?.updateSubmission(
         this.identifier,
-        this.data
-      );
+        this.data,
+      )
     }
 
     if (!this.isEditMode) {
-      if (this.folderStructure?.canUploadFiles) {
-        await this.uploadFiles(this.uploads);
+      // TODO: integration changes
+      if (this.hasFileExplorer && !this.fileExplorer.hasTooManyFiles && !this.fileExplorer.isTotalUploadSizeTooBig) {
+        await this.uploadFiles(this.toUpload)
       }
     }
     // If we are in edit mode, files have already been saved
@@ -706,53 +746,87 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
       // Indicate that changes have been saved
       Notifications.toast({
         message: this.isEditMode
-          ? "Your changes have been saved"
-          : "Your submission has been saved!",
-        type: "success",
-      });
-    } else {
+          ? 'Your changes have been saved'
+          : 'Your submission has been saved!',
+        type: 'success',
+      })
+    }
+    else {
       Notifications.toast({
         message: this.isEditMode
-          ? "Your changes could not be saved"
-          : "Failed to create submission",
-        type: "error",
-      });
+          ? 'Your changes could not be saved'
+          : 'Failed to create submission',
+        type: 'error',
+      })
     }
 
-    this.isSaving = false;
+    this.isSaving = false
 
-    return wasSaved;
+    return wasSaved
   }
 
-  protected onDataChange(_data) {
+  onUpdateErrors(errors: { title: string, message: string }[]) {
+    this.errors = errors
+  }
+
+  onDataChange(_data: any) {
     // cz-form emits 'change' event multiple times during instantioation.
-    const changesDuringInstantiation = 2;
+    const changesDuringInstantiation = 3
 
-    if (this.timesChanged <= changesDuringInstantiation) {
-      this.timesChanged = this.timesChanged + 1;
-    }
+    if (this.timesChanged <= changesDuringInstantiation)
+      this.timesChanged = this.timesChanged + 1
 
-    this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation;
+    this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation
   }
 
-  protected async uploadFiles(files: (IFolder | IFile)[]) {
-    const repoUrls: IRepositoryUrls | undefined =
-      this.activeRepository?.get()?.urls;
+  async uploadFiles(files: (IFile | IFolder)[]): Promise<boolean[]> {
+    const repoUrls: IRepositoryUrls | undefined
+      = this.activeRepository?.get()?.urls
 
     if (files.length && repoUrls) {
-      const url = sprintf(repoUrls.fileCreateUrl, this.identifier);
+      const url = sprintf(repoUrls.fileCreateUrl, this.identifier)
 
       const createFolderUrl = sprintf(
-        repoUrls.folderCreateUrl,
+        repoUrls.folderCreateUrl || '',
         this.identifier,
-        "%s" // replaced file by file inside repo model
-      );
-      files.map((f) => (f.isDisabled = true));
-      await this.activeRepository?.uploadFiles(url, files, createFolderUrl);
-      this.folderStructure.redrawFileTree();
+        '%s', // replaced file by file inside repo model
+      )
+      // Annotate file paths before uploading
+      files.forEach((f) => {
+        f.isDisabled = true
+        f.path = this.fileExplorer.getPathString(f)
+      })
+      return this.activeRepository?.uploadFiles(url, files, createFolderUrl)
     }
+    return []
+  }
+
+  async deleteFileOrFolder(item: (IFile | IFolder)): Promise<boolean> {
+    return this.activeRepository.deleteFileOrFolder(
+      this.identifier,
+      item,
+    )
+  }
+
+  async renameFileOrFolder(item: (IFile | IFolder), newPath: string): Promise<boolean> {
+    item.path = this.fileExplorer.getPathString(item)
+    return this.activeRepository.renameFileOrFolder(
+      this.identifier,
+      item,
+      newPath,
+    )
+  }
+
+  @Hook
+  beforeRouteLeave(
+    to: RouteLocationNormalized,
+    from: RouteLocationNormalized,
+    next: NavigationGuardNext,
+  ) {
+    hasUnsavedChangesGuard(to, from, next)
   }
 }
+export default toNative(CzNewSubmission)
 </script>
 
 <style lang="scss" scoped>
@@ -766,11 +840,7 @@ export default class CzNewSubmission extends mixins<ActiveRepositoryMixin>(
   align-items: center;
 }
 
-::v-deep .v-overlay.backdrop {
+:deep(.v-overlay.backdrop) {
   z-index: 4 !important;
-}
-
-::v-deep .v-alert__content {
-  width: 0;
 }
 </style>

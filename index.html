@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#00aba9" />
+    <link rel="icon" href="/img/czcnet_logo_circle.png" />
+    <meta name="msapplication-TileColor" content="#00aba9" />
+    <script>
+      ;(function () {
+        const prefersDark =
+          window.matchMedia &&
+          window.matchMedia('(prefers-color-scheme: dark)').matches
+        const setting = localStorage.getItem('vueuse-color-scheme') || 'auto'
+        if (setting === 'dark' || (prefersDark && setting !== 'light'))
+          document.documentElement.classList.toggle('dark', true)
+      })()
+    </script>
+    <!-- Heap Analytics: https://developers.heap.io/docs/web -->
+    <script type="text/javascript">
+      ;(window.heap = window.heap || []),
+        (heap.load = function (e, t) {
+          ;(window.heap.appid = e), (window.heap.config = t = t || {})
+          var r = document.createElement('script')
+          ;(r.type = 'text/javascript'),
+            (r.async = !0),
+            (r.src = 'https://cdn.heapanalytics.com/js/heap-' + e + '.js')
+          var a = document.getElementsByTagName('script')[0]
+          a.parentNode.insertBefore(r, a)
+          for (
+            var n = function (e) {
+                return function () {
+                  heap.push(
+                    [e].concat(Array.prototype.slice.call(arguments, 0)),
+                  )
+                }
+              },
+              p = [
+                'addEventProperties',
+                'addUserProperties',
+                'clearEventProperties',
+                'identify',
+                'resetIdentity',
+                'removeEventProperty',
+                'setEventProperties',
+                'track',
+                'unsetEventProperty',
+              ],
+              o = 0;
+            o < p.length;
+            o++
+          )
+            heap[p[o]] = n(p[o])
+        })
+      heap.load('<%= VITE_APP_HEAP_ANALYTICS_APP_ID %>')
+    </script>
+  </head>
+  <body class="font-sans">
+    <div id="app"></div>
+    <script type="module" src="/src/main.ts"></script>
+    <noscript>
+      This website requires JavaScript to function properly. Please enable
+      JavaScript to continue.
+    </noscript>
+  </body>
+</html>

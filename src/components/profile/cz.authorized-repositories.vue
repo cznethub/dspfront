@@ -1,7 +1,9 @@
 <template>
   <div class="cz-authorized-repositories">
-    <div class="text-h4">Authorized Repositories</div>
-    <v-divider class="mb-4"></v-divider>
+    <div class="text-h4">
+      Authorized Repositories
+    </div>
+    <v-divider class="mb-4" />
 
     <p class="text-body-1 mb-4">
       The {{ $t("portalName") }} needs your permission to access and interact
@@ -9,45 +11,48 @@
     </p>
 
     <v-card v-for="repo of supportedRepositories" :key="repo.key" class="mb-6">
-      <v-card-title :class="{ 'is-small': $vuetify.breakpoint.mdAndDown }">
+      <v-card-title :class="{ 'is-small': $vuetify.display.mdAndDown }">
         <span class="repo-name">{{ repo.name }}</span>
         <template v-if="getAccessToken(repo.key)">
           <div>
-            <v-chip small color="green" outlined class="pl-0">
-              <v-icon left class="ml-0">mdi-check-circle</v-icon>
+            <v-chip small color="green" variant="outlined" prepend-icon="mdi-check-circle">
               Authorized
             </v-chip>
           </div>
           <div class="text-right">
-            <v-btn @click="openRevokeDialog(repo.key)" small
-              ><v-icon small class="mr-1">mdi-cancel</v-icon> Revoke</v-btn
-            >
+            <v-btn small @click="openRevokeDialog(repo.key)">
+              <v-icon small class="mr-1">
+                mdi-cancel
+              </v-icon> Revoke
+            </v-btn>
           </div>
         </template>
         <template v-else>
           <div>
-            <v-chip small color="red" outlined>Unauthorized</v-chip>
+            <v-chip small color="red" variant="outlined">
+              Unauthorized
+            </v-chip>
           </div>
           <div class="text-right">
-            <v-btn @click="openAuthorizePopup(repo.key)" color="primary">
+            <v-btn color="primary" @click="openAuthorizePopup(repo.key)">
               <i class="fas fa-key mr-2" />Authorize
             </v-btn>
           </div>
         </template>
       </v-card-title>
       <template v-if="getAccessToken(repo.key)">
-        <v-divider></v-divider>
+        <v-divider />
         <v-card-text>
           <v-text-field
-            @click:append="onCopy(repo.key)"
-            :label="repo.name + ' access token'"
+            :label="`${repo.name} access token`"
             :value="getAccessToken(repo.key)"
-            outlined
+            variant="outlined"
             readonly
             append-icon="mdi-content-copy"
-            dense
-            hide-details=""
-          ></v-text-field>
+            density="compact"
+            hide-details
+            @click:append="onCopy(repo.key)"
+          />
         </v-card-text>
       </template>
     </v-card>
@@ -55,49 +60,47 @@
 </template>
 
 <script lang="ts">
-import { Component } from "vue-property-decorator";
-import { repoMetadata } from "@/components/submit/constants";
-import { mixins } from "vue-class-component";
-import { ActiveRepositoryMixin } from "@/mixins/activeRepository.mixin";
-import { IRepository } from "../submissions/types";
-import { getRepositoryFromKey } from "@/constants";
-import { Notifications } from "@cznethub/cznet-vue-core";
-import Repository from "@/models/repository.model";
+import { Component, mixins, toNative } from 'vue-facing-decorator'
+import { Notifications } from '@cznethub/cznet-vue-core'
+import type { IRepository } from '../submissions/types'
+import { repoMetadata } from '~/components/submit/constants'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import { getRepositoryFromKey } from '~/constants'
+import Repository from '~/models/repository.model'
 
 @Component({
-  name: "cz-authorized-repositories",
+  name: 'cz-authorized-repositories',
   components: {},
 })
-export default class CzAuthorizedRepositories extends mixins<ActiveRepositoryMixin>(
-  ActiveRepositoryMixin
-) {
-  protected repoMetadata = repoMetadata;
+class CzAuthorizedRepositories extends mixins(ActiveRepositoryMixin) {
+  repoMetadata = repoMetadata
 
-  protected get supportedRepositories(): IRepository[] {
+  get supportedRepositories(): IRepository[] {
     return Object.keys(repoMetadata)
-      .map((key) => repoMetadata[key])
-      .filter((repo) => !repo.isExternal && repo.isSupported);
+      .map(key => repoMetadata[key])
+      .filter(repo => !repo.isExternal && repo.isSupported)
   }
 
-  protected getAccessToken(repositoryKey: string): string {
-    return getRepositoryFromKey(repositoryKey)?.$state.accessToken;
+  getAccessToken(repositoryKey: string): string {
+    return getRepositoryFromKey(repositoryKey)?.$state.accessToken
   }
 
-  protected onCopy(repositoryKey: string) {
-    navigator.clipboard.writeText(this.getAccessToken(repositoryKey));
-    Notifications.toast({ message: "Copied to clipboard", type: "info" });
+  onCopy(repositoryKey: string) {
+    navigator.clipboard.writeText(this.getAccessToken(repositoryKey))
+    Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
   }
 
-  protected async openAuthorizePopup(repositoryKey: string) {
-    Repository.openAuthorizeDialog(repositoryKey);
+  async openAuthorizePopup(repositoryKey: string) {
+    Repository.openAuthorizeDialog(repositoryKey)
   }
 
-  protected openRevokeDialog(repositoryKey: string) {
+  openRevokeDialog(repositoryKey: string) {
     Repository.openRevokeDialog(
-      getRepositoryFromKey(repositoryKey) as typeof Repository
-    );
+      getRepositoryFromKey(repositoryKey) as typeof Repository,
+    )
   }
 }
+export default toNative(CzAuthorizedRepositories)
 </script>
 
 <style lang="scss" scoped>
@@ -105,7 +108,7 @@ export default class CzAuthorizedRepositories extends mixins<ActiveRepositoryMix
   max-width: 40rem;
 }
 
-.v-card__title {
+.v-card-title {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   justify-content: space-between;

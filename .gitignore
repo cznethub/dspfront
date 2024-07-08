@@ -1,6 +1,7 @@
 .DS_Store
 node_modules
 /dist
+tsconfig.tsbuildinfo
 
 # local env files
 .env.local
@@ -13,6 +14,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+*.log
 
 # Editor directories and files
 .idea
@@ -27,3 +29,9 @@ pnpm-debug.log*
 
 #  Test files
 /cypress/videos
+/cypress/downloads
+
+# vite-ssg
+.vite-ssg-dist
+.vite-ssg-temp
+dist-ssr
