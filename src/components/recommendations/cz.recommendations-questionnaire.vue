@@ -30,6 +30,7 @@
             :step="index"
             editable
             edit-icon="mdi-check"
+            color="primary"
           >
             <div>{{ step.next || "Recommendations" }}</div>
             <v-chip v-if="step.selectedOption" class="mt-2" color="success">
@@ -85,7 +86,7 @@
               type="warning"
               border="start"
             >
-              <p>
+              <p class="text-orange-darken-3">
                 If you are a CZ Net data manager or investigator and you choose
                 to submit data to a repository other than HydroShare, EarthChem,
                 or Zenodo, please use the

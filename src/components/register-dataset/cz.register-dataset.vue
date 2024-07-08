@@ -358,9 +358,11 @@
               variant="outlined"
               density="compact"
             >
-              We could not find a resource matching the criteria above. Please
-              make sure that you have selected the correct repository and that the
-              URL or identifier is correct and try again.
+              <p class="text-orange-darken-3">
+                We could not find a resource matching the criteria above. Please
+                make sure that you have selected the correct repository and that the
+                URL or identifier is correct and try again.
+              </p>
             </v-alert>
           </template>
 
