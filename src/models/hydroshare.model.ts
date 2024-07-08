@@ -238,6 +238,7 @@ export default class HydroShare extends Repository {
             return {
               name: folderName,
               children: [],
+              isUploaded: true,
             }
           },
         )

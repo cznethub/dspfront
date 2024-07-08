@@ -143,16 +143,15 @@
                 Also consider:
               </div>
 
-              <ul class="repositories pl-4">
+              <ul class="repositories px-4">
                 <li
                   v-for="considered in getRepoMetadataFromKeys(
                     step.finish.consider,
                   )" :key="considered.key"
+                  class="mb-4"
                 >
                   <cz-recommendation-card
                     :repo="considered"
-                    :hide-logo="false"
-                    class="mb-4"
                   />
                 </li>
               </ul>

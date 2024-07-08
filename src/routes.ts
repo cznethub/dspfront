@@ -15,7 +15,6 @@ import CzSubmissions from '~/components/submissions/cz.submissions.vue'
 
 import CzNewSubmission from '~/components/new-submission/cz.new-submission.vue'
 
-// import CzViewSubmission from "~/components/view-submission/cz.view-submission.vue";
 import CzRegisterDataset from '~/components/register-dataset/cz.register-dataset.vue'
 
 export const routes: RouteRecordRaw[] = [
@@ -150,19 +149,6 @@ export const routes: RouteRecordRaw[] = [
       },
     ],
   },
-  // {
-  //   name: "view-submission",
-  //   path: "/submission/:repository/:id",
-  //   components: {
-  //     content: CzViewSubmission,
-  //     footer: CzFooter,
-  //   },
-  //   meta: {
-  //     hasLoggedInGuard: true,
-  //     hasAccessTokenGuard: true,
-  //     title: "View Submission", // TODO: use dataset title if possible
-  //   },
-  // },
   {
     name: 'contact',
     path: '/contact',

@@ -143,14 +143,13 @@
           variant="outlined"
         >
           <v-row>
-            <v-col class="flex-grow-1">
+            <v-col class="flex-grow-1 text-black">
               We need your authorization to load this submission from the
               repository.
             </v-col>
             <v-col class="flex-grow-0">
               <v-btn
                 color="primary"
-                class="mb-4"
                 @click="openAuthorizePopup(repositoryKey)"
               >
                 <i class="fas fa-key mr-2" />Authorize
@@ -169,7 +168,7 @@
           variant="outlined"
         >
           <v-row>
-            <v-col class="flex-grow-1">
+            <v-col class="flex-grow-1 text-black">
               You need to log in to access this submission.
             </v-col>
             <v-col class="flex-grow-0">
@@ -184,7 +183,7 @@
         </v-alert>
 
         <div class="d-flex justify-center mt-8">
-          <v-icon style="font-size: 8rem" class="text--disabled">
+          <v-icon style="font-size: 8rem" class="text-disabled">
             mdi-login
           </v-icon>
         </div>
@@ -772,7 +771,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
   onDataChange(_data: any) {
     // cz-form emits 'change' event multiple times during instantioation.
-    const changesDuringInstantiation = 2
+    const changesDuringInstantiation = 3
 
     if (this.timesChanged <= changesDuringInstantiation)
       this.timesChanged = this.timesChanged + 1

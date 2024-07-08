@@ -13,7 +13,7 @@
       density="compact"
       variant="outlined"
     >
-      <p>
+      <p class="text-black">
         You should only use this form to register existing datasets from
         HydroShare, EarthChem, or Zenodo that were not submitted through the Data
         Submission Portal
@@ -201,34 +201,38 @@
           <template v-else-if="submission">
             <v-alert
               v-if="isPublished"
-              class="my-8"
+              class="my-8 text-subtitle-1"
               variant="outlined"
               icon="mdi-lock"
               type="info"
               border="start"
             >
-              This resource is published and is not editable in the Data
-              Submission Portal. If you need to modify this resource once
-              registered, navigate to the resource in the repository where it is
-              hosted and modify it there (if possible). You can refresh the
-              metadata for this resource by clicking the "Update Record" button on
-              the My Submissions page.
+              <p class="text-black">
+                This resource is published and is not editable in the Data
+                Submission Portal. If you need to modify this resource once
+                registered, navigate to the resource in the repository where it is
+                hosted and modify it there (if possible). You can refresh the
+                metadata for this resource by clicking the "Update Record" button on
+                the My Submissions page.
+              </p>
             </v-alert>
 
             <v-alert
               v-if="isHsCollection"
-              class="my-8"
+              class="text-subtitle-1 my-8"
               variant="outlined"
               icon="mdi-lock"
               type="info"
               border="start"
             >
-              This resource is a HydroShare Collection and is not editable in the
-              {{ $t("portalName") }}. If you need to modify this resource once
-              registered, navigate to the resource in the repository where it is
-              hosted and modify it there (if possible). You can refresh the
-              metadata for this resource by clicking the "Update Record" button on
-              the My Submissions page.
+              <p class="text-black">
+                This resource is a HydroShare Collection and is not editable in the
+                {{ $t("portalName") }}. If you need to modify this resource once
+                registered, navigate to the resource in the repository where it is
+                hosted and modify it there (if possible). You can refresh the
+                metadata for this resource by clicking the "Update Record" button on
+                the My Submissions page.
+              </p>
             </v-alert>
 
             <v-card elevation="2" outlined class="mb-6">
@@ -328,7 +332,7 @@
               variant="outlined"
             >
               <v-row>
-                <v-col class="flex-grow-1">
+                <v-col class="flex-grow-1 text-black">
                   We need your authorization to load this submission from the
                   repository.
                 </v-col>
