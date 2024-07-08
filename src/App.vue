@@ -202,6 +202,7 @@ import Submission from './models/submission.model'
 import Repository from './models/repository.model'
 import External from './models/external.model'
 import EarthChem from './models/earthchem.model'
+import { hasLoggedInGuard } from './guards'
 import CzFooter from '~/components/base/cz.footer.vue'
 import CzLogin from '~/components/account/cz.login.vue'
 import CzAuthorize from '~/components/authorize/cz.authorize.vue'
@@ -328,6 +329,10 @@ class App extends Vue {
       cancelText: 'Cancel',
       onConfirm: () => {
         User.logOut()
+
+        if (this.route.matched.some(r => (r.beforeEnter as any[])?.includes(hasLoggedInGuard))) {
+          this.router.push({ name: 'home' })
+        }
       },
     })
   }
