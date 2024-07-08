@@ -26,5 +26,12 @@
     "isolatedModules": true,
     "skipLibCheck": true
   },
+  "include": [
+    "env.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "cypress/support/component.*",
+    "cypress/support/commands.ts"
+  ],
   "exclude": ["dist", "node_modules", "cypress"]
 }
