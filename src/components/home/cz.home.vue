@@ -4,6 +4,7 @@
       class="text-center"
       src="/img/bg-3.jpg"
       :height="isLoggedIn ? 450 : 650"
+      :scale="1"
     >
       <v-container
         class="d-flex flex-column justify-center align-center full-height pa-12"
