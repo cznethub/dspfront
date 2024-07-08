@@ -242,6 +242,7 @@ import { CzFileExplorer, CzForm, Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
 import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import { useRoute, useRouter } from 'vue-router'
+import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
 import type { IRepositoryUrls } from '../submissions/types'
 import { EnumRepositoryKeys } from '../submissions/types'
 import { repoMetadata } from '../submit/constants'
@@ -271,7 +272,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   route = useRoute()
   router = useRouter()
 
-  rootDirectory: any = {
+  rootDirectory: Partial<IFolder> = {
     name: 'root',
     children: [
     ],
@@ -282,7 +283,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   isLoadingInitialFiles = false
   isSaving = false
   identifier = ''
-  data: any = initialData
+  data: Partial<IFolder> = initialData
   usedUISchema = {}
   repoMetadata = repoMetadata
   toUpload = []
@@ -468,7 +469,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   async loadSavedSubmission() {
-    console.info('CzNewSubmission: reading existing record...')
+    console.info('[CzNewSubmission]: Reading existing record...')
     const response
       = this.route.query.mode === 'register'
         ? this.registeringSubmission
@@ -779,7 +780,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.hasUnsavedChanges = this.timesChanged > changesDuringInstantiation
   }
 
-  async uploadFiles(files: any[]): Promise<boolean[]> {
+  async uploadFiles(files: (IFile | IFolder)[]): Promise<boolean[]> {
     const repoUrls: IRepositoryUrls | undefined
       = this.activeRepository?.get()?.urls
 
@@ -801,14 +802,15 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     return []
   }
 
-  async deleteFileOrFolder(item: any): Promise<boolean> {
+  async deleteFileOrFolder(item: (IFile | IFolder)): Promise<boolean> {
     return this.activeRepository.deleteFileOrFolder(
       this.identifier,
       item,
     )
   }
 
-  async renameFileOrFolder(item: any, newPath: string): Promise<boolean> {
+  async renameFileOrFolder(item: (IFile | IFolder), newPath: string): Promise<boolean> {
+    item.path = this.fileExplorer.getPathString(item)
     return this.activeRepository.renameFileOrFolder(
       this.identifier,
       item,
