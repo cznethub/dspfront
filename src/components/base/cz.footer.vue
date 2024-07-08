@@ -8,9 +8,11 @@
         <div class="mb-2 text-h6">
           Contact Us
         </div>
-        <router-link to="/contact">
-          Contact
-        </router-link>
+        <p>
+          <router-link to="/contact">
+            Contact
+          </router-link>
+        </p>
         <p>
           Learn more about the
           <a :href="`${$t('footer.orgLink')}`" target="_blank">{{
@@ -85,7 +87,7 @@ class CzFooter extends Vue {
   }
 
   get version() {
-    return import.meta.env.VITE_APP_VERSION || '0'
+    return VITE_APP_VERSION
   }
 
   get year() {
@@ -98,5 +100,9 @@ export default toNative(CzFooter)
 <style lang="scss" scoped>
 .cz-footer {
   padding: 2rem 0;
+}
+
+p {
+  margin-bottom: 0.5rem;
 }
 </style>

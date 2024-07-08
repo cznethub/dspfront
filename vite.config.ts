@@ -18,6 +18,10 @@ export default defineConfig({
     },
   },
 
+  define: {
+    VITE_APP_VERSION: JSON.stringify(process.env.npm_package_version),
+  },
+
   // https://vitejs.dev/config/dep-optimization-options#optimizedeps-include
   optimizeDeps: {
     include: [
