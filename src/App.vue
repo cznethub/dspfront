@@ -208,6 +208,7 @@ import CzLogin from '~/components/account/cz.login.vue'
 import CzAuthorize from '~/components/authorize/cz.authorize.vue'
 import User from '~/models/user.model'
 import Zenodo from '~/models/zenodo.model'
+import { addRouteTags } from '~/modules/router'
 
 const INITIAL_DIALOG = {
   title: '',
@@ -346,6 +347,7 @@ class App extends Vue {
 
   async created() {
     document.title = `${this.$t('hubName')}`
+    addRouteTags(this.route, this.route)
 
     if ((this.route).name !== 'submissions') {
       // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook

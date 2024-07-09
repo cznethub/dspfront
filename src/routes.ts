@@ -25,6 +25,9 @@ export const routes: RouteRecordRaw[] = [
       content: CzHome,
       footer: CzFooter,
     },
+    meta: {
+      title: 'Home',
+    },
   },
   {
     name: 'profile',
@@ -43,6 +46,9 @@ export const routes: RouteRecordRaw[] = [
           CzAccount,
         },
         beforeEnter: [hasLoggedInGuard],
+        meta: {
+          title: 'Account',
+        },
       },
       {
         name: 'profile.authorized-repositories',
@@ -51,8 +57,14 @@ export const routes: RouteRecordRaw[] = [
           CzAuthorizedRepositories,
         },
         beforeEnter: [hasLoggedInGuard],
+        meta: {
+          title: 'Authorised Repositories',
+        },
       },
     ],
+    meta: {
+      title: 'Profile',
+    },
   },
   {
     name: 'about',
