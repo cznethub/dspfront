@@ -94,9 +94,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
+      selfDestroying: true, // TODO: disabled until api endpoints can be black-listed
       manifest: {
-        name: 'Vitesse',
-        short_name: 'Vitesse',
+        name: 'CZ Hub',
+        short_name: 'CZ Hub',
         theme_color: '#ffffff',
         icons: [
           {
