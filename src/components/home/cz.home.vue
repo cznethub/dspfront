@@ -109,9 +109,17 @@
       <v-row id="features-2" justify="center">
         <v-col>
           <router-link class="is-clickable" to="/submit">
-            <div><v-icon>mdi-book-plus</v-icon></div>
+            <div>
+              <v-icon>
+                mdi-book-plus
+              </v-icon>
+            </div>
           </router-link>
-          <router-link class="mb-2 text-h6 is-clickable" to="/submit">
+
+          <router-link
+            to="/submit"
+            class="my-2 text-h6 is-clickable"
+          >
             <div>Submit Data Products</div>
           </router-link>
           <div class="font-weight-light text-subtitle-1">
@@ -128,7 +136,7 @@
           </router-link>
           <router-link
             to="/resources/recommendations"
-            class="mb-2 text-h6 is-clickable"
+            class="my-2 text-h6 is-clickable"
           >
             <div>Find the Right Repository</div>
           </router-link>
@@ -245,6 +253,10 @@ section {
 
 :deep(.v-parallax__content) {
   padding: 0;
+}
+
+.v-icon {
+  color: rgba(0, 0, 0, 0.54) !important;
 }
 
 #features-1 {
