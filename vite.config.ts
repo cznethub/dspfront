@@ -68,7 +68,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
-      selfDestroying: true, // TODO: disabled until api endpoints can be black-listed
+      selfDestroying: false,
       workbox: {
         navigateFallbackDenylist: [/^\/api/],
       },
