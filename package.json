@@ -50,8 +50,6 @@
     "eslint-plugin-cypress": "^2.15.1",
     "eslint-plugin-format": "^0.1.2",
     "lint-staged": "^15.2.5",
-    "pnpm": "^9.4.0",
-    "rollup": "^4.18.0",
     "sass": "^1.77.6",
     "taze": "^0.14.2",
     "typescript": "^5.5.3",

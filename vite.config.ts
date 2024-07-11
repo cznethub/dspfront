@@ -31,7 +31,7 @@ export default defineConfig({
     VueMacros({
       plugins: {
         vue: Vue({
-          include: [/\.vue$/, /\.md$/],
+          include: [/\.vue$/],
         }),
       },
     }),
@@ -57,10 +57,9 @@ export default defineConfig({
 
     // https://github.com/antfu/unplugin-vue-components
     Components({
-      // allow auto load markdown components under `./src/components/`
-      extensions: ['vue', 'md'],
-      // allow auto import and register components used in markdown
-      include: [/\.vue$/, /\.vue\?vue/, /\.md$/],
+      extensions: ['vue'],
+      // allow auto import
+      include: [/\.vue$/, /\.vue\?vue/],
       dts: 'src/components.d.ts',
     }),
 
@@ -70,7 +69,7 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
       selfDestroying: false,
       workbox: {
-        navigateFallbackDenylist: [/^\/api/],
+        navigateFallbackDenylist: [/^\/api/, /^\/openapi.json/, /^\/docs/, /^\/redoc/],
       },
       manifest: {
         name: 'CZ Hub',
