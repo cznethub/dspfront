@@ -53,24 +53,6 @@
 
     <div>
       <div v-if="!isLoading">
-        <!-- <cz-folder-structure
-          v-if="hasFileExplorer"
-          id="cz-folder-structure"
-          ref="folderStructure"
-          v-model="uploads"
-          v-model:root-directory="rootDirectory"
-          :is-read-only="config.isReadOnly"
-          :allow-file-upload="allowFileUpload"
-          :repo-metadata="repoMetadata[repositoryKey]"
-          :is-edit-mode="isEditMode"
-          :identifier="identifier"
-          @upload="uploadFiles($event)"
-        /> -->
-
-        <!-- <template v-for="f of toUpload">
-          <pre>{{ rootDirectory }}</pre>
-        </template> -->
-
         <cz-file-explorer
           v-if="hasFileExplorer"
           id="cz-folder-structure"
@@ -79,7 +61,7 @@
           :root-directory="rootDirectory"
           :has-folders="fileExplorerConfig.hasFolders"
           :is-read-only="fileExplorerConfig.isReadOnly"
-          :has-file-metadata="() => true"
+          :has-file-metadata="() => false"
           :upload="isEditMode ? uploadFiles : undefined"
           :delete-file-or-folder="isEditMode ? deleteFileOrFolder : undefined"
           :rename-file-or-folder="isEditMode ? renameFileOrFolder : undefined"

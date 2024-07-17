@@ -107,7 +107,7 @@ export default class HydroShare extends Repository {
       // HydroShare replaces spaces with '_' when uploading files. We must update the name here with their changes.
       filesToUpload.forEach((f, index) => {
         // @ts-expect-error TODO: typing
-        const uploadedFileName = response[index].value.data.file_name
+        const uploadedFileName = response[index]?.value.data.file_name
         if (response[index].status === 'fulfilled' && uploadedFileName) {
           f.name = uploadedFileName
           f.isUploaded = true

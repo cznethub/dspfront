@@ -108,7 +108,7 @@
       </div>
       <v-row id="features-2" justify="center">
         <v-col>
-          <router-link class="is-clickable" to="/submit">
+          <router-link to="/submit">
             <div>
               <v-icon>
                 mdi-book-plus
@@ -118,45 +118,61 @@
 
           <router-link
             to="/submit"
-            class="my-2 text-h6 is-clickable"
+            class="text-h6"
           >
-            <div>Submit Data Products</div>
+            <div class="my-2">
+              Submit Data Products
+            </div>
           </router-link>
+
           <div class="font-weight-light text-subtitle-1">
             Assemble your data files and metadata using our templates and submit
             directly to a supported repository.
           </div>
         </v-col>
+
         <v-col>
           <router-link
             to="/resources/recommendations"
-            class="is-clickable"
           >
             <div><v-icon>mdi-arrow-decision</v-icon></div>
           </router-link>
           <router-link
             to="/resources/recommendations"
-            class="my-2 text-h6 is-clickable"
+            class="text-h6"
           >
-            <div>Find the Right Repository</div>
+            <div class="my-2">
+              Find the Right Repository
+            </div>
           </router-link>
+
           <div class="font-weight-light text-subtitle-1">
             Don't know which repository to use? Use our repository
             recommendation system to decide which repository is the best place
             for your data.
           </div>
         </v-col>
-        <!-- TODO: link to cataloging and discovery once implemented -->
+
         <!-- <v-col>
-          <v-icon >mdi-database-search</v-icon>
-          <div class=" mb-2 text-h6">Explore CZCN Data</div>
+          <a
+            to=""
+          >
+            <div><v-icon>mdi-database-search</v-icon></div>
+          </a>
+
+          <a
+            href=""
+            class="my-2 text-h6"
+          >
+            <div>Explore CZCN Data</div>
+          </a>
         </v-col> -->
       </v-row>
     </section>
 
     <v-divider />
 
-    <section class="d-flex align-center flex-column flex-lg-row">
+    <section class="d-flex align-center justify-center flex-column flex-lg-row">
       <div class="text-center text-lg-left">
         <div class="mb-4 text-h4">
           Make your Data FAIR

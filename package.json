@@ -17,7 +17,7 @@
     "link": "npm link @cznethub/cznet-vue-core"
   },
   "dependencies": {
-    "@cznethub/cznet-vue-core": "^0.2.11",
+    "@cznethub/cznet-vue-core": "^0.2.12",
     "@unhead/vue": "^1.9.15",
     "@vueuse/core": "^10.11.0",
     "@vueuse/head": "^2.0.0",

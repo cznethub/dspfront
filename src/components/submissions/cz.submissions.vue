@@ -4,7 +4,7 @@
       <div class="text-h4">
         My Submissions
       </div>
-      <v-divider class="mb-2" />
+      <v-divider class="mb-4" />
       <div>
         <div class="d-flex align-sm-center flex-column flex-sm-row">
           <div
@@ -120,7 +120,7 @@
               <template #header>
                 <div elevation="0" class="has-bg-light-gray pa-4">
                   <div
-                    class="d-flex justify-space-between full-width flex-column flex-md-row"
+                    class="d-flex justify-space-between full-width flex-column flex-md-row gap-1"
                   >
                     <v-btn
                       class="mb-md-0 mb-4"
@@ -131,14 +131,14 @@
                       Export Submissions
                     </v-btn>
                     <v-spacer />
-                    <div class="sort-controls d-flex flex-column flex-sm-row">
+                    <div class="sort-controls d-flex flex-column flex-sm-row gap-1">
                       <v-select
                         id="sort-by"
                         v-model="sortBy.key"
                         :items="sortOptions"
                         item-title="label"
                         item-value="key"
-                        class="sort-control mr-2"
+                        class="sort-control"
                         variant="outlined"
                         density="compact"
                         hide-details="auto"
@@ -186,19 +186,19 @@
                           </td>
                         </tr>
                         <tr v-if="item.raw.authors.length">
-                          <th class="pr-4 body-2">
+                          <th class="pr-4 text-body-2">
                             Authors:
                           </th>
                           <td>{{ item.raw.authors.join(" | ") }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">
+                          <th class="pr-4 text-body-2">
                             Submission Repository:
                           </th>
                           <td>{{ getRepositoryName(item.raw) }}</td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">
+                          <th class="pr-4 text-body-2">
                             Submission Date:
                           </th>
                           <td :id="`sub-${index}-date`">
@@ -206,7 +206,7 @@
                           </td>
                         </tr>
                         <tr>
-                          <th class="pr-4 body-2">
+                          <th class="pr-4 text-body-2">
                             Identifier:
                           </th>
                           <td>{{ item.raw.identifier }}</td>
@@ -216,7 +216,7 @@
                             item.raw.repository === enumRepositoryKeys.hydroshare
                           "
                         >
-                          <th class="pr-4 body-2">
+                          <th class="pr-4 text-body-2">
                             Type:
                           </th>
                           <td>{{ getItemResourceType(item.raw) }}</td>
@@ -227,7 +227,7 @@
                               && item.raw.repository === enumRepositoryKeys.earthchem
                           "
                         >
-                          <th class="pr-4 body-2">
+                          <th class="pr-4 text-body-2">
                             Status:
                           </th>
 
@@ -886,7 +886,7 @@ export default toNative(CzSubmissions)
   display: flex;
 
   > * {
-    width: 15rem;
+    min-width: 15rem;
   }
 }
 

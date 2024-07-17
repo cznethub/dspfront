@@ -22,7 +22,7 @@
         Cancel
       </v-btn>
 
-      <v-menu :disabled="!errors.length" open-on-hover bottom left offset-y>
+      <v-menu :disabled="!errors.length" open-on-hover open-on-click bottom left offset-y>
         <template #activator="{ props }">
           <div
             v-bind="props"
