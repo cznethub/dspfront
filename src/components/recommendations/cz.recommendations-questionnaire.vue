@@ -8,9 +8,7 @@
       Use the questionnaire below to identify repository options for different
       types of data. If you cannot find guidance for your particular data or
       still have questions, please
-      <router-link to="/contact">
-        contact us
-      </router-link>.
+      <span><router-link to="/contact">contact us</router-link></span>.
     </p>
 
     <p class="text-body-1 mb-8">
