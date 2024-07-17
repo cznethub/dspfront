@@ -104,6 +104,7 @@
               hide-details="auto"
               persistent-hint
               variant="outlined"
+              autofocus
               @keypress.enter="onReadDataset"
             />
 
@@ -167,25 +168,25 @@
                 :class="{ 'is-xs-small': $vuetify.display.xs }"
               >
                 <tr>
-                  <th class="pr-4 body-2 text-right">
+                  <th class="pr-4 text-right">
                     <v-skeleton-loader type="text" />
                   </th>
                   <td><v-skeleton-loader type="text" /></td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2 text-right">
+                  <th class="pr-4 text-right">
                     <v-skeleton-loader type="text" />
                   </th>
                   <td><v-skeleton-loader type="text" /></td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2 text-right">
+                  <th class="pr-4 text-right">
                     <v-skeleton-loader type="text" />
                   </th>
                   <td><v-skeleton-loader type="text" /></td>
                 </tr>
                 <tr>
-                  <th class="pr-4 body-2 text-right">
+                  <th class="pr-4 text-right">
                     <v-skeleton-loader type="text" />
                   </th>
                   <td><v-skeleton-loader type="text" /></td>
@@ -249,37 +250,37 @@
                     </td>
                   </tr>
                   <tr v-if="submission.authors && submission.authors.length">
-                    <th class="pr-4 body-2">
+                    <th class="pr-4 text-body-2">
                       Authors:
                     </th>
                     <td>{{ submission.authors.join(" | ") }}</td>
                   </tr>
                   <tr>
-                    <th class="pr-4 body-2">
+                    <th class="pr-4 text-body-2">
                       Submission Repository:
                     </th>
                     <td>{{ selectedRepository.name }}</td>
                   </tr>
                   <tr>
-                    <th class="pr-4 body-2">
+                    <th class="pr-4 text-body-2">
                       Submission Date:
                     </th>
                     <td>{{ getDateInLocalTime(submission.date) }}</td>
                   </tr>
                   <tr>
-                    <th class="pr-4 body-2">
+                    <th class="pr-4 text-body-2">
                       Identifier:
                     </th>
                     <td>{{ submission.identifier }}</td>
                   </tr>
                   <tr v-if="selectedRepository.name == 'HydroShare'">
-                    <th class="pr-4 body-2">
+                    <th class="pr-4 text-body-2">
                       Type:
                     </th>
                     <td>{{ resourceType }}</td>
                   </tr>
                   <tr v-if="submission.metadata && submission.metadata.status">
-                    <th class="pr-4 body-2">
+                    <th class="pr-4 text-body-2">
                       Status:
                     </th>
 
