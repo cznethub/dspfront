@@ -63,8 +63,8 @@
           :is-read-only="fileExplorerConfig.isReadOnly"
           :has-file-metadata="() => false"
           :upload="isEditMode ? uploadFiles : undefined"
-          :delete-file-or-folder="isEditMode ? deleteFileOrFolder : undefined"
-          :rename-file-or-folder="isEditMode ? renameFileOrFolder : undefined"
+          :delete-file-or-folder="isEditMode && activeRepository.deleteFileOrFolder ? deleteFileOrFolder : undefined"
+          :rename-file-or-folder="isEditMode && activeRepository.renameFileOrFolder ? renameFileOrFolder : undefined"
         >
           <template #prepend>
             <span />
@@ -302,8 +302,8 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   fileExplorerConfig = {
-    isReadOnly: false,
-    hasFolders: true,
+    isReadOnly: false, // Unused for now
+    hasFolders: false,
   }
 
   get dbSubmission() {
@@ -430,6 +430,8 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
         this.setActiveRepository(this.repositoryKey)
     }
 
+    this.fileExplorerConfig.hasFolders = this.activeRepository.entity === EnumRepositoryKeys.hydroshare
+
     if (this.isEditMode) {
       this.identifier = this.route.params.id?.toString()
       this.loadSavedSubmission()
@@ -536,6 +538,8 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
               this.identifier,
               '',
             )
+          // @ts-expect-error The key property is generated when the component is initialized
+          // TODO: this component should have a load function instead of populating the `children` object directly
           this.rootDirectory.children = initialStructure
         }
         catch (e) {
@@ -784,19 +788,19 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   async deleteFileOrFolder(item: (IFile | IFolder)): Promise<boolean> {
-    return this.activeRepository.deleteFileOrFolder(
+    return this.activeRepository.deleteFileOrFolder?.(
       this.identifier,
       item,
-    )
+    ) || true
   }
 
   async renameFileOrFolder(item: (IFile | IFolder), newPath: string): Promise<boolean> {
     item.path = this.fileExplorer.getPathString(item)
-    return this.activeRepository.renameFileOrFolder(
+    return this.activeRepository.renameFileOrFolder?.(
       this.identifier,
       item,
       newPath,
-    )
+    ) || true
   }
 
   @Hook

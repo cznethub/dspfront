@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
+import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
 import Repository from './repository.model'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
-import type { IFile, IFolder } from '~/components/new-submission/types'
 
 export default class EarthChem extends Repository {
   static entity = EnumRepositoryKeys.earthchem
@@ -18,38 +18,31 @@ export default class EarthChem extends Repository {
   /** Uploads multiple files sequentially */
   static async uploadFiles(
     bucketUrl: string,
-    itemsToUpload: (IFile | IFolder)[] | any[],
+    itemsToUpload: (IFile | IFolder)[],
     _createFolderUrl: string,
   ) {
     // EarthChem needs files uploaded sequentially
     const response: any[] = []
 
     for (const item of itemsToUpload) {
-      const message = await this._uploadFile(item, bucketUrl)
+      const message = await this._uploadFile(item as IFile & { file: Blob }, bucketUrl)
       response.push(message)
     }
 
-    itemsToUpload.forEach((f, index) => {
-      if (!response[index]) {
-        // Uplaod failed for this file
-        f.parent.children = f.parent.children.filter(
-          file => file.name !== f.name,
-        )
-      }
-    })
-
-    // TODO: figure out how to identify that fail was due to a name that already exists
+    // TODO: Handle when fail was due to a name that already exists
     if (response.some(r => !r)) {
       Notifications.toast({
         message: 'Some of your files failed to upload',
         type: 'error',
       })
     }
+
+    return response.map(r => r.status === 'fulfilled')
   }
 
   static async readRootFolder(
     identifier: string,
-  ): Promise<(IFile | IFolder)[]> {
+  ): Promise<(Partial<IFile | IFolder>)[]> {
     const url = this.get()?.urls?.fileReadUrl || ''
     const folderReadUrl = sprintf(
       url,
@@ -64,7 +57,7 @@ export default class EarthChem extends Repository {
     })
 
     if (response.status === 200) {
-      const files: IFile[] = response.data.map((file: any): IFile => {
+      const files: IFile[] = response.data.map((file: any): Partial<IFile> => {
         return {
           name: file.name,
           serverName: file.serverName,
@@ -84,7 +77,7 @@ export default class EarthChem extends Repository {
     identifier: string,
     item: IFile | IFolder,
   ): Promise<boolean> {
-    const url = this.get()?.urls?.fileDeleteUrl
+    const url = this.get()?.urls?.fileDeleteUrl || ''
     const deleteUrl = sprintf(url, identifier, (item as IFile).serverName)
 
     try {
@@ -108,7 +101,7 @@ export default class EarthChem extends Repository {
   }
 
   /** Uploads a single file */
-  private static async _uploadFile(file, url: string) {
+  private static async _uploadFile(file: IFile & { file: Blob }, url: string) {
     const form = new window.FormData()
     form.append('file', file.file, file.name)
     form.append('description', file.name)

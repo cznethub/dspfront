@@ -3,6 +3,7 @@ import { Subject } from 'rxjs'
 import type { RouteLocationRaw } from 'vue-router'
 import axios from 'axios'
 import { Notifications } from '@cznethub/cznet-vue-core'
+import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
 import Submission from './submission.model'
 import User from './user.model'
 
@@ -11,7 +12,6 @@ import User from './user.model'
 // import Zenodo from './zenodo.model'
 // import External from './external.model'
 import { APP_URL, DELETED_RESOURCE_STATUS_CODES } from '~/constants'
-import type { IFile, IFolder } from '~/components/new-submission/types'
 import type {
   IRepository,
   IRepositoryUrls,
@@ -726,14 +726,14 @@ export default class Repository extends Model implements IRepository {
   static readRootFolder: (
     identifier: string,
     path: string
-  ) => Promise<(IFile | IFolder)[]>
+  ) => Promise<Partial<(IFile | IFolder)>[]>
 
-  static deleteFileOrFolder: (
+  static deleteFileOrFolder?: (
     identifier: string,
     item: IFile | IFolder
   ) => Promise<boolean>
 
-  static renameFileOrFolder: (
+  static renameFileOrFolder?: (
     identifier: string,
     item: IFile | IFolder,
     newPath: string

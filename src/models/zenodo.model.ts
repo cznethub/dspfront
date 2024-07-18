@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import { sprintf } from 'sprintf-js'
+import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
 import Repository from './repository.model'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
-import type { IFile, IFolder } from '~/components/new-submission/types'
 
 export default class Zenodo extends Repository {
   static entity = EnumRepositoryKeys.zenodo
@@ -26,11 +26,11 @@ export default class Zenodo extends Repository {
 
     const response = await Promise.allSettled(uploadPromises)
 
-    itemsToUpload.map((f, index) => {
+    itemsToUpload.forEach((f, index) => {
       if (response[index].status !== 'fulfilled') {
         // Uplaod failed for this file
         f.parent.children = f.parent.children.filter(
-          file => file.name !== f.name,
+          (file: IFile | IFolder) => file.name !== f.name,
         )
       }
     })
@@ -42,6 +42,8 @@ export default class Zenodo extends Repository {
         type: 'error',
       })
     }
+
+    return response.map(r => r.status === 'fulfilled')
   }
 
   private static async _uploadFile(file: IFile, url: string) {
@@ -61,7 +63,8 @@ export default class Zenodo extends Repository {
       params: { access_token: this.accessToken },
     })
     file.isDisabled = false
-    file.key = response.data.id
+    // @ts-expect-error Used in zenodo endpoints
+    file._id = response.data.id
     file.isUploaded = response.status === 201
 
     return response.status === 201
@@ -86,6 +89,8 @@ export default class Zenodo extends Repository {
           isUploaded: true,
           uploadedSize: file.filesize,
           file: null,
+          // @ts-expect-error Used in Zenodo endpoints. TODO: typing
+          _id: file.id,
         }
       })
 
@@ -95,46 +100,56 @@ export default class Zenodo extends Repository {
     return []
   }
 
-  static async renameFileOrFolder(
-    identifier: string,
-    item: IFile | IFolder,
-    newPath: string,
-  ): Promise<boolean> {
-    // TODO: zenodo api throws an error when trying to rename the same file more than once
-    // https://github.com/zenodo/zenodo/issues/2342
-    const url = this.get()?.urls?.moveOrRenameUrl
-    const renameUrl = sprintf(url, identifier, item.key)
-    const newName = newPath.split('/').pop()
+  /**
+   * @param identifier
+   * @param item
+   * @param newPath
+   *
+   * @deprecated PUT request not allowed by Zenodo at this endpoint.
+   * They seem to have changed this recently, but documentation is outdated.
+   * File modifications are not permitted.
+   * @see https://help.zenodo.org/docs/deposit/manage-files/#pending
+   */
+  // static async renameFileOrFolder(
+  //   identifier: string,
+  //   item: (IFile | IFolder) & { _id?: string },
+  //   newPath: string,
+  // ): Promise<boolean> {
+  //   // TODO: zenodo api throws an error when trying to rename the same file more than once
+  //   // https://github.com/zenodo/zenodo/issues/2342
+  //   const url = this.get()?.urls?.moveOrRenameUrl || ''
+  //   const renameUrl = sprintf(url, identifier, item._id)
+  //   const newName = newPath.split('/').pop()
 
-    if (!newName)
-      return false
+  //   if (!newName)
+  //     return false
 
-    try {
-      const response = await axios.put(
-        renameUrl,
-        { filename: newName },
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          params: { access_token: this.accessToken },
-        },
-      )
+  //   try {
+  //     const response = await axios.put(
+  //       renameUrl,
+  //       { name: newName },
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //         },
+  //         params: { access_token: this.accessToken },
+  //       },
+  //     )
 
-      return response.status === 200
-    }
-    catch (e: any) {
-      console.log(e)
-      return false
-    }
-  }
+  //     return response.status === 200
+  //   }
+  //   catch (e: any) {
+  //     console.log(e)
+  //     return false
+  //   }
+  // }
 
   static async deleteFileOrFolder(
     identifier: string,
-    item: IFile | IFolder,
+    item: (IFile | IFolder) & { _id?: string },
   ): Promise<boolean> {
-    const url = this.get()?.urls?.fileDeleteUrl
-    const deleteUrl = sprintf(url, identifier, item.name) // Zenodo delete file endpoint uses the file name. Their documentation is wrong (does not use file id).
+    const url = this.get()?.urls?.fileDeleteUrl || ''
+    const deleteUrl = sprintf(url, identifier, item._id)
 
     try {
       const response = await axios.delete(deleteUrl, {
