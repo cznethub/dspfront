@@ -66,7 +66,7 @@ export default defineConfig({
     // https://github.com/antfu/vite-plugin-pwa
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg', 'safari-pinned-tab.svg'],
+      includeAssets: ['favicon.svg', 'safari-pinned-tab.svg', 'img/*.png', 'img/*.jpg', 'img/*.svg'],
       selfDestroying: false,
       workbox: {
         navigateFallbackDenylist: [/^\/api/, /^\/openapi.json/, /^\/docs/, /^\/redoc/],

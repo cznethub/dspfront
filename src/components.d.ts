@@ -28,7 +28,6 @@ declare module 'vue' {
     'Cz.resources': typeof import('./components/resources/cz.resources.vue')['default']
     'Cz.submissions': typeof import('./components/submissions/cz.submissions.vue')['default']
     'Cz.submit': typeof import('./components/submit/cz.submit.vue')['default']
-    README: typeof import('./components/README.md')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }
