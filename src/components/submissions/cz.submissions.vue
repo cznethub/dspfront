@@ -6,15 +6,15 @@
       </div>
       <v-divider class="mb-4" />
       <div>
-        <div class="d-flex align-sm-center flex-column flex-sm-row">
+        <div class="d-flex align-md-center flex-column flex-md-row gap-1">
           <div
             v-if="!isFetching && submissions.length"
-            class="d-flex flex-column flex-sm-row flex-grow-1"
+            class="d-flex flex-column flex-md-row flex-grow-1"
           >
             <v-text-field
               id="my_submissions_search"
               v-model="filters.searchStr"
-              class="ma-1 my-2 my-sm-0"
+              class="ma-1 my-2 my-md-0"
               density="compact"
               clearable
               variant="outlined"
@@ -28,7 +28,7 @@
               :items="repoOptions"
               item-value="key"
               item-title="label"
-              class="ma-1 my-2 my-sm-0"
+              class="ma-1 my-2 my-md-0"
               small-chips
               clearable
               label="Repository"
@@ -37,6 +37,7 @@
               multiple
               density="compact"
               variant="outlined"
+              closable-chips
             />
           </div>
 
@@ -447,7 +448,8 @@
           <v-spacer />
           <v-btn
             class="dialog-cancel"
-            variant="text"
+            variant="elevated"
+            elevation="1"
             @click="isDeleteDialogActive = false"
           >
             Cancel
@@ -456,7 +458,7 @@
           <v-btn
             class="dialog-confirm"
             color="red darken-1"
-            variant="text"
+            variant="elevated"
             @click="
               isDeleteDialogActive = false;
               onDeleteSubmission();

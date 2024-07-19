@@ -1,16 +1,3 @@
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-
-@Component({
-  name: 'cz-contact',
-  components: { },
-})
-class CzContact extends Vue {
-
-}
-export default toNative(CzContact)
-</script>
-
 <template>
   <v-container class="cz-contact">
     <div class="text-h4">
@@ -39,6 +26,19 @@ export default toNative(CzContact)
     </p>
   </v-container>
 </template>
+
+<script lang="ts">
+import { Component, Vue, toNative } from 'vue-facing-decorator'
+
+@Component({
+  name: 'cz-contact',
+  components: { },
+})
+class CzContact extends Vue {
+
+}
+export default toNative(CzContact)
+</script>
 
 <style lang="scss" scoped>
 </style>

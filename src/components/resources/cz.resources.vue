@@ -1,73 +1,3 @@
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-import { guideUrls } from '~/components/recommendations/constants'
-
-interface IDataTemplate {
-  title: string
-  description: string
-  icon: string
-  iconColor: string
-  iconClass?: string
-  url: string
-}
-
-const dataTemplates: IDataTemplate[] = [
-  {
-    title: 'Time Series Data',
-    description:
-      'Learn more about formats, best practices, and repositories for sensor time series data.',
-    icon: 'mdi-chart-timeline-variant',
-    iconColor: '#BCCC9A',
-    url: guideUrls.timeSeriesData,
-  },
-  {
-    title: 'Geospatial Data',
-    description:
-      'Geospatial data include geographic feature and raster datasets.',
-    icon: 'mdi-layers',
-    iconColor: '#87AAAA',
-    url: guideUrls.geospatialData,
-  },
-  {
-    title: 'Registering Samples',
-    description: 'Learn more about registering samples with SESAR.',
-    icon: 'mdi-shape-rectangle-plus',
-    iconColor: '#A4C9D7',
-    url: guideUrls.sampleRegistration,
-  },
-  {
-    title: 'Data Derived from Samples',
-    description: 'Learn more about submitting data derived from samples.',
-    icon: 'mdi-file-tree',
-    iconColor: '#C37B89',
-    url: guideUrls.sampleData,
-  },
-  {
-    title: 'Sharing Multiple Data Types Together',
-    description:
-      'Learn more about best practices for assembling multiple datasets for a project or publication.',
-    icon: 'mdi-chart-multiple',
-    iconColor: '#5784BA',
-    iconClass: 'is-smaller',
-    url: guideUrls.multipleDataTypes,
-  },
-]
-
-@Component({
-  name: 'cz-resources',
-  components: {},
-})
-class CzResources extends Vue {
-  dataTemplates!: IDataTemplate[]
-  guideUrls = guideUrls
-
-  beforeCreate() {
-    this.dataTemplates = dataTemplates
-  }
-}
-export default toNative(CzResources)
-</script>
-
 <template>
   <div class="cz-resources">
     <v-container
@@ -174,6 +104,76 @@ export default toNative(CzResources)
     </v-container>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Vue, toNative } from 'vue-facing-decorator'
+import { guideUrls } from '~/components/recommendations/constants'
+
+interface IDataTemplate {
+  title: string
+  description: string
+  icon: string
+  iconColor: string
+  iconClass?: string
+  url: string
+}
+
+const dataTemplates: IDataTemplate[] = [
+  {
+    title: 'Time Series Data',
+    description:
+      'Learn more about formats, best practices, and repositories for sensor time series data.',
+    icon: 'mdi-chart-timeline-variant',
+    iconColor: '#BCCC9A',
+    url: guideUrls.timeSeriesData,
+  },
+  {
+    title: 'Geospatial Data',
+    description:
+      'Geospatial data include geographic feature and raster datasets.',
+    icon: 'mdi-layers',
+    iconColor: '#87AAAA',
+    url: guideUrls.geospatialData,
+  },
+  {
+    title: 'Registering Samples',
+    description: 'Learn more about registering samples with SESAR.',
+    icon: 'mdi-shape-rectangle-plus',
+    iconColor: '#A4C9D7',
+    url: guideUrls.sampleRegistration,
+  },
+  {
+    title: 'Data Derived from Samples',
+    description: 'Learn more about submitting data derived from samples.',
+    icon: 'mdi-file-tree',
+    iconColor: '#C37B89',
+    url: guideUrls.sampleData,
+  },
+  {
+    title: 'Sharing Multiple Data Types Together',
+    description:
+      'Learn more about best practices for assembling multiple datasets for a project or publication.',
+    icon: 'mdi-chart-multiple',
+    iconColor: '#5784BA',
+    iconClass: 'is-smaller',
+    url: guideUrls.multipleDataTypes,
+  },
+]
+
+@Component({
+  name: 'cz-resources',
+  components: {},
+})
+class CzResources extends Vue {
+  dataTemplates!: IDataTemplate[]
+  guideUrls = guideUrls
+
+  beforeCreate() {
+    this.dataTemplates = dataTemplates
+  }
+}
+export default toNative(CzResources)
+</script>
 
 <style lang="scss" scoped>
 .cz-resources {

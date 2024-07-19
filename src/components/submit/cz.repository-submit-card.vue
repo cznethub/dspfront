@@ -1,17 +1,3 @@
-<script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
-import type { IRepository } from '../submissions/types'
-
-@Component({
-  name: 'cz-repository-submit-card',
-})
-class CzRepositorySubmitCard extends Vue {
-  @Prop({ required: true }) repo!: IRepository
-  @Prop() hideLogo!: boolean
-}
-export default toNative(CzRepositorySubmitCard)
-</script>
-
 <template>
   <div class="cz-repository-submit-card">
     <v-hover :key="repo.key">
@@ -66,6 +52,20 @@ export default toNative(CzRepositorySubmitCard)
     </v-hover>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
+import type { IRepository } from '../submissions/types'
+
+@Component({
+  name: 'cz-repository-submit-card',
+})
+class CzRepositorySubmitCard extends Vue {
+  @Prop({ required: true }) repo!: IRepository
+  @Prop() hideLogo!: boolean
+}
+export default toNative(CzRepositorySubmitCard)
+</script>
 
 <style lang="scss" scoped>
 :deep(.v-card-media) {

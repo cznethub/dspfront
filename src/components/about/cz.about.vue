@@ -1,15 +1,3 @@
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-
-@Component({
-  name: 'cz-about',
-  components: {},
-})
-class CzAbout extends Vue {}
-
-export default toNative(CzAbout)
-</script>
-
 <template>
   <v-container class="cz-about d-flex full-height pa-0">
     <div
@@ -39,6 +27,18 @@ export default toNative(CzAbout)
     </v-container>
   </v-container>
 </template>
+
+<script lang="ts">
+import { Component, Vue, toNative } from 'vue-facing-decorator'
+
+@Component({
+  name: 'cz-about',
+  components: {},
+})
+class CzAbout extends Vue {}
+
+export default toNative(CzAbout)
+</script>
 
 <style lang="scss" scoped>
 #panel-left {

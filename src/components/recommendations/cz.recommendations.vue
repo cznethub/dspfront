@@ -1,14 +1,3 @@
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-
-@Component({
-  name: 'cz-recommendations',
-  components: {},
-})
-class CzRecommendations extends Vue {}
-export default toNative(CzRecommendations)
-</script>
-
 <template>
   <div class="cz-recommendations">
     <div class="py-8 text-center has-bg-light-gray">
@@ -141,6 +130,17 @@ export default toNative(CzRecommendations)
     </section>
   </div>
 </template>
+
+<script lang="ts">
+import { Component, Vue, toNative } from 'vue-facing-decorator'
+
+@Component({
+  name: 'cz-recommendations',
+  components: {},
+})
+class CzRecommendations extends Vue {}
+export default toNative(CzRecommendations)
+</script>
 
 <style lang="scss" scoped>
 #options-grid {

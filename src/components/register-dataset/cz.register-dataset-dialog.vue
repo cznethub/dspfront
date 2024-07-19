@@ -1,36 +1,3 @@
-<script lang="ts">
-import { Component, mixins, toNative } from 'vue-facing-decorator'
-import { repoMetadata } from '~/components/submit/constants'
-import type { IRepository } from '~/components/submissions/types'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-
-@Component({
-  name: 'cz-register-dataset-dialog',
-  components: {},
-  emits: ['close'],
-})
-class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixin) {
-  public active = false
-
-  get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map(r => repoMetadata[r])
-  }
-
-  get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
-  }
-
-  get externalRepoMetadata(): IRepository | undefined {
-    return this.repoCollection.find(r => r.isExternal)
-  }
-
-  close() {
-    this.$emit('close')
-  }
-}
-export default toNative(CzRegisterDatasetDialog)
-</script>
-
 <template>
   <v-dialog v-model="active" width="800">
     <v-card>
@@ -112,13 +79,46 @@ export default toNative(CzRegisterDatasetDialog)
 
       <v-card-actions>
         <v-spacer />
-        <v-btn @click="active = false">
+        <v-btn variant="elevated" @click="active = false">
           Cancel
         </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
+
+<script lang="ts">
+import { Component, mixins, toNative } from 'vue-facing-decorator'
+import { repoMetadata } from '~/components/submit/constants'
+import type { IRepository } from '~/components/submissions/types'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+
+@Component({
+  name: 'cz-register-dataset-dialog',
+  components: {},
+  emits: ['close'],
+})
+class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixin) {
+  public active = false
+
+  get repoCollection(): IRepository[] {
+    return Object.keys(repoMetadata).map(r => repoMetadata[r])
+  }
+
+  get supportedRepoMetadata() {
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+  }
+
+  get externalRepoMetadata(): IRepository | undefined {
+    return this.repoCollection.find(r => r.isExternal)
+  }
+
+  close() {
+    this.$emit('close')
+  }
+}
+export default toNative(CzRegisterDatasetDialog)
+</script>
 
 <style lang="scss" scoped>
 .choice-container {
