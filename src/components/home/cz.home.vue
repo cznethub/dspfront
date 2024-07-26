@@ -108,13 +108,7 @@
       </div>
       <v-row id="features-2" justify="center">
         <v-col>
-          <router-link to="/submit">
-            <div>
-              <v-icon>
-                mdi-book-plus
-              </v-icon>
-            </div>
-          </router-link>
+          <v-btn size="100" flat icon="mdi-book-plus" :to="{ path: '/submit' }" />
 
           <router-link
             to="/submit"
@@ -132,11 +126,7 @@
         </v-col>
 
         <v-col>
-          <router-link
-            to="/resources/recommendations"
-          >
-            <div><v-icon>mdi-arrow-decision</v-icon></div>
-          </router-link>
+          <v-btn size="100" flat icon="mdi-arrow-decision" :to="{ path: '/resources/recommendations' }" />
           <router-link
             to="/resources/recommendations"
             class="text-h6"
@@ -229,6 +219,7 @@
 
 <script lang="ts">
 import { Component, Vue, toNative } from 'vue-facing-decorator'
+import { useRouter } from 'vue-router'
 import { repoMetadata } from '../submit/constants'
 import { DISCOVERY_SITE_URL } from '~/constants'
 import User from '~/models/user.model'
@@ -240,6 +231,7 @@ import User from '~/models/user.model'
 class CzHome extends Vue {
   repoMetadata = repoMetadata
   discoverySiteUrl = DISCOVERY_SITE_URL
+  router = useRouter()
 
   get isLoggedIn() {
     return User.$state.isLoggedIn
@@ -297,8 +289,9 @@ section {
     padding: 1rem;
   }
 
-  .v-icon {
+  :deep(.v-icon) {
     font-size: 5rem;
+    color: rgba(0, 0, 0, 0.54);
   }
 }
 
