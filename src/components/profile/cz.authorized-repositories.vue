@@ -45,7 +45,7 @@
         <v-card-text>
           <v-text-field
             :label="`${repo.name} access token`"
-            :value="getAccessToken(repo.key)"
+            :model-value="getAccessToken(repo.key)"
             variant="outlined"
             readonly
             append-icon="mdi-content-copy"

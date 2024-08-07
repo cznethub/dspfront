@@ -13,10 +13,11 @@
 
     <v-text-field
       label="Access token"
-      :value="token"
+      :model-value="token"
       variant="outlined"
       readonly
       append-icon="mdi-content-copy"
+      persi
       @click:append="onCopy"
     />
   </div>
