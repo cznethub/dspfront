@@ -10,6 +10,9 @@ export const createApp = ViteSSG(
   App,
   {
     routes,
+    scrollBehavior(_to, _from, _savedPosition) {
+      document.getElementsByTagName('html')[0]?.scrollTo({ left: 0, top: 0 })
+    },
     base: import.meta.env.BASE_URL,
   },
   (ctx) => {
