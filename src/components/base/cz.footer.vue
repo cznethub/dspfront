@@ -32,7 +32,11 @@
         <div class="mb-2 text-h6">
           Get Started
         </div>
-        <a v-if="!isLoggedIn" href="#" @click="openLogInDialog()">Log In</a>
+
+        <v-btn v-if="!isLoggedIn" variant="text" color="primary" @click="openLogInDialog()">
+          Log In
+        </v-btn>
+
         <router-link v-else to="/submit">
           Submit Data
         </router-link>
