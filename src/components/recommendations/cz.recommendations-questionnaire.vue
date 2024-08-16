@@ -43,7 +43,7 @@
             </template>
 
             <template v-if="s.options">
-              <v-card class="pa-4" min-height="300px" variant="outlined" style="border: thin solid rgba(0, 0, 0, .12);">
+              <v-card class="pa-4 borther-thin" border="solid thin" flat min-height="300px">
                 <v-radio-group
                   v-model="s.selectedOption"
                   @change="onOptionChanged"
@@ -97,6 +97,7 @@
               <div class="text-heading-5 mb-8">
                 Recommended Repositories:
               </div>
+
               <template v-if="getRepoMetadataFromKeys(s.finish.prefer).length">
                 <div class="repositories justify-space-around px-1">
                   <cz-recommendation-card

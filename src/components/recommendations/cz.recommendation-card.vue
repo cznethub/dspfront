@@ -5,15 +5,17 @@
     :disabled="repo.isDisabled"
     :outlined="!repo.isSupported"
     :flat="!repo.isSupported"
-    variant="elevated"
+    :variant="repo.isSupported ? 'elevated' : 'outlined'"
+    border="solid thin"
   >
     <v-card-title>
       {{ repo.name }}
     </v-card-title>
+
     <v-list-item three-line class="flex-column flex-md-row">
       <div class="d-flex justify-space-between">
         <div>
-          <div class="text-subtitle-1 font-weight-light">
+          <div class="text-body-1 font-weight-light">
             {{ repo.description }}
           </div>
           <v-chip v-if="repo.isComingSoon" class="mt-2">
@@ -31,7 +33,7 @@
       </div>
     </v-list-item>
 
-    <v-divider v-if="repo.isSupported" />
+    <v-divider />
 
     <v-card-actions class="d-flex flex-column flex-md-row flex-wrap-wrap">
       <v-btn
