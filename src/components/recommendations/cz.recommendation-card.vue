@@ -8,12 +8,13 @@
     :variant="repo.isSupported ? 'elevated' : 'outlined'"
     border="solid thin"
   >
-    <v-card-title>
+    <v-card-title class="bg-grey-lighten-4">
       {{ repo.name }}
     </v-card-title>
+    <v-divider />
 
     <v-list-item three-line class="flex-column flex-md-row">
-      <div class="d-flex justify-space-between">
+      <div class="d-flex justify-space-between pa-2">
         <div>
           <div class="text-body-1 font-weight-light">
             {{ repo.description }}
