@@ -25,7 +25,7 @@
         <template v-for="(s, index) in steps" :key="`${index}-step`">
           <v-stepper-vertical-item
             color="primary"
-            :complete="step > index + 1"
+            :complete="step > index + 1 || !!s.finish"
             :editable="step > index + 1"
             :value="index + 1"
             edit-icon="mdi-check"
