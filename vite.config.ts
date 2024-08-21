@@ -67,7 +67,7 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'safari-pinned-tab.svg', 'img/*.png', 'img/*.jpg', 'img/*.svg'],
-      selfDestroying: false,
+      selfDestroying: true,
       workbox: {
         navigateFallbackDenylist: [/^\/api/, /^\/openapi.json/, /^\/docs/, /^\/redoc/],
       },
