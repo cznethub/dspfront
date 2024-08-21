@@ -106,6 +106,11 @@ export default defineConfig({
     environment: 'jsdom',
   },
 
+  // https://vitejs.dev/config/preview-options
+  preview: {
+    port: 8080,
+  },
+
   // https://github.com/antfu/vite-ssg
   ssgOptions: {
     script: 'async',

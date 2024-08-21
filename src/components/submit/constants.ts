@@ -9,7 +9,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
   [EnumRepositoryKeys.hydroshare]: {
     key: EnumRepositoryKeys.hydroshare,
     name: 'HydroShare',
-    logoSrc: '/img/hydroshare.png',
+    logoSrc: new URL('/img/hydroshare.png', import.meta.url).href,
     description:
       'A dependable data management and publication solution for hydrologic data types and models.',
     submitTooltip: 'Submit a dataset to the HydroShare repository.',
@@ -21,8 +21,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
     exampleUrl:
       'https://www.hydroshare.org/resource/9d3d437466764bb5b6668d2742cf9db2/',
     exampleIdentifier: '9d3d437466764bb5b6668d2742cf9db2',
-    identifierUrlPattern: /(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:hydroshare.org\/resource\/)([0-9a-fA-F]{32})\/?$/,
-    identifierPattern: /^[0-9a-fA-F]{32}$/,
+    identifierUrlPattern: /(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?hydroshare.org\/resource\/([0-9a-fA-F]{32})\/?$/,
+    identifierPattern: /^[0-9a-f]{32}$/i,
   },
   [EnumRepositoryKeys.earthchem]: {
     key: EnumRepositoryKeys.earthchem,
@@ -78,13 +78,11 @@ export const repoMetadata: { [key: string]: IRepository } = {
     maxNumberOfFiles: 20,
     maxUploadSizePerFile: 50000000, // 50 MB
     maxTotalUploadSize: 400000000, // 400 MB
-    fileNameRegex: /^[-_()\w\s]*$/, // File names can only contain upper or lowercase letters, numbers, spaces, _(underscores), -(dashes) and parenthesis().
+    fileNameRegex: /^[-()\w\s]*$/, // File names can only contain upper or lowercase letters, numbers, spaces, _(underscores), -(dashes) and parenthesis().
     exampleUrl: 'https://www.earthchem.org/view.php?id=2391',
     exampleIdentifier: '2391',
-    identifierUrlPattern: new RegExp(
-      `(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:earthchem\.org\/view\.php\\?id=)([0-9]+)/?$`,
-    ),
-    identifierPattern: new RegExp(`^[0-9]+$`),
+    identifierUrlPattern: /(?:http:\/\/www.|https:\/\/www.|http:\/\/|https:\/\/)?earthchem.org\/view.php\?id=(\d+)\/?$/,
+    identifierPattern: /^\d+$/,
   },
   [EnumRepositoryKeys.zenodo]: {
     key: EnumRepositoryKeys.zenodo,
@@ -99,10 +97,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
     maxTotalUploadSize: 50000000000, // 50 GB
     exampleUrl: 'https://zenodo.org/uploads/7047180',
     exampleIdentifier: '7047180',
-    identifierUrlPattern: new RegExp(
-      `(?:http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?(?:zenodo.org/(?:uploads|records)/)([0-9]+)/?$`,
-    ),
-    identifierPattern: new RegExp(`^[0-9]+$`),
+    identifierUrlPattern: /(?:http:\/\/www.|https:\/\/www.|http:\/\/|https:\/\/)?zenodo.org\/(?:uploads|records)\/(\d+)\/?$/,
+    identifierPattern: /^\d+$/,
   },
   [EnumRepositoryKeys.external]: {
     key: EnumRepositoryKeys.external,

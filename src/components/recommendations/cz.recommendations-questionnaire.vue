@@ -238,6 +238,10 @@ export default toNative(CzRecommendationsQuestionnaire)
 </script>
 
 <style lang="scss" scoped>
+:deep(.v-expansion-panel-title > .v-avatar) {
+  z-index: 1;
+}
+
 :deep(.v-selection-control-group) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(30rem, 100%), 1fr));
