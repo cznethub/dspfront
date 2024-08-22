@@ -34,13 +34,13 @@
           </template>
 
           <v-card-title>
-            <div class="text-h4 repo-name">
+            <div class="text-h4 my-2">
               {{ repo.name }}
             </div>
           </v-card-title>
 
-          <v-card-text class="font-weight-light">
-            <div class="text-subtitle-1">
+          <v-card-text>
+            <div class="text-subtitle-1 text-medium-emphasis">
               {{ repo.description }}
             </div>
 

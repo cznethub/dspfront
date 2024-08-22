@@ -24,15 +24,15 @@
               v-bind="props"
               variant="elevated"
             >
-              <v-card-text class="d-flex align-items-center gap-1">
-                <v-icon large color="#87AAAA">
+              <v-card-text class="d-flex align-center gap-1">
+                <v-icon size="3rem" color="#87AAAA">
                   mdi-link-plus
                 </v-icon>
                 <div>
                   <div class="text-overline mb-2 has-text-black">
                     SUPPORTED REPOSITORY
                   </div>
-                  <div class="text-body-1">
+                  <div class="text-body-1 text-medium-emphasis">
                     Register an existing dataset from HydroShare, EarthChem, or
                     Zenodo
                   </div>
@@ -53,19 +53,19 @@
               ripple
             >
               <v-card-text
-                class="d-flex align-items-center gap-1"
+                class="d-flex align-center gap-1"
                 @click="
                   submitTo(externalRepoMetadata);
                 "
               >
-                <v-icon large color="#C37B89">
+                <v-icon size="3rem" color="#C37B89">
                   mdi-text-box-plus
                 </v-icon>
                 <div>
                   <div class="text-overline mb-2 has-text-black">
                     OTHER
                   </div>
-                  <div class="text-body-1">
+                  <div class="text-body-1  text-medium-emphasis">
                     Register a dataset from a different repository
                   </div>
                 </div>
