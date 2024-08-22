@@ -18,20 +18,22 @@
         class="d-flex flex-wrap-wrap justify-space-between flex-column flex-md-row text-black"
       >
         <div>
-          <div><b>Instructions</b></div>
+          <div class="font-weight-bold">
+            Instructions
+          </div>
           <p>
             Fill in the required fields (marked with * and highlighted in red).
             Press the "Save / Finish" button to upload your submission.
           </p>
         </div>
 
-        <v-img
+        <img
+          v-if="activeRepository.get()?.logoSrc"
           class="my-4 flex-grow-0 ml-md-4 ml-0"
           :src="activeRepository.get()?.logoSrc"
           :alt="activeRepository.get()?.name"
-          width="350px"
-          contain
-        />
+          style="max-height: 4rem;"
+        >
       </div>
     </v-alert>
 

@@ -45,24 +45,28 @@
 
           <v-speed-dial
             location="bottom center"
+            transition="slide-y-transition"
           >
             <template #activator="{ props }">
               <v-btn color="primary" rounded v-bind="props">
-                <v-icon>mdi-plus</v-icon>
+                <!-- <v-icon>mdi-plus</v-icon> -->
                 New Submission
+                <v-icon>mdi-menu-down</v-icon>
               </v-btn>
             </template>
 
-            <v-card key="0">
-              <v-card-text>
+            <v-card key="0" class="bg-blue-grey-lighten-4">
+              <v-card-text class="py-6">
                 <template v-for="repo of supportedRepoMetadata" :key="repo.name">
                   <v-tooltip v-if="!repo.isDisabled" left>
                     <template #activator="{ props }">
                       <v-btn
                         v-bind="props"
-                        class="mx-0 mb-4"
+                        class="mb-4"
                         block
-                        color="white"
+                        variant="elevated"
+                        elevation="1"
+                        size="default"
                         @click="submitTo(repo)"
                       >
                         {{ repo.name }}
@@ -75,10 +79,11 @@
                 <v-tooltip v-if="!externalRepoMetadata?.isDisabled" left>
                   <template #activator="{ props }">
                     <v-btn
-                      class="mx-0"
                       v-bind="props"
-                      color="white"
                       block
+                      variant="elevated"
+                      elevation="1"
+                      size="default"
                       @click="openRegisterDatasetDialog"
                     >
                       {{ externalRepoMetadata?.name }}

@@ -19,14 +19,11 @@
 
     <v-card style="flex-basis: 30rem" class="flex-grow-1 flex-md-shrink-0">
       <div class="v-card-media py-4 px-8">
-        <v-img
+        <img
           :src="repoLogoSrc"
           :alt="repoName"
-          content-class="content-logo"
-          width="100%"
-          height="8rem"
-          contain
-        />
+          class="content-logo"
+        >
       </div>
 
       <v-divider />
@@ -121,6 +118,6 @@ export default toNative(CzAuthorize)
 }
 
 :deep(.v-card-media .content-logo) {
-  width: auto !important;
+  width: 100%;
 }
 </style>

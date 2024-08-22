@@ -64,37 +64,37 @@ export default defineConfig({
     }),
 
     // https://github.com/antfu/vite-plugin-pwa
-    // VitePWA({
-    //   registerType: 'autoUpdate',
-    //   // includeAssets: ['favicon.svg', 'safari-pinned-tab.svg', 'img/*.png', 'img/*.jpg', 'img/*.svg', 'assets/*'],
-    //   selfDestroying: true,
-    //   workbox: {
-    //     navigateFallbackDenylist: [/^\/api/, /^\/openapi.json/, /^\/docs/, /^\/redoc/],
-    //   },
-    //   manifest: {
-    //     name: 'CZ Hub',
-    //     short_name: 'CZ Hub',
-    //     theme_color: '#ffffff',
-    //     icons: [
-    //       {
-    //         src: '/pwa-192x192.png',
-    //         sizes: '192x192',
-    //         type: 'image/png',
-    //       },
-    //       {
-    //         src: '/pwa-512x512.png',
-    //         sizes: '512x512',
-    //         type: 'image/png',
-    //       },
-    //       {
-    //         src: '/pwa-512x512.png',
-    //         sizes: '512x512',
-    //         type: 'image/png',
-    //         purpose: 'any maskable',
-    //       },
-    //     ],
-    //   },
-    // }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      // includeAssets: ['favicon.svg', 'safari-pinned-tab.svg', 'img/*.png', 'img/*.jpg', 'img/*.svg', 'assets/*'],
+      selfDestroying: true,
+      workbox: {
+        navigateFallbackDenylist: [/^\/api/, /^\/openapi.json/, /^\/docs/, /^\/redoc/],
+      },
+      manifest: {
+        name: 'CZ Hub',
+        short_name: 'CZ Hub',
+        theme_color: '#ffffff',
+        icons: [
+          {
+            src: '/pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: '/pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+          {
+            src: '/pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any maskable',
+          },
+        ],
+      },
+    }),
 
     // https://github.com/feat-agency/vite-plugin-webfont-dl
     WebfontDownload(),

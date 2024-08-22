@@ -9,7 +9,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
   [EnumRepositoryKeys.hydroshare]: {
     key: EnumRepositoryKeys.hydroshare,
     name: 'HydroShare',
-    logoSrc: new URL('/img/hydroshare.png', import.meta.url).href,
+    logoSrc: '/img/hydroshare.png',
     description:
       'A dependable data management and publication solution for hydrologic data types and models.',
     submitTooltip: 'Submit a dataset to the HydroShare repository.',
