@@ -27,13 +27,13 @@
           </p>
         </div>
 
-        <img
-          v-if="activeRepository.get()?.logoSrc"
+        <v-img
           class="my-4 flex-grow-0 ml-md-4 ml-0"
           :src="activeRepository.get()?.logoSrc"
           :alt="activeRepository.get()?.name"
-          style="max-height: 4rem;"
-        >
+          width="350px"
+          contain
+        />
       </div>
     </v-alert>
 

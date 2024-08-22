@@ -98,14 +98,7 @@ export default class Repository extends Model implements IRepository {
   // }
 
   static async init() {
-    // Insert initial repo
-
-    if (!this.get()) {
-      console.info(
-        `Repository: Initializing ${this.entity} for the first time...`,
-      )
-      await Repository.insert({ data: repoMetadata[this.entity] })
-    }
+    await Repository.insertOrUpdate({ data: repoMetadata[this.entity] })
 
     // Fetch urls and schemas
     console.info(`[${this.entity}]: Fetching schemas...`)
