@@ -26,8 +26,10 @@
               />
             </v-card-title>
 
-            <v-card-title v-else class="v-card-media justify-center">
-              <v-icon>mdi-text-box-plus</v-icon>
+            <v-card-title v-else class="d-flex v-card-media justify-center">
+              <v-icon class="text-medium-emphasis">
+                mdi-text-box-plus
+              </v-icon>
             </v-card-title>
           </template>
 

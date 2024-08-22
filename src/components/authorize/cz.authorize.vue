@@ -19,11 +19,14 @@
 
     <v-card style="flex-basis: 30rem" class="flex-grow-1 flex-md-shrink-0">
       <div class="v-card-media py-4 px-8">
-        <img
+        <v-img
           :src="repoLogoSrc"
           :alt="repoName"
-          class="content-logo"
-        >
+          content-class="content-logo"
+          width="100%"
+          height="8rem"
+          contain
+        />
       </div>
 
       <v-divider />
@@ -73,7 +76,7 @@ class CzAuthorize extends mixins(ActiveRepositoryMixin) {
   }
 
   get repoLogoSrc() {
-    return this.repository.get()?.logoSrc
+    return new URL(this.repository.get()?.logoSrc || '', import.meta.url).href
   }
 
   get repoName() {
