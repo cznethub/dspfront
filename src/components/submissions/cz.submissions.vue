@@ -266,7 +266,7 @@
                         :id="`sub-${index}-view`"
                         :href="item.raw.url"
                         target="_blank"
-                        color="blue-grey lighten-4"
+                        color="blue-grey-lighten-4"
                         rounded
                       >
                         <v-icon class="mr-1">

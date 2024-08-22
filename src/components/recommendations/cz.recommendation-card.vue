@@ -16,7 +16,7 @@
     <v-list-item three-line class="flex-column flex-md-row">
       <div class="d-flex justify-space-between pa-2">
         <div>
-          <div class="text-body-1 font-weight-light">
+          <div class="text-body-1 text-medium-emphasis">
             {{ repo.description }}
           </div>
           <v-chip v-if="repo.isComingSoon" class="mt-2">
