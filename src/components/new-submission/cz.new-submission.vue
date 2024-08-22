@@ -376,7 +376,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
     return this.isEditMode
       ? 'Edit Submission'
-      : `Submit to ${this.activeRepository.name}`
+      : `Submit to ${this.activeRepository?.get()?.name}`
   }
 
   get submitText() {
