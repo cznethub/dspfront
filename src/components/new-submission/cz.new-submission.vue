@@ -32,6 +32,7 @@
           :src="activeRepository.get()?.logoSrc"
           :alt="activeRepository.get()?.name"
           width="350px"
+          max-height="80px"
           contain
         />
       </div>
