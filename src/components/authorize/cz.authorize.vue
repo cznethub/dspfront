@@ -4,7 +4,7 @@
     :class="{ 'is-medium': $vuetify.display.mdAndUp }"
   >
     <v-card min-width="15rem" class="d-flex flex-column darken-2 flex-grow-1 flex-shrink-0 flex-md-shrink-1" color="blue-grey" rounded="0">
-      <v-card-title style="white-space: normal" class="pb-4">
+      <v-card-title style="white-space: break-word" class="pb-4">
         <v-icon color="white" class="mr-4">
           mdi-alert-circle
         </v-icon>
@@ -98,17 +98,14 @@ export default toNative(CzAuthorize)
 .cz-authorize.is-medium {
   & > .v-card:first-child {
     max-width: 14rem;
-    // text-align: right;
-
-    // .v-card-title {
-    //   justify-content: flex-end;
-    // }
   }
 }
 
 .v-card {
   .v-card-title {
-    word-break: break-word;
+    word-break: auto-phrase;
+    white-space: normal;
+    line-height: 1.5;
   }
 
   .v-card-media {
