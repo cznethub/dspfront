@@ -81,9 +81,10 @@ export default class Submission extends Model implements ISubmission {
     repository: EnumRepositoryKeys,
     identifier: string,
     overrideDate?: boolean,
+    isPublished?: boolean,
   ): ISubmission | Partial<Submission> {
     const repo = getRepositoryFromKey(repository)
-    let viewUrl = sprintf(repo?.get()?.urls?.viewUrl, identifier)
+    let viewUrl = sprintf(repo?.get()?.urls?.viewUrl || '', identifier)
 
     if (repository === EnumRepositoryKeys.hydroshare) {
       const data: Partial<Submission> = {
@@ -101,6 +102,9 @@ export default class Submission extends Model implements ISubmission {
       return data
     }
     else if (repository === EnumRepositoryKeys.zenodo) {
+      if (isPublished)
+        viewUrl = sprintf(repo?.get()?.urls?.publicViewUrl || '', identifier)
+
       const data: Partial<Submission> = {
         title: apiSubmission.title,
         authors: apiSubmission.creators?.map(c => c.name),
@@ -121,7 +125,7 @@ export default class Submission extends Model implements ISubmission {
     else if (repository === EnumRepositoryKeys.earthchem) {
       // If the record has been published, use the public view URL
       if (apiSubmission.status === 'published')
-        viewUrl = sprintf(repo?.get()?.urls?.publicViewUrl, identifier)
+        viewUrl = sprintf(repo?.get()?.urls?.publicViewUrl || '', identifier)
 
       const data: Partial<Submission> = {
         title: apiSubmission.title,

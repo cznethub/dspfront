@@ -372,8 +372,7 @@
               <div class="mb-2">
                 <v-btn
                   v-if="isPublished || isHsCollection"
-                  color="primary"
-                  class="mr-4"
+                  class="bg-primary mr-4"
                   :disabled="isFetching || !isValid || !url || isRegistering"
                   @click="registerSubmissionAsIs"
                 >
@@ -478,7 +477,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
     if (currentStep === 2) {
       (this.$refs.txtIdentifier as InstanceType<
     typeof VTextField
-  >)?.focus()
+      >)?.focus()
     }
   }
 
@@ -574,6 +573,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
             this.selectedRepository.key,
             this.identifierFromUrl,
             true,
+            response.published,
           )
           this.apiSubmission = response.metadata
           if (response.published)
