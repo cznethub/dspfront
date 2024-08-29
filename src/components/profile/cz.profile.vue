@@ -20,6 +20,8 @@
           <v-list-item-title>Authorized Repositories</v-list-item-title>
         </v-list-item>
 
+        <v-divider class="my-4" />
+
         <v-list-item id="drawer-nav-logout" prepend-icon="mdi-logout" @click="logOut()">
           <v-list-item-title>Log Out</v-list-item-title>
         </v-list-item>

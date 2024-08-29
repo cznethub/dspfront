@@ -10,12 +10,12 @@
       with the repositories below.
     </p>
 
-    <v-card v-for="repo of supportedRepositories" :key="repo.key" class="mb-6">
-      <v-card-title :class="{ 'is-small': $vuetify.display.mdAndDown }">
+    <v-card v-for="repo of supportedRepositories" :key="repo.key" class="my-12" border="thin grey" variant="outlined">
+      <v-card-title :class="{ 'is-small': $vuetify.display.mdAndDown }" class="bg-grey-lighten-4">
         <span class="repo-name">{{ repo.name }}</span>
         <template v-if="getAccessToken(repo.key)">
           <div>
-            <v-chip small color="green" variant="outlined" prepend-icon="mdi-check-circle">
+            <v-chip small color="green" class="bg-white" variant="outlined" prepend-icon="mdi-check-circle">
               Authorized
             </v-chip>
           </div>
@@ -29,7 +29,7 @@
         </template>
         <template v-else>
           <div>
-            <v-chip small color="red" variant="outlined">
+            <v-chip small color="red" class="bg-white" variant="outlined">
               Unauthorized
             </v-chip>
           </div>
@@ -42,7 +42,7 @@
       </v-card-title>
       <template v-if="getAccessToken(repo.key)">
         <v-divider />
-        <v-card-text>
+        <v-card-text class="py-8">
           <v-text-field
             :label="`${repo.name} access token`"
             :model-value="getAccessToken(repo.key)"

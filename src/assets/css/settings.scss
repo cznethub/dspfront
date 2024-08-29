@@ -1,0 +1,7 @@
+// @use 'vuetify/settings' with (
+//   $card-border-color: red,
+// );
+
+.v-label.v-field-label--floating {
+  --v-field-label-scale: 1em;
+}
