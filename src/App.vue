@@ -8,7 +8,7 @@
       app
     >
       <v-container
-        class="d-flex align-center full-height pa-0"
+        class="d-flex align-center full-height py-0"
       >
         <router-link :to="{ path: `/` }" class="logo">
           <img
