@@ -135,11 +135,25 @@ export default class Repository extends Model implements IRepository {
 
   static async authorize(
     activeRepository: typeof Repository,
-    callback?: () => any,
+    callback?: (response?: any) => any,
   ) {
     const handleMessage = async (event: MessageEvent) => {
-      if (event.origin !== APP_URL || !Object.prototype.hasOwnProperty.call(event.data, 'token'))
+      if (event.origin !== APP_URL) {
         return
+      }
+
+      if (Object.prototype.hasOwnProperty.call(event.data, 'error')) {
+        if (event.data.error === 'invalid_grant') {
+          // Signal error and abort controller
+          callback?.(event.data)
+          this.controller.abort()
+          return
+        }
+      }
+
+      if (!Object.prototype.hasOwnProperty.call(event.data, 'token')) {
+        return
+      }
 
       if (activeRepository && event.data?.token) {
         activeRepository.commit((state) => {
@@ -180,7 +194,7 @@ export default class Repository extends Model implements IRepository {
     window.addEventListener('message', handleMessage, {
       signal: this.controller.signal, // Used to remove the listener
     })
-    console.info(`[User]: Listening to authorization window...`)
+    console.info(`[Repository]: Listening to authorization window...`)
   }
 
   static openRevokeDialog(repository: typeof Repository) {
@@ -291,11 +305,11 @@ export default class Repository extends Model implements IRepository {
         }
       }
       catch (e: any) {
-        this.commit((state) => {
-          state.accessToken = ''
-        })
-        if (e.response?.status === 404) {
-          // Token not set
+        if (e.response?.status === 401) {
+          // Token expired or not set
+          this.commit((state) => {
+            state.accessToken = ''
+          })
         }
         else {
           console.error(

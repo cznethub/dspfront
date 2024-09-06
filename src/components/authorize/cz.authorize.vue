@@ -39,8 +39,19 @@
         </div>
       </v-card-title>
       <v-card-text class="d-flex flex-column align-center">
+        <v-alert
+          v-if="retry"
+          class="my-8 text-subtitle-1"
+          variant="outlined"
+          type="warning"
+          border="start"
+        >
+          <p class="text-orange-darken-3">
+            Failed to get authorization from {{ repoName }}. Please try again.
+          </p>
+        </v-alert>
         <v-btn color="primary" class="mb-4" @click="openAuthorizePopup">
-          <i class="fas fa-key mr-2" />Authorize
+          <i class="fas fa-key mr-2" /> {{ retry ? 'Retry Authorization' : 'Authorize' }}
         </v-btn>
       </v-card-text>
       <v-divider />
@@ -63,9 +74,11 @@ import Repository from '~/models/repository.model'
 @Component({
   name: 'cz-authorize',
   components: {},
+  emits: ['authorized', 'update:retry'],
 })
 class CzAuthorize extends mixins(ActiveRepositoryMixin) {
   @Prop() repo!: string
+  @Prop() retry!: boolean
 
   get repository() {
     return getRepositoryFromKey(this.repo) as typeof Repository
@@ -84,11 +97,12 @@ class CzAuthorize extends mixins(ActiveRepositoryMixin) {
   }
 
   async openAuthorizePopup() {
+    this.$emit('update:retry', false)
     Repository.authorize(this.repository, this.onAuthorized)
   }
 
-  onAuthorized() {
-    this.$emit('authorized')
+  onAuthorized(response: any) {
+    this.$emit('authorized', response)
   }
 }
 export default toNative(CzAuthorize)
