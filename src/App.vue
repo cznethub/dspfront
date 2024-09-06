@@ -106,6 +106,7 @@
       <router-view name="footer" />
     </v-footer>
 
+    <!-- NOTE: v-navigation-drawer is a single component for the entire app. Properties of other v-navigation-drawer instances will affect this one. -->
     <v-navigation-drawer
       v-model="showMobileNavigation"
       class="mobile-nav-items"

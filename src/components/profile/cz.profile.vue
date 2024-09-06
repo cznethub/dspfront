@@ -1,32 +1,45 @@
 <template>
   <div class="cz-profile">
-    <v-navigation-drawer permanent :expand-on-hover="$vuetify.display.mdAndDown" mobile-breakpoint="md" class="flex-shrink-0">
-      <template #prepend>
-        <v-list-item>
-          <v-list-item-subtitle class="d-flex align-center my-4">
-            <i left class="fab fa-orcid mr-2" style="font-size: 1.5rem" aria-hidden="true" /> Logged In
-          </v-list-item-subtitle>
-        </v-list-item>
-      </template>
+    <v-list class="flex-shrink-0 border-e-thin" nav>
+      <v-list-item>
+        <v-list-item-subtitle class="d-flex align-center my-4 text-body-1">
+          <i class="fab fa-orcid mr-2" style="font-size: 1.5rem" aria-hidden="true" /> <span v-if="$vuetify.display.mdAndUp">Logged In</span>
+        </v-list-item-subtitle>
+        <v-divider />
+      </v-list-item>
 
-      <v-divider />
+      <v-list-item link :to="{ path: '/profile/account' }" active-class="active">
+        <v-list-item-title class="d-flex align-center gap-1">
+          <v-icon size="x-large" class="text-medium-emphasis" title="Account">
+            mdi-account-circle
+          </v-icon>
+          <span v-if="$vuetify.display.mdAndUp">Account</span>
+        </v-list-item-title>
+      </v-list-item>
 
-      <v-list density="compact" nav>
-        <v-list-item link :to="{ path: '/profile/account' }" prepend-icon="mdi-account-circle" active-class="active">
-          <v-list-item-title>Account</v-list-item-title>
-        </v-list-item>
+      <v-list-item
+        link :to="{ path: '/profile/authorized-repositories' }"
+        active-class="active"
+      >
+        <v-list-item-title class="d-flex align-center gap-1">
+          <v-icon size="x-large" class="text-medium-emphasis" title="Authorized Repositories">
+            mdi-key
+          </v-icon>
+          <span v-if="$vuetify.display.mdAndUp">Authorized Repositories</span>
+        </v-list-item-title>
+      </v-list-item>
 
-        <v-list-item link :to="{ path: '/profile/authorized-repositories' }" prepend-icon="mdi-key" active-class="active">
-          <v-list-item-title>Authorized Repositories</v-list-item-title>
-        </v-list-item>
+      <v-divider class="my-4" />
 
-        <v-divider class="my-4" />
-
-        <v-list-item id="drawer-nav-logout" prepend-icon="mdi-logout" @click="logOut()">
-          <v-list-item-title>Log Out</v-list-item-title>
-        </v-list-item>
-      </v-list>
-    </v-navigation-drawer>
+      <v-list-item id="drawer-nav-logout" @click="logOut()">
+        <v-list-item-title class="d-flex align-center gap-1">
+          <v-icon size="x-large" class="text-medium-emphasis" title="Log Out">
+            mdi-logout
+          </v-icon>
+          <span v-if="$vuetify.display.mdAndUp">Log Out</span>
+        </v-list-item-title>
+      </v-list-item>
+    </v-list>
 
     <div class="profile-content">
       <router-view name="CzAccount" />
@@ -40,7 +53,7 @@ import { Component, Vue, toNative } from 'vue-facing-decorator'
 
 @Component({
   name: 'cz-profile',
-  components: { },
+  components: {},
 })
 class CzProfile extends Vue {
   logOut() {
@@ -51,13 +64,9 @@ export default toNative(CzProfile)
 </script>
 
 <style lang="scss" scoped>
-  .cz-profile {
+.cz-profile {
   display: flex;
   min-height: 100%;
-
-  .v-navigation-drawer {
-    height: unset !important;
-  }
 
   .profile-content {
     flex-grow: 1;
