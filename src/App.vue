@@ -175,6 +175,7 @@
 
     <v-dialog v-model="authorizeDialog.isActive" width="45rem">
       <cz-authorize
+        v-model:retry="authorizeDialog.retry"
         :repo="authorizeDialog.repo"
         @authorized="authorizeDialog.onAuthorized"
       />
@@ -241,7 +242,6 @@ class App extends Vue {
   onOpenAuthorizeDialog!: Subscription
   showMobileNavigation = false
   loggedInSubject = new Subscription()
-  // authorizedSubject = new Subscription();
 
   snackbar: any & { isActive: boolean, isInfinite: boolean }
     = INITIAL_SNACKBAR
@@ -257,6 +257,7 @@ class App extends Vue {
 
   authorizeDialog: any & { isActive: boolean } = {
     isActive: false,
+    retry: false,
     repo: '',
     onAuthorized: () => {},
     onCancel: () => {},
@@ -375,8 +376,13 @@ class App extends Vue {
         redirectTo?: RouteLocationRaw | undefined
       }) => {
         this.authorizeDialog.repo = params.repository
+        this.authorizeDialog.retry = false
         this.authorizeDialog.isActive = true
-        this.authorizeDialog.onAuthorized = async () => {
+        this.authorizeDialog.onAuthorized = async (response?: any) => {
+          if (response?.error) {
+            this.authorizeDialog.retry = true
+            return
+          }
           if (params.redirectTo) {
             if (params.repository === EnumRepositoryKeys.hydroshare)
               await HydroShare.init()
@@ -407,15 +413,6 @@ class App extends Vue {
       : this.loggedInSubject = User.loggedIn$.subscribe(async () => {
         await this._initRepositories()
       })
-
-    // this.authorizedSubject = Repository.authorized$.subscribe(async (repository: string) => {
-    //   if (repository === EnumRepositoryKeys.hydroshare) {
-    //     await HydroShare.init()
-    //   }
-    //   else if (repository === EnumRepositoryKeys.zenodo) {
-    //     await Zenodo.init()
-    //   }
-    // })
 
     this.isLoading = false
   }
