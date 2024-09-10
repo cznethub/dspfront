@@ -7,15 +7,10 @@ import axios from 'axios'
 import type Submission from './submission.model'
 import { API_BASE, APP_URL } from '~/constants'
 
-export interface ICzCurrentUserState {
-  orcid: string
-  orcidAccessToken: string
-}
-
 export interface IUserState {
   isLoggedIn: boolean
-  orcid: string
-  orcidAccessToken: string
+  // orcid: string
+  orcidAccessToken: { token: string, expiresAt: number }
   next: string
   hasUnsavedChanges: boolean
   registeringSubmission: Partial<Submission> | null
@@ -35,10 +30,6 @@ export default class User extends Model {
     return this.store().state.entities[this.entity]
   }
 
-  static get next() {
-
-  }
-
   static get accessToken() {
     return this.$state?.orcidAccessToken
   }
@@ -46,8 +37,8 @@ export default class User extends Model {
   static state(): IUserState {
     return {
       isLoggedIn: false,
-      orcid: '',
-      orcidAccessToken: '',
+      // orcid: '',
+      orcidAccessToken: { token: '', expiresAt: 0 },
       next: '',
       hasUnsavedChanges: false,
       registeringSubmission: null,
@@ -61,7 +52,6 @@ export default class User extends Model {
   static async logIn(callback?: () => any) {
     const handleMessage = async (event: MessageEvent) => {
       if (event.origin !== APP_URL || !Object.prototype.hasOwnProperty.call(event.data, 'token')) {
-        console.log(event.origin, APP_URL)
         return
       }
 
@@ -72,8 +62,8 @@ export default class User extends Model {
         })
         await User.commit((state) => {
           state.isLoggedIn = true
-          state.orcid = event.data.orcid
-          state.orcidAccessToken = event.data.token
+          state.orcidAccessToken.token = event.data.token
+          state.orcidAccessToken.expiresAt = event.data.expiresAt
         })
         document.cookie = `Authorization=Bearer ${event.data.token}; expires=${event.data.expiresIn}; path=/`
         this.controller.abort()
@@ -102,14 +92,21 @@ export default class User extends Model {
     console.info(`[User]: Listening to login window...`)
   }
 
+  /** Refresh the token if expired or close to expire */
   static async checkAuthorization() {
     try {
-      const response = await axios.get('/api', {
-        params: { access_token: User.$state.orcidAccessToken },
-      })
+      const response = await axios.get('/api')
 
-      if (response.status !== 200) {
-        // Something went wrong, authorization may be invalid
+      if (response.data?.token) {
+        // Update cookie and access token
+        await User.commit((state) => {
+          state.isLoggedIn = true
+          state.orcidAccessToken = { token: response.data.token, expiresAt: response.data.expiresAt }
+        })
+
+        document.cookie = `Authorization=Bearer ${response.data.token}; expires=${response.data.expiresIn}; path=/`
+      }
+      else {
         User.commit((state) => {
           state.isLoggedIn = false
         })
@@ -137,7 +134,7 @@ export default class User extends Model {
   private static async _logOut() {
     await User.commit((state) => {
       state.isLoggedIn = false
-      state.orcidAccessToken = ''
+      state.orcidAccessToken = { token: '', expiresAt: '' }
     })
 
     Notifications.toast({

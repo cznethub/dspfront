@@ -214,7 +214,7 @@ export default class Repository extends Model implements IRepository {
         }
         try {
           const response = await axios.delete(accessTokenUrl, {
-            params: { access_token: User.$state.orcidAccessToken },
+            params: { access_token: User.accessToken.token },
           })
           if (response.status === 200) {
             repository.commit((state) => {
@@ -249,7 +249,7 @@ export default class Repository extends Model implements IRepository {
       return undefined
 
     const resp = await axios.get(jsonUrl, {
-      params: { access_token: User.$state.orcidAccessToken },
+      params: { access_token: User.accessToken.token },
     })
 
     if (resp.status === 200)
@@ -259,7 +259,7 @@ export default class Repository extends Model implements IRepository {
   static async getUrls(): Promise<undefined | IRepositoryUrls> {
     try {
       const response = await axios.get(`/api/urls/${this.entity}`, {
-        params: { access_token: User.$state.orcidAccessToken },
+        params: { access_token: User.accessToken.token },
       })
 
       return {
@@ -295,7 +295,7 @@ export default class Repository extends Model implements IRepository {
       console.info(`[${this.get()?.key}]: Fetching access token...`)
       try {
         const resp = await axios.get(accessTokenUrl, {
-          params: { access_token: User.$state.orcidAccessToken },
+          params: { access_token: User.accessToken.token },
         })
         if (resp.status === 200) {
           const token = resp.data.access_token // TODO: also need its expiration date!
@@ -340,7 +340,7 @@ export default class Repository extends Model implements IRepository {
     try {
       const response = await axios.post(`/api/metadata/${repository}`, data, {
         headers: { 'Content-Type': 'application/json' },
-        params: { access_token: User.$state.orcidAccessToken },
+        params: { access_token: User.accessToken.token },
       })
       if (response?.status === 201) {
         // TODO: get these identifiers from the backend
@@ -416,7 +416,7 @@ export default class Repository extends Model implements IRepository {
         data,
         {
           headers: { 'Content-Type': 'application/json' },
-          params: { access_token: User.$state.orcidAccessToken },
+          params: { access_token: User.accessToken.token },
         },
       )
 
@@ -453,7 +453,7 @@ export default class Repository extends Model implements IRepository {
       const response = await axios.get(
         `/api/submission/${repository}/${identifier}`,
         {
-          params: { access_token: User.$state.orcidAccessToken },
+          params: { access_token: User.accessToken.token },
         },
       )
 
@@ -531,7 +531,7 @@ export default class Repository extends Model implements IRepository {
         : `/api/submit/${repository}/${identifier}` // deletes only in database
 
       const response = await axios.delete(deleteUrl, {
-        params: { access_token: User.$state.orcidAccessToken },
+        params: { access_token: User.accessToken.token },
       })
 
       if (response.status === 200) {
@@ -597,7 +597,7 @@ export default class Repository extends Model implements IRepository {
     try {
       const response = await axios.get(
         `/api/metadata/${repository}/${identifier}`,
-        { params: { access_token: User.$state.orcidAccessToken } },
+        { params: { access_token: User.accessToken.token } },
       )
 
       if (response.status === 200) {
@@ -666,7 +666,7 @@ export default class Repository extends Model implements IRepository {
     try {
       const response = await axios.get(
         `/api/json/${repository}/${identifier}`,
-        { params: { access_token: User.$state.orcidAccessToken } },
+        { params: { access_token: User.accessToken.token } },
       )
 
       if (response.status === 200) {

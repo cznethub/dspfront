@@ -169,7 +169,7 @@ export default class Submission extends Model implements ISubmission {
       })
 
       const response = await axios.get('/api/submissions', {
-        params: { access_token: User.$state.orcidAccessToken },
+        params: { access_token: User.accessToken.token },
       })
 
       if (response.status === 200) {

@@ -34,7 +34,7 @@ import User from '~/models/user.model'
 })
 class CzAccount extends Vue {
   get token() {
-    return User.$state.orcidAccessToken
+    return User.accessToken.token
   }
 
   onCopy() {

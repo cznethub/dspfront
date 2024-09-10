@@ -408,11 +408,14 @@ class App extends Vue {
     await User.checkAuthorization()
     // }
 
-    User.$state.isLoggedIn
-      ? await this._initRepositories()
-      : this.loggedInSubject = User.loggedIn$.subscribe(async () => {
+    if (User.$state.isLoggedIn) {
+      await this._initRepositories()
+    }
+    else {
+      this.loggedInSubject = User.loggedIn$.subscribe(async () => {
         await this._initRepositories()
       })
+    }
 
     this.isLoading = false
   }
