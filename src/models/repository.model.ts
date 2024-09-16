@@ -143,12 +143,10 @@ export default class Repository extends Model implements IRepository {
       }
 
       if (Object.prototype.hasOwnProperty.call(event.data, 'error')) {
-        if (event.data.error === 'invalid_grant') {
-          // Signal error and abort controller
-          callback?.(event.data)
-          this.controller.abort()
-          return
-        }
+        // Signal error and abort controller
+        callback?.(event.data)
+        this.controller.abort()
+        return
       }
 
       if (!Object.prototype.hasOwnProperty.call(event.data, 'token')) {
