@@ -42,7 +42,7 @@ import User from '~/models/user.model'
 @Component({
   name: 'cz-login',
   components: {},
-  emits: ['loggedIn'],
+  emits: ['loggedIn', 'cancel'],
 })
 class CzLogin extends Vue {
   async openLogInDialog() {
