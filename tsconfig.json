@@ -12,11 +12,7 @@
       "~/*": ["src/*"]
     },
     "resolveJsonModule": true,
-    "types": [
-      "vitest",
-      "vite/client",
-      "vite-plugin-pwa/client"
-    ],
+    "types": ["vitest", "vite/client", "vite-plugin-pwa/client", "cypress"],
     "allowJs": true,
     "strict": true,
     "strictNullChecks": true,

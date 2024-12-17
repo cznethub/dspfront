@@ -10,9 +10,9 @@
     "build-prod": "vite build --mode=production",
     "serve-prod": "vite --mode production",
     "preview": "vite preview",
-    "test:e2e": "start-server-and-test preview http://localhost:4173 'cypress run --e2e'",
-    "test:e2e:dev": "start-server-and-test 'vite dev --port 4173' http://localhost:4173 'cypress open --e2e'",
-    "test:unit": "cypress run --component",
+    "test:e2e": "cypress open",
+    "test": "vitest",
+    "test:unit": "vitest",
     "test:unit:dev": "cypress open --component",
     "up": "taze major -I",
     "link": "npm link @cznethub/cznet-vue-core"
