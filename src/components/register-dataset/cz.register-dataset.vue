@@ -630,6 +630,10 @@ export default toNative(CzRegisterDataset)
 </script>
 
 <style lang="scss" scoped>
+:deep(.v-expansion-panel-title > .v-avatar) {
+  z-index: 1;
+}
+
 .table-item {
   padding: 1rem;
 
