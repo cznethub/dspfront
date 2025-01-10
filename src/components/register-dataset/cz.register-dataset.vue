@@ -152,11 +152,13 @@
                 class="text-body-1"
                 :class="{ 'is-xs-small': $vuetify.display.xs }"
               >
-                <tr>
-                  <td colspan="2" class="text-h6 title">
-                    <v-skeleton-loader type="heading" />
-                  </td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td colspan="2" class="text-h6 title">
+                      <v-skeleton-loader type="heading" />
+                    </td>
+                  </tr>
+                </tbody>
               </table>
             </div>
 
@@ -167,30 +169,32 @@
                 class="text-body-1"
                 :class="{ 'is-xs-small': $vuetify.display.xs }"
               >
-                <tr>
-                  <th class="pr-4 text-right">
-                    <v-skeleton-loader type="text" />
-                  </th>
-                  <td><v-skeleton-loader type="text" /></td>
-                </tr>
-                <tr>
-                  <th class="pr-4 text-right">
-                    <v-skeleton-loader type="text" />
-                  </th>
-                  <td><v-skeleton-loader type="text" /></td>
-                </tr>
-                <tr>
-                  <th class="pr-4 text-right">
-                    <v-skeleton-loader type="text" />
-                  </th>
-                  <td><v-skeleton-loader type="text" /></td>
-                </tr>
-                <tr>
-                  <th class="pr-4 text-right">
-                    <v-skeleton-loader type="text" />
-                  </th>
-                  <td><v-skeleton-loader type="text" /></td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <th class="pr-4 text-right">
+                      <v-skeleton-loader type="text" />
+                    </th>
+                    <td><v-skeleton-loader type="text" /></td>
+                  </tr>
+                  <tr>
+                    <th class="pr-4 text-right">
+                      <v-skeleton-loader type="text" />
+                    </th>
+                    <td><v-skeleton-loader type="text" /></td>
+                  </tr>
+                  <tr>
+                    <th class="pr-4 text-right">
+                      <v-skeleton-loader type="text" />
+                    </th>
+                    <td><v-skeleton-loader type="text" /></td>
+                  </tr>
+                  <tr>
+                    <th class="pr-4 text-right">
+                      <v-skeleton-loader type="text" />
+                    </th>
+                    <td><v-skeleton-loader type="text" /></td>
+                  </tr>
+                </tbody>
               </table>
 
               <div class="text-right">
@@ -244,67 +248,69 @@
                   class="text-body-1"
                   :class="{ 'is-xs-small': $vuetify.display.xs }"
                 >
-                  <tr>
-                    <td colspan="2" class="text-h6 title">
-                      {{ submission.title }}
-                    </td>
-                  </tr>
-                  <tr v-if="submission.authors && submission.authors.length">
-                    <th class="pr-4 text-body-2">
-                      Authors:
-                    </th>
-                    <td>{{ submission.authors.join(" | ") }}</td>
-                  </tr>
-                  <tr>
-                    <th class="pr-4 text-body-2">
-                      Submission Repository:
-                    </th>
-                    <td>{{ selectedRepository.name }}</td>
-                  </tr>
-                  <tr>
-                    <th class="pr-4 text-body-2">
-                      Submission Date:
-                    </th>
-                    <td>{{ getDateInLocalTime(submission.date) }}</td>
-                  </tr>
-                  <tr>
-                    <th class="pr-4 text-body-2">
-                      Identifier:
-                    </th>
-                    <td>{{ submission.identifier }}</td>
-                  </tr>
-                  <tr v-if="selectedRepository.name == 'HydroShare'">
-                    <th class="pr-4 text-body-2">
-                      Type:
-                    </th>
-                    <td>{{ resourceType }}</td>
-                  </tr>
-                  <tr v-if="submission.metadata && submission.metadata.status">
-                    <th class="pr-4 text-body-2">
-                      Status:
-                    </th>
+                  <tbody>
+                    <tr>
+                      <td colspan="2" class="text-h6 title">
+                        {{ submission.title }}
+                      </td>
+                    </tr>
+                    <tr v-if="submission.authors && submission.authors.length">
+                      <th class="pr-4 text-body-2">
+                        Authors:
+                      </th>
+                      <td>{{ submission.authors.join(" | ") }}</td>
+                    </tr>
+                    <tr>
+                      <th class="pr-4 text-body-2">
+                        Submission Repository:
+                      </th>
+                      <td>{{ selectedRepository.name }}</td>
+                    </tr>
+                    <tr>
+                      <th class="pr-4 text-body-2">
+                        Submission Date:
+                      </th>
+                      <td>{{ getDateInLocalTime(submission.date) }}</td>
+                    </tr>
+                    <tr>
+                      <th class="pr-4 text-body-2">
+                        Identifier:
+                      </th>
+                      <td>{{ submission.identifier }}</td>
+                    </tr>
+                    <tr v-if="selectedRepository.name == 'HydroShare'">
+                      <th class="pr-4 text-body-2">
+                        Type:
+                      </th>
+                      <td>{{ resourceType }}</td>
+                    </tr>
+                    <tr v-if="submission.metadata && submission.metadata.status">
+                      <th class="pr-4 text-body-2">
+                        Status:
+                      </th>
 
-                    <td>
-                      <v-chip
-                        v-if="submission.metadata.status !== 'incomplete'"
-                        color="orange"
-                        small
-                        variant="outlined"
-                      >
-                        <v-icon left small>
-                          mdi-lock
-                        </v-icon>
-                        {{ submission.metadata.status }}
-                      </v-chip>
+                      <td>
+                        <v-chip
+                          v-if="submission.metadata.status !== 'incomplete'"
+                          color="orange"
+                          small
+                          variant="outlined"
+                        >
+                          <v-icon left small>
+                            mdi-lock
+                          </v-icon>
+                          {{ submission.metadata.status }}
+                        </v-chip>
 
-                      <v-chip v-else small outlined>
-                        <v-icon left small>
-                          mdi-pencil
-                        </v-icon>
-                        {{ submission.metadata.status }}
-                      </v-chip>
-                    </td>
-                  </tr>
+                        <v-chip v-else small outlined>
+                          <v-icon left small>
+                            mdi-pencil
+                          </v-icon>
+                          {{ submission.metadata.status }}
+                        </v-chip>
+                      </td>
+                    </tr>
+                  </tbody>
                 </table>
 
                 <div class="d-flex flex-column mt-4 mt-md-0 actions">
@@ -409,14 +415,14 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, mixins, toNative } from 'vue-facing-decorator'
-import { Notifications } from '@cznethub/cznet-vue-core'
-import { VStepperVertical, VStepperVerticalItem } from 'vuetify/labs/VStepperVertical'
 import type { VTextField } from 'vuetify/lib/components/index.mjs'
-import { useRoute, useRouter } from 'vue-router'
-import { repoMetadata } from '~/components/submit/constants'
-import { EnumRepositoryKeys } from '~/components/submissions/types'
 import type { IRepository } from '~/components/submissions/types'
+import { Notifications } from '@cznethub/cznet-vue-core'
+import { Component, mixins, toNative, Watch } from 'vue-facing-decorator'
+import { useRoute, useRouter } from 'vue-router'
+import { VStepperVertical, VStepperVerticalItem } from 'vuetify/labs/VStepperVertical'
+import { EnumRepositoryKeys } from '~/components/submissions/types'
+import { repoMetadata } from '~/components/submit/constants'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 
 import Repository from '~/models/repository.model'
