@@ -65,6 +65,7 @@
           :has-folders="fileExplorerConfig.hasFolders"
           :is-read-only="fileExplorerConfig.isReadOnly"
           :has-file-metadata="() => false"
+          :supported-file-types="supportedFileTypes"
           :upload="isEditMode ? uploadFiles : undefined"
           :delete-file-or-folder="isEditMode && activeRepository.deleteFileOrFolder ? deleteFileOrFolder : undefined"
           :rename-file-or-folder="isEditMode && activeRepository.renameFileOrFolder ? renameFileOrFolder : undefined"
@@ -79,7 +80,7 @@
             v-if="schema"
             ref="form"
             v-model="data"
-            v-model:isValid="isValid"
+            v-model:is-valid="isValid"
             :schema="schema"
             :uischema="uiSchema"
             :config="config"
@@ -220,23 +221,23 @@
 </template>
 
 <script lang="ts">
-import { Component, Hook, Ref, mixins, toNative } from 'vue-facing-decorator'
-import { Subscription } from 'rxjs'
-import { CzFileExplorer, CzForm, Notifications } from '@cznethub/cznet-vue-core'
-import { sprintf } from 'sprintf-js'
-import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
-import { useRoute, useRouter } from 'vue-router'
 import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
+import type { NavigationGuardNext, RouteLocationNormalized } from 'vue-router'
 import type { IRepositoryUrls } from '../submissions/types'
+import { CzFileExplorer, CzForm, Notifications } from '@cznethub/cznet-vue-core'
+import { Subscription } from 'rxjs'
+import { sprintf } from 'sprintf-js'
+import { Component, Hook, mixins, Ref, toNative } from 'vue-facing-decorator'
+import { useRoute, useRouter } from 'vue-router'
+import CzNewSubmissionActions from '~/components/new-submission/cz.new-submission-actions.vue'
+import { DELETED_RESOURCE_STATUS_CODES } from '~/constants'
+import { hasUnsavedChangesGuard } from '~/guards'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import Repository from '~/models/repository.model'
+import Submission from '~/models/submission.model'
+import User from '~/models/user.model'
 import { EnumRepositoryKeys } from '../submissions/types'
 import { repoMetadata } from '../submit/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import { DELETED_RESOURCE_STATUS_CODES } from '~/constants'
-import Repository from '~/models/repository.model'
-import CzNewSubmissionActions from '~/components/new-submission/cz.new-submission-actions.vue'
-import User from '~/models/user.model'
-import Submission from '~/models/submission.model'
-import { hasUnsavedChangesGuard } from '~/guards'
 
 const initialData = {}
 
@@ -353,6 +354,10 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
   get schema() {
     return this.activeRepository?.get()?.schema
+  }
+
+  get supportedFileTypes() {
+    return this.repoMetadata[this.repositoryKey].supportedFileTypes
   }
 
   get uiSchema() {
