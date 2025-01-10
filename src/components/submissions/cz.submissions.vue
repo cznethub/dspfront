@@ -182,82 +182,84 @@
                         class="text-body-1"
                         :class="{ 'is-xs-small': $vuetify.display.xs }"
                       >
-                        <tr>
-                          <td
-                            :id="`sub-${index}-title`"
-                            colspan="2"
-                            class="text-h6 title"
-                          >
-                            {{ item.raw.title }}
-                          </td>
-                        </tr>
-                        <tr v-if="item.raw.authors.length">
-                          <th class="pr-4 text-body-2">
-                            Authors:
-                          </th>
-                          <td>{{ item.raw.authors.join(" | ") }}</td>
-                        </tr>
-                        <tr>
-                          <th class="pr-4 text-body-2">
-                            Submission Repository:
-                          </th>
-                          <td>{{ getRepositoryName(item.raw) }}</td>
-                        </tr>
-                        <tr>
-                          <th class="pr-4 text-body-2">
-                            Submission Date:
-                          </th>
-                          <td :id="`sub-${index}-date`">
-                            {{ getDateInLocalTime(item.raw.date) }}
-                          </td>
-                        </tr>
-                        <tr>
-                          <th class="pr-4 text-body-2">
-                            Identifier:
-                          </th>
-                          <td>{{ item.raw.identifier }}</td>
-                        </tr>
-                        <tr
-                          v-if="
-                            item.raw.repository === enumRepositoryKeys.hydroshare
-                          "
-                        >
-                          <th class="pr-4 text-body-2">
-                            Type:
-                          </th>
-                          <td>{{ getItemResourceType(item.raw) }}</td>
-                        </tr>
-                        <tr
-                          v-if="
-                            item.raw.metadata.status
-                              && item.raw.repository === enumRepositoryKeys.earthchem
-                          "
-                        >
-                          <th class="pr-4 text-body-2">
-                            Status:
-                          </th>
-
-                          <td>
-                            <v-chip
-                              v-if="item.raw.metadata.status !== 'incomplete'"
-                              color="orange"
-                              density="compact"
-                              size="small"
+                        <tbody>
+                          <tr>
+                            <td
+                              :id="`sub-${index}-title`"
+                              colspan="2"
+                              class="text-h6 title"
                             >
-                              <v-icon size="small" class="mr-1">
-                                mdi-lock
-                              </v-icon>
-                              {{ item.raw.metadata.status }}
-                            </v-chip>
+                              {{ item.raw.title }}
+                            </td>
+                          </tr>
+                          <tr v-if="item.raw.authors.length">
+                            <th class="pr-4 text-body-2">
+                              Authors:
+                            </th>
+                            <td>{{ item.raw.authors.join(" | ") }}</td>
+                          </tr>
+                          <tr>
+                            <th class="pr-4 text-body-2">
+                              Submission Repository:
+                            </th>
+                            <td>{{ getRepositoryName(item.raw) }}</td>
+                          </tr>
+                          <tr>
+                            <th class="pr-4 text-body-2">
+                              Submission Date:
+                            </th>
+                            <td :id="`sub-${index}-date`">
+                              {{ getDateInLocalTime(item.raw.date) }}
+                            </td>
+                          </tr>
+                          <tr>
+                            <th class="pr-4 text-body-2">
+                              Identifier:
+                            </th>
+                            <td>{{ item.raw.identifier }}</td>
+                          </tr>
+                          <tr
+                            v-if="
+                              item.raw.repository === enumRepositoryKeys.hydroshare
+                            "
+                          >
+                            <th class="pr-4 text-body-2">
+                              Type:
+                            </th>
+                            <td>{{ getItemResourceType(item.raw) }}</td>
+                          </tr>
+                          <tr
+                            v-if="
+                              item.raw.metadata.status
+                                && item.raw.repository === enumRepositoryKeys.earthchem
+                            "
+                          >
+                            <th class="pr-4 text-body-2">
+                              Status:
+                            </th>
 
-                            <v-chip v-else size="small">
-                              <v-icon size="small" class="mr-1">
-                                mdi-pencil
-                              </v-icon>
-                              {{ item.raw.metadata.status }}
-                            </v-chip>
-                          </td>
-                        </tr>
+                            <td>
+                              <v-chip
+                                v-if="item.raw.metadata.status !== 'incomplete'"
+                                color="orange"
+                                density="compact"
+                                size="small"
+                              >
+                                <v-icon size="small" class="mr-1">
+                                  mdi-lock
+                                </v-icon>
+                                {{ item.raw.metadata.status }}
+                              </v-chip>
+
+                              <v-chip v-else size="small">
+                                <v-icon size="small" class="mr-1">
+                                  mdi-pencil
+                                </v-icon>
+                                {{ item.raw.metadata.status }}
+                              </v-chip>
+                            </td>
+                          </tr>
+                        </tbody>
                       </table>
                     </div>
 
@@ -480,29 +482,29 @@
 </template>
 
 <script lang="ts">
-import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
-import { Subscription } from 'rxjs'
 import type {
   IRepository,
   ISubmission,
 } from '~/components/submissions/types'
+import { Subscription } from 'rxjs'
+import { Component, mixins, Ref, toNative } from 'vue-facing-decorator'
+import CzRegisterDatasetDialog from '~/components/register-dataset/cz.register-dataset-dialog.vue'
+import {
+  itemsPerPageArray,
+  sortDirectionsOverrides,
+} from '~/components/submissions/constants'
 import {
   EnumRepositoryKeys,
   EnumSortDirections,
   EnumSubmissionSorts,
 } from '~/components/submissions/types'
 import { repoMetadata } from '~/components/submit/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import {
-  itemsPerPageArray,
-  sortDirectionsOverrides,
-} from '~/components/submissions/constants'
 import { getRepositoryFromKey } from '~/constants'
-import CzRegisterDatasetDialog from '~/components/register-dataset/cz.register-dataset-dialog.vue'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 
+import Repository from '~/models/repository.model'
 // import { formatDistanceToNow } from 'date-fns'
 import Submission from '~/models/submission.model'
-import Repository from '~/models/repository.model'
 import User from '~/models/user.model'
 import { isRepositoryAuthorized } from '~/util'
 
@@ -599,7 +601,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
       return {
         key,
         label: sortDirectionsOverrides[this.sortBy.key]?.[key as keyof typeof EnumSortDirections]
-        || EnumSortDirections[key as keyof typeof EnumSortDirections],
+          || EnumSortDirections[key as keyof typeof EnumSortDirections],
       }
     })
   }
