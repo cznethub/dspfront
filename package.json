@@ -53,7 +53,7 @@
     "sass": "^1.85.0",
     "taze": "^18.5.0",
     "typescript": "^5.7.3",
-    "unplugin-auto-import": "^19.0.0",
+    "unplugin-auto-import": "^19.1.0",
     "unplugin-vue-components": "^28.1.0",
     "unplugin-vue-macros": "^2.14.2",
     "vite": "^6.1.0",
