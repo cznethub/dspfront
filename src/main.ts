@@ -1,9 +1,9 @@
+import type { UserModule } from './types'
 import { ViteSSG } from 'vite-ssg'
 import App from './App.vue'
-import type { UserModule } from './types'
 
-import './assets/css/global.scss'
 import { routes } from './routes'
+import './assets/css/global.scss'
 
 // https://github.com/antfu/vite-ssg
 export const createApp = ViteSSG(
