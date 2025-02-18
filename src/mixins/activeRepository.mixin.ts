@@ -1,12 +1,12 @@
-import { Component, Vue } from 'vue-facing-decorator'
-import { Subscription } from 'rxjs'
-import { useRoute, useRouter } from 'vue-router'
-import Repository from '~/models/repository.model'
 import type {
   EnumRepositoryKeys,
   IRepository,
 } from '~/components/submissions/types'
+import { Subscription } from 'rxjs'
+import { Component, Vue } from 'vue-facing-decorator'
+import { useRoute, useRouter } from 'vue-router'
 import { getRepositoryFromKey } from '~/constants'
+import Repository from '~/models/repository.model'
 
 @Component
 export class ActiveRepositoryMixin extends Vue {
@@ -33,7 +33,7 @@ export class ActiveRepositoryMixin extends Vue {
     if (repo.isDisabled)
       return
 
-    if (repo.isSupported && !repo.isComingSoon) {
+    if (repo.isSupported?.form && !repo.isComingSoon) {
       this.setActiveRepository(repo.key)
       this.router
         .push({ name: 'submit.repository', params: { repository: repo.key } })

@@ -192,25 +192,25 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch, toNative } from 'vue-facing-decorator'
-import { Subscription } from 'rxjs'
 import type { RouteLocationMatched, RouteLocationRaw } from 'vue-router'
 import { CzNotifications, Notifications } from '@cznethub/cznet-vue-core'
+import { Subscription } from 'rxjs'
+import { Component, toNative, Vue, Watch } from 'vue-facing-decorator'
 import { useRoute, useRouter } from 'vue-router'
-import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from './constants'
-import { EnumRepositoryKeys } from './components/submissions/types'
-import HydroShare from './models/hydroshare.model'
-import Submission from './models/submission.model'
-import Repository from './models/repository.model'
-import External from './models/external.model'
-import EarthChem from './models/earthchem.model'
-import { hasLoggedInGuard } from './guards'
-import CzFooter from '~/components/base/cz.footer.vue'
 import CzLogin from '~/components/account/cz.login.vue'
 import CzAuthorize from '~/components/authorize/cz.authorize.vue'
+import CzFooter from '~/components/base/cz.footer.vue'
 import User from '~/models/user.model'
-import Zenodo from '~/models/zenodo.model'
+// import Zenodo from '~/models/zenodo.model'
 import { addRouteTags } from '~/modules/router'
+import { EnumRepositoryKeys } from './components/submissions/types'
+import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from './constants'
+import { hasLoggedInGuard } from './guards'
+import EarthChem from './models/earthchem.model'
+import External from './models/external.model'
+import HydroShare from './models/hydroshare.model'
+import Repository from './models/repository.model'
+import Submission from './models/submission.model'
 
 const INITIAL_DIALOG = {
   title: '',
@@ -386,8 +386,8 @@ class App extends Vue {
           if (params.redirectTo) {
             if (params.repository === EnumRepositoryKeys.hydroshare)
               await HydroShare.init()
-            else if (params.repository === EnumRepositoryKeys.zenodo)
-              await Zenodo.init()
+            // else if (params.repository === EnumRepositoryKeys.zenodo)
+            //   await Zenodo.init()
             else if (params.repository === EnumRepositoryKeys.earthchem)
               await EarthChem.init()
 
@@ -421,7 +421,7 @@ class App extends Vue {
     return Promise.all([
       HydroShare.init(),
       EarthChem.init(),
-      Zenodo.init(),
+      // Zenodo.init(),
       External.init(),
     ])
   }

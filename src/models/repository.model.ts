@@ -1,25 +1,25 @@
-import { Model } from '@vuex-orm/core'
-import { Subject } from 'rxjs'
-import type { RouteLocationRaw } from 'vue-router'
-import axios from 'axios'
-import { Notifications } from '@cznethub/cznet-vue-core'
 import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
-import Submission from './submission.model'
-import User from './user.model'
+import type { RouteLocationRaw } from 'vue-router'
+import type {
+  IRepository,
+  IRepositoryUrls,
+} from '~/components/submissions/types'
+import { Notifications } from '@cznethub/cznet-vue-core'
+import { Model } from '@vuex-orm/core'
+import axios from 'axios'
+import { Subject } from 'rxjs'
+import {
+  EnumRepositoryKeys,
+} from '~/components/submissions/types'
 
+import { repoMetadata } from '~/components/submit/constants'
 // import HydroShare from './hydroshare.model'
 // import EarthChem from './earthchem.model'
 // import Zenodo from './zenodo.model'
 // import External from './external.model'
 import { APP_URL, DELETED_RESOURCE_STATUS_CODES } from '~/constants'
-import type {
-  IRepository,
-  IRepositoryUrls,
-} from '~/components/submissions/types'
-import {
-  EnumRepositoryKeys,
-} from '~/components/submissions/types'
-import { repoMetadata } from '~/components/submit/constants'
+import Submission from './submission.model'
+import User from './user.model'
 
 export default class Repository extends Model implements IRepository {
   static types() {
@@ -356,9 +356,9 @@ export default class Repository extends Model implements IRepository {
               },
             })
             break
-          case EnumRepositoryKeys.zenodo:
-            identifier = response.data.metadata.prereserve_doi?.recid
-            break
+          // case EnumRepositoryKeys.zenodo:
+          //   identifier = response.data.metadata.prereserve_doi?.recid
+          //   break
           case EnumRepositoryKeys.earthchem:
             identifier = response.data.metadata.id
             break

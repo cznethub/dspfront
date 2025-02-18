@@ -282,6 +282,7 @@
                             isItemHsCollection(item.raw)
                             || isItemPublished(item.raw)
                             || isItemEclSubmitted(item.raw)
+                            || !itemHasFormSupport(item.raw)
                           )
                         "
                         :id="`sub-${index}-edit`"
@@ -324,7 +325,7 @@
                         @click="
                           onDelete(
                             item.raw,
-                            repoMetadata[item.raw.repository]?.isExternal,
+                            repoMetadata[item.raw.repository]?.isExternal || !repoMetadata[item.raw.repository]?.isSupported?.form,
                           )
                         "
                       >
@@ -543,7 +544,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   }
 
   get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported?.form)
   }
 
   get externalRepoMetadata() {
@@ -566,7 +567,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
 
   get repoOptions(): { key: string, label: string }[] {
     return Object.keys(repoMetadata)
-      .filter(key => repoMetadata[key].isSupported)
+      .filter(key => repoMetadata[key].isSupported?.form)
       .map(key => ({ key, label: repoMetadata[key].name }))
   }
 
@@ -748,22 +749,26 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     )
   }
 
-  isItemPublished(submission): boolean {
+  isItemPublished(submission: any): boolean {
     if (submission.repository === EnumRepositoryKeys.hydroshare)
       return !!submission?.metadata.published
     else if (submission.repository === EnumRepositoryKeys.earthchem)
       return submission?.metadata?.status === 'published'
-    else if (submission.repository === EnumRepositoryKeys.zenodo)
-      return !!submission?.metadata?.doi
+    // else if (submission.repository === EnumRepositoryKeys.zenodo)
+    //   return !!submission?.metadata?.doi
 
     return false
   }
 
-  isItemEclSubmitted(submission): boolean {
+  isItemEclSubmitted(submission: any): boolean {
     return (
       submission.repository === EnumRepositoryKeys.earthchem
       && submission?.metadata.status === 'submitted'
     )
+  }
+
+  itemHasFormSupport(submission: any) {
+    return repoMetadata[submission.repository]?.isSupported?.form
   }
 
   onDelete(submission: ISubmission, isExternal: boolean) {

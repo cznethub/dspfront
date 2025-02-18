@@ -10,7 +10,7 @@
           class="has-cursor-pointer transition-swing"
         >
           <v-icon
-            v-if="!repo.isSupported || repo.isComingSoon"
+            v-if="!repo.isSupported?.form || repo.isComingSoon"
             class="open-in-new"
           >
             mdi-open-in-new
@@ -56,8 +56,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
 import type { IRepository } from '../submissions/types'
+import { Component, Prop, toNative, Vue } from 'vue-facing-decorator'
 
 @Component({
   name: 'cz-repository-submit-card',

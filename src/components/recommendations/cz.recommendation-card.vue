@@ -3,9 +3,9 @@
     :id="`${repo.name.replaceAll(` `, ``)}-card`"
     class="cz-recommendation-card"
     :disabled="repo.isDisabled"
-    :outlined="!repo.isSupported"
-    :flat="!repo.isSupported"
-    :variant="repo.isSupported ? 'elevated' : 'outlined'"
+    :outlined="!repo.isSupported?.form"
+    :flat="!repo.isSupported?.form"
+    :variant="repo.isSupported?.form ? 'elevated' : 'outlined'"
     border="solid thin"
   >
     <v-card-title class="bg-grey-lighten-4">
@@ -38,7 +38,7 @@
 
     <v-card-actions class="d-flex flex-column flex-md-row flex-wrap-wrap">
       <v-btn
-        v-if="repo.isSupported"
+        v-if="repo.isSupported?.form"
         :disabled="repo.isComingSoon"
         variant="text"
         color="primary"
@@ -50,7 +50,7 @@
         Visit {{ repo.name }}
       </v-btn>
       <v-btn
-        v-if="repo.isSupported"
+        v-if="repo.isSupported?.form"
         variant="text"
         :href="repo.supportUrl"
         target="_blank"
@@ -64,8 +64,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, mixins, toNative } from 'vue-facing-decorator'
 import type { IRepository } from '~/components/submissions/types'
+import { Component, mixins, Prop, toNative } from 'vue-facing-decorator'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 
 @Component({

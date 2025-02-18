@@ -1,8 +1,8 @@
+import type Repository from './models/repository.model'
 import { EnumRepositoryKeys } from './components/submissions/types'
 import EarthChem from './models/earthchem.model'
 import External from './models/external.model'
 import HydroShare from './models/hydroshare.model'
-import type Repository from './models/repository.model'
 import Zenodo from './models/zenodo.model'
 
 /**

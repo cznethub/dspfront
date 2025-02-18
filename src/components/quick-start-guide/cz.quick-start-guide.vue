@@ -24,8 +24,7 @@
       Zone who need to submit data to a reputable repository and who want their
       data to be affiliated with one or more CZNet projects or the larger
       Critical Zone scientific community. Data submitted through the DSP are
-      deposited into one of our supported repositories (HydroShare, EarthChem,
-      or Zenodo). Users who have shared data in other reputable repositories,
+      deposited into one of our supported repositories (HydroShare or EarthChem). Users who have shared data in other reputable repositories,
       but who want their data to be included in the CZ Hub data discovery system
       can register datasets with the DSP.
     </p>
@@ -96,11 +95,11 @@
         in storing data related to water science. HydroShare is file agnostic
         and can support any file type.
       </li>
-      <li>
+      <!-- <li>
         <strong>Zenodo: </strong>Zenodo is a general-purpose repository that can
         be used for sharing data or other content that might not fit well in
         other repositories.
-      </li>
+      </li> -->
     </ul>
 
     <div class="text-h6 mb-3 mt-6">
@@ -131,7 +130,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
+import { Component, toNative, Vue } from 'vue-facing-decorator'
 
 @Component({
   name: 'cz-quick-start-guide',

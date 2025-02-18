@@ -31,7 +31,7 @@ export enum EnumRepositoryKeys {
   ornlDaac = 'ornlDaac',
   bcoDmo = 'bcoDmo',
   vegBank = 'vegBank',
-  essDive = 'essdive',
+  essDive = 'essDive',
   socib = 'socib',
   polarRock = 'polarRock',
   crystalography = 'crystalography',
@@ -94,7 +94,7 @@ export interface IRepository {
   uischema?: any
   schemaDefaults?: any
   isDisabled?: boolean
-  isSupported?: boolean
+  isSupported?: { form?: boolean, registration?: boolean }
   isComingSoon?: boolean
   isExternal?: boolean
   hasFolderStructure?: boolean

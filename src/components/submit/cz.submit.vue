@@ -54,14 +54,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Ref, mixins, toNative } from 'vue-facing-decorator'
 import type { RouteLocationNormalized } from 'vue-router'
-import { useRoute } from 'vue-router'
 import type { IRepository } from '../submissions/types'
-import { repoMetadata } from '~/components/submit/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import CzRepositorySubmitCard from '~/components/submit/cz.repository-submit-card.vue'
+import { Notifications } from '@cznethub/cznet-vue-core'
+import { Component, mixins, Ref, toNative } from 'vue-facing-decorator'
+import { useRoute } from 'vue-router'
 import CzRegisterDatasetDialog from '~/components/register-dataset/cz.register-dataset-dialog.vue'
+import { repoMetadata } from '~/components/submit/constants'
+import CzRepositorySubmitCard from '~/components/submit/cz.repository-submit-card.vue'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import User from '~/models/user.model'
 
 @Component({
   name: 'cz-submit',
@@ -79,7 +81,7 @@ class CzSubmit extends mixins(ActiveRepositoryMixin) {
   }
 
   get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported?.form)
   }
 
   get externalRepoMetadata() {
@@ -92,6 +94,32 @@ class CzSubmit extends mixins(ActiveRepositoryMixin) {
 
   openRegisterDatasetDialog() {
     this.registerDatasetDialog.active = true
+  }
+
+  created() {
+    // TODO: this should be a notification system in the API with a dedicated endpoint
+    if (User.$state.showZenodoWarning) {
+      Notifications.toast({
+        title: `Important Note: As of February 2025, we have removed submission of datasets to the Zenodo repository directly through this Data Submission Portal.`,
+        message: `Issues and changes with Zenodo's API and API documentation made it very difficult for us to continue supporting this functionality. We highly encourage you to submit CZNet datasets to the HydroShare and EarthChem repositories. If you need to use Zenodo, you should go directly to the Zenodo website to create your resource. Then, make sure you come back here and use the "Register Dataset" option to register your dataset. This will ensure that anything you submit to Zenodo becomes discoverable with all other CZNet data. Make sure your resource is publicly available in Zenodo before you try to register it here.`,
+        isInfinite: true,
+        type: 'warning',
+        hasDoNotShowAgain: true,
+        location: 'top center',
+        onDismissed: (doNotShowAgain: boolean) => {
+          if (doNotShowAgain) {
+            User.commit((state) => {
+              state.showZenodoWarning = false
+            })
+          }
+        },
+      })
+    }
+    else {
+      User.commit((state) => {
+        state.showZenodoWarning = true
+      })
+    }
   }
 }
 export default toNative(CzSubmit)

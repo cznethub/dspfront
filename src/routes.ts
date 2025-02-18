@@ -1,21 +1,21 @@
 import type { RouteRecordRaw } from 'vue-router'
-import { hasAccessTokenGuard, hasLoggedInGuard, hasUnsavedChangesGuard } from './guards'
-import CzFooter from '~/components/base/cz.footer.vue'
-import CzHome from '~/components/home/cz.home.vue'
 import CzAbout from '~/components/about/cz.about.vue'
-import CzQuickStartGuide from '~/components/quick-start-guide/cz.quick-start-guide.vue'
-import CzSubmit from '~/components/submit/cz.submit.vue'
-import CzResources from '~/components/resources/cz.resources.vue'
+import CzFooter from '~/components/base/cz.footer.vue'
 import CzContact from '~/components/contact/cz.contact.vue'
-import CzRecomendationsQuestionnaire from '~/components/recommendations/cz.recommendations-questionnaire.vue'
-import CzProfile from '~/components/profile/cz.profile.vue'
+import CzHome from '~/components/home/cz.home.vue'
+import CzNewSubmission from '~/components/new-submission/cz.new-submission.vue'
 import CzAccount from '~/components/profile/cz.account.vue'
 import CzAuthorizedRepositories from '~/components/profile/cz.authorized-repositories.vue'
+import CzProfile from '~/components/profile/cz.profile.vue'
+import CzQuickStartGuide from '~/components/quick-start-guide/cz.quick-start-guide.vue'
+import CzRecomendationsQuestionnaire from '~/components/recommendations/cz.recommendations-questionnaire.vue'
+import CzRegisterDataset from '~/components/register-dataset/cz.register-dataset.vue'
+import CzResources from '~/components/resources/cz.resources.vue'
 import CzSubmissions from '~/components/submissions/cz.submissions.vue'
 
-import CzNewSubmission from '~/components/new-submission/cz.new-submission.vue'
+import CzSubmit from '~/components/submit/cz.submit.vue'
 
-import CzRegisterDataset from '~/components/register-dataset/cz.register-dataset.vue'
+import { hasAccessTokenGuard, hasLoggedInGuard, hasUnsavedChangesGuard } from './guards'
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -146,7 +146,7 @@ export const routes: RouteRecordRaw[] = [
       metaTags: [
         {
           name: 'keywords',
-          content: 'HydroShare, EarthChem, Zenodo, Submit, Data, Repositories',
+          content: 'HydroShare, EarthChem, Submit, Data, Repositories',
         },
       ],
     },
