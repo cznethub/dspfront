@@ -57,7 +57,7 @@
     "unplugin-vue-components": "^28.4.1",
     "unplugin-vue-macros": "^2.14.5",
     "vite": "^6.2.3",
-    "vite-plugin-pwa": "^0.21.2",
+    "vite-plugin-pwa": "^1.0.0",
     "vite-plugin-webfont-dl": "^3.10.4",
     "vite-ssg": "^26.0.0",
     "vite-ssg-sitemap": "^0.8.1",
