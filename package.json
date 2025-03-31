@@ -51,7 +51,7 @@
     "eslint-plugin-format": "^1.0.1",
     "lint-staged": "^15.5.0",
     "sass": "^1.86.0",
-    "taze": "^19.0.3",
+    "taze": "^19.0.4",
     "typescript": "^5.8.2",
     "unplugin-auto-import": "^19.1.2",
     "unplugin-vue-components": "^28.4.1",
