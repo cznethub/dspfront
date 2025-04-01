@@ -212,7 +212,7 @@
           target="_blank"
         ><img :src="repo.logoSrc" :alt="repo.name"></a>
       </div>
-      <div class="d-flex justify-center mt-8">
+      <div class="d-flex justify-center mt-12">
         <p class="font-weight-light text-center text-subtitle-1">
           You can also register datasets submitted to other repositories here so that they will be discoverable by Critical Zone Scientists. You can register data submitted to any repository, but the following are some common examples.
         </p>

@@ -98,7 +98,7 @@ class CzSubmit extends mixins(ActiveRepositoryMixin) {
 
   created() {
     // TODO: this should be a notification system in the API with a dedicated endpoint
-    if (User.$state.showZenodoWarning) {
+    if (this.route.name === 'submit' && User.$state.showZenodoWarning) {
       Notifications.toast({
         title: `Important Note: As of February 2025, we have removed submission of datasets to the Zenodo repository directly through this Data Submission Portal.`,
         message: `Issues and changes with Zenodo's API and API documentation made it very difficult for us to continue supporting this functionality. We highly encourage you to submit CZNet datasets to the HydroShare and EarthChem repositories. If you need to use Zenodo, you should go directly to the Zenodo website to create your resource. Then, make sure you come back here and use the "Register Dataset" option to register your dataset. This will ensure that anything you submit to Zenodo becomes discoverable with all other CZNet data. Make sure your resource is publicly available in Zenodo before you try to register it here.`,

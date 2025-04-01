@@ -1,9 +1,9 @@
-import axios from 'axios'
-import { Notifications } from '@cznethub/cznet-vue-core'
-import { sprintf } from 'sprintf-js'
 import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
-import Repository from './repository.model'
+import { Notifications } from '@cznethub/cznet-vue-core'
+import axios from 'axios'
+import { sprintf } from 'sprintf-js'
 import { EnumRepositoryKeys } from '~/components/submissions/types'
+import Repository from './repository.model'
 
 export default class HydroShare extends Repository {
   static entity = EnumRepositoryKeys.hydroshare

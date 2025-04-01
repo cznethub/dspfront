@@ -567,7 +567,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
 
   get repoOptions(): { key: string, label: string }[] {
     return Object.keys(repoMetadata)
-      .filter(key => repoMetadata[key].isSupported?.form)
+      .filter(key => repoMetadata[key].isSupported)
       .map(key => ({ key, label: repoMetadata[key].name }))
   }
 
