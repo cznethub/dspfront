@@ -1,5 +1,5 @@
 @use "montserrat/stylesheet.css";
-/* TODO: transition from montserrat to inter: use 1px lower size of inter! */
+/* TODO: transition from montserrat to inter: use 1px lower size of inter */
 @use "inter/inter.css";
 
 html, body {
