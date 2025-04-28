@@ -322,12 +322,7 @@
                         :id="`sub-${index}-delete`"
                         :disabled="isDeleteButtonDisabled(item.raw)"
                         rounded
-                        @click="
-                          onDelete(
-                            item.raw,
-                            repoMetadata[item.raw.repository]?.isExternal || !repoMetadata[item.raw.repository]?.isSupported?.form,
-                          )
-                        "
+                        @click="onDelete(item.raw)"
                       >
                         <v-icon
                           v-if="
@@ -340,7 +335,9 @@
                           mdi-delete-outline
                         </v-icon><span class="ml-1">
                           {{
-                            isDeleting[`${item.raw.repository}-${item.raw.identifier}`]
+                            isDeleting[
+                              `${item.raw.repository}-${item.raw.identifier}`
+                            ]
                               ? "Deleting..."
                               : "Delete"
                           }}</span>
@@ -445,7 +442,7 @@
             submission Portal.
           </p>
           <v-checkbox
-            v-if="!deleteDialogData.isExternal"
+            v-if="!deleteDialogData.isExternal && !deleteDialogData.isPublished"
             v-model="alsoDeleteInRepository"
             color="red"
             label="Also attempt to delete this resource and its content files from the repository. If the resource is permanently published (i.e., it has been assigned a DOI), we will not be able to remove it from the repository."
@@ -524,6 +521,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   deleteDialogData: {
     submission: ISubmission
     isExternal: boolean
+    isPublished: boolean
   } | null = null
 
   alsoDeleteInRepository = false
@@ -738,8 +736,8 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     document.body.removeChild(element)
   }
 
-  isDeleteButtonDisabled(item) {
-    return this.isDeleting[`${item.repository}-${item.identifier}`]
+  isDeleteButtonDisabled(submission: Submission) {
+    return this.isDeleting[`${submission.repository}-${submission.identifier}`]
   }
 
   isItemHsCollection(submission: ISubmission) {
@@ -749,7 +747,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     )
   }
 
-  isItemPublished(submission: any): boolean {
+  isItemPublished(submission: Submission): boolean {
     if (submission.repository === EnumRepositoryKeys.hydroshare)
       return !!submission?.metadata.published
     else if (submission.repository === EnumRepositoryKeys.earthchem)
@@ -760,19 +758,19 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     return false
   }
 
-  isItemEclSubmitted(submission: any): boolean {
+  isItemEclSubmitted(submission: Submission): boolean {
     return (
       submission.repository === EnumRepositoryKeys.earthchem
       && submission?.metadata.status === 'submitted'
     )
   }
 
-  itemHasFormSupport(submission: any) {
-    return repoMetadata[submission.repository]?.isSupported?.form
-  }
-
-  onDelete(submission: ISubmission, isExternal: boolean) {
-    this.deleteDialogData = { submission, isExternal }
+  onDelete(submission: Submission) {
+    this.deleteDialogData = {
+      submission,
+      isExternal: repoMetadata[submission.repository]?.isExternal || !repoMetadata[submission.repository]?.isSupported?.form || false,
+      isPublished: this.isItemPublished(submission),
+    }
     this.alsoDeleteInRepository = false // we want it unchecked initially
     this.isDeleteDialogActive = true
   }
