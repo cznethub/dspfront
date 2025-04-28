@@ -1,5 +1,5 @@
 import type { RouteRecordRaw } from 'vue-router'
-import { hasAccessTokenGuard, hasLoggedInGuard, hasUnsavedChangesGuard } from './guards'
+import { hasAccessTokenGuard, hasLoggedInGuard } from './guards'
 import CzFooter from '~/components/base/cz.footer.vue'
 import CzHome from '~/components/home/cz.home.vue'
 import CzAbout from '~/components/about/cz.about.vue'

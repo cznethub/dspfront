@@ -18,6 +18,7 @@ export interface IUserState {
   orcidAccessToken: string
   next: string
   hasUnsavedChanges: boolean
+  isSaving: false
   registeringSubmission: Partial<Submission> | null
 }
 
@@ -35,10 +36,6 @@ export default class User extends Model {
     return this.store().state.entities[this.entity]
   }
 
-  static get next() {
-
-  }
-
   static get accessToken() {
     return this.$state?.orcidAccessToken
   }
@@ -50,6 +47,7 @@ export default class User extends Model {
       orcidAccessToken: '',
       next: '',
       hasUnsavedChanges: false,
+      isSaving: false,
       registeringSubmission: null,
     }
   }

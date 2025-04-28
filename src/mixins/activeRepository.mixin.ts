@@ -1,6 +1,6 @@
 import { Component, Vue } from 'vue-facing-decorator'
 import { Subscription } from 'rxjs'
-import { useRoute, useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 import Repository from '~/models/repository.model'
 import type {
   EnumRepositoryKeys,

@@ -266,9 +266,8 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   isValid = false
   isLoading = false
   isLoadingInitialFiles = false
-  isSaving = false
   identifier = ''
-  data: Partial<IFolder> = initialData
+  data: any = initialData
   usedUISchema = {}
   repoMetadata = repoMetadata
   toUpload = []
@@ -279,6 +278,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   wasUnauthorized = false
   allowFileUpload = true
   repositoryKey: EnumRepositoryKeys = EnumRepositoryKeys.external
+  isRegistering = false
 
   get config() {
     return {
@@ -395,17 +395,27 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     return this.isEditMode ? !!this.repositoryRecord : true
   }
 
-  get hasUnsavedChanges(): boolean {
-    return User.$state.hasUnsavedChanges
-  }
-
   get registeringSubmission(): Partial<Submission> | null {
     return User.$state.registeringSubmission
+  }
+
+  get hasUnsavedChanges(): boolean {
+    return User.$state.hasUnsavedChanges
   }
 
   set hasUnsavedChanges(value: boolean) {
     User.commit((state) => {
       state.hasUnsavedChanges = value
+    })
+  }
+
+  get isSaving(): boolean {
+    return User.$state.isSaving
+  }
+
+  set isSaving(value: boolean) {
+    User.commit((state) => {
+      state.isSaving = value
     })
   }
 
@@ -428,6 +438,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.hasUnsavedChanges = false
     this.wasUnauthorized = false
     this.repositoryKey = this.route.params.repository as EnumRepositoryKeys
+    this.isRegistering = this.route.query.mode === 'register'
 
     if (
       !this.activeRepository
@@ -462,7 +473,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   async loadSavedSubmission() {
     console.info('[CzNewSubmission]: Reading existing record...')
     const response
-      = this.route.query.mode === 'register'
+      = this.isRegistering
         ? this.registeringSubmission
           ? { metadata: this.registeringSubmission } // Load it from persistent state if we have it
           : await Repository.readExistingSubmission(
@@ -682,7 +693,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
   }
 
   private async _saveAndFinish() {
-    if (this.hasUnsavedChanges || this.route.query.mode === 'register') {
+    if (this.hasUnsavedChanges || this.isRegistering) {
       const wasSaved = await this._save()
 
       if (wasSaved) {
@@ -690,8 +701,8 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
         this.router.push({ name: 'submissions' })
       }
     }
-    // If nothing to save, just redirect to submissions page
     else {
+      // If nothing to save, just redirect to submissions page
       this.router.push({ name: 'submissions' })
     }
   }
@@ -725,11 +736,12 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       wasSaved = await this.activeRepository?.updateSubmission(
         this.identifier,
         this.data,
+        this.isRegistering,
+        this.router,
       )
     }
 
     if (!this.isEditMode) {
-      // TODO: integration changes
       if (this.hasFileExplorer && !this.fileExplorer.hasTooManyFiles && !this.fileExplorer.isTotalUploadSizeTooBig) {
         await this.uploadFiles(this.toUpload)
       }
