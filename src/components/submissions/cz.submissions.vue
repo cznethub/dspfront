@@ -765,6 +765,10 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     )
   }
 
+  itemHasFormSupport(submission: any) {
+    return repoMetadata[submission.repository]?.isSupported?.form
+  }
+
   onDelete(submission: Submission) {
     this.deleteDialogData = {
       submission,
