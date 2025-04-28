@@ -1,18 +1,18 @@
+import type {
+  ISubmission,
+} from '~/components/submissions/types'
 import { Model } from '@vuex-orm/core'
 import axios from 'axios'
 import { sprintf } from 'sprintf-js'
-import User from './user.model'
+import { itemsPerPageArray } from '~/components/submissions/constants'
 import {
   EnumRepositoryKeys,
 
   EnumSortDirections,
   EnumSubmissionSorts,
 } from '~/components/submissions/types'
-import type {
-  ISubmission,
-} from '~/components/submissions/types'
-import { itemsPerPageArray } from '~/components/submissions/constants'
 import { getRepositoryFromKey } from '~/constants'
+import User from './user.model'
 
 export interface ISubmisionState {
   sortBy: { key: string, label: string, order: 'asc' | 'desc' }
@@ -101,27 +101,27 @@ export default class Submission extends Model implements ISubmission {
 
       return data
     }
-    else if (repository === EnumRepositoryKeys.zenodo) {
-      if (isPublished)
-        viewUrl = sprintf(repo?.get()?.urls?.publicViewUrl || '', identifier)
+    // else if (repository === EnumRepositoryKeys.zenodo) {
+    //   if (isPublished)
+    //     viewUrl = sprintf(repo?.get()?.urls?.publicViewUrl || '', identifier)
 
-      const data: Partial<Submission> = {
-        title: apiSubmission.title,
-        authors: apiSubmission.creators?.map(c => c.name),
-        repository,
-        identifier,
-        url: viewUrl,
-      }
+    //   const data: Partial<Submission> = {
+    //     title: apiSubmission.title,
+    //     authors: apiSubmission.creators?.map(c => c.name),
+    //     repository,
+    //     identifier,
+    //     url: viewUrl,
+    //   }
 
-      if (overrideDate) {
-        // Zenodo returns a date string (e.g. "2022-09-19"), and we need a datetime
-        const date = apiSubmission.publication_date.split('-')
-        const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
-        data.date = parsedDate.getTime()
-      }
+    //   if (overrideDate) {
+    //     // Zenodo returns a date string (e.g. "2022-09-19"), and we need a datetime
+    //     const date = apiSubmission.publication_date.split('-')
+    //     const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
+    //     data.date = parsedDate.getTime()
+    //   }
 
-      return data
-    }
+    //   return data
+    // }
     else if (repository === EnumRepositoryKeys.earthchem) {
       // If the record has been published, use the public view URL
       if (apiSubmission.status === 'published')

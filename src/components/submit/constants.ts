@@ -13,7 +13,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     description:
       'A dependable data management and publication solution for hydrologic data types and models.',
     submitTooltip: 'Submit a dataset to the HydroShare repository.',
-    isSupported: true,
+    isSupported: { registration: true, form: true },
     hasFolderStructure: true,
     maxUploadSizePerFile: 1000000000, // 1 GB
     url: 'https://www.hydroshare.org',
@@ -31,7 +31,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     description:
       'EarthChem provides open data services to the geochemical, petrological, mineralogical, and related communities. Services include data preservation, discovery, access, and visualization.',
     submitTooltip: 'Submit a dataset to the EarthChem repository.',
-    isSupported: true,
+    isSupported: { registration: true, form: true },
     url: 'https://www.earthchem.org',
     supportUrl: 'https://www.earthchem.org/resources/support/',
     supportedFileTypes: [
@@ -91,7 +91,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     description:
       'Zenodo helps researchers receive credit by making the research results citable and through OpenAIRE integrates them into existing reporting lines to funding agencies like the European Commission.',
     submitTooltip: 'Submit a dataset to the Zenodo repository.',
-    isSupported: true,
+    isSupported: { registration: true, form: false },
     url: 'https://www.zenodo.org',
     supportUrl: 'https://help.zenodo.org/',
     maxTotalUploadSize: 50000000000, // 50 GB
@@ -107,7 +107,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '',
     description:
       'We encourage you to submit your data to one of the supported repositories listed here. We know that these repositories may not be a good fit for every CZNet dataset. If you have submitted a dataset to a different repository, register that dataset here. Registering will create a metadata record for the dataset within the Data Submission Portal to ensure that your data can still be discovered with all of the other CZ Net research products.',
-    isSupported: true,
+    isSupported: { registration: false, form: true },
     isExternal: true,
     submitTooltip: 'Register a dataset submitted to another repository.',
   },
@@ -117,8 +117,15 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/sesar.png',
     description: `SESAR is a community platform that helps make samples more discoverable, accessible, and reusable, and connects samples with the knowledge ecosystem derived from them.`,
     submitTooltip: 'Submit a dataset to the SESAR repository.',
-    isSupported: false,
     url: 'https://www.geosamples.org/',
+  },
+  [EnumRepositoryKeys.essDive]: {
+    key: EnumRepositoryKeys.essDive,
+    name: 'ESS-Dive',
+    logoSrc: '/img/ess-dive.png',
+    description: ``, // TODO
+    submitTooltip: 'Submit a dataset to the ESS-Dive repository.',
+    url: 'https://ess-dive.lbl.gov',
   },
   [EnumRepositoryKeys.openTopography]: {
     key: EnumRepositoryKeys.openTopography,
@@ -126,7 +133,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/openTopography.png',
     description: `The OpenTopography Community Dataspace allows users who are producing small to moderate sized topographic datasets (with technologies such as lidar and photogrammetry) to archive their data with OpenTopography`,
     submitTooltip: 'Submit a dataset to the OpenTopography repository.',
-    isSupported: false,
     url: 'https://opentopography.org/',
   },
   [EnumRepositoryKeys.dryad]: {
@@ -135,7 +141,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/dryad.png',
     description: `The Dryad Digital Repository is a curated resource that makes research data discoverable, freely reusable, and citable. Dryad provides a general-purpose home for a wide diversity of data types.`,
     submitTooltip: 'Submit a dataset to the Dryad repository.',
-    isSupported: false,
     url: 'https://datadryad.org/stash/',
   },
   [EnumRepositoryKeys.pangaea]: {
@@ -144,7 +149,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/pangaea.png',
     description: `The information system PANGAEA is operated as an Open Access library aimed at archiving, publishing and distributing georeferenced data from earth system research.`,
     submitTooltip: 'Submit a dataset to the Panagea repository.',
-    isSupported: false,
     url: 'https://www.pangaea.de/',
   },
   [EnumRepositoryKeys.edi]: {
@@ -154,7 +158,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     description: `We provide support, training, and resources to help archive and publish high-quality data and metadata. We operate a secure data repository and work closely with the LTER Network Communications Office and DataONE to promote data management best practices and stewardship.`,
     submitTooltip:
       'Submit a dataset to The Environmental Data Initiative repository',
-    isSupported: false,
     url: 'https://environmentaldatainitiative.org/',
   },
   [EnumRepositoryKeys.scienceBase]: {
@@ -163,7 +166,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/scienceBase.png',
     description: `The U.S. Geological Survey (USGS) is committed to enhancing and expanding information sharing and sound data management practices by developing ScienceBase, a collaborative scientific data and information management platform used directly by science teams.`,
     submitTooltip: 'Submit a dataset to the USGS ScienceBase repository',
-    isSupported: false,
     url: 'https://www.sciencebase.gov/about/',
   },
   [EnumRepositoryKeys.osf]: {
@@ -172,7 +174,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/osf.png',
     description: `OSF is a free, open source web application that connects and supports the research workflow, enabling scientists to increase the efficiency and effectiveness of their research. Researchers use OSF to collaborate, document, archive, share, and register research projects, materials, and data. OSF is the flagship product of the non-profit Center for Open Science.`,
     submitTooltip: 'Submit a dataset to the OSF repository.',
-    isSupported: false,
     url: 'https://osf.io/',
   },
   [EnumRepositoryKeys.geo]: {
@@ -181,7 +182,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/geo.png',
     description: `GEO is a public functional genomics data repository supporting MIAME-compliant data submissions. Array- and sequence-based data are accepted. Tools are provided to help users query and download experiments and curated gene expression profiles.`,
     submitTooltip: 'Submit a dataset to the GEO repository.',
-    isSupported: false,
     url: 'https://www.ncbi.nlm.nih.gov/geo/',
   },
   [EnumRepositoryKeys.bioSample]: {
@@ -190,7 +190,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/bioSample.png',
     description: `The BioSample database stores submitter-supplied descriptive information, or metadata, about the biological materials from which data stored in NCBI’s primary data archives are derived. NCBI’s archives host data from diverse types of samples from any species, so the BioSample database is similarly diverse; typical examples of a BioSample include a cell line, a primary tissue biopsy, an individual organism or an environmental isolate.`,
     submitTooltip: 'Submit a dataset to the BioSample repository.',
-    isSupported: false,
     url: 'https://www.ncbi.nlm.nih.gov/biosample/',
   },
   [EnumRepositoryKeys.sra]: {
@@ -199,7 +198,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/sra.png',
     description: `The SRA is NIH's primary archive of high-throughput sequencing data and is part of the International Nucleotide Sequence Database Collaboration (INSDC) that includes at the NCBI Sequence Read Archive (SRA), the European Bioinformatics Institute (EBI), and the DNA Database of Japan (DDBJ). Data submitted to any of the three organizations are shared among them.`,
     submitTooltip: 'Submit a dataset to the Sequence Read Archive repository.',
-    isSupported: false,
     url: 'https://www.ncbi.nlm.nih.gov/sra/',
   },
   [EnumRepositoryKeys.itrdb]: {
@@ -209,7 +207,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     description: `The World Data Service for Paleoclimatology manages the International Tree-Ring Data Bank (ITRDB), the world's largest public archive of tree ring data. Oversight is provided by the ITRDB Advisory Committee.`,
     submitTooltip:
       'Submit a dataset to the NOAA International Tree-Ring Data Bank repository.',
-    isSupported: false,
     url: 'https://www.ncei.noaa.gov/products/paleoclimatology/tree-ring',
   },
   [EnumRepositoryKeys.gitHub]: {
@@ -218,7 +215,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/github.png',
     description: `GitHub is a provider of Internet hosting for software development and version control using Git. GitHub provides access control and several collaboration features such as bug tracking, feature requests, task management, continuous integration, and wikis for every project.`,
     submitTooltip: 'Create a repository in GitHub.',
-    isSupported: false,
     url: 'https://www.github.com',
   },
   [EnumRepositoryKeys.ameriFlux]: {
@@ -227,7 +223,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/ameriflux.png',
     description: `AmeriFlux is a network of PI-managed sites measuring ecosystem CO2, water, and energy fluxes in North, Central and South America. It was established to connect research on field sites representing major climate and ecological biomes, including tundra, grasslands, savanna, crops, and conifer, deciduous, and tropical forests.`,
     submitTooltip: 'Submit data to Ameriflux.',
-    isSupported: false,
     url: 'https://ameriflux.lbl.gov/',
   },
   [EnumRepositoryKeys.hydrolearn]: {
@@ -236,7 +231,6 @@ export const repoMetadata: { [key: string]: IRepository } = {
     logoSrc: '/img/hydrolearn.png',
     description: `HydroLearn is an education project funded by the National Science Foundation to promote the collaborative development and adoption of active-learning resources in hydrology and water resources engineering.`,
     submitTooltip: 'Submit data to HydroLearn.',
-    isSupported: false,
     url: 'https://www.hydrolearn.org/',
   },
 }

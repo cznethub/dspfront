@@ -96,17 +96,17 @@
             target="_blank"
           >https://help.hydroshare.org/introduction-to-hydroshare/getting-started/use-the-api/</a>
         </li>
-        <li class="font-weight-light text-subtitle-1">
+        <!-- <li class="font-weight-light text-subtitle-1">
           Zenodo API:
           <a href="https://developers.zenodo.org/" target="_blank">https://developers.zenodo.org/</a>
-        </li>
+        </li> -->
       </ul>
     </v-container>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
+import { Component, toNative, Vue } from 'vue-facing-decorator'
 import { guideUrls } from '~/components/recommendations/constants'
 
 interface IDataTemplate {

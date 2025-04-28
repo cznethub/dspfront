@@ -68,11 +68,10 @@
               >
                 <p class="text-orange-darken-3">
                   If you are a CZ Net data manager or investigator and you choose
-                  to submit data to a repository other than HydroShare, EarthChem,
-                  or Zenodo, please use the
+                  to submit data to a repository other than HydroShare or EarthChem, please use the
                   <a href="" @click.prevent="submitTo(externalRepoMetadata)">Register Dataset</a>
                   form to provide metadata about those datasets. If you submit to
-                  HydroShare, EarthChem or Zenodo through the Data Submission
+                  HydroShare or EarthChem through the Data Submission
                   Portal, we will automatically harvest your metadata for you to
                   support CZ Net data discovery services.
                 </p>
@@ -159,17 +158,17 @@
 </template>
 
 <script lang="ts">
+import type { IRepository } from '../submissions/types'
 import { Component, mixins, toNative } from 'vue-facing-decorator'
 import { VStepperVertical, VStepperVerticalItem } from 'vuetify/labs/VStepperVertical'
-import type { IRepository } from '../submissions/types'
-import { EnumRepositoryKeys } from '../submissions/types'
-import { repoMetadata } from '~/components/submit/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import { EnumDataTemplateType } from '~/components/recommendations/types'
 import { guideUrls } from '~/components/recommendations/constants'
 import CzRecommendationCard from '~/components/recommendations/cz.recommendation-card.vue'
-
 import mappings from '~/components/recommendations/mapping.json'
+import { EnumDataTemplateType } from '~/components/recommendations/types'
+import { repoMetadata } from '~/components/submit/constants'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+
+import { EnumRepositoryKeys } from '../submissions/types'
 
 interface CzStep {
   next?: string // The question that must be answered to continue
@@ -218,10 +217,10 @@ class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
         .map(key => this.repoMetadata[key])
         // Sort supported repositories first
         .sort((a, b) => {
-          if (a.isSupported === b.isSupported)
+          if (a.isSupported?.form === b.isSupported?.form)
             return 0
 
-          return a.isSupported ? -1 : 1
+          return a.isSupported?.form ? -1 : 1
         })
     )
   }

@@ -60,12 +60,12 @@
 </template>
 
 <script lang="ts">
-import { Component, mixins, toNative } from 'vue-facing-decorator'
-import { Notifications } from '@cznethub/cznet-vue-core'
 import type { IRepository } from '../submissions/types'
+import { Notifications } from '@cznethub/cznet-vue-core'
+import { Component, mixins, toNative } from 'vue-facing-decorator'
 import { repoMetadata } from '~/components/submit/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 import { getRepositoryFromKey } from '~/constants'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 import Repository from '~/models/repository.model'
 
 @Component({
@@ -78,7 +78,7 @@ class CzAuthorizedRepositories extends mixins(ActiveRepositoryMixin) {
   get supportedRepositories(): IRepository[] {
     return Object.keys(repoMetadata)
       .map(key => repoMetadata[key])
-      .filter(repo => !repo.isExternal && repo.isSupported)
+      .filter(repo => !repo.isExternal && repo.isSupported?.form)
   }
 
   getAccessToken(repositoryKey: string): string {

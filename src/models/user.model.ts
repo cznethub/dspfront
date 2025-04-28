@@ -1,10 +1,10 @@
-import { Model } from '@vuex-orm/core'
-import { Subject } from 'rxjs'
 import type { RouteLocationRaw } from 'vue-router'
+import type Submission from './submission.model'
 import { Notifications } from '@cznethub/cznet-vue-core'
+import { Model } from '@vuex-orm/core'
 import axios from 'axios'
 
-import type Submission from './submission.model'
+import { Subject } from 'rxjs'
 import { API_BASE, APP_URL } from '~/constants'
 
 export interface ICzCurrentUserState {
@@ -20,6 +20,7 @@ export interface IUserState {
   hasUnsavedChanges: boolean
   isSaving: false
   registeringSubmission: Partial<Submission> | null
+  showZenodoWarning: boolean
 }
 
 export default class User extends Model {
@@ -49,6 +50,7 @@ export default class User extends Model {
       hasUnsavedChanges: false,
       isSaving: false,
       registeringSubmission: null,
+      showZenodoWarning: true,
     }
   }
 
@@ -66,7 +68,7 @@ export default class User extends Model {
       if (event.data.token) {
         Notifications.toast({
           message: 'You have logged in!',
-          type: 'success',
+          type: 'info',
         })
         await User.commit((state) => {
           state.isLoggedIn = true

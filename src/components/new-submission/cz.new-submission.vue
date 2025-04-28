@@ -565,6 +565,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
           Notifications.toast({
             message: 'Failed to load existing files.',
             type: 'error',
+            location: 'top center',
           })
         }
       }

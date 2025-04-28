@@ -1,12 +1,13 @@
 import { Model } from '@vuex-orm/core'
 import { Subject } from 'rxjs'
-import { Router, useRouter, type RouteLocationRaw } from 'vue-router'
+import { Router, type RouteLocationRaw } from 'vue-router'
 import axios from 'axios'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import type { IDialog, IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
 import Submission from './submission.model'
 import User from './user.model'
 
+import { repoMetadata } from '~/components/submit/constants'
 // import HydroShare from './hydroshare.model'
 // import EarthChem from './earthchem.model'
 // import Zenodo from './zenodo.model'
@@ -357,9 +358,9 @@ export default class Repository extends Model implements IRepository {
               },
             })
             break
-          case EnumRepositoryKeys.zenodo:
-            identifier = response.data.metadata.prereserve_doi?.recid
-            break
+          // case EnumRepositoryKeys.zenodo:
+          //   identifier = response.data.metadata.prereserve_doi?.recid
+          //   break
           case EnumRepositoryKeys.earthchem:
             identifier = response.data.metadata.id
             break

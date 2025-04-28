@@ -199,9 +199,8 @@
       </div>
       <div class="d-flex justify-center mb-4">
         <p class="font-weight-light text-center text-subtitle-1">
-          Data submitted via this Portal are deposited in multiple repositories.
-          Click the links below to learn more about each of the supported
-          repositories.
+          You can submit data to HydroShare and EarthChem directly through this Data Submission Portal.
+          <br>Click the links below to learn more about HydroShare and EarthChem.
         </p>
       </div>
       <div class="repos mb-4 d-flex flex-wrap align-center justify-center">
@@ -213,16 +212,36 @@
           target="_blank"
         ><img :src="repo.logoSrc" :alt="repo.name"></a>
       </div>
+      <div class="d-flex justify-center mt-12">
+        <p class="font-weight-light text-center text-subtitle-1">
+          You can also register datasets submitted to other repositories here so that they will be discoverable by Critical Zone Scientists. You can register data submitted to any repository, but the following are some common examples.
+        </p>
+      </div>
+      <div class="repos my-4 d-flex flex-wrap align-center justify-center">
+        <a
+          v-for="repo of exampleExternalRepositories"
+          :key="repo.key"
+          :href="repo.url"
+          :title="repo.name"
+          target="_blank"
+        ><img class="small" :src="repo.logoSrc" :alt="repo.name"></a>
+      </div>
     </section>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
+import type {
+  IRepository,
+} from '~/components/submissions/types'
+import { Component, toNative, Vue } from 'vue-facing-decorator'
 import { useRouter } from 'vue-router'
-import { repoMetadata } from '../submit/constants'
+import {
+  EnumRepositoryKeys,
+} from '~/components/submissions/types'
 import { DISCOVERY_SITE_URL } from '~/constants'
 import User from '~/models/user.model'
+import { repoMetadata } from '../submit/constants'
 
 @Component({
   name: 'cz-home',
@@ -240,7 +259,17 @@ class CzHome extends Vue {
   get supportedRepositories() {
     return Object.keys(repoMetadata)
       .map(key => repoMetadata[key])
-      .filter(repo => !repo.isExternal && repo.isSupported)
+      .filter(repo => !repo.isExternal && repo.isSupported?.form)
+  }
+
+  get exampleExternalRepositories(): Partial<IRepository>[] {
+    return [
+      repoMetadata[EnumRepositoryKeys.essDive],
+      repoMetadata[EnumRepositoryKeys.edi],
+      repoMetadata[EnumRepositoryKeys.zenodo],
+      repoMetadata[EnumRepositoryKeys.scienceBase],
+      repoMetadata[EnumRepositoryKeys.openTopography],
+    ]
   }
 
   openLogInDialog() {
@@ -303,6 +332,11 @@ section {
 
     img {
       max-height: 5rem;
+      max-width: 100%;
+    }
+
+    img.small {
+      max-height: 3rem;
       max-width: 100%;
     }
   }

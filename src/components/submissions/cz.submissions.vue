@@ -282,6 +282,7 @@
                             isItemHsCollection(item.raw)
                             || isItemPublished(item.raw)
                             || isItemEclSubmitted(item.raw)
+                            || !itemHasFormSupport(item.raw)
                           )
                         "
                         :id="`sub-${index}-edit`"
@@ -541,7 +542,7 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
   }
 
   get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
+    return this.repoCollection.filter(r => !r.isExternal && r.isSupported?.form)
   }
 
   get externalRepoMetadata() {
@@ -751,8 +752,8 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
       return !!submission?.metadata.published
     else if (submission.repository === EnumRepositoryKeys.earthchem)
       return submission?.metadata?.status === 'published'
-    else if (submission.repository === EnumRepositoryKeys.zenodo)
-      return !!submission?.metadata?.doi
+    // else if (submission.repository === EnumRepositoryKeys.zenodo)
+    //   return !!submission?.metadata?.doi
 
     return false
   }
@@ -764,10 +765,14 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     )
   }
 
+  itemHasFormSupport(submission: any) {
+    return repoMetadata[submission.repository]?.isSupported?.form
+  }
+
   onDelete(submission: Submission) {
     this.deleteDialogData = {
       submission,
-      isExternal: repoMetadata[submission.repository]?.isExternal || false,
+      isExternal: repoMetadata[submission.repository]?.isExternal || !repoMetadata[submission.repository]?.isSupported?.form || false,
       isPublished: this.isItemPublished(submission),
     }
     this.alsoDeleteInRepository = false // we want it unchecked initially

@@ -24,8 +24,8 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
 import { Notifications } from '@cznethub/cznet-vue-core'
+import { Component, toNative, Vue } from 'vue-facing-decorator'
 import User from '~/models/user.model'
 
 @Component({

@@ -1,16 +1,16 @@
-import { repoMetadata } from "../submit/constants";
-import { ISubmission } from "./types";
+import type { ISubmission } from './types'
+import { repoMetadata } from '../submit/constants'
 
 const titles = [
   'A really awesome dataset',
   'Another really awesome dataset',
   'Yet another really awesome dataset',
-  'Really awesome LiDAR dataset'
+  'Really awesome LiDAR dataset',
 ]
 
 const repos = [
   repoMetadata.hydroshare.name,
-  repoMetadata.zenodo.name,
+  // repoMetadata.zenodo.name,
   repoMetadata.earthchem.name,
   // repoMetadata.openTopography.name,
   // repoMetadata.other.name,
@@ -18,7 +18,7 @@ const repos = [
 
 const numberOfSubmissions = 50
 
-export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmissions)).map((el, index) => {
+export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array.from({ length: numberOfSubmissions })).map((el, index) => {
   return {
     id: index,
     title: getRandomElementFromArray(titles),
@@ -27,7 +27,7 @@ export const SUBMISSIONS: ISubmission[] = Array.apply(null, Array(numberOfSubmis
     date: getRandomDate().getTime(),
     identifier: 'http://doi.org/hs.xxxxxxx.123456789',
     url: 'https://beta.hydroshare.org/resource/72693ac3f5a146fca3b26aee2deefb4a/',
-    metadata: {}
+    metadata: {},
   }
 })
 
@@ -38,5 +38,5 @@ function getRandomElementFromArray(array: any[]) {
 function getRandomDate() {
   const start = new Date(2012, 0, 1)
   const end = new Date()
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
 }

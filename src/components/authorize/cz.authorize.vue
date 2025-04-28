@@ -46,10 +46,7 @@
           type="warning"
           border="start"
         >
-          <p v-if="isZenodo" class="text-orange-darken-3 text-body-1">
-            The authorization attempt failed. But, we often have this issue with Zenodo due to an issue with their application programming interface. Please click the "Retry Authorization" button below to try again. It may take several attempts for the authorization to succeed. If you can't successfully authorize after several attempts, please contact us and we will investigate.
-          </p>
-          <p v-else class="text-orange-darken-3">
+          <p class="text-orange-darken-3">
             Failed to get authorization from {{ repoName }}. Please try again.
           </p>
         </v-alert>
@@ -69,11 +66,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, mixins, toNative } from 'vue-facing-decorator'
-import { EnumRepositoryKeys } from '../submissions/types'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import { Component, mixins, Prop, toNative } from 'vue-facing-decorator'
 import { getRepositoryFromKey } from '~/constants'
+import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 import Repository from '~/models/repository.model'
+// import { EnumRepositoryKeys } from '../submissions/types'
 
 @Component({
   name: 'cz-authorize',
@@ -100,9 +97,9 @@ class CzAuthorize extends mixins(ActiveRepositoryMixin) {
     return this.repository.get()?.name
   }
 
-  get isZenodo() {
-    return this.repository.get()?.key === EnumRepositoryKeys.zenodo
-  }
+  // get isZenodo() {
+  //   return this.repository.get()?.key === EnumRepositoryKeys.zenodo
+  // }
 
   async openAuthorizePopup() {
     this.$emit('update:retry', false)
