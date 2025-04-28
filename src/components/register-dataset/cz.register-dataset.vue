@@ -15,8 +15,8 @@
     >
       <p class="text-black">
         You should only use this form to register existing datasets from
-        HydroShare, EarthChem, or Zenodo that were not submitted through the Data
-        Submission Portal
+        HydroShare, EarthChem, or Zenodo that were not submitted through the
+        Data Submission Portal
       </p>
     </v-alert>
 
@@ -215,10 +215,10 @@
               <p class="text-black">
                 This resource is published and is not editable in the Data
                 Submission Portal. If you need to modify this resource once
-                registered, navigate to the resource in the repository where it is
-                hosted and modify it there (if possible). You can refresh the
-                metadata for this resource by clicking the "Update Record" button on
-                the My Submissions page.
+                registered, navigate to the resource in the repository where it
+                is hosted and modify it there (if possible). You can refresh the
+                metadata for this resource by clicking the "Update Record"
+                button on the My Submissions page.
               </p>
             </v-alert>
 
@@ -231,12 +231,26 @@
               border="start"
             >
               <p class="text-black">
-                This resource is a HydroShare Collection and is not editable in the
+                This resource is a HydroShare Collection and is not editable in
+                the
                 {{ $t("portalName") }}. If you need to modify this resource once
-                registered, navigate to the resource in the repository where it is
-                hosted and modify it there (if possible). You can refresh the
-                metadata for this resource by clicking the "Update Record" button on
-                the My Submissions page.
+                registered, navigate to the resource in the repository where it
+                is hosted and modify it there (if possible). You can refresh the
+                metadata for this resource by clicking the "Update Record"
+                button on the My Submissions page.
+              </p>
+            </v-alert>
+
+            <v-alert
+              v-if="isPublic && !isPublished"
+              class="my-8 text-subtitle-1"
+              variant="outlined"
+              icon="mdi-lock-open"
+              type="info"
+              border="start"
+            >
+              <p class="text-black">
+                This resource is public.
               </p>
             </v-alert>
 
@@ -284,7 +298,9 @@
                       </th>
                       <td>{{ resourceType }}</td>
                     </tr>
-                    <tr v-if="submission.metadata && submission.metadata.status">
+                    <tr
+                      v-if="submission.metadata && submission.metadata.status"
+                    >
                       <th class="pr-4 text-body-2">
                         Status:
                       </th>
@@ -345,6 +361,7 @@
                 </v-col>
                 <v-col class="flex-grow-0">
                   <v-btn
+                    v-if="selectedRepository"
                     color="primary"
                     @click="openAuthorizePopup(selectedRepository.key)"
                   >
@@ -367,40 +384,52 @@
             >
               <p class="text-orange-darken-3">
                 We could not find a resource matching the criteria above. Please
-                make sure that you have selected the correct repository and that the
-                URL or identifier is correct and try again.
+                make sure that you have selected the correct repository and that
+                the URL or identifier is correct and try again.
               </p>
             </v-alert>
           </template>
 
           <template #next>
             <template v-if="submission">
-              <div class="mb-2">
+              <div v-if="!isPublished && !isHsCollection">
                 <v-btn
-                  v-if="isPublished || isHsCollection"
-                  class="bg-primary mr-4"
                   :disabled="isFetching || !isValid || !url || isRegistering"
-                  @click="registerSubmissionAsIs"
-                >
-                  {{ isRegistering ? "Registering..." : "Register Dataset" }}
-                </v-btn>
-
-                <v-btn
-                  v-else
-                  class="mr-4 bg-primary"
-                  :disabled="isFetching || !isValid || !url"
+                  :class="{ 'bg-primary': !isPublic }"
+                  :prepend-icon="isPublic ? 'mdi-lock' : ''"
                   @click="goToEditSubmission"
                 >
                   Continue & Edit...
                 </v-btn>
+
+                <v-card-subtitle
+                  v-if="isPublic"
+                  class="mt-1 pa-0"
+                  style="
+                    max-width: 11rem;
+                    text-overflow: unset;
+                    overflow: visible;
+                    white-space: unset;
+                  "
+                >
+                  You must have permission to edit this resource.
+                </v-card-subtitle>
               </div>
+
+              <v-btn
+                v-if="isPublished || isHsCollection || isPublic"
+                class="bg-primary mr-4"
+                :disabled="isFetching || !isValid || !url || isRegistering"
+                @click="registerSubmissionAsIs"
+              >
+                {{ isRegistering ? "Registering..." : "Register Dataset" }}
+              </v-btn>
             </template>
           </template>
 
           <template #prev="{ prev }">
             <v-btn
               color="default"
-              class="mb-2"
               :disabled="isFetching"
               variant="text"
               @click="prev"
@@ -443,6 +472,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   apiSubmission: any = null
   wasUnauthorized = false
   isPublished = false
+  isPublic = false
   isRegistering = false
   allowFileUpload = true
   resourceType = ''
@@ -562,6 +592,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
     this.isFetching = true
     this.wasUnauthorized = false
     this.isPublished = false
+    this.isPublic = false
     this.isHsCollection = false
     this.allowFileUpload = true
     this.resourceType = ''
@@ -584,6 +615,8 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
           this.apiSubmission = response.metadata
           if (response.published)
             this.isPublished = true
+          if (response.public)
+            this.isPublic = true
 
           // For earthchem submissions we need to set the community to a constant
           if (this.submission.repository === EnumRepositoryKeys.earthchem)
@@ -595,7 +628,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
 
             this.allowFileUpload
               = this.apiSubmission.type === 'CompositeResource'
-              && !this.isPublished
+                && !this.isPublished
             this.resourceType
               = this.apiSubmission.type === 'CompositeResource'
                 ? 'Resource'
@@ -632,6 +665,10 @@ export default toNative(CzRegisterDataset)
 <style lang="scss" scoped>
 :deep(.v-expansion-panel-title > .v-avatar) {
   z-index: 1;
+}
+
+:deep(.v-stepper .v-stepper-vertical-actions.v-stepper-actions) {
+  align-items: baseline;
 }
 
 .table-item {

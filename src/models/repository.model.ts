@@ -1,9 +1,9 @@
 import { Model } from '@vuex-orm/core'
 import { Subject } from 'rxjs'
-import type { RouteLocationRaw } from 'vue-router'
+import { Router, useRouter, type RouteLocationRaw } from 'vue-router'
 import axios from 'axios'
 import { Notifications } from '@cznethub/cznet-vue-core'
-import type { IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
+import type { IDialog, IFile, IFolder } from '@cznethub/cznet-vue-core/dist/types'
 import Submission from './submission.model'
 import User from './user.model'
 
@@ -20,6 +20,7 @@ import {
   EnumRepositoryKeys,
 } from '~/components/submissions/types'
 import { repoMetadata } from '~/components/submit/constants'
+import { useI18n } from 'vue-i18n'
 
 export default class Repository extends Model implements IRepository {
   static types() {
@@ -374,18 +375,8 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch (e: any) {
-      if (e.response?.status === 401 || e.response?.status === 403) {
-        // Token has expired
-        this.commit((state) => {
-          state.accessToken = ''
-        })
-
-        Notifications.toast({
-          message: 'Authorization token is invalid or has expired.',
-          type: 'error',
-        })
-
-        Repository.openAuthorizeDialog(this.entity)
+      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")) {
+        this._handleUnauthorized()
       }
       else {
         Notifications.toast({
@@ -407,7 +398,7 @@ export default class Repository extends Model implements IRepository {
    * @param {string} identifier - the identifier of the resource in the repository
    * @param {any} data - the form data to be saved
    */
-  static async updateSubmission(identifier: string, data: any) {
+  static async updateSubmission(identifier: string, data: any, isRegistering?: boolean, router?: Router) {
     try {
       const response = await axios.put(
         `/api/metadata/${this.entity}/${identifier}`,
@@ -422,17 +413,72 @@ export default class Repository extends Model implements IRepository {
     }
     catch (e: any) {
       console.log(e)
-      if (e.response?.status === 401 || e.response?.status === 403) {
+      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")
+        || e.response.data.includes("has expired and could not be refreshed")) {
         // Token has expired
-        this.commit((state) => {
-          state.accessToken = ''
-        })
-        Notifications.toast({
-          message: 'Authorization token is invalid or has expired.',
-          type: 'error',
-        })
+        this._handleUnauthorized()
+      }
+      else if (e.response?.status === 401 || e.response?.status === 403) {
+        // User has no permission to edit this resource
+        if (isRegistering && !User.$state.hasUnsavedChanges) {
+          // If no changes were attempted, just register the resource as is
+          await this.readSubmission(
+            identifier,
+            this.entity as EnumRepositoryKeys,
+          );
 
-        Repository.openAuthorizeDialog(this.entity)
+          return true
+        }
+
+        const dialog: IDialog = {
+          title: 'Permission required',
+          content: 'You do not have permission to edit this resource. Consider asking the owner of the resource to grant you access and try again.',
+          cancelText: 'Cancel',
+          isPersistent: true,
+          onConfirm: () => {
+          },
+        }
+
+        if (isRegistering) {
+          dialog.confirmText = 'Discard Changes & Register'
+          dialog.onConfirm = async () => {
+            try {
+              User.commit((state) => {
+                state.isSaving = true;
+              });
+
+              await this.readSubmission(
+                identifier,
+                this.entity as EnumRepositoryKeys,
+              );
+
+              User.commit((state) => {
+                state.isSaving = false;
+                state.hasUnsavedChanges = false;
+              });
+
+              Notifications.toast({
+                message: "Your dataset has been registered!",
+                type: "success",
+              });
+
+              // redirect to my submissions
+              router?.push({ name: "submissions" });
+            } catch (e) {
+              User.commit((state) => {
+                state.isSaving = false;
+                state.hasUnsavedChanges = false;
+              });
+
+              Notifications.toast({
+                message: "Failed to register dataset",
+                type: "error",
+              });
+            }
+          }
+        }
+
+        Notifications.openDialog(dialog)
       }
       return false
     }
@@ -469,21 +515,10 @@ export default class Repository extends Model implements IRepository {
     }
     catch (e: any) {
       console.log(e)
-      if (
-        e.response?.status === 400
-        || e.response?.status === 401
-        || e.response?.status === 403
-      ) {
+      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")
+        || e.response.data.includes("has expired and could not be refreshed")) {
         // Token has expired
-        this.commit((state) => {
-          state.accessToken = ''
-        })
-        Notifications.toast({
-          message: 'Authorization token is invalid or has expired.',
-          type: 'error',
-        })
-
-        Repository.openAuthorizeDialog(repository)
+        this._handleUnauthorized()
       }
       else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
         const { t } = useI18n()
@@ -542,19 +577,12 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch (e: any) {
-      if (e.response?.status === 401) {
+      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")
+        || e.response.data.includes("has expired and could not be refreshed")) {
         // Token has expired
-        this.commit((state) => {
-          state.accessToken = ''
-        })
-        Notifications.toast({
-          message: 'Authorization token is invalid or has expired.',
-          type: 'error',
-        })
-
-        Repository.openAuthorizeDialog(repository)
+        this._handleUnauthorized()
       }
-      if (e.response?.status === 403) {
+      else if (e.response?.status === 403) {
         await Submission.delete([identifier, repository])
         // Repository refused to delete submission
         Notifications.toast({
@@ -621,18 +649,10 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch (e: any) {
-      if (e.response.status === 401) {
+      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")
+        || e.response.data.includes("has expired and could not be refreshed")) {
         // Token has expired
-        this.commit((state) => {
-          state.accessToken = ''
-        })
-
-        Notifications.toast({
-          message: 'Authorization token is invalid or has expired.',
-          type: 'error',
-        })
-
-        Repository.openAuthorizeDialog(repository)
+        this._handleUnauthorized()
         return e.response.status
       }
       else if (e.response?.status === 403) {
@@ -680,8 +700,8 @@ export default class Repository extends Model implements IRepository {
     }
     catch (e: any) {
       // Handle unauthenticated
-      if (e.response.status === 401) {
-        Repository._handleUnauthenticated(repository)
+      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")) {
+        this._handleUnauthorized()
         return e.response.status
       }
       // Handle permission denied
@@ -708,8 +728,7 @@ export default class Repository extends Model implements IRepository {
     }
   }
 
-  private static _handleUnauthenticated(repository: string) {
-    // Token has expired
+  private static _handleUnauthorized() {
     this.commit((state) => {
       state.accessToken = ''
     })
@@ -719,7 +738,7 @@ export default class Repository extends Model implements IRepository {
       type: 'error',
     })
 
-    Repository.openAuthorizeDialog(repository)
+    Repository.openAuthorizeDialog(this.entity)
   }
 
   static uploadFiles: (
