@@ -254,7 +254,7 @@
               </p>
             </v-alert>
 
-            <v-card elevation="2" outlined class="mb-6">
+            <v-card v-if="submission && selectedRepository" elevation="2" outlined class="mb-6">
               <div
                 class="table-item d-flex justify-space-between flex-column flex-md-row"
               >
@@ -280,7 +280,7 @@
                       </th>
                       <td>{{ selectedRepository.name }}</td>
                     </tr>
-                    <tr>
+                    <tr v-if="submission.date">
                       <th class="pr-4 text-body-2">
                         Submission Date:
                       </th>

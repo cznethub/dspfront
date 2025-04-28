@@ -89,7 +89,7 @@ export default class Submission extends Model implements ISubmission {
     if (repository === EnumRepositoryKeys.hydroshare) {
       const data: Partial<Submission> = {
         title: apiSubmission.title,
-        authors: apiSubmission.creators.map(c => c.name),
+        authors: apiSubmission.creators.map(c => c.name || c.organization),
         repository,
         identifier,
         url: viewUrl,
@@ -101,27 +101,27 @@ export default class Submission extends Model implements ISubmission {
 
       return data
     }
-    // else if (repository === EnumRepositoryKeys.zenodo) {
-    //   if (isPublished)
-    //     viewUrl = sprintf(repo?.get()?.urls?.publicViewUrl || '', identifier)
+    else if (repository === EnumRepositoryKeys.zenodo) {
+      if (isPublished)
+        viewUrl = sprintf(repo?.get()?.urls?.publicViewUrl || '', identifier)
 
-    //   const data: Partial<Submission> = {
-    //     title: apiSubmission.title,
-    //     authors: apiSubmission.creators?.map(c => c.name),
-    //     repository,
-    //     identifier,
-    //     url: viewUrl,
-    //   }
+      const data: Partial<Submission> = {
+        title: apiSubmission.title,
+        authors: apiSubmission.creators?.map(c => c.name),
+        repository,
+        identifier,
+        url: viewUrl,
+      }
 
-    //   if (overrideDate) {
-    //     // Zenodo returns a date string (e.g. "2022-09-19"), and we need a datetime
-    //     const date = apiSubmission.publication_date.split('-')
-    //     const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
-    //     data.date = parsedDate.getTime()
-    //   }
+      if (overrideDate) {
+        // Zenodo returns a date string (e.g. "2022-09-19"), and we need a datetime
+        const date = apiSubmission.publication_date.split('-')
+        const parsedDate = new Date(Date.UTC(+date[0], +date[1] - 1, +date[2]))
+        data.date = parsedDate.getTime()
+      }
 
-    //   return data
-    // }
+      return data
+    }
     else if (repository === EnumRepositoryKeys.earthchem) {
       // If the record has been published, use the public view URL
       if (apiSubmission.status === 'published')
