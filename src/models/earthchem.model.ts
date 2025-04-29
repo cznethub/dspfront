@@ -20,9 +20,9 @@ export default class EarthChem extends Repository {
     bucketUrl: string,
     itemsToUpload: (IFile | IFolder)[],
     _createFolderUrl: string,
-  ) {
+  ): Promise<boolean[]> {
     // EarthChem needs files uploaded sequentially
-    const response: any[] = []
+    const response: boolean[] = []
 
     for (const item of itemsToUpload) {
       const message = await this._uploadFile(item as IFile & { file: Blob }, bucketUrl)
@@ -37,7 +37,7 @@ export default class EarthChem extends Repository {
       })
     }
 
-    return response.map(r => r.status === 'fulfilled')
+    return response
   }
 
   static async readRootFolder(
