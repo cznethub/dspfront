@@ -36,6 +36,20 @@
               :repo="repo"
               @click.enter="submitTo(repo)"
             />
+
+            <cz-repository-submit-card
+              :repo="sesarCardMetadata"
+              @click.="openSesar"
+            >
+              <template #description="{ desc }">
+                <div class="text-subtitle-1 text-medium-emphasis">
+                  <p>{{ desc }}</p>
+                  <br>
+                  <p>For instructions and best practices related to registering samples, visit our <a :href="guideUrls.main" target="_blank" @click.stop="">CZNet data best practices</a>.</p>
+                </div>
+              </template>
+            </cz-repository-submit-card>
+
             <cz-repository-submit-card
               :repo="externalRepoMetadata"
               @click.enter="openRegisterDatasetDialog"
@@ -55,7 +69,7 @@
 
 <script lang="ts">
 import type { RouteLocationNormalized } from 'vue-router'
-import type { IRepository } from '../submissions/types'
+import { EnumRepositoryKeys, type IRepository } from '../submissions/types'
 import { Notifications } from '@cznethub/cznet-vue-core'
 import { Component, mixins, Ref, toNative } from 'vue-facing-decorator'
 import { useRoute } from 'vue-router'
@@ -64,6 +78,7 @@ import { repoMetadata } from '~/components/submit/constants'
 import CzRepositorySubmitCard from '~/components/submit/cz.repository-submit-card.vue'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 import User from '~/models/user.model'
+import { guideUrls } from '../recommendations/constants'
 
 @Component({
   name: 'cz-submit',
@@ -75,6 +90,12 @@ class CzSubmit extends mixins(ActiveRepositoryMixin) {
   >
 
   route = useRoute()
+  guideUrls = guideUrls
+
+  sesarCardMetadata = {
+    ...repoMetadata[EnumRepositoryKeys.sesar],
+    name: 'Register Samples',
+  }
 
   get repoCollection(): IRepository[] {
     return Object.keys(repoMetadata).map(r => repoMetadata[r])
@@ -96,6 +117,10 @@ class CzSubmit extends mixins(ActiveRepositoryMixin) {
     this.registerDatasetDialog.active = true
   }
 
+  openSesar() {
+    window.open(this.sesarCardMetadata.url, '_blank')
+  }
+
   created() {
     // TODO: this should be a notification system in the API with a dedicated endpoint
     if (this.route.name === 'submit' && User.$state.showZenodoWarning) {
@@ -113,11 +138,6 @@ class CzSubmit extends mixins(ActiveRepositoryMixin) {
             })
           }
         },
-      })
-    }
-    else {
-      User.commit((state) => {
-        state.showZenodoWarning = true
       })
     }
   }
