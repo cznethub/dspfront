@@ -40,9 +40,11 @@
           </v-card-title>
 
           <v-card-text>
-            <div class="text-subtitle-1 text-medium-emphasis">
-              {{ repo.description }}
-            </div>
+            <slot name="description" :desc="repo.description">
+              <div class="text-subtitle-1 text-medium-emphasis">
+                {{ repo.description }}
+              </div>
+            </slot>
 
             <template v-if="repo.isComingSoon">
               <v-divider class="mt-2 mb-2" />

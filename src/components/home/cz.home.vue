@@ -143,20 +143,19 @@
           </div>
         </v-col>
 
-        <!-- <v-col>
+        <v-col>
+          <v-btn size="100" flat icon="mdi-test-tube" href="https://www.geosamples.org/" target="_blank" />
           <a
-            to=""
-          >
-            <div><v-icon>mdi-database-search</v-icon></div>
+            href="https://www.geosamples.org/"
+            target="_blank"
+            class="text-h6 d-block my-2"
+          >Register Samples
           </a>
 
-          <a
-            href=""
-            class="my-2 text-h6"
-          >
-            <div>Explore CZCN Data</div>
-          </a>
-        </v-col> -->
+          <div class="font-weight-light text-subtitle-1">
+            Register metadata for samples and get an IGSN to make samples more discoverable, accessible, and reusable.
+          </div>
+        </v-col>
       </v-row>
     </section>
 
@@ -214,9 +213,24 @@
       </div>
       <div class="d-flex justify-center mt-12">
         <p class="font-weight-light text-center text-subtitle-1">
+          Metadata for samples can be submitted via SESAR. Click the link below to learn more about SESAR and sample registration or contact <a href="mailto:info@geosamples.org">info@geosamples.org</a> for more information.
+        </p>
+      </div>
+
+      <div class="d-flex flex-wrap align-center justify-center mt-6">
+        <a
+          href="https://www.geosamples.org/"
+          target="_blank"
+          title="SESAR"
+        ><img class="medium" src="/img/sesar.png" alt="SESAR logo"></a>
+      </div>
+
+      <div class="d-flex justify-center mt-12">
+        <p class="font-weight-light text-center text-subtitle-1">
           You can also register datasets submitted to other repositories here so that they will be discoverable by Critical Zone Scientists. You can register data submitted to any repository, but the following are some common examples.
         </p>
       </div>
+
       <div class="repos my-4 d-flex flex-wrap align-center justify-center">
         <a
           v-for="repo of exampleExternalRepositories"
@@ -334,11 +348,16 @@ section {
       max-height: 5rem;
       max-width: 100%;
     }
-
-    img.small {
-      max-height: 3rem;
-      max-width: 100%;
-    }
   }
+}
+
+img.small {
+  max-height: 3rem;
+  max-width: 100%;
+}
+
+img.medium {
+  max-height: 6rem;
+  max-width: 100%;
 }
 </style>
