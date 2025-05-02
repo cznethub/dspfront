@@ -69,6 +69,8 @@
           :upload="isEditMode ? uploadFiles : undefined"
           :delete-file-or-folder="isEditMode && activeRepository.deleteFileOrFolder ? deleteFileOrFolder : undefined"
           :rename-file-or-folder="isEditMode && activeRepository.renameFileOrFolder ? renameFileOrFolder : undefined"
+          :file-name-regex="fileNameRegex"
+          :folder-name-regex="folderNameRegex"
         >
           <template #prepend>
             <span />
@@ -358,6 +360,14 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
 
   get supportedFileTypes() {
     return this.repoMetadata[this.repositoryKey].supportedFileTypes
+  }
+
+  get fileNameRegex() {
+    return this.repoMetadata[this.repositoryKey].fileNameRegex
+  }
+
+  get folderNameRegex() {
+    return this.repoMetadata[this.repositoryKey].folderNameRegex
   }
 
   get uiSchema() {

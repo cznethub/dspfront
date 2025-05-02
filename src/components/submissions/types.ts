@@ -104,7 +104,8 @@ export interface IRepository {
   /** Maximum allowed total upload size */
   maxTotalUploadSize?: number
   maxNumberOfFiles?: number
-  fileNameRegex?: any
+  fileNameRegex?: RegExp
+  folderNameRegex?: RegExp
   url?: string
   supportUrl?: string
   submitTooltip?: string

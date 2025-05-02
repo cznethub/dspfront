@@ -15,7 +15,11 @@ export const repoMetadata: { [key: string]: IRepository } = {
     submitTooltip: 'Submit a dataset to the HydroShare repository.',
     isSupported: { registration: true, form: true },
     hasFolderStructure: true,
-    maxUploadSizePerFile: 1000000000, // 1 GB
+    maxUploadSizePerFile: 25 * 1024 ** 3, // 25GB in BYTES
+    // https://github.com/hydroshare/hydroshare/blob/master/hs_core/models.py#L3110-L3112
+    // https://github.com/hydroshare/hydroshare/blob/master/hs_core/models.py#L3527-L3553
+    fileNameRegex: /^[^\\/:*?"<>|]+$/,
+    folderNameRegex: /^[^\\/:*?"<>|]+$/,
     url: 'https://www.hydroshare.org',
     supportUrl: 'https://help.hydroshare.org/',
     exampleUrl:
@@ -76,8 +80,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
       '.hdf',
     ],
     maxNumberOfFiles: 20,
-    maxUploadSizePerFile: 50000000, // 50 MB
-    maxTotalUploadSize: 400000000, // 400 MB
+    maxUploadSizePerFile: 50 * 1024 ** 2, // 50 MB
+    maxTotalUploadSize: 400 * 1024 ** 2, // 400 MB
     fileNameRegex: /^[-()\w\s]*$/, // File names can only contain upper or lowercase letters, numbers, spaces, _(underscores), -(dashes) and parenthesis().
     exampleUrl: 'https://www.earthchem.org/view.php?id=2391',
     exampleIdentifier: '2391',
@@ -94,7 +98,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     isSupported: { registration: true, form: false },
     url: 'https://www.zenodo.org',
     supportUrl: 'https://help.zenodo.org/',
-    maxTotalUploadSize: 50000000000, // 50 GB
+    maxTotalUploadSize: 50 * 1024 ** 3, // 50 GB
     exampleUrl: 'https://zenodo.org/uploads/7047180',
     exampleIdentifier: '7047180',
     identifierUrlPattern: /(?:http:\/\/www.|https:\/\/www.|http:\/\/|https:\/\/)?zenodo.org\/(?:uploads|records)\/(\d+)\/?$/,
