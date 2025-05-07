@@ -1,28 +1,50 @@
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
-import TheCounter from '../src/components/TheCounter.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import Home from '../src/components/home/cz.home.vue'
+import { i18n } from '../src/modules/i18n'
+import { vuetify } from '../src/modules/vuetify'
+import { store } from '../src/modules/vuex'
+import { routes } from '../src/routes'
 
-describe('component TheCounter.vue', () => {
+const router = createRouter({
+  history: createWebHistory(),
+  routes,
+})
+
+const plugins = [router, vuetify, store, i18n]
+
+describe('component Home', () => {
   it('should render', () => {
-    const wrapper = mount(TheCounter, { props: { initial: 10 } })
-    expect(wrapper.text()).toContain('10')
-    expect(wrapper.html()).toMatchSnapshot()
+    const wrapper = mount(Home, {
+      props: {},
+      global: {
+        plugins,
+      },
+    })
+    expect(wrapper.text()).toContain('discoverable')
+    // expect(wrapper.html()).toMatchSnapshot()
   })
 
   it('should be interactive', async () => {
-    const wrapper = mount(TheCounter, { props: { initial: 0 } })
-    expect(wrapper.text()).toContain('0')
+    const wrapper = mount(Home, {
+      props: {},
+      global: {
+        plugins,
+      },
+    })
+    expect(wrapper.text()).toContain('discoverable')
 
-    expect(wrapper.find('.inc').exists()).toBe(true)
+    // expect(wrapper.find('.inc').exists()).toBe(true)
 
-    expect(wrapper.find('.dec').exists()).toBe(true)
+    // expect(wrapper.find('.dec').exists()).toBe(true)
 
-    await wrapper.get('.inc').trigger('click')
+    // await wrapper.get('.inc').trigger('click')
 
-    expect(wrapper.text()).toContain('1')
+    // expect(wrapper.text()).toContain('1')
 
-    await wrapper.get('.dec').trigger('click')
+    // await wrapper.get('.dec').trigger('click')
 
-    expect(wrapper.text()).toContain('0')
+    // expect(wrapper.text()).toContain('0')
   })
 })

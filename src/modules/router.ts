@@ -1,6 +1,6 @@
 import type { NavigationHookAfter } from 'vue-router'
-import { APP_NAME } from '~/constants'
 import type { UserModule } from '~/types'
+import { APP_NAME } from '~/constants'
 
 export const addRouteTags: NavigationHookAfter = (to, from) => {
   // This goes through the matched routes from last to first, finding the closest route with a title.

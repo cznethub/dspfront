@@ -1,5 +1,5 @@
-import { createI18n } from 'vue-i18n'
 import type { UserModule } from '~/types'
+import { createI18n } from 'vue-i18n'
 import { messages } from '~/i18n/messages'
 
 // Import i18n resources

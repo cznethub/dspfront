@@ -6,7 +6,6 @@ import VueMacros from 'unplugin-vue-macros/vite'
 import { defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
 import WebfontDownload from 'vite-plugin-webfont-dl'
-import generateSitemap from 'vite-ssg-sitemap'
 
 export default defineConfig({
   resolve: {
@@ -104,6 +103,16 @@ export default defineConfig({
   test: {
     include: ['test/**/*.test.ts'],
     environment: 'jsdom',
+    globals: true,
+    pool: 'vmThreads',
+    deps: {
+      optimizer: {
+        web: {
+          include: ['vuetify'],
+        },
+      },
+      inline: ['vuetify'],
+    },
   },
 
   // https://vitejs.dev/config/preview-options
@@ -112,13 +121,13 @@ export default defineConfig({
   },
 
   // https://github.com/antfu/vite-ssg
-  ssgOptions: {
-    script: 'async',
-    formatting: 'minify',
-    onFinished() {
-      generateSitemap()
-    },
-  },
+  // ssgOptions: {
+  //   script: 'async',
+  //   formatting: 'minify',
+  //   onFinished() {
+  //     generateSitemap()
+  //   },
+  // },
 
   ssr: {
     // TODO: workaround until they support native ESM

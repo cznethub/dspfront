@@ -53,7 +53,7 @@
               <template #activator="{ props }">
                 <v-btn
                   :color="
-                    route.matched.some((p: RouteLocationMatched) => p.name === 'profile')
+                    route.matched.some((p) => p.name === 'profile')
                       ? 'primary'
                       : 'white'
                   "
@@ -192,7 +192,7 @@
 </template>
 
 <script lang="ts">
-import type { RouteLocationMatched, RouteLocationRaw } from 'vue-router'
+import type { RouteLocationRaw } from 'vue-router'
 import { CzNotifications, Notifications } from '@cznethub/cznet-vue-core'
 import { Subscription } from 'rxjs'
 import { Component, toNative, Vue, Watch } from 'vue-facing-decorator'
