@@ -162,7 +162,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     description: `We provide support, training, and resources to help archive and publish high-quality data and metadata. We operate a secure data repository and work closely with the LTER Network Communications Office and DataONE to promote data management best practices and stewardship.`,
     submitTooltip:
       'Submit a dataset to The Environmental Data Initiative repository',
-    url: 'https://environmentaldatainitiative.org/',
+    url: 'https://edirepository.org/',
   },
   [EnumRepositoryKeys.scienceBase]: {
     key: EnumRepositoryKeys.scienceBase,
