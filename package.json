@@ -41,7 +41,7 @@
     "@mdi/font": "^7.4.47",
     "@types/nprogress": "^0.2.3",
     "@types/sprintf-js": "^1.1.4",
-    "@vitejs/plugin-vue": "^5.2.3",
+    "@vitejs/plugin-vue": "^5.2.4",
     "@vue/test-utils": "^2.4.6",
     "cross-env": "^7.0.3",
     "cypress": "^14.3.3",
