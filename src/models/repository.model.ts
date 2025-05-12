@@ -376,8 +376,10 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch (e: any) {
-      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")) {
-        this._handleUnauthorized()
+      if (e.response?.status === 401 && e.response.data?.detail?.includes("User has not authorized with")
+        || e.response.data.includes?.("has expired and could not be refreshed")) {
+        // Token has expired
+        this._handleUnauthorized(repository)
       }
       else {
         Notifications.toast({
@@ -414,10 +416,10 @@ export default class Repository extends Model implements IRepository {
     }
     catch (e: any) {
       console.log(e)
-      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")
-        || e.response.data.includes("has expired and could not be refreshed")) {
+      if (e.response?.status === 401 && e.response.data?.detail?.includes("User has not authorized with")
+        || e.response.data.includes?.("has expired and could not be refreshed")) {
         // Token has expired
-        this._handleUnauthorized()
+        this._handleUnauthorized(this.entity)
       }
       else if (e.response?.status === 401 || e.response?.status === 403) {
         // User has no permission to edit this resource
@@ -516,20 +518,18 @@ export default class Repository extends Model implements IRepository {
     }
     catch (e: any) {
       console.log(e)
-      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")
-        || e.response.data.includes("has expired and could not be refreshed")) {
+      if (e.response?.status === 401 && e.response.data?.detail?.includes("User has not authorized with")
+        || e.response.data.includes?.("has expired and could not be refreshed")) {
         // Token has expired
-        this._handleUnauthorized()
+        this._handleUnauthorized(repository)
       }
       else if (DELETED_RESOURCE_STATUS_CODES.includes(e.response?.status)) {
-        const { t } = useI18n()
         // Resource has been deleted in repository
         Notifications.openDialog({
           title: 'This resource has been deleted',
-          content: `The resource you requested does not exist in the remote repository. It may have been deleted outside of the ${t(
-            'portalName',
-          )}. Do you want to remove it from your list of submissions?`,
+          content: `The resource you requested does not exist in the remote repository. It may have been deleted outside of the Data Submission Portal. Do you want to remove it from your list of submissions?`,
           confirmText: 'Remove',
+          confirmTextColor: 'red',
           cancelText: 'Cancel',
           onConfirm: async () => {
             await this.deleteSubmission(identifier, repository)
@@ -578,10 +578,10 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch (e: any) {
-      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")
-        || e.response.data.includes("has expired and could not be refreshed")) {
+      if (e.response?.status === 401 && e.response.data?.detail?.includes("User has not authorized with")
+        || e.response.data.includes?.("has expired and could not be refreshed")) {
         // Token has expired
-        this._handleUnauthorized()
+        this._handleUnauthorized(repository)
       }
       else if (e.response?.status === 403) {
         await Submission.delete([identifier, repository])
@@ -650,10 +650,10 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch (e: any) {
-      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")
-        || e.response.data.includes("has expired and could not be refreshed")) {
+      if (e.response?.status === 401 && e.response.data?.detail?.includes("User has not authorized with")
+        || e.response.data.includes?.("has expired and could not be refreshed")) {
         // Token has expired
-        this._handleUnauthorized()
+        this._handleUnauthorized(repository)
         return e.response.status
       }
       else if (e.response?.status === 403) {
@@ -701,8 +701,8 @@ export default class Repository extends Model implements IRepository {
     }
     catch (e: any) {
       // Handle unauthenticated
-      if (e.response?.status === 401 && e.response.data.includes("User has not authorized with")) {
-        this._handleUnauthorized()
+      if (e.response?.status === 401 && e.response.data.detail?.includes("User has not authorized with")) {
+        this._handleUnauthorized(repository)
         return e.response.status
       }
       // Handle permission denied
@@ -729,7 +729,7 @@ export default class Repository extends Model implements IRepository {
     }
   }
 
-  private static _handleUnauthorized() {
+  private static _handleUnauthorized(repository: string) {
     this.commit((state) => {
       state.accessToken = ''
     })
@@ -739,7 +739,7 @@ export default class Repository extends Model implements IRepository {
       type: 'error',
     })
 
-    Repository.openAuthorizeDialog(this.entity)
+    Repository.openAuthorizeDialog(repository)
   }
 
   static uploadFiles: (
