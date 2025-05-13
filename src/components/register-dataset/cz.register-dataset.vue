@@ -548,19 +548,27 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   async registerSubmissionAsIs() {
     this.isRegistering = true
     try {
-      await Repository.readSubmission(
+      const response = await Repository.readSubmission(
         this.identifierFromUrl,
         (this.selectedRepository as IRepository).key,
       )
 
       this.isRegistering = false
-      Notifications.toast({
-        message: 'Your dataset has been registered!',
-        type: 'success',
-      })
-      this.router.push({
-        name: 'submissions',
-      })
+      if (isNaN(response)) {
+        Notifications.toast({
+          message: 'Your dataset has been registered!',
+          type: 'success',
+        })
+        this.router.push({
+          name: 'submissions',
+        })
+      }
+      else {
+        Notifications.toast({
+          message: 'Failed to register dataset',
+          type: 'error',
+        })
+      }
     }
     catch (e) {
       this.isRegistering = false
