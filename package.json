@@ -46,7 +46,7 @@
     "cross-env": "^7.0.3",
     "cypress": "^14.3.3",
     "cypress-vite": "^1.6.0",
-    "eslint": "^9.26.0",
+    "eslint": "^9.27.0",
     "eslint-plugin-cypress": "^4.3.0",
     "eslint-plugin-format": "^1.0.1",
     "lint-staged": "^16.0.0",
