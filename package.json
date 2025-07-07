@@ -30,7 +30,7 @@
     "vue-facing-decorator": "^4.0.1",
     "vue-i18n": "^11.1.7",
     "vue-router": "^4.5.1",
-    "vuetify": "^3.8.11",
+    "vuetify": "^3.8.12",
     "vuex": "^4.1.0",
     "vuex-persistedstate": "^4.1.0"
   },
