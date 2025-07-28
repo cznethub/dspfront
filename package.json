@@ -43,7 +43,7 @@
     "@types/sprintf-js": "^1.1.4",
     "@vitejs/plugin-vue": "^6.0.0",
     "@vue/test-utils": "^2.4.6",
-    "cross-env": "^7.0.3",
+    "cross-env": "^10.0.0",
     "cypress": "^14.5.2",
     "cypress-vite": "^1.6.0",
     "eslint": "^9.31.0",
