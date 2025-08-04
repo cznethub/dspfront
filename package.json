@@ -52,7 +52,7 @@
     "lint-staged": "^16.1.4",
     "sass": "^1.89.2",
     "taze": "^19.1.0",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "unplugin-auto-import": "^19.3.0",
     "unplugin-vue-components": "^28.8.0",
     "unplugin-vue-macros": "^2.14.5",
