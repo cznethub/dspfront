@@ -49,7 +49,7 @@
     "eslint": "^9.32.0",
     "eslint-plugin-cypress": "^5.1.0",
     "eslint-plugin-format": "^1.0.1",
-    "lint-staged": "^16.1.4",
+    "lint-staged": "^16.1.5",
     "sass": "^1.90.0",
     "taze": "^19.1.0",
     "typescript": "^5.9.2",
