@@ -62,7 +62,7 @@
     "vite-ssg": "^28.1.0",
     "vite-ssg-sitemap": "^0.10.0",
     "vitest": "^3.2.4",
-    "vue-tsc": "^3.0.6"
+    "vue-tsc": "^3.0.7"
   },
   "lint-staged": {
     "*": "eslint --fix"
