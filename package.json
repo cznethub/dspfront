@@ -54,7 +54,7 @@
     "taze": "^19.6.0",
     "typescript": "^5.9.2",
     "unplugin-auto-import": "^20.1.0",
-    "unplugin-vue-components": "^29.0.0",
+    "unplugin-vue-components": "^29.1.0",
     "unplugin-vue-macros": "^2.14.5",
     "vite": "^7.1.5",
     "vite-plugin-pwa": "^1.0.3",
