@@ -447,6 +447,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
     this.timesChanged = 0 // Need to reset in case we are redirecting from the creation page and the component wasn't destroyed
     this.hasUnsavedChanges = false
     this.wasUnauthorized = false
+    this.isSaving = false
     this.repositoryKey = this.route.params.repository as EnumRepositoryKeys
     this.isRegistering = this.route.query.mode === 'register'
 

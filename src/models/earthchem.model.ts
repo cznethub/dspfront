@@ -107,18 +107,23 @@ export default class EarthChem extends Repository {
     form.append('description', file.name)
 
     file.isDisabled = true
-    const response = await axios.post(url, form, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${this.accessToken}`,
-      },
-    })
-    file.isDisabled = false
-    file.isUploaded = response.status === 200
-    file.serverName = response.data.serverName
-    file.name = response.data.name
-    file.uploadedSize = response.data.size
+    try {
+      const response = await axios.post(url, form, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${this.accessToken}`,
+        },
+      })
+      file.isUploaded = response.status === 200
+      file.serverName = response.data.serverName
+      file.name = response.data.name
+      file.uploadedSize = response.data.size
+    }
+    catch (e) {
+      file.isUploaded = false
+    }
 
+    file.isDisabled = false
     return file.isUploaded
   }
 
