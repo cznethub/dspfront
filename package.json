@@ -35,7 +35,7 @@
     "vuex-persistedstate": "^4.1.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^6.0.0",
+    "@antfu/eslint-config": "^6.1.0",
     "@fortawesome/fontawesome-free": "^7.1.0",
     "@iconify-json/carbon": "^1.2.14",
     "@mdi/font": "^7.4.47",
