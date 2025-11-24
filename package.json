@@ -56,7 +56,7 @@
     "unplugin-auto-import": "^20.2.0",
     "unplugin-vue-components": "^30.0.0",
     "unplugin-vue-macros": "^2.14.5",
-    "vite": "^7.2.2",
+    "vite": "^7.2.4",
     "vite-plugin-pwa": "^1.1.0",
     "vite-plugin-webfont-dl": "^3.11.1",
     "vite-ssg": "^28.2.2",
