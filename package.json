@@ -37,7 +37,7 @@
   "devDependencies": {
     "@antfu/eslint-config": "^7.0.1",
     "@fortawesome/fontawesome-free": "^7.1.0",
-    "@iconify-json/carbon": "^1.2.16",
+    "@iconify-json/carbon": "^1.2.18",
     "@mdi/font": "^7.4.47",
     "@types/nprogress": "^0.2.3",
     "@types/sprintf-js": "^1.1.4",
