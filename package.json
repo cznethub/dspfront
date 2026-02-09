@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@cznethub/cznet-vue-core": "^0.2.42",
-    "@unhead/vue": "^2.1.2",
+    "@unhead/vue": "^2.1.4",
     "@vueuse/core": "^14.2.0",
     "@vueuse/head": "^2.0.0",
     "@vuex-orm/core": "^0.36.4",
