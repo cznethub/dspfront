@@ -61,7 +61,7 @@ export default class User extends Model {
   static async logIn(callback?: () => any) {
     const handleMessage = async (event: MessageEvent) => {
       if (event.origin !== APP_URL || !Object.prototype.hasOwnProperty.call(event.data, 'token')) {
-        console.log(event.origin, APP_URL)
+        // console.log(event.origin, APP_URL)
         return
       }
 

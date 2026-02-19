@@ -377,7 +377,6 @@ export default class Repository extends Model implements IRepository {
       }
     }
     catch (e: any) {
-      console.log(e.response)
       if (e.response?.status === 401 && e.response.data?.detail?.includes("User has not authorized with")
         || e.response.data.includes?.("has expired and could not be refreshed")) {
         // Token has expired
