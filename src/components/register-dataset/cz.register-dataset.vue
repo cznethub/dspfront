@@ -504,6 +504,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   @Watch("step")
   onStepChange(currentStep: number, _previousStep: number) {
     if (currentStep === 2) {
+      // @ts-ignore
       (this.$refs.txtIdentifier as InstanceType<typeof VTextField>)?.focus();
     }
   }
