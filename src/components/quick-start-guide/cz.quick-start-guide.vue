@@ -1,13 +1,24 @@
 <template>
   <v-container class="cz-quick-start-guide">
-    <div class="text-h4">
-      {{ $t("portalName") }} Quickstart Guide
-    </div>
+    <div class="text-h4">{{ $t("portalName") }} Quickstart Guide</div>
     <v-divider class="mb-2" />
 
-    <div class="text-h6 mb-3 mt-6">
-      Purpose
-    </div>
+    <v-alert
+      class="my-8 text-subtitle-1"
+      variant="outlined"
+      type="error"
+      border="start"
+    >
+      <b>NOTICE</b>: As of February 2026, we have removed the ability to submit
+      data to repositories through this Data Submission portal in anticipation
+      of the CZHub project coming to a close in August 2026. We encourage you to
+      navigate directly to the repository of your choice to submit your data and
+      then return here to register your submitted datasets so that we can have a
+      complete catalog of CZNet data. Given these changes, some of the text on
+      this page is out of date.
+    </v-alert>
+
+    <div class="text-h6 mb-3 mt-6">Purpose</div>
     <p class="text-body-1">
       The {{ $t("portalName") }} ({{ $t("portalNameShort") }}) is intended to
       streamline the data submission and sharing process for critical zone
@@ -16,22 +27,19 @@
       submitted data to an appropriate repository.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">
-      Who Should Use the DSP?
-    </div>
+    <div class="text-h6 mb-3 mt-6">Who Should Use the DSP?</div>
     <p class="text-body-1">
       The DSP was designed for scientists and others working in the Critical
       Zone who need to submit data to a reputable repository and who want their
       data to be affiliated with one or more CZNet projects or the larger
       Critical Zone scientific community. Data submitted through the DSP are
-      deposited into one of our supported repositories (HydroShare or EarthChem). Users who have shared data in other reputable repositories,
+      deposited into one of our supported repositories (HydroShare or
+      EarthChem). Users who have shared data in other reputable repositories,
       but who want their data to be included in the CZ Hub data discovery system
       can register datasets with the DSP.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">
-      Getting Started
-    </div>
+    <div class="text-h6 mb-3 mt-6">Getting Started</div>
     <p class="text-body-1">
       The DSP requires an ORCID for login. On the landing page of the DSP, users
       can select “Log In” and be prompted to login using their ORCID. This will
@@ -40,15 +48,13 @@
     </p>
 
     <p class="text-body-1">
-      <a href="https://orcid.org/" target="_blank">Register for and learn more about ORCIDs</a>
-      <v-icon class="ml-2" small>
-        mdi-open-in-new
-      </v-icon>
+      <a href="https://orcid.org/" target="_blank"
+        >Register for and learn more about ORCIDs</a
+      >
+      <v-icon class="ml-2" small> mdi-open-in-new </v-icon>
     </p>
 
-    <div class="text-h6 mb-3 mt-6">
-      Choosing a Repository
-    </div>
+    <div class="text-h6 mb-3 mt-6">Choosing a Repository</div>
     <p class="text-body-1">
       Users can click the “Resources” link at the top of the DSP to access the
       Resources page and then click the “Help Me Decide” button to access a page
@@ -58,9 +64,7 @@
       you can skip this step.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">
-      Data Submission
-    </div>
+    <div class="text-h6 mb-3 mt-6">Data Submission</div>
     <p class="text-body-1">
       To submit data through the DSP, users can select “Submit data” from the
       top menu in the DSP. You can then select the repository you want to submit
@@ -77,9 +81,7 @@
       metadata as you possibly can.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">
-      DSP Supported Repositories
-    </div>
+    <div class="text-h6 mb-3 mt-6">DSP Supported Repositories</div>
     <p class="text-body-1">
       The DSP supports the following repositories for data submission. If you
       have data content to submit, you can submit it directly to these
@@ -116,9 +118,7 @@
       metadata form to tell us about your CZ-related data.
     </p>
 
-    <div class="text-h6 mb-3 mt-6">
-      Tracking Your Submissions
-    </div>
+    <div class="text-h6 mb-3 mt-6">Tracking Your Submissions</div>
     <p class="text-body-1">
       If you click on the “My Submissions” link at the top of the DSP, you will
       be able to see all of the datasets you have submitted to the DSP. On this
@@ -130,14 +130,14 @@
 </template>
 
 <script lang="ts">
-import { Component, toNative, Vue } from 'vue-facing-decorator'
+import { Component, toNative, Vue } from "vue-facing-decorator";
 
 @Component({
-  name: 'cz-quick-start-guide',
+  name: "cz-quick-start-guide",
   components: {},
 })
 class CzQuickStartGuide extends Vue {}
-export default toNative(CzQuickStartGuide)
+export default toNative(CzQuickStartGuide);
 </script>
 
 <style lang="scss" scoped></style>

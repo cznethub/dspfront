@@ -14,7 +14,7 @@ export const messages = {
         portalLinkText: `Visit our data discovery portal`,
       },
       submitData: {
-        title: `Submit Your Data and Research Products`,
+        title: `Register Your Data and Research Products`,
         description: `Created for the Critical Zone Collaborative Network (CZCN), this
         Data Submission Portal provides tools for determining which
         repository to use for data submission along with enhanced submission

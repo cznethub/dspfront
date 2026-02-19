@@ -1,9 +1,7 @@
 <template>
   <div class="cz-submissions">
     <div class="cz-submissions--header">
-      <div class="text-h4">
-        My Submissions
-      </div>
+      <div class="text-h4">My Submissions</div>
       <v-divider class="mb-4" />
       <div>
         <div class="d-flex align-md-center flex-column flex-md-row gap-1">
@@ -43,57 +41,13 @@
 
           <v-spacer />
 
-          <v-speed-dial
-            location="bottom center"
-            transition="slide-y-transition"
+          <v-btn
+            @click.enter="openRegisterDatasetDialog"
+            color="primary"
+            prepend-icon="mdi-text-box-plus"
           >
-            <template #activator="{ props }">
-              <v-btn color="primary" rounded v-bind="props">
-                <!-- <v-icon>mdi-plus</v-icon> -->
-                New Submission
-                <v-icon>mdi-menu-down</v-icon>
-              </v-btn>
-            </template>
-
-            <v-card key="0" class="bg-blue-grey-lighten-4">
-              <v-card-text class="py-6">
-                <template v-for="repo of supportedRepoMetadata" :key="repo.name">
-                  <v-tooltip v-if="!repo.isDisabled" left>
-                    <template #activator="{ props }">
-                      <v-btn
-                        v-bind="props"
-                        class="mb-4"
-                        block
-                        variant="elevated"
-                        elevation="1"
-                        size="default"
-                        @click="submitTo(repo)"
-                      >
-                        {{ repo.name }}
-                      </v-btn>
-                    </template>
-                    <span>{{ repo.submitTooltip }}</span>
-                  </v-tooltip>
-                </template>
-
-                <v-tooltip v-if="!externalRepoMetadata?.isDisabled" left>
-                  <template #activator="{ props }">
-                    <v-btn
-                      v-bind="props"
-                      block
-                      variant="elevated"
-                      elevation="1"
-                      size="default"
-                      @click="openRegisterDatasetDialog"
-                    >
-                      {{ externalRepoMetadata?.name }}
-                    </v-btn>
-                  </template>
-                  <span>{{ externalRepoMetadata?.submitTooltip }}</span>
-                </v-tooltip>
-              </v-card-text>
-            </v-card>
-          </v-speed-dial>
+            Register Datasets
+          </v-btn>
         </div>
       </div>
     </div>
@@ -137,7 +91,9 @@
                       Export Submissions
                     </v-btn>
                     <v-spacer />
-                    <div class="sort-controls d-flex flex-column flex-sm-row gap-1">
+                    <div
+                      class="sort-controls d-flex flex-column flex-sm-row gap-1"
+                    >
                       <v-select
                         id="sort-by"
                         v-model="sortBy.key"
@@ -193,9 +149,7 @@
                             </td>
                           </tr>
                           <tr v-if="item.raw.authors.length">
-                            <th class="pr-4 text-body-2">
-                              Authors:
-                            </th>
+                            <th class="pr-4 text-body-2">Authors:</th>
                             <td>{{ item.raw.authors.join(" | ") }}</td>
                           </tr>
                           <tr>
@@ -205,38 +159,32 @@
                             <td>{{ getRepositoryName(item.raw) }}</td>
                           </tr>
                           <tr>
-                            <th class="pr-4 text-body-2">
-                              Submission Date:
-                            </th>
+                            <th class="pr-4 text-body-2">Submission Date:</th>
                             <td :id="`sub-${index}-date`">
                               {{ getDateInLocalTime(item.raw.date) }}
                             </td>
                           </tr>
                           <tr>
-                            <th class="pr-4 text-body-2">
-                              Identifier:
-                            </th>
+                            <th class="pr-4 text-body-2">Identifier:</th>
                             <td>{{ item.raw.identifier }}</td>
                           </tr>
                           <tr
                             v-if="
-                              item.raw.repository === enumRepositoryKeys.hydroshare
+                              item.raw.repository ===
+                              enumRepositoryKeys.hydroshare
                             "
                           >
-                            <th class="pr-4 text-body-2">
-                              Type:
-                            </th>
+                            <th class="pr-4 text-body-2">Type:</th>
                             <td>{{ getItemResourceType(item.raw) }}</td>
                           </tr>
                           <tr
                             v-if="
-                              item.raw.metadata.status
-                                && item.raw.repository === enumRepositoryKeys.earthchem
+                              item.raw.metadata.status &&
+                              item.raw.repository ===
+                                enumRepositoryKeys.earthchem
                             "
                           >
-                            <th class="pr-4 text-body-2">
-                              Status:
-                            </th>
+                            <th class="pr-4 text-body-2">Status:</th>
 
                             <td>
                               <v-chip
@@ -271,52 +219,52 @@
                         color="blue-grey-lighten-4"
                         rounded
                       >
-                        <v-icon class="mr-1">
-                          mdi-open-in-new
-                        </v-icon> View In
+                        <v-icon class="mr-1"> mdi-open-in-new </v-icon> View In
                         Repository
                       </v-btn>
                       <v-btn
                         v-if="
-                          !(
-                            isItemHsCollection(item.raw)
-                            || isItemPublished(item.raw)
-                            || isItemEclSubmitted(item.raw)
-                            || !itemHasFormSupport(item.raw)
-                          )
+                          itemHasFormSupport(item.raw) &&
+                          !isItemHsCollection(item.raw) &&
+                          !isItemPublished(item.raw) &&
+                          !isItemEclSubmitted(item.raw)
                         "
                         :id="`sub-${index}-edit`"
                         rounded
                         @click="goToEditSubmission(item.raw)"
                       >
-                        <v-icon class="mr-1">
-                          mdi-pencil-outline
-                        </v-icon> Edit
+                        <v-icon class="mr-1"> mdi-pencil-outline </v-icon> Edit
                       </v-btn>
                       <v-btn
                         v-if="!repoMetadata[item.raw.repository]?.isExternal"
                         :id="`sub-${index}-update`"
                         :disabled="
-                          isUpdating[`${item.raw.repository}-${item.raw.identifier}`]
+                          isUpdating[
+                            `${item.raw.repository}-${item.raw.identifier}`
+                          ]
                         "
                         rounded
                         @click="onUpdateRecord(item.raw)"
                       >
                         <v-icon
                           v-if="
-                            isUpdating[`${item.raw.repository}-${item.raw.identifier}`]
+                            isUpdating[
+                              `${item.raw.repository}-${item.raw.identifier}`
+                            ]
                           "
                         >
                           fas fa-circle-notch fa-spin
                         </v-icon>
-                        <v-icon v-else>
-                          mdi-sync
-                        </v-icon><span class="ml-1">
+                        <v-icon v-else> mdi-sync </v-icon
+                        ><span class="ml-1">
                           {{
-                            isUpdating[`${item.raw.repository}-${item.raw.identifier}`]
+                            isUpdating[
+                              `${item.raw.repository}-${item.raw.identifier}`
+                            ]
                               ? "Updating Record..."
                               : "Update Record"
-                          }}</span>
+                          }}</span
+                        >
                       </v-btn>
                       <v-btn
                         :id="`sub-${index}-delete`"
@@ -326,21 +274,23 @@
                       >
                         <v-icon
                           v-if="
-                            isDeleting[`${item.raw.repository}-${item.raw.identifier}`]
+                            isDeleting[
+                              `${item.raw.repository}-${item.raw.identifier}`
+                            ]
                           "
                         >
                           fas fa-circle-notch fa-spin
                         </v-icon>
-                        <v-icon v-else>
-                          mdi-delete-outline
-                        </v-icon><span class="ml-1">
+                        <v-icon v-else> mdi-delete-outline </v-icon
+                        ><span class="ml-1">
                           {{
                             isDeleting[
                               `${item.raw.repository}-${item.raw.identifier}`
                             ]
                               ? "Deleting..."
                               : "Delete"
-                          }}</span>
+                          }}</span
+                        >
                       </v-btn>
                     </div>
                   </div>
@@ -351,7 +301,9 @@
               <template #footer>
                 <div class="footer d-flex justify-space-between align-center">
                   <div>
-                    <span class="grey--text text-body-2 mr-1">Items per page</span>
+                    <span class="grey--text text-body-2 mr-1"
+                      >Items per page</span
+                    >
 
                     <v-menu offset-y>
                       <template #activator="{ props }">
@@ -480,326 +432,330 @@
 </template>
 
 <script lang="ts">
-import type {
-  IRepository,
-  ISubmission,
-} from '~/components/submissions/types'
-import { Subscription } from 'rxjs'
-import { Component, mixins, Ref, toNative } from 'vue-facing-decorator'
-import CzRegisterDatasetDialog from '~/components/register-dataset/cz.register-dataset-dialog.vue'
+import type { IRepository, ISubmission } from "~/components/submissions/types";
+import { Subscription } from "rxjs";
+import { Component, mixins, Ref, toNative } from "vue-facing-decorator";
+import CzRegisterDatasetDialog from "~/components/register-dataset/cz.register-dataset-dialog.vue";
 import {
   itemsPerPageArray,
   sortDirectionsOverrides,
-} from '~/components/submissions/constants'
+} from "~/components/submissions/constants";
 import {
   EnumRepositoryKeys,
   EnumSortDirections,
   EnumSubmissionSorts,
-} from '~/components/submissions/types'
-import { repoMetadata } from '~/components/submit/constants'
-import { getRepositoryFromKey } from '~/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+} from "~/components/submissions/types";
+import { repoMetadata } from "~/components/submit/constants";
+import { getRepositoryFromKey } from "~/constants";
+import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
 
-import Repository from '~/models/repository.model'
+import Repository from "~/models/repository.model";
 // import { formatDistanceToNow } from 'date-fns'
-import Submission from '~/models/submission.model'
-import User from '~/models/user.model'
-import { isRepositoryAuthorized } from '~/util'
+import Submission from "~/models/submission.model";
+import User from "~/models/user.model";
+import { isRepositoryAuthorized } from "~/util";
 
 @Component({
-  name: 'cz-submissions',
+  name: "cz-submissions",
   components: { CzRegisterDatasetDialog },
 })
 class CzSubmissions extends mixins(ActiveRepositoryMixin) {
-  @Ref('registerDatasetDialog') registerDatasetDialog!: InstanceType<
+  @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<
     typeof CzRegisterDatasetDialog
-  >
+  >;
 
-  isUpdating: { [key: string]: boolean } = {}
-  isDeleting: { [key: string]: boolean } = {}
-  isDeleteDialogActive = false
+  isUpdating: { [key: string]: boolean } = {};
+  isDeleting: { [key: string]: boolean } = {};
+  isDeleteDialogActive = false;
   deleteDialogData: {
-    submission: ISubmission
-    isExternal: boolean
-    isPublished: boolean
-  } | null = null
+    submission: ISubmission;
+    isExternal: boolean;
+    isPublished: boolean;
+  } | null = null;
 
-  alsoDeleteInRepository = false
+  alsoDeleteInRepository = false;
 
   filters: {
-    repository: string[]
-    searchStr: string
-  } = { repository: [], searchStr: '' }
+    repository: string[];
+    searchStr: string;
+  } = { repository: [], searchStr: "" };
 
-  itemsPerPageArray = itemsPerPageArray
-  page = 1
-  repoMetadata = repoMetadata
-  enumRepositoryKeys = EnumRepositoryKeys
-  loggedInSubject = new Subscription()
+  itemsPerPageArray = itemsPerPageArray;
+  page = 1;
+  repoMetadata = repoMetadata;
+  enumRepositoryKeys = EnumRepositoryKeys;
+  loggedInSubject = new Subscription();
 
   get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map(r => repoMetadata[r])
+    return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
   }
 
   get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => !r.isExternal && r.isSupported?.form)
+    return this.repoCollection.filter(
+      (r) => !r.isExternal && r.isSupported?.form,
+    );
   }
 
   get externalRepoMetadata() {
-    return this.repoCollection.find(r => r.isExternal)
+    return this.repoCollection.find((r) => r.isExternal);
   }
 
   get itemsPerPage() {
-    return Submission.$state.itemsPerPage
+    return Submission.$state.itemsPerPage;
   }
 
   set itemsPerPage(itemsPerPage: number) {
     Submission.commit((state) => {
-      state.itemsPerPage = itemsPerPage
-    })
+      state.itemsPerPage = itemsPerPage;
+    });
   }
 
   get isFetching() {
-    return Submission.$state.isFetching
+    return Submission.$state.isFetching;
   }
 
-  get repoOptions(): { key: string, label: string }[] {
+  get repoOptions(): { key: string; label: string }[] {
     return Object.keys(repoMetadata)
-      .filter(key => repoMetadata[key].isSupported)
-      .map(key => ({ key, label: repoMetadata[key].name }))
+      .filter((key) => repoMetadata[key].isSupported)
+      .map((key) => ({ key, label: repoMetadata[key].name }));
   }
 
   get sortOptions() {
     return Object.keys(EnumSubmissionSorts).map((key) => {
-      return { key, label: EnumSubmissionSorts[key as keyof typeof EnumSubmissionSorts] }
-    })
+      return {
+        key,
+        label: EnumSubmissionSorts[key as keyof typeof EnumSubmissionSorts],
+      };
+    });
   }
 
   get sortBy() {
-    return Submission.$state.sortBy
+    return Submission.$state.sortBy;
   }
 
-  set sortBy(sortBy: { key: string, order: 'asc' | 'desc' }) {
+  set sortBy(sortBy: { key: string; order: "asc" | "desc" }) {
     Submission.commit((state) => {
-      state.sortBy = sortBy
-    })
+      state.sortBy = sortBy;
+    });
   }
 
   get isLoggedIn() {
-    return User.$state.isLoggedIn
+    return User.$state.isLoggedIn;
   }
 
   get isAnyFilterAcitve() {
     return Object.keys(this.filters).find(
-      key => this.filters[key] && this.filters[key].length,
-    )
+      (key) => this.filters[key] && this.filters[key].length,
+    );
   }
 
   get sortDirectionOptions() {
     return Object.keys(EnumSortDirections).map((key) => {
       return {
         key,
-        label: sortDirectionsOverrides[this.sortBy.key]?.[key as keyof typeof EnumSortDirections]
-          || EnumSortDirections[key as keyof typeof EnumSortDirections],
-      }
-    })
+        label:
+          sortDirectionsOverrides[this.sortBy.key]?.[
+            key as keyof typeof EnumSortDirections
+          ] || EnumSortDirections[key as keyof typeof EnumSortDirections],
+      };
+    });
   }
 
   get filteredSubmissions() {
     if (this.filters.repository.length) {
-      return Submission.all().filter(s =>
+      return Submission.all().filter((s) =>
         this.filters.repository.includes(s.repository),
-      )
+      );
     }
 
-    return Submission.all()
+    return Submission.all();
   }
 
   get submissions(): ISubmission[] {
-    return Submission.all()
+    return Submission.all();
   }
 
   get repoName(): string {
     if (this.deleteDialogData) {
       return (
         getRepositoryFromKey(this.deleteDialogData.submission.repository)
-          ?.name || ''
-      )
+          ?.name || ""
+      );
     }
 
-    return ''
+    return "";
   }
 
   get numberOfPages() {
     return this.isAnyFilterAcitve
       ? Math.ceil(this.filteredSubmissions.length / this.itemsPerPage)
-      : Math.ceil(this.submissions.length / this.itemsPerPage)
+      : Math.ceil(this.submissions.length / this.itemsPerPage);
   }
 
   created() {
-    if (User.$state.isLoggedIn)
-      Submission.fetchSubmissions()
+    if (User.$state.isLoggedIn) Submission.fetchSubmissions();
 
     this.loggedInSubject = User.loggedIn$.subscribe(() => {
-      Submission.fetchSubmissions()
-    })
+      Submission.fetchSubmissions();
+    });
   }
 
   beforeDestroy() {
-    this.loggedInSubject.unsubscribe()
+    this.loggedInSubject.unsubscribe();
   }
 
   nextPage() {
-    if (this.page + 1 <= this.numberOfPages)
-      this.page += 1
+    if (this.page + 1 <= this.numberOfPages) this.page += 1;
   }
 
   formerPage() {
-    if (this.page - 1 >= 1)
-      this.page -= 1
+    if (this.page - 1 >= 1) this.page -= 1;
   }
 
   goToEditSubmission(submission: ISubmission) {
-    const repo: IRepository = repoMetadata[submission.repository]
+    const repo: IRepository = repoMetadata[submission.repository];
     this.router.push({
-      name: 'submit.repository',
+      name: "register-data.repository",
       params: { repository: repo.key, id: submission.identifier },
-    })
+    });
   }
 
   getDateInLocalTime(date: number): string {
-    const offset = new Date(date).getTimezoneOffset() * 60 * 1000
+    const offset = new Date(date).getTimezoneOffset() * 60 * 1000;
     // TODO: subtracting offset because db stored dates seem to have the time shifted
-    const localDateTime = date - offset
-    const localizedDate = new Date(localDateTime).toLocaleString()
+    const localDateTime = date - offset;
+    const localizedDate = new Date(localDateTime).toLocaleString();
     // const ago = formatDistanceToNow(new Date(localDateTime), { addSuffix: true })
-    return localizedDate
+    return localizedDate;
   }
 
   openRegisterDatasetDialog() {
-    this.registerDatasetDialog.active = true
+    this.registerDatasetDialog.active = true;
   }
 
   async onUpdateRecord(submission: ISubmission) {
-    const key = `${submission.repository}-${submission.identifier}`
-    this.isUpdating[key] = true
+    const key = `${submission.repository}-${submission.identifier}`;
+    this.isUpdating[key] = true;
 
     await Repository.refetchSubmission(
       submission.identifier,
       submission.repository,
-    )
+    );
 
-    this.isUpdating[key] = false
+    this.isUpdating[key] = false;
   }
 
   exportSubmissions() {
     const parsedSubmissions = this.filteredSubmissions.map((s) => {
       return {
-        authors: s.authors.join('; '),
+        authors: s.authors.join("; "),
         date: new Date(s.date).toISOString(),
         title: s.title,
         repository: this.getRepositoryName(s),
         url: s.url,
-      }
-    })
+      };
+    });
 
     const columnLabels = [
-      'Authors',
-      'Publication Date',
-      'Title',
-      'Repository',
-      'URL',
-    ]
+      "Authors",
+      "Publication Date",
+      "Title",
+      "Repository",
+      "URL",
+    ];
 
-    const headerRow = `${columnLabels.join(',')}\n`
+    const headerRow = `${columnLabels.join(",")}\n`;
     const rows = parsedSubmissions.map((s) => {
-      return Object.keys(s).map((key: string) => `"${s[key]}"`)
-    })
+      return Object.keys(s).map((key: string) => `"${s[key]}"`);
+    });
 
-    const csvContent = headerRow + rows.map(c => c.join(',')).join('\n')
+    const csvContent = headerRow + rows.map((c) => c.join(",")).join("\n");
 
     // Download as CSV
-    const filename = `${this.$t('footer.orgName')}_submissions.csv`
+    const filename = `${this.$t("footer.orgName")}_submissions.csv`;
 
-    const element = document.createElement('a')
+    const element = document.createElement("a");
     element.setAttribute(
-      'href',
+      "href",
       `data:text/plain;charset=utf-8,${encodeURIComponent(csvContent)}`,
-    )
-    element.setAttribute('download', filename)
+    );
+    element.setAttribute("download", filename);
 
-    element.style.display = 'none'
-    document.body.appendChild(element)
+    element.style.display = "none";
+    document.body.appendChild(element);
 
-    element.click()
+    element.click();
 
-    document.body.removeChild(element)
+    document.body.removeChild(element);
   }
 
   isDeleteButtonDisabled(submission: Submission) {
-    return this.isDeleting[`${submission.repository}-${submission.identifier}`]
+    return this.isDeleting[`${submission.repository}-${submission.identifier}`];
   }
 
   isItemHsCollection(submission: ISubmission) {
     return (
-      submission.repository === EnumRepositoryKeys.hydroshare
-      && submission.metadata.type === 'CollectionResource'
-    )
+      submission.repository === EnumRepositoryKeys.hydroshare &&
+      submission.metadata.type === "CollectionResource"
+    );
   }
 
   isItemPublished(submission: Submission): boolean {
     if (submission.repository === EnumRepositoryKeys.hydroshare)
-      return !!submission?.metadata.published
+      return !!submission?.metadata.published;
     else if (submission.repository === EnumRepositoryKeys.earthchem)
-      return submission?.metadata?.status === 'published'
+      return submission?.metadata?.status === "published";
     // else if (submission.repository === EnumRepositoryKeys.zenodo)
     //   return !!submission?.metadata?.doi
 
-    return false
+    return false;
   }
 
   isItemEclSubmitted(submission: Submission): boolean {
     return (
-      submission.repository === EnumRepositoryKeys.earthchem
-      && submission?.metadata.status === 'submitted'
-    )
+      submission.repository === EnumRepositoryKeys.earthchem &&
+      submission?.metadata.status === "submitted"
+    );
   }
 
   itemHasFormSupport(submission: any) {
-    return repoMetadata[submission.repository]?.isSupported?.form
+    return repoMetadata[submission.repository]?.isSupported?.form;
   }
 
   onDelete(submission: Submission) {
     this.deleteDialogData = {
       submission,
-      isExternal: repoMetadata[submission.repository]?.isExternal || !repoMetadata[submission.repository]?.isSupported?.form || false,
+      isExternal:
+        repoMetadata[submission.repository]?.isExternal ||
+        !repoMetadata[submission.repository]?.isSupported?.form ||
+        false,
       isPublished: this.isItemPublished(submission),
-    }
-    this.alsoDeleteInRepository = false // we want it unchecked initially
-    this.isDeleteDialogActive = true
+    };
+    this.alsoDeleteInRepository = false; // we want it unchecked initially
+    this.isDeleteDialogActive = true;
   }
 
   async onDeleteSubmission() {
-    const key = `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`
-    this.isDeleting[key] = true
+    const key = `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`;
+    this.isDeleting[key] = true;
 
     if (this.deleteDialogData) {
-      const deleteInRepo
-        = !this.deleteDialogData.isExternal && this.alsoDeleteInRepository
+      const deleteInRepo =
+        !this.deleteDialogData.isExternal && this.alsoDeleteInRepository;
 
       if (deleteInRepo) {
         // Check that the user has authorized the selected repository
         if (
           !isRepositoryAuthorized(this.deleteDialogData.submission.repository)
         ) {
-          this.isDeleting[key] = false
+          this.isDeleting[key] = false;
           this.authorizedSubject = Repository.authorized$.subscribe(
             async (_repositoryKey: EnumRepositoryKeys) => {
               // try again when the repository has been authorized
-              await this.onDeleteSubmission()
+              await this.onDeleteSubmission();
             },
-          )
-          return
+          );
+          return;
         }
       }
 
@@ -807,34 +763,33 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
         this.deleteDialogData.submission.identifier,
         this.deleteDialogData.submission.repository,
         deleteInRepo,
-      )
+      );
     }
 
-    this.isDeleting[key] = false
-    this.deleteDialogData = null
+    this.isDeleting[key] = false;
+    this.deleteDialogData = null;
   }
 
   getRepositoryName(item: ISubmission) {
     // For external submissions, we return the provider name instead
     if (item.repository === EnumRepositoryKeys.external)
-      return item.metadata.provider?.name || ''
+      return item.metadata.provider?.name || "";
 
     return repoMetadata[item.repository]
       ? repoMetadata[item.repository].name
-      : ''
+      : "";
   }
 
   getItemResourceType(item: ISubmission) {
     // For hydroshare submissions, get the resource type
     if (item.repository === EnumRepositoryKeys.hydroshare) {
-      if (item.metadata.type === 'CollectionResource')
-        return 'Collection'
-      else return 'Resource'
+      if (item.metadata.type === "CollectionResource") return "Collection";
+      else return "Resource";
     }
-    return ''
+    return "";
   }
 }
-export default toNative(CzSubmissions)
+export default toNative(CzSubmissions);
 </script>
 
 <style lang="scss" scoped>
