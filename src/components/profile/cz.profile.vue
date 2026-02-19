@@ -3,12 +3,21 @@
     <v-list class="flex-shrink-0 border-e-thin" nav>
       <v-list-item>
         <v-list-item-subtitle class="d-flex align-center my-4 text-body-1">
-          <i class="fab fa-orcid mr-2" style="font-size: 1.5rem" aria-hidden="true" /> <span v-if="$vuetify.display.mdAndUp">Logged In</span>
+          <i
+            class="fab fa-orcid mr-2"
+            style="font-size: 1.5rem"
+            aria-hidden="true"
+          />
+          <span v-if="$vuetify.display.mdAndUp">Logged In</span>
         </v-list-item-subtitle>
         <v-divider />
       </v-list-item>
 
-      <v-list-item link :to="{ path: '/profile/account' }" active-class="active">
+      <v-list-item
+        link
+        :to="{ path: '/profile/account' }"
+        active-class="active"
+      >
         <v-list-item-title class="d-flex align-center gap-1">
           <v-icon size="x-large" class="text-medium-emphasis" title="Account">
             mdi-account-circle
@@ -17,7 +26,7 @@
         </v-list-item-title>
       </v-list-item>
 
-      <v-list-item
+      <!-- <v-list-item
         link :to="{ path: '/profile/authorized-repositories' }"
         active-class="active"
       >
@@ -27,7 +36,7 @@
           </v-icon>
           <span v-if="$vuetify.display.mdAndUp">Authorized Repositories</span>
         </v-list-item-title>
-      </v-list-item>
+      </v-list-item> -->
 
       <v-divider class="my-4" />
 
@@ -49,18 +58,18 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
+import { Component, Vue, toNative } from "vue-facing-decorator";
 
 @Component({
-  name: 'cz-profile',
+  name: "cz-profile",
   components: {},
 })
 class CzProfile extends Vue {
   logOut() {
-    this.$emit('logout')
+    this.$emit("logout");
   }
 }
-export default toNative(CzProfile)
+export default toNative(CzProfile);
 </script>
 
 <style lang="scss" scoped>

@@ -53,17 +53,17 @@ export const routes: RouteRecordRaw[] = [
           title: 'Account',
         },
       },
-      {
-        name: 'profile.authorized-repositories',
-        path: 'authorized-repositories',
-        components: {
-          CzAuthorizedRepositories,
-        },
-        beforeEnter: [hasLoggedInGuard],
-        meta: {
-          title: 'Authorised Repositories',
-        },
-      },
+      // {
+      //   name: 'profile.authorized-repositories',
+      //   path: 'authorized-repositories',
+      //   components: {
+      //     CzAuthorizedRepositories,
+      //   },
+      //   beforeEnter: [hasLoggedInGuard],
+      //   meta: {
+      //     title: 'Authorised Repositories',
+      //   },
+      // },
     ],
     meta: {
       title: 'Profile',
@@ -138,24 +138,24 @@ export const routes: RouteRecordRaw[] = [
     },
   },
   {
-    name: 'submit',
-    path: '/submit',
+    name: 'register-data',
+    path: '/register-data',
     components: {
       content: CzSubmit,
       footer: CzFooter,
     },
     meta: {
-      title: 'Submit Data',
+      title: 'Register Data',
       metaTags: [
         {
           name: 'keywords',
-          content: 'HydroShare, EarthChem, Submit, Data, Repositories',
+          content: 'HydroShare, EarthChem, Register, Data, Repositories',
         },
       ],
     },
     children: [
       {
-        name: 'submit.repository',
+        name: 'register-data.repository',
         path: ':repository/:id?',
         components: {
           default: CzNewSubmission,

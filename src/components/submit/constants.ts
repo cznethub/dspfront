@@ -13,7 +13,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     description:
       'A dependable data management and publication solution for hydrologic data types and models.',
     submitTooltip: 'Submit a dataset to the HydroShare repository.',
-    isSupported: { registration: true, form: true },
+    isSupported: { registration: true, form: false },
     hasFolderStructure: true,
     maxUploadSizePerFile: 25 * 1024 ** 3, // 25GB in BYTES
     // https://github.com/hydroshare/hydroshare/blob/master/hs_core/models.py#L3110-L3112
@@ -35,7 +35,7 @@ export const repoMetadata: { [key: string]: IRepository } = {
     description:
       'EarthChem provides open data services to the geochemical, petrological, mineralogical, and related communities. Services include data preservation, discovery, access, and visualization.',
     submitTooltip: 'Submit a dataset to the EarthChem repository.',
-    isSupported: { registration: true, form: true },
+    isSupported: { registration: true, form: false },
     url: 'https://www.earthchem.org',
     supportUrl: 'https://www.earthchem.org/resources/support/',
     supportedFileTypes: [

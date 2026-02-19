@@ -20,7 +20,7 @@ export interface IUserState {
   hasUnsavedChanges: boolean
   isSaving: false
   registeringSubmission: Partial<Submission> | null
-  showZenodoWarning: boolean
+  showSubmissionWarning: boolean
 }
 
 export default class User extends Model {
@@ -50,7 +50,7 @@ export default class User extends Model {
       hasUnsavedChanges: false,
       isSaving: false,
       registeringSubmission: null,
-      showZenodoWarning: true,
+      showSubmissionWarning: true,
     }
   }
 
@@ -61,7 +61,7 @@ export default class User extends Model {
   static async logIn(callback?: () => any) {
     const handleMessage = async (event: MessageEvent) => {
       if (event.origin !== APP_URL || !Object.prototype.hasOwnProperty.call(event.data, 'token')) {
-        console.log(event.origin, APP_URL)
+        // console.log(event.origin, APP_URL)
         return
       }
 

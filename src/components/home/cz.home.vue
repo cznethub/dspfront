@@ -25,11 +25,9 @@
         <template v-if="!isLoggedIn">
           <div>
             <div class="has-text-white mt-4 mb-4 has-text-shadow text-h6">
-              Ready to Submit Data?
+              Ready to Register Data?
             </div>
-            <v-btn rounded @click="openLogInDialog()">
-              Log In
-            </v-btn>
+            <v-btn rounded @click="openLogInDialog()"> Log In </v-btn>
           </div>
         </template>
         <div class="mt-16">
@@ -103,20 +101,18 @@
     <v-divider />
 
     <section class="text-center">
-      <div class="mb-4 text-h4">
-        What do you want to do?
-      </div>
+      <div class="mb-4 text-h4">What do you want to do?</div>
       <v-row id="features-2" justify="center">
         <v-col>
-          <v-btn size="100" flat icon="mdi-book-plus" :to="{ path: '/submit' }" />
+          <v-btn
+            size="100"
+            flat
+            icon="mdi-book-plus"
+            :to="{ path: '/register-data' }"
+          />
 
-          <router-link
-            to="/submit"
-            class="text-h6"
-          >
-            <div class="my-2">
-              Submit Data Products
-            </div>
+          <router-link to="/register-data" class="text-h6">
+            <div class="my-2">Register Data Products</div>
           </router-link>
 
           <div class="font-weight-light text-subtitle-1">
@@ -126,14 +122,14 @@
         </v-col>
 
         <v-col>
-          <v-btn size="100" flat icon="mdi-arrow-decision" :to="{ path: '/resources/recommendations' }" />
-          <router-link
-            to="/resources/recommendations"
-            class="text-h6"
-          >
-            <div class="my-2">
-              Find the Right Repository
-            </div>
+          <v-btn
+            size="100"
+            flat
+            icon="mdi-arrow-decision"
+            :to="{ path: '/resources/recommendations' }"
+          />
+          <router-link to="/resources/recommendations" class="text-h6">
+            <div class="my-2">Find the Right Repository</div>
           </router-link>
 
           <div class="font-weight-light text-subtitle-1">
@@ -144,16 +140,23 @@
         </v-col>
 
         <v-col>
-          <v-btn size="100" flat icon="mdi-test-tube" href="https://www.geosamples.org/" target="_blank" />
+          <v-btn
+            size="100"
+            flat
+            icon="mdi-test-tube"
+            href="https://www.geosamples.org/"
+            target="_blank"
+          />
           <a
             href="https://www.geosamples.org/"
             target="_blank"
             class="text-h6 d-block my-2"
-          >Register Samples
+            >Register Samples
           </a>
 
           <div class="font-weight-light text-subtitle-1">
-            Register metadata for samples and get an IGSN to make samples more discoverable, accessible, and reusable.
+            Register metadata for samples and get an IGSN to make samples more
+            discoverable, accessible, and reusable.
           </div>
         </v-col>
       </v-row>
@@ -163,9 +166,7 @@
 
     <section class="d-flex align-center justify-center flex-column flex-lg-row">
       <div class="text-center text-lg-left">
-        <div class="mb-4 text-h4">
-          Make your Data FAIR
-        </div>
+        <div class="mb-4 text-h4">Make your Data FAIR</div>
         <p class="font-weight-light text-subtitle-1">
           This {{ $t("portalName") }} works with reputable Earth Science
           repositories to ensure that research products you submit are
@@ -181,11 +182,7 @@
           target="_blank"
           style="max-width: 100%"
         >
-          <img
-            src="/img/fair.png"
-            alt="FAIR"
-            style="max-width: 100%"
-          >
+          <img src="/img/fair.png" alt="FAIR" style="max-width: 100%" />
         </a>
       </div>
     </section>
@@ -193,13 +190,16 @@
     <v-divider />
 
     <section>
-      <div class="mb-2 text-center text-h4">
-        Supported Repositories
-      </div>
+      <div class="mb-2 text-center text-h4">Supported Repositories</div>
       <div class="d-flex justify-center mb-4">
         <p class="font-weight-light text-center text-subtitle-1">
-          You can submit data to HydroShare and EarthChem directly through this Data Submission Portal.
-          <br>Click the links below to learn more about HydroShare and EarthChem.
+          Use the links below to navigate directly to HydroShare and EarthChem
+          to submit your data. Then, use the
+          <router-link :to="{ name: 'register-data' }"
+            >Register Data</router-link
+          >
+          page to register your submitted datasets with the Data Submission
+          Portal
         </p>
       </div>
       <div class="repos mb-4 d-flex flex-wrap align-center justify-center">
@@ -209,25 +209,30 @@
           :href="repo.url"
           :title="repo.name"
           target="_blank"
-        ><img :src="repo.logoSrc" :alt="repo.name"></a>
+          ><img :src="repo.logoSrc" :alt="repo.name"
+        /></a>
       </div>
       <div class="d-flex justify-center mt-12">
         <p class="font-weight-light text-center text-subtitle-1">
-          Metadata for samples can be submitted via SESAR. Click the link below to learn more about SESAR and sample registration or contact <a href="mailto:info@geosamples.org">info@geosamples.org</a> for more information.
+          Metadata for samples can be submitted via SESAR. Click the link below
+          to learn more about SESAR and sample registration or contact
+          <a href="mailto:info@geosamples.org">info@geosamples.org</a> for more
+          information.
         </p>
       </div>
 
       <div class="d-flex flex-wrap align-center justify-center mt-6">
-        <a
-          href="https://www.geosamples.org/"
-          target="_blank"
-          title="SESAR"
-        ><img class="medium" src="/img/sesar.png" alt="SESAR logo"></a>
+        <a href="https://www.geosamples.org/" target="_blank" title="SESAR"
+          ><img class="medium" src="/img/sesar.png" alt="SESAR logo"
+        /></a>
       </div>
 
       <div class="d-flex justify-center mt-12">
         <p class="font-weight-light text-center text-subtitle-1">
-          You can also register datasets submitted to other repositories here so that they will be discoverable by Critical Zone Scientists. You can register data submitted to any repository, but the following are some common examples.
+          You can also register datasets submitted to other repositories here so
+          that they will be discoverable by Critical Zone Scientists. You can
+          register data submitted to any repository, but the following are some
+          common examples.
         </p>
       </div>
 
@@ -238,42 +243,40 @@
           :href="repo.url"
           :title="repo.name"
           target="_blank"
-        ><img class="small" :src="repo.logoSrc" :alt="repo.name"></a>
+          ><img class="small" :src="repo.logoSrc" :alt="repo.name"
+        /></a>
       </div>
     </section>
   </div>
 </template>
 
 <script lang="ts">
-import type {
-  IRepository,
-} from '~/components/submissions/types'
-import { Component, toNative, Vue } from 'vue-facing-decorator'
-import { useRouter } from 'vue-router'
-import {
-  EnumRepositoryKeys,
-} from '~/components/submissions/types'
-import { DISCOVERY_SITE_URL } from '~/constants'
-import User from '~/models/user.model'
-import { repoMetadata } from '../submit/constants'
+import type { IRepository } from "~/components/submissions/types";
+import { Component, toNative, Vue } from "vue-facing-decorator";
+import { useRouter } from "vue-router";
+import { EnumRepositoryKeys } from "~/components/submissions/types";
+import { DISCOVERY_SITE_URL } from "~/constants";
+import User from "~/models/user.model";
+import { repoMetadata } from "../submit/constants";
 
 @Component({
-  name: 'cz-home',
+  name: "cz-home",
   components: {},
 })
 class CzHome extends Vue {
-  repoMetadata = repoMetadata
-  discoverySiteUrl = DISCOVERY_SITE_URL
-  router = useRouter()
+  repoMetadata = repoMetadata;
+  discoverySiteUrl = DISCOVERY_SITE_URL;
+  router = useRouter();
 
   get isLoggedIn() {
-    return User.$state.isLoggedIn
+    return User.$state.isLoggedIn;
   }
 
   get supportedRepositories() {
-    return Object.keys(repoMetadata)
-      .map(key => repoMetadata[key])
-      .filter(repo => !repo.isExternal && repo.isSupported?.form)
+    return [
+      repoMetadata[EnumRepositoryKeys.hydroshare],
+      repoMetadata[EnumRepositoryKeys.earthchem],
+    ];
   }
 
   get exampleExternalRepositories(): Partial<IRepository>[] {
@@ -283,14 +286,14 @@ class CzHome extends Vue {
       repoMetadata[EnumRepositoryKeys.zenodo],
       repoMetadata[EnumRepositoryKeys.scienceBase],
       repoMetadata[EnumRepositoryKeys.openTopography],
-    ]
+    ];
   }
 
   openLogInDialog() {
-    User.openLogInDialog()
+    User.openLogInDialog();
   }
 }
-export default toNative(CzHome)
+export default toNative(CzHome);
 </script>
 
 <style lang="scss" scoped>

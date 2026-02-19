@@ -18,9 +18,7 @@
         class="d-flex flex-wrap-wrap justify-space-between flex-column flex-md-row text-black"
       >
         <div>
-          <div class="font-weight-bold">
-            Instructions
-          </div>
+          <div class="font-weight-bold">Instructions</div>
           <p>
             Fill in the required fields (marked with * and highlighted in red).
             Press the "Save / Finish" button to upload your submission.
@@ -67,8 +65,16 @@
           :has-file-metadata="() => false"
           :supported-file-types="supportedFileTypes"
           :upload="isEditMode ? uploadFiles : undefined"
-          :delete-file-or-folder="isEditMode && activeRepository.deleteFileOrFolder ? deleteFileOrFolder : undefined"
-          :rename-file-or-folder="isEditMode && activeRepository.renameFileOrFolder ? renameFileOrFolder : undefined"
+          :delete-file-or-folder="
+            isEditMode && activeRepository.deleteFileOrFolder
+              ? deleteFileOrFolder
+              : undefined
+          "
+          :rename-file-or-folder="
+            isEditMode && activeRepository.renameFileOrFolder
+              ? renameFileOrFolder
+              : undefined
+          "
           :file-name-regex="fileNameRegex"
           :folder-name-regex="folderNameRegex"
         >
@@ -136,10 +142,7 @@
               repository.
             </v-col>
             <v-col class="flex-grow-0">
-              <v-btn
-                color="primary"
-                @click="openAuthorizePopup(repositoryKey)"
-              >
+              <v-btn color="primary" @click="openAuthorizePopup(repositoryKey)">
                 <i class="fas fa-key mr-2" />Authorize
               </v-btn>
             </v-col>
@@ -161,9 +164,7 @@
             </v-col>
             <v-col class="flex-grow-0">
               <v-btn id="orcid_login_continue" color="primary" @click="onLogIn">
-                <v-icon class="mr-2">
-                  fab fa-orcid
-                </v-icon>
+                <v-icon class="mr-2"> fab fa-orcid </v-icon>
                 <span>Log In Using ORCID</span>
               </v-btn>
             </v-col>
@@ -210,11 +211,7 @@
           <p id="new-submission-saving" class="mb-4 text-center text-body-2">
             Saving...
           </p>
-          <v-progress-linear
-            indeterminate
-            color="white"
-            class="mb-0"
-          />
+          <v-progress-linear indeterminate color="white" class="mb-0" />
         </v-card-text>
       </v-card>
     </v-dialog>
@@ -689,7 +686,7 @@ class CzNewSubmission extends mixins(ActiveRepositoryMixin) {
       if (!this.isEditMode) {
         // If creating, redirect to the edit page
         this.router.push({
-          name: 'submit.repository',
+          name: 'register-data.repository',
           params: {
             repository: this.activeRepository.entity,
             id: this.identifier,

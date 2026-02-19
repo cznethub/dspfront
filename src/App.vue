@@ -1,20 +1,9 @@
 <template>
   <v-app app>
-    <v-app-bar
-      id="app-bar"
-      color="navbar"
-      scroll-behavior="elevate"
-      fixed
-      app
-    >
-      <v-container
-        class="d-flex align-center full-height py-0"
-      >
+    <v-app-bar id="app-bar" color="navbar" scroll-behavior="elevate" fixed app>
+      <v-container class="d-flex align-center full-height py-0">
         <router-link :to="{ path: `/` }" class="logo">
-          <img
-            :src="`/img/${$t('logo')}`"
-            :alt="`${$t('portalName')} home`"
-          >
+          <img :src="`/img/${$t('logo')}`" :alt="`${$t('portalName')} home`" />
         </router-link>
         <v-spacer />
         <v-card
@@ -53,7 +42,9 @@
               <template #activator="{ props }">
                 <v-btn
                   :color="
-                    route.matched.some((p: RouteLocationMatched) => p.name === 'profile')
+                    route.matched.some(
+                      (p: RouteLocationMatched) => p.name === 'profile',
+                    )
                       ? 'primary'
                       : 'white'
                   "
@@ -72,14 +63,16 @@
                   active-class="bg-primary"
                   prepend-icon="mdi-account-circle"
                 >
-                  <v-list-item-title>
-                    Account & Settings
-                  </v-list-item-title>
+                  <v-list-item-title> Account & Settings </v-list-item-title>
                 </v-list-item>
 
                 <v-divider />
 
-                <v-list-item id="navbar-logout" prepend-icon="mdi-logout" @click="logOut()">
+                <v-list-item
+                  id="navbar-logout"
+                  prepend-icon="mdi-logout"
+                  @click="logOut()"
+                >
                   <v-list-item-title>Log Out</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -97,7 +90,12 @@
     <v-main app>
       <v-container id="main-container">
         <v-sheet :elevation="route.meta.hideMainSheet ? 0 : 2">
-          <router-view v-if="!isLoading" :key="route.fullPath" name="content" @logout="logOut" />
+          <router-view
+            v-if="!isLoading"
+            :key="route.fullPath"
+            name="content"
+            @logout="logOut"
+          />
         </v-sheet>
       </v-container>
     </v-main>
@@ -145,18 +143,23 @@
               showMobileNavigation = false;
             "
           >
-            <v-icon class="mr-2">
-              mdi-login
-            </v-icon>
+            <v-icon class="mr-2"> mdi-login </v-icon>
             <span>Log In</span>
           </v-list-item>
 
           <template v-else>
-            <v-list-item :to="{ path: '/profile' }" prepend-icon="mdi-account-circle">
+            <v-list-item
+              :to="{ path: '/profile' }"
+              prepend-icon="mdi-account-circle"
+            >
               <span>Account & Settings</span>
             </v-list-item>
 
-            <v-list-item id="drawer-nav-logout" prepend-icon="mdi-logout" @click="logOut()">
+            <v-list-item
+              id="drawer-nav-logout"
+              prepend-icon="mdi-logout"
+              @click="logOut()"
+            >
               <span>Log Out</span>
             </v-list-item>
           </template>
@@ -183,220 +186,229 @@
     <link
       href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"
       rel="stylesheet"
-    >
+    />
     <link
       href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css"
       rel="stylesheet"
-    >
+    />
   </v-app>
 </template>
 
 <script lang="ts">
-import type { RouteLocationMatched, RouteLocationRaw } from 'vue-router'
-import { CzNotifications, Notifications } from '@cznethub/cznet-vue-core'
-import { Subscription } from 'rxjs'
-import { Component, toNative, Vue, Watch } from 'vue-facing-decorator'
-import { useRoute, useRouter } from 'vue-router'
-import CzLogin from '~/components/account/cz.login.vue'
-import CzAuthorize from '~/components/authorize/cz.authorize.vue'
-import CzFooter from '~/components/base/cz.footer.vue'
-import User from '~/models/user.model'
+import type { RouteLocationMatched, RouteLocationRaw } from "vue-router";
+import { CzNotifications, Notifications } from "@cznethub/cznet-vue-core";
+import { Subscription } from "rxjs";
+import { Component, toNative, Vue, Watch } from "vue-facing-decorator";
+import { useRoute, useRouter } from "vue-router";
+import CzLogin from "~/components/account/cz.login.vue";
+import CzAuthorize from "~/components/authorize/cz.authorize.vue";
+import CzFooter from "~/components/base/cz.footer.vue";
+import User from "~/models/user.model";
 // import Zenodo from '~/models/zenodo.model'
-import { addRouteTags } from '~/modules/router'
-import { EnumRepositoryKeys } from './components/submissions/types'
-import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from './constants'
-import { hasLoggedInGuard } from './guards'
-import EarthChem from './models/earthchem.model'
-import External from './models/external.model'
-import HydroShare from './models/hydroshare.model'
-import Repository from './models/repository.model'
-import Submission from './models/submission.model'
+import { addRouteTags } from "~/modules/router";
+import { EnumRepositoryKeys } from "./components/submissions/types";
+import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from "./constants";
+import { hasLoggedInGuard } from "./guards";
+import EarthChem from "./models/earthchem.model";
+import External from "./models/external.model";
+import HydroShare from "./models/hydroshare.model";
+import Repository from "./models/repository.model";
+import Submission from "./models/submission.model";
 
 const INITIAL_DIALOG = {
-  title: '',
-  content: '',
-  confirmText: '',
-  cancelText: '',
+  title: "",
+  content: "",
+  confirmText: "",
+  cancelText: "",
   isActive: false,
   onConfirm: () => {},
   onCancel: () => {},
-}
+};
 
 const INITIAL_SNACKBAR = {
-  message: '',
+  message: "",
   duration: DEFAULT_TOAST_DURATION,
-  position: 'center' as 'center' | 'left' | undefined,
-  type: 'default' as 'default' | 'success' | 'error' | 'info',
+  position: "center" as "center" | "left" | undefined,
+  type: "default" as "default" | "success" | "error" | "info",
   isActive: false,
   isInfinite: false,
   // isPersistent: false,
-}
+};
 
 @Component({
-  name: 'app',
+  name: "app",
   components: { CzFooter, CzLogin, CzAuthorize, CzNotifications },
 })
 class App extends Vue {
-  isLoading = true
-  onOpenLogInDialog!: Subscription
-  onOpenAuthorizeDialog!: Subscription
-  showMobileNavigation = false
-  loggedInSubject = new Subscription()
+  isLoading = true;
+  onOpenLogInDialog!: Subscription;
+  onOpenAuthorizeDialog!: Subscription;
+  showMobileNavigation = false;
+  loggedInSubject = new Subscription();
 
-  snackbar: any & { isActive: boolean, isInfinite: boolean }
-    = INITIAL_SNACKBAR
+  snackbar: any & { isActive: boolean; isInfinite: boolean } = INITIAL_SNACKBAR;
 
-  route = useRoute()
-  router = useRouter()
-  dialog: any & { isActive: boolean } = INITIAL_DIALOG
+  route = useRoute();
+  router = useRouter();
+  dialog: any & { isActive: boolean } = INITIAL_DIALOG;
   logInDialog: any & { isActive: boolean } = {
     isActive: false,
     onLoggedIn: () => {},
     onCancel: () => {},
-  }
+  };
 
   authorizeDialog: any & { isActive: boolean } = {
     isActive: false,
     retry: false,
-    repo: '',
+    repo: "",
     onAuthorized: () => {},
     onCancel: () => {},
-  }
+  };
 
   paths = [
     {
-      attrs: { to: '/' },
-      label: 'Home',
-      icon: 'mdi-home',
+      attrs: { to: "/" },
+      label: "Home",
+      icon: "mdi-home",
       isActive: () => {
-        return this.route?.name === 'home'
+        return this.route?.name === "home";
       },
     },
     {
-      attrs: { to: '/submissions' },
-      label: 'My Submissions',
-      icon: 'mdi-bookmark-multiple',
+      attrs: { to: "/submissions" },
+      label: "My Submissions",
+      icon: "mdi-bookmark-multiple",
       isActive: () => {
-        return this.route?.name === 'submissions'
+        return this.route?.name === "submissions";
       },
     },
     {
-      attrs: { to: '/resources' },
-      label: 'Resources',
-      icon: 'mdi-library',
+      attrs: { to: "/resources" },
+      label: "Resources",
+      icon: "mdi-library",
       isActive: () => {
-        return ['resources', 'quick-start-guide', 'recommendations'].includes(this.route?.name?.toString() || '')
+        return ["resources", "quick-start-guide", "recommendations"].includes(
+          this.route?.name?.toString() || "",
+        );
       },
     },
     {
-      attrs: { to: '/submit' },
-      label: 'Submit Data',
-      icon: 'mdi-book-plus',
+      attrs: { to: "/register-data" },
+      label: "Register Data",
+      icon: "mdi-book-plus",
       isActive: () => {
-        return ['submit', 'submit.repository', 'register'].includes(this.route?.name?.toString() || '')
+        return ["register-data", "register-data.repository", "register"].includes(
+          this.route?.name?.toString() || "",
+        );
       },
     },
     {
       attrs: { href: DISCOVERY_SITE_URL },
-      label: 'Discover Data',
-      icon: 'mdi-card-search',
+      label: "Discover Data",
+      icon: "mdi-card-search",
       isExternal: true,
     },
-    { attrs: { to: '/about' }, label: 'About', icon: 'mdi-help', isActive: () => {
-      return this.route?.name === 'about'
-    } },
-
     {
-      attrs: { to: '/contact' },
-      label: 'Contact',
-      icon: 'mdi-book-open-blank-variant',
+      attrs: { to: "/about" },
+      label: "About",
+      icon: "mdi-help",
       isActive: () => {
-        return this.route?.name === 'contact'
+        return this.route?.name === "about";
       },
     },
-  ]
+
+    {
+      attrs: { to: "/contact" },
+      label: "Contact",
+      icon: "mdi-book-open-blank-variant",
+      isActive: () => {
+        return this.route?.name === "contact";
+      },
+    },
+  ];
 
   get isLoggedIn(): boolean {
-    return User.$state.isLoggedIn
+    return User.$state.isLoggedIn;
   }
 
   openLogInDialog() {
-    User.openLogInDialog()
+    User.openLogInDialog();
   }
 
   logOut() {
     Notifications.openDialog({
-      title: 'Log out?',
-      content: 'Are you sure you want to log out?',
-      confirmText: 'Log Out',
-      cancelText: 'Cancel',
+      title: "Log out?",
+      content: "Are you sure you want to log out?",
+      confirmText: "Log Out",
+      cancelText: "Cancel",
       onConfirm: () => {
-        User.logOut()
+        User.logOut();
 
-        if (this.route.matched.some(r => (r.beforeEnter as any[])?.includes(hasLoggedInGuard))) {
-          this.router.push({ name: 'home' })
+        if (
+          this.route.matched.some((r) =>
+            (r.beforeEnter as any[])?.includes(hasLoggedInGuard),
+          )
+        ) {
+          this.router.push({ name: "home" });
         }
       },
-    })
+    });
   }
 
   /** Check if the user is still logged in after being idle for a while */
-  @Watch('isAppIdle')
+  @Watch("isAppIdle")
   onIdleChange(_wasActive: boolean, isActive: boolean) {
-    if (isActive)
-      User.checkAuthorization()
+    if (isActive) User.checkAuthorization();
   }
 
   async created() {
-    document.title = `${this.$t('hubName')}`
-    addRouteTags(this.route, this.route)
+    document.title = `${this.$t("hubName")}`;
+    addRouteTags(this.route, this.route);
 
-    if ((this.route).name !== 'submissions') {
+    if (this.route.name !== "submissions") {
       // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
-      Submission.fetchSubmissions()
+      Submission.fetchSubmissions();
     }
 
     this.onOpenLogInDialog = User.logInDialog$.subscribe(
       (redirectTo?: RouteLocationRaw) => {
-        this.logInDialog.isActive = true
+        this.logInDialog.isActive = true;
 
         this.logInDialog.onLoggedIn = () => {
-          if (redirectTo)
+          if (redirectTo) this.router.push(redirectTo).catch(() => {});
 
-            this.router.push(redirectTo).catch(() => {})
-
-          this.logInDialog.isActive = false
-        }
+          this.logInDialog.isActive = false;
+        };
       },
-    )
+    );
 
     this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe(
       (params: {
-        repository: string
-        redirectTo?: RouteLocationRaw | undefined
+        repository: string;
+        redirectTo?: RouteLocationRaw | undefined;
       }) => {
-        this.authorizeDialog.repo = params.repository
-        this.authorizeDialog.retry = false
-        this.authorizeDialog.isActive = true
+        this.authorizeDialog.repo = params.repository;
+        this.authorizeDialog.retry = false;
+        this.authorizeDialog.isActive = true;
         this.authorizeDialog.onAuthorized = async (response?: any) => {
           if (response?.error) {
-            this.authorizeDialog.retry = true
-            return
+            this.authorizeDialog.retry = true;
+            return;
           }
           if (params.redirectTo) {
             if (params.repository === EnumRepositoryKeys.hydroshare)
-              await HydroShare.init()
+              await HydroShare.init();
             // else if (params.repository === EnumRepositoryKeys.zenodo)
             //   await Zenodo.init()
             else if (params.repository === EnumRepositoryKeys.earthchem)
-              await EarthChem.init()
+              await EarthChem.init();
 
-            this.router.push(params.redirectTo).catch(() => {})
+            this.router.push(params.redirectTo).catch(() => {});
           }
-          this.authorizeDialog.isActive = false
-        }
+          this.authorizeDialog.isActive = false;
+        };
       },
-    )
+    );
 
     // Check for Authorization cookie instead.
     // const isAuthorized = this.$cookies.get('Authorization')
@@ -405,16 +417,16 @@ class App extends Vue {
     // Reproducible if the server is restarted
 
     // if (isAuthorized && !User.$state.isLoggedIn) {
-    await User.checkAuthorization()
+    await User.checkAuthorization();
     // }
 
     User.$state.isLoggedIn
       ? await this._initRepositories()
-      : this.loggedInSubject = User.loggedIn$.subscribe(async () => {
-        await this._initRepositories()
-      })
+      : (this.loggedInSubject = User.loggedIn$.subscribe(async () => {
+          await this._initRepositories();
+        }));
 
-    this.isLoading = false
+    this.isLoading = false;
   }
 
   private _initRepositories() {
@@ -423,18 +435,18 @@ class App extends Vue {
       EarthChem.init(),
       // Zenodo.init(),
       External.init(),
-    ])
+    ]);
   }
 
   beforeDestroy() {
     // Good practice
-    this.onOpenLogInDialog.unsubscribe()
-    this.onOpenAuthorizeDialog.unsubscribe()
-    this.loggedInSubject.unsubscribe()
+    this.onOpenLogInDialog.unsubscribe();
+    this.onOpenAuthorizeDialog.unsubscribe();
+    this.loggedInSubject.unsubscribe();
   }
 }
 
-export default toNative(App)
+export default toNative(App);
 </script>
 
 <style lang="scss" scoped>

@@ -38,19 +38,27 @@
 
     <v-card-actions class="d-flex flex-column flex-md-row flex-wrap-wrap">
       <v-btn
-        v-if="repo.isSupported?.form"
+        v-if="repo.isSupported?.registration"
         :disabled="repo.isComingSoon"
+        :href="repo.url"
+        target="_blank"
         variant="text"
+        prepend-icon="mdi-open-in-new"
         color="primary"
-        @click="submitTo(repo)"
       >
         Submit to {{ repo.name }}
       </v-btn>
-      <v-btn variant="text" :href="repo.url" target="_blank" prepend-icon="mdi-open-in-new">
+      <v-btn
+        v-else
+        variant="text"
+        :href="repo.url"
+        target="_blank"
+        prepend-icon="mdi-open-in-new"
+      >
         Visit {{ repo.name }}
       </v-btn>
       <v-btn
-        v-if="repo.isSupported?.form"
+        v-if="repo.supportUrl"
         variant="text"
         :href="repo.supportUrl"
         target="_blank"
@@ -64,19 +72,19 @@
 </template>
 
 <script lang="ts">
-import type { IRepository } from '~/components/submissions/types'
-import { Component, mixins, Prop, toNative } from 'vue-facing-decorator'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import type { IRepository } from "~/components/submissions/types";
+import { Component, mixins, Prop, toNative } from "vue-facing-decorator";
+import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
 
 @Component({
-  name: 'cz-recommendation-card',
+  name: "cz-recommendation-card",
   components: {},
 })
 class CzRecommendationCard extends mixins(ActiveRepositoryMixin) {
-  @Prop({ required: true }) repo!: IRepository
-  @Prop() hideLogo!: boolean
+  @Prop({ required: true }) repo!: IRepository;
+  @Prop() hideLogo!: boolean;
 }
-export default toNative(CzRecommendationCard)
+export default toNative(CzRecommendationCard);
 </script>
 
 <style lang="scss" scoped>

@@ -40,7 +40,7 @@ export class ActiveRepositoryMixin extends Vue {
     if (repo.isSupported?.form && !repo.isComingSoon) {
       this.setActiveRepository(repo.key)
       this.router
-        .push({ name: 'submit.repository', params: { repository: repo.key } })
+        .push({ name: 'register-data.repository', params: { repository: repo.key } })
     }
     else {
       window.open(repo.url, '_blank')

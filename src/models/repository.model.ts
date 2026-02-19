@@ -128,7 +128,8 @@ export default class Repository extends Model implements IRepository {
       data: { urls, schema, uischema, schemaDefaults },
     })
 
-    await this.fetchAccessToken()
+    /** No longer needed after disabling submissions in preparation for project shutdown */
+    // await this.fetchAccessToken()
   }
 
   static openAuthorizeDialog(repository: string, redirectTo?: RouteLocationRaw) {
@@ -734,12 +735,12 @@ export default class Repository extends Model implements IRepository {
       state.accessToken = ''
     })
 
-    Notifications.toast({
-      message: 'Authorization token is invalid or has expired.',
-      type: 'error',
-    })
+    // Notifications.toast({
+    //   message: 'Authorization token is invalid or has expired.',
+    //   type: 'error',
+    // })
 
-    Repository.openAuthorizeDialog(repository)
+    // Repository.openAuthorizeDialog(repository)
   }
 
   static uploadFiles: (
