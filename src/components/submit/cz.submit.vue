@@ -197,7 +197,7 @@ export default toNative(CzSubmit);
 <style lang="scss" scoped>
 .repositories {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(25rem, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(30rem, 100%), 1fr));
   gap: 2rem;
 }
 
