@@ -50,7 +50,7 @@
     "eslint-plugin-cypress": "^6.2.0",
     "eslint-plugin-format": "^2.0.1",
     "lint-staged": "^16.4.0",
-    "sass": "^1.97.3",
+    "sass": "^1.98.0",
     "taze": "^19.10.0",
     "typescript": "^5.9.3",
     "unplugin-auto-import": "^21.0.0",
