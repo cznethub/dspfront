@@ -1,7 +1,4 @@
 import type { RouteRecordRaw } from 'vue-router'
-import { hasAccessTokenGuard, hasLoggedInGuard } from './guards'
-import CzFooter from '~/components/base/cz.footer.vue'
-import CzHome from '~/components/home/cz.home.vue'
 import CzAbout from '~/components/about/cz.about.vue'
 import CzFooter from '~/components/base/cz.footer.vue'
 import CzContact from '~/components/contact/cz.contact.vue'
@@ -18,6 +15,7 @@ import CzSubmissions from '~/components/submissions/cz.submissions.vue'
 
 import CzSubmit from '~/components/submit/cz.submit.vue'
 
+// hasUnsavedChangesGuard: imported for future use (REQ-04)
 import { hasAccessTokenGuard, hasLoggedInGuard, hasUnsavedChangesGuard } from './guards'
 
 export const routes: RouteRecordRaw[] = [
