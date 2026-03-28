@@ -15,13 +15,13 @@
         <span class="repo-name">{{ repo.name }}</span>
         <template v-if="getAccessToken(repo.key)">
           <div>
-            <v-chip small color="green" class="bg-white" variant="outlined" prepend-icon="mdi-check-circle">
+            <v-chip size="small" color="green" class="bg-white" variant="outlined" prepend-icon="mdi-check-circle">
               Authorized
             </v-chip>
           </div>
           <div class="text-right">
-            <v-btn small @click="openRevokeDialog(repo.key)">
-              <v-icon small class="mr-1">
+            <v-btn size="small" @click="openRevokeDialog(repo.key)">
+              <v-icon size="small" class="mr-1">
                 mdi-cancel
               </v-icon> Revoke
             </v-btn>
@@ -29,7 +29,7 @@
         </template>
         <template v-else>
           <div>
-            <v-chip small color="red" class="bg-white" variant="outlined">
+            <v-chip size="small" color="red" class="bg-white" variant="outlined">
               Unauthorized
             </v-chip>
           </div>
