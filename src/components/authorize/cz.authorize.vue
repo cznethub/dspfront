@@ -70,7 +70,6 @@ import { Component, mixins, Prop, toNative } from 'vue-facing-decorator'
 import { getRepositoryFromKey } from '~/constants'
 import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
 import Repository from '~/models/repository.model'
-// import { EnumRepositoryKeys } from '../submissions/types'
 
 @Component({
   name: 'cz-authorize',
@@ -96,10 +95,6 @@ class CzAuthorize extends mixins(ActiveRepositoryMixin) {
   get repoName() {
     return this.repository.get()?.name
   }
-
-  // get isZenodo() {
-  //   return this.repository.get()?.key === EnumRepositoryKeys.zenodo
-  // }
 
   async openAuthorizePopup() {
     this.$emit('update:retry', false)

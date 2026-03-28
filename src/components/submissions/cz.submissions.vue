@@ -450,7 +450,6 @@ import { getRepositoryFromKey } from "~/constants";
 import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
 
 import Repository from "~/models/repository.model";
-// import { formatDistanceToNow } from 'date-fns'
 import Submission from "~/models/submission.model";
 import User from "~/models/user.model";
 import { isRepositoryAuthorized } from "~/util";
@@ -625,7 +624,6 @@ class CzSubmissions extends mixins(ActiveRepositoryMixin) {
     // TODO: subtracting offset because db stored dates seem to have the time shifted
     const localDateTime = date - offset;
     const localizedDate = new Date(localDateTime).toLocaleString();
-    // const ago = formatDistanceToNow(new Date(localDateTime), { addSuffix: true })
     return localizedDate;
   }
 

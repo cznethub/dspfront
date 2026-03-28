@@ -100,50 +100,6 @@ export default class Zenodo extends Repository {
     return []
   }
 
-  /**
-   * @param identifier
-   * @param item
-   * @param newPath
-   *
-   * @deprecated PUT request not allowed by Zenodo at this endpoint.
-   * They seem to have changed this recently, but documentation is outdated.
-   * File modifications are not permitted.
-   * @see https://help.zenodo.org/docs/deposit/manage-files/#pending
-   */
-  // static async renameFileOrFolder(
-  //   identifier: string,
-  //   item: (IFile | IFolder) & { _id?: string },
-  //   newPath: string,
-  // ): Promise<boolean> {
-  //   // TODO: zenodo api throws an error when trying to rename the same file more than once
-  //   // https://github.com/zenodo/zenodo/issues/2342
-  //   const url = this.get()?.urls?.moveOrRenameUrl || ''
-  //   const renameUrl = sprintf(url, identifier, item._id)
-  //   const newName = newPath.split('/').pop()
-
-  //   if (!newName)
-  //     return false
-
-  //   try {
-  //     const response = await axios.put(
-  //       renameUrl,
-  //       { name: newName },
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //         },
-  //         params: { access_token: this.accessToken },
-  //       },
-  //     )
-
-  //     return response.status === 200
-  //   }
-  //   catch (e: any) {
-  //     console.log(e)
-  //     return false
-  //   }
-  // }
-
   static async deleteFileOrFolder(
     identifier: string,
     item: (IFile | IFolder) & { _id?: string },

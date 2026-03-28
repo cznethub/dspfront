@@ -36,7 +36,7 @@
           Log In
         </v-btn>
 
-        <router-link v-else to="/register-data"> Registar Data </router-link>
+        <router-link v-else to="/register-data"> Register Data </router-link>
       </div>
 
       <div>

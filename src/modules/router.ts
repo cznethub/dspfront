@@ -22,8 +22,6 @@ export const addRouteTags: NavigationHookAfter = (to, from) => {
     .reverse()
     .find(r => r.meta && r.meta.metaTags)
 
-  // const { t } = useI18n();
-
   // If a route with a title was found, set the document (page) title to that value.
   if (nearestWithTitle)
     document.title = `${APP_NAME} | ${nearestWithTitle.meta.title}`

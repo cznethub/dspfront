@@ -126,38 +126,4 @@ export default class EarthChem extends Repository {
     file.isDisabled = false
     return file.isUploaded
   }
-
-  /** @deprecated currently not supported by EarthChem */
-  // static async renameFileOrFolder(identifier: string, item: IFile | IFolder, newPath: string): Promise<boolean> {
-  //   const url = this.get()?.urls?.moveOrRenameUrl
-  //   const renameUrl = sprintf(url, identifier, item.key)
-  //   const form = new window.FormData()
-
-  //   const newName = newPath.split('/').pop()
-  //   if (!newName) {
-  //     return false
-  //   }
-  //   form.append('filename ', newName)
-  //   try {
-  //     const response = await axios.put(
-  //       renameUrl,
-  //       form,
-  //       {
-  //         headers: {
-  //           'Content-Type': 'multipart/form-data',
-  //           'Authorization': `Bearer ${this.accessToken}`,
-  //         }
-  //       }
-  //     )
-
-  //     if (response.status === 200) {
-  //       return true
-  //     }
-  //     return false
-  //   }
-  //   catch(e: any) {
-  //     console.log(e)
-  //     return false
-  //   }
-  // }
 }

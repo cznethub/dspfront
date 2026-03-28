@@ -410,15 +410,7 @@ class App extends Vue {
       },
     );
 
-    // Check for Authorization cookie instead.
-    // const isAuthorized = this.$cookies.get('Authorization')
-
-    // TODO: if the user is not logged in in the server, the client auth cookie needs to be deleted
-    // Reproducible if the server is restarted
-
-    // if (isAuthorized && !User.$state.isLoggedIn) {
     await User.checkAuthorization();
-    // }
 
     User.$state.isLoggedIn
       ? await this._initRepositories()

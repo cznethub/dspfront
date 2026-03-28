@@ -1,14 +1,13 @@
 <template>
   <div class="cz-recommendations-questionnaire pa-4">
-    <div class="text-h4">
-      Repository Recommendations
-    </div>
+    <div class="text-h4">Repository Recommendations</div>
     <v-divider class="mb-4" />
     <p class="text-body-1 mb-8">
       Use the questionnaire below to identify repository options for different
       types of data. If you cannot find guidance for your particular data or
       still have questions, please
-      <span><router-link to="/contact">contact us</router-link></span>.
+      <span><router-link to="/contact">contact us</router-link></span
+      >.
     </p>
 
     <p class="text-body-1 mb-8">
@@ -32,7 +31,7 @@
           >
             <template #title>
               <div class="text-h6">
-                {{ s.next || 'Recommendations' }}
+                {{ s.next || "Recommendations" }}
               </div>
             </template>
 
@@ -43,7 +42,12 @@
             </template>
 
             <template v-if="s.options">
-              <v-card class="pa-4 borther-thin" border="solid thin" flat min-height="300px">
+              <v-card
+                class="pa-4 borther-thin"
+                border="solid thin"
+                flat
+                min-height="300px"
+              >
                 <v-radio-group
                   v-model="s.selectedOption"
                   @change="onOptionChanged"
@@ -61,23 +65,6 @@
 
             <template v-if="s.finish">
               <v-alert
-                class="my-8 text-subtitle-1"
-                variant="outlined"
-                type="warning"
-                border="start"
-              >
-                <p class="text-orange-darken-3">
-                  If you are a CZ Net data manager or investigator and you choose
-                  to submit data to a repository other than HydroShare or EarthChem, please use the
-                  <a href="" @click.prevent="submitTo(externalRepoMetadata)">Register Dataset</a>
-                  form to provide metadata about those datasets. If you submit to
-                  HydroShare or EarthChem through the Data Submission
-                  Portal, we will automatically harvest your metadata for you to
-                  support CZ Net data discovery services.
-                </p>
-              </v-alert>
-
-              <v-alert
                 v-if="s.finish.linkToGuide"
                 class="my-8 text-subtitle-1"
                 border="start"
@@ -89,13 +76,13 @@
                   View guidance and best practices for "{{
                     enumDataTemplateType[s.finish.linkToGuide]
                   }}" data
-                  <a :href="guideUrls[s.finish.linkToGuide]" target="_blank">here</a>.
+                  <a :href="guideUrls[s.finish.linkToGuide]" target="_blank"
+                    >here</a
+                  >.
                 </p>
               </v-alert>
 
-              <div class="text-heading-5 mb-8">
-                Recommended Repositories:
-              </div>
+              <div class="text-heading-5 mb-8">Recommended Repositories:</div>
 
               <template v-if="getRepoMetadataFromKeys(s.finish.prefer).length">
                 <div class="repositories justify-space-around px-1">
@@ -116,24 +103,21 @@
 
               <div
                 v-if="
-                  s.finish.consider
-                    && getRepoMetadataFromKeys(s.finish.consider).length
+                  s.finish.consider &&
+                  getRepoMetadataFromKeys(s.finish.consider).length
                 "
               >
-                <div class="text-heading-5 my-8">
-                  Also consider:
-                </div>
+                <div class="text-heading-5 my-8">Also consider:</div>
 
                 <ul class="repositories px-4">
                   <li
                     v-for="considered in getRepoMetadataFromKeys(
                       s.finish.consider,
-                    )" :key="considered.key"
+                    )"
+                    :key="considered.key"
                     class="mb-4"
                   >
-                    <cz-recommendation-card
-                      :repo="considered"
-                    />
+                    <cz-recommendation-card :repo="considered" />
                   </li>
                 </ul>
               </div>
@@ -144,7 +128,7 @@
                 v-if="s.selectedOption"
                 class="bg-primary"
                 :disabled="!s.selectedOption"
-                @click="nextStep(s.selectedOption);"
+                @click="nextStep(s.selectedOption)"
               >
                 Continue
               </v-btn>
@@ -158,82 +142,84 @@
 </template>
 
 <script lang="ts">
-import type { IRepository } from '../submissions/types'
-import { Component, mixins, toNative } from 'vue-facing-decorator'
-import { VStepperVertical, VStepperVerticalItem } from 'vuetify/labs/VStepperVertical'
-import { guideUrls } from '~/components/recommendations/constants'
-import CzRecommendationCard from '~/components/recommendations/cz.recommendation-card.vue'
-import mappings from '~/components/recommendations/mapping.json'
-import { EnumDataTemplateType } from '~/components/recommendations/types'
-import { repoMetadata } from '~/components/submit/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import type { IRepository } from "../submissions/types";
+import { Component, mixins, toNative } from "vue-facing-decorator";
+import {
+  VStepperVertical,
+  VStepperVerticalItem,
+} from "vuetify/labs/VStepperVertical";
+import { guideUrls } from "~/components/recommendations/constants";
+import CzRecommendationCard from "~/components/recommendations/cz.recommendation-card.vue";
+import mappings from "~/components/recommendations/mapping.json";
+import { EnumDataTemplateType } from "~/components/recommendations/types";
+import { repoMetadata } from "~/components/submit/constants";
+import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
 
-import { EnumRepositoryKeys } from '../submissions/types'
+import { EnumRepositoryKeys } from "../submissions/types";
 
 interface CzStep {
-  next?: string // The question that must be answered to continue
-  options?: CzStep[] // The options available to answer the question
+  next?: string; // The question that must be answered to continue
+  options?: CzStep[]; // The options available to answer the question
   finish?: {
     // The recommendations at the end of a query
-    prefer: EnumRepositoryKeys[]
-    consider?: EnumRepositoryKeys[]
-    linkToGuide?: boolean // Wether the user should see a link that points to our existing guidance and best practices
-  }
-  selectedOption?: CzStep // Used internally to track which option the user selected
-  label?: string
+    prefer: EnumRepositoryKeys[];
+    consider?: EnumRepositoryKeys[];
+    linkToGuide?: boolean; // Wether the user should see a link that points to our existing guidance and best practices
+  };
+  selectedOption?: CzStep; // Used internally to track which option the user selected
+  label?: string;
 }
 
 @Component({
-  name: 'cz-recommendations-questionnaire',
+  name: "cz-recommendations-questionnaire",
   components: { CzRecommendationCard, VStepperVertical, VStepperVerticalItem },
 })
 class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
-  currentStepIndex = 1
-  steps: CzStep[] = [mappings] as CzStep[]
-  selectedOption: CzStep | null = null
-  repoMetadata = repoMetadata
-  enumDataTemplateType = EnumDataTemplateType
-  guideUrls = guideUrls
-  externalRepoMetadata = repoMetadata[EnumRepositoryKeys.external]
+  currentStepIndex = 1;
+  steps: CzStep[] = [mappings] as CzStep[];
+  selectedOption: CzStep | null = null;
+  repoMetadata = repoMetadata;
+  enumDataTemplateType = EnumDataTemplateType;
+  guideUrls = guideUrls;
+  externalRepoMetadata = repoMetadata[EnumRepositoryKeys.external];
 
   get currentStep() {
-    return this.steps[this.currentStepIndex - 1]
+    return this.steps[this.currentStepIndex - 1];
   }
 
   nextStep(option: CzStep) {
-    this._trimFurtherSteps()
-    this.currentStep.selectedOption = option
-    this.steps.push(option)
+    this._trimFurtherSteps();
+    this.currentStep.selectedOption = option;
+    this.steps.push(option);
 
     this.$nextTick(() => {
-      this.currentStepIndex = this.currentStepIndex + 1
-    })
+      this.currentStepIndex = this.currentStepIndex + 1;
+    });
   }
 
   getRepoMetadataFromKeys(repoKeys: string[]): IRepository[] {
     return (
       repoKeys
-        .filter(key => !!this.repoMetadata[key])
-        .map(key => this.repoMetadata[key])
+        .filter((key) => !!this.repoMetadata[key])
+        .map((key) => this.repoMetadata[key])
         // Sort supported repositories first
         .sort((a, b) => {
-          if (a.isSupported?.form === b.isSupported?.form)
-            return 0
+          if (a.isSupported?.form === b.isSupported?.form) return 0;
 
-          return a.isSupported?.form ? -1 : 1
+          return a.isSupported?.form ? -1 : 1;
         })
-    )
+    );
   }
 
   onOptionChanged(_option: CzStep) {
-    this._trimFurtherSteps()
+    this._trimFurtherSteps();
   }
 
   private _trimFurtherSteps() {
-    this.steps = this.steps.slice(0, this.currentStepIndex)
+    this.steps = this.steps.slice(0, this.currentStepIndex);
   }
 }
-export default toNative(CzRecommendationsQuestionnaire)
+export default toNative(CzRecommendationsQuestionnaire);
 </script>
 
 <style lang="scss" scoped>
@@ -264,7 +250,7 @@ export default toNative(CzRecommendationsQuestionnaire)
   }
 
   li:before {
-    content: '';
+    content: "";
     float: left;
     display: list-item;
     list-style-type: disc;
