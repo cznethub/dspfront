@@ -152,91 +152,69 @@
   </div>
 </template>
 
-<script lang="ts">
-import type { IRepository } from "../submissions/types";
-import { Component, mixins, toNative } from "vue-facing-decorator";
+<script setup lang="ts">
+import { nextTick, ref } from 'vue'
 import {
   VStepperVertical,
   VStepperVerticalItem,
-} from "vuetify/labs/VStepperVertical";
-import { guideUrls } from "~/components/recommendations/constants";
-import CzRecommendationCard from "~/components/recommendations/cz.recommendation-card.vue";
-import mappings from "~/components/recommendations/mapping.json";
-import { EnumDataTemplateType } from "~/components/recommendations/types";
-import { repoMetadata } from "~/components/submit/constants";
-import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
-
-import { EnumRepositoryKeys } from "../submissions/types";
+} from 'vuetify/labs/VStepperVertical'
+import { guideUrls } from '~/components/recommendations/constants'
+import CzRecommendationCard from '~/components/recommendations/cz.recommendation-card.vue'
+import mappings from '~/components/recommendations/mapping.json'
+import { EnumDataTemplateType } from '~/components/recommendations/types'
+import { repoMetadata } from '~/components/submit/constants'
+import type { IRepository, EnumRepositoryKeys } from '~/components/submissions/types'
 
 interface CzStep {
-  next?: string; // The question that must be answered to continue
-  options?: CzStep[]; // The options available to answer the question
+  next?: string
+  options?: CzStep[]
   finish?: {
-    // The recommendations at the end of a query
-    prefer: EnumRepositoryKeys[];
-    consider?: EnumRepositoryKeys[];
-    linkToGuide?: keyof typeof EnumDataTemplateType; // Key that maps to a guide URL in guideUrls and a label in EnumDataTemplateType
-  };
-  selectedOption?: CzStep; // Used internally to track which option the user selected
-  label?: string;
+    prefer: EnumRepositoryKeys[]
+    consider?: EnumRepositoryKeys[]
+    linkToGuide?: keyof typeof EnumDataTemplateType
+  }
+  selectedOption?: CzStep
+  label?: string
 }
 
-@Component({
-  name: "cz-recommendations-questionnaire",
-  components: { CzRecommendationCard, VStepperVertical, VStepperVerticalItem },
-})
-class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
-  currentStepIndex = 1;
-  steps: CzStep[] = [mappings] as CzStep[];
-  selectedOption: CzStep | null = null;
-  repoMetadata = repoMetadata;
-  enumDataTemplateType = EnumDataTemplateType;
-  guideUrls = guideUrls;
-  externalRepoMetadata = repoMetadata[EnumRepositoryKeys.external];
+const currentStepIndex = ref(1)
+const steps = ref<CzStep[]>([mappings] as CzStep[])
+const enumDataTemplateType = EnumDataTemplateType
 
-  get currentStep() {
-    return this.steps[this.currentStepIndex - 1];
-  }
+const currentStep = ref<CzStep>(steps.value[currentStepIndex.value - 1])
 
-  nextStep(option: CzStep) {
-    this._trimFurtherSteps();
-    this.currentStep.selectedOption = option;
-    this.steps.push(option);
-
-    this.$nextTick(() => {
-      this.currentStepIndex = this.currentStepIndex + 1;
-    });
-  }
-
-  getRepoMetadataFromKeys(repoKeys: string[]): IRepository[] {
-    return (
-      repoKeys
-        .filter((key) => !!this.repoMetadata[key])
-        .map((key) => this.repoMetadata[key])
-        // Sort supported repositories first
-        .sort((a, b) => {
-          if (a.isSupported?.form === b.isSupported?.form) return 0;
-
-          return a.isSupported?.form ? -1 : 1;
-        })
-    );
-  }
-
-  resetQuestionnaire() {
-    this.steps = [mappings] as CzStep[];
-    this.currentStepIndex = 1;
-    this.selectedOption = null;
-  }
-
-  onOptionChanged(_option: CzStep) {
-    this._trimFurtherSteps();
-  }
-
-  private _trimFurtherSteps() {
-    this.steps = this.steps.slice(0, this.currentStepIndex);
-  }
+function nextStep(option: CzStep) {
+  _trimFurtherSteps()
+  currentStep.value.selectedOption = option
+  steps.value.push(option)
+  nextTick(() => {
+    currentStepIndex.value = currentStepIndex.value + 1
+  })
 }
-export default toNative(CzRecommendationsQuestionnaire);
+
+function getRepoMetadataFromKeys(repoKeys: string[]): IRepository[] {
+  return repoKeys
+    .filter(key => !!repoMetadata[key])
+    .map(key => repoMetadata[key])
+    .sort((a, b) => {
+      if (a.isSupported?.form === b.isSupported?.form) return 0
+      return a.isSupported?.form ? -1 : 1
+    })
+}
+
+function resetQuestionnaire() {
+  steps.value = [mappings] as CzStep[]
+  currentStepIndex.value = 1
+  currentStep.value = steps.value[0]
+}
+
+function onOptionChanged(_option: CzStep) {
+  _trimFurtherSteps()
+}
+
+function _trimFurtherSteps() {
+  steps.value = steps.value.slice(0, currentStepIndex.value)
+}
 </script>
 
 <style lang="scss" scoped>

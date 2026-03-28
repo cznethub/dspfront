@@ -92,7 +92,7 @@
             <v-card
               :class="`elevation-${
                 isHovering ? 12 : 2
-              } has-cursor-pointer transition-swing`",
+              } has-cursor-pointer transition-swing`"
               v-bind="props"
             >
               <v-card-text class="text-center">
@@ -131,15 +131,7 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-
-@Component({
-  name: 'cz-recommendations',
-  components: {},
-})
-class CzRecommendations extends Vue {}
-export default toNative(CzRecommendations)
+<script setup lang="ts">
 </script>
 
 <style lang="scss" scoped>

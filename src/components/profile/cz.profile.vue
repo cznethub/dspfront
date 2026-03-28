@@ -57,19 +57,14 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue, toNative } from "vue-facing-decorator";
+<script setup lang="ts">
+defineOptions({ name: 'cz-profile' })
 
-@Component({
-  name: "cz-profile",
-  components: {},
-})
-class CzProfile extends Vue {
-  logOut() {
-    this.$emit("logout");
-  }
+const emit = defineEmits<{ logout: [] }>()
+
+function logOut() {
+  emit('logout')
 }
-export default toNative(CzProfile);
 </script>
 
 <style lang="scss" scoped>

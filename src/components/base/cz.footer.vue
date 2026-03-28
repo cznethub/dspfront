@@ -68,32 +68,21 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component, Vue, toNative } from "vue-facing-decorator";
-import User from "~/models/user.model";
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useUserStore } from '~/stores/user.store'
 
-@Component({
-  name: "cz-footer",
-  components: {},
-})
-class CzFooter extends Vue {
-  openLogInDialog() {
-    User.openLogInDialog();
-  }
+defineOptions({ name: 'cz-footer' })
 
-  get isLoggedIn() {
-    return User.$state.isLoggedIn;
-  }
+const userStore = useUserStore()
 
-  get version() {
-    return VITE_APP_VERSION;
-  }
+const isLoggedIn = computed(() => userStore.isLoggedIn)
+const version = VITE_APP_VERSION
+const year = new Date().getFullYear()
 
-  get year() {
-    return new Date().getFullYear();
-  }
+function openLogInDialog() {
+  userStore.openLogInDialog()
 }
-export default toNative(CzFooter);
 </script>
 
 <style lang="scss" scoped>

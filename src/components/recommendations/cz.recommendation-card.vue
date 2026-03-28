@@ -71,20 +71,13 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import type { IRepository } from "~/components/submissions/types";
-import { Component, mixins, Prop, toNative } from "vue-facing-decorator";
-import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
+<script setup lang="ts">
+import type { IRepository } from '~/components/submissions/types'
 
-@Component({
-  name: "cz-recommendation-card",
-  components: {},
-})
-class CzRecommendationCard extends mixins(ActiveRepositoryMixin) {
-  @Prop({ required: true }) repo!: IRepository;
-  @Prop() hideLogo!: boolean;
-}
-export default toNative(CzRecommendationCard);
+defineProps<{
+  repo: IRepository
+  hideLogo?: boolean
+}>()
 </script>
 
 <style lang="scss" scoped>

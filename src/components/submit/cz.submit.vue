@@ -31,6 +31,7 @@
               submitted.
             </p>
             <cz-repository-submit-card
+              v-if="externalRepoMetadata"
               :repo="externalRepoMetadata"
               @click.enter="openRegisterDatasetDialog"
               style="max-width: 45rem"
@@ -92,106 +93,79 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { RouteLocationNormalized } from "vue-router";
-import { EnumRepositoryKeys, type IRepository } from "../submissions/types";
+import { computed, onMounted, ref } from "vue";
+import { EnumRepositoryKeys } from "../submissions/types";
 import { Notifications } from "@cznethub/cznet-vue-core";
-import { Component, mixins, Ref, toNative } from "vue-facing-decorator";
 import { useRoute } from "vue-router";
 import CzRegisterDatasetDialog from "~/components/register-dataset/cz.register-dataset-dialog.vue";
 import { repoMetadata } from "~/components/submit/constants";
 import CzRepositorySubmitCard from "~/components/submit/cz.repository-submit-card.vue";
-import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
-import User from "~/models/user.model";
+import { useActiveRepository } from "~/composables/useActiveRepository";
+import { useUserStore } from "~/stores/user.store";
 import { guideUrls } from "../recommendations/constants";
 
-@Component({
-  name: "cz-submit",
-  components: { CzRepositorySubmitCard, CzRegisterDatasetDialog },
-})
-class CzSubmit extends mixins(ActiveRepositoryMixin) {
-  @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<
-    typeof CzRegisterDatasetDialog
-  >;
+const userStore = useUserStore();
+const { submitTo } = useActiveRepository();
+const route = useRoute();
 
-  route = useRoute();
-  guideUrls = guideUrls;
+const registerDatasetDialog = ref<InstanceType<typeof CzRegisterDatasetDialog>>();
 
-  sesarCardMetadata = {
-    ...repoMetadata[EnumRepositoryKeys.sesar],
-    name: "Register Samples",
-  };
+const sesarCardMetadata = { ...repoMetadata[EnumRepositoryKeys.sesar], name: "Register Samples" };
+const hsCardMetadata = { ...repoMetadata[EnumRepositoryKeys.hydroshare] };
+const ecCardMetadata = { ...repoMetadata[EnumRepositoryKeys.earthchem] };
 
-  hsCardMetadata = {
-    ...repoMetadata[EnumRepositoryKeys.hydroshare],
-  };
+const repoCollection = Object.keys(repoMetadata).map((r) => repoMetadata[r]);
 
-  ecCardMetadata = {
-    ...repoMetadata[EnumRepositoryKeys.earthchem],
-  };
+const supportedRepoMetadata = computed(() =>
+  repoCollection.filter((r) => !r.isExternal && r.isSupported?.form),
+);
 
-  get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
-  }
+const externalRepoMetadata = computed(() =>
+  repoCollection.find((r) => r.isExternal),
+);
 
-  get supportedRepoMetadata() {
-    return this.repoCollection.filter(
-      (r) => !r.isExternal && r.isSupported?.form,
-    );
-  }
+const isInSubmitLandingPage = computed(
+  () => !(route as RouteLocationNormalized).params.repository,
+);
 
-  get externalRepoMetadata() {
-    return this.repoCollection.find((r) => r.isExternal);
-  }
+function openRegisterDatasetDialog() {
+  if (registerDatasetDialog.value) registerDatasetDialog.value.active = true;
+}
 
-  get isInSubmitLandingPage() {
-    return !(this.route as RouteLocationNormalized).params.repository;
-  }
+function openSesar() {
+  window.open(sesarCardMetadata.url, "_blank");
+}
 
-  openRegisterDatasetDialog() {
-    this.registerDatasetDialog.active = true;
-  }
+function openEc() {
+  window.open(ecCardMetadata.url, "_blank");
+}
 
-  openSesar() {
-    window.open(this.sesarCardMetadata.url, "_blank");
-  }
+function openHs() {
+  window.open(hsCardMetadata.url, "_blank");
+}
 
-  openEc() {
-    window.open(this.ecCardMetadata.url, "_blank");
-  }
-
-  openHs() {
-    window.open(this.hsCardMetadata.url, "_blank");
-  }
-
-  created() {
-    // TODO: this should be a notification system in the API with a dedicated endpoint
-    if (
-      this.route.name === "register-data" &&
-      User.$state.showSubmissionWarning
-    ) {
-      Notifications.toast({
-        title: `NOTE: As of February 2026, we have removed functionality for submitting datasets to repositories through this Data Submission Portal.`,
-        message: `Please submit your data directly to your chosen repository (e.g., HydroShare or EarthChem) and then come back here to register your submitted data products with the Data Submission Portal.
+onMounted(() => {
+  if (route.name === "register-data" && userStore.showSubmissionWarning) {
+    Notifications.toast({
+      title: `NOTE: As of February 2026, we have removed functionality for submitting datasets to repositories through this Data Submission Portal.`,
+      message: `Please submit your data directly to your chosen repository (e.g., HydroShare or EarthChem) and then come back here to register your submitted data products with the Data Submission Portal.
 
 IMPORTANT: Your repository submissions will not be discoverable in the CZNet data collection if you do not register them with this Data Submission Portal.
 `,
-        isInfinite: true,
-        type: "warning",
-        hasDoNotShowAgain: true,
-        location: "top center",
-        onDismissed: (doNotShowAgain: boolean) => {
-          if (doNotShowAgain) {
-            User.commit((state) => {
-              state.showSubmissionWarning = false;
-            });
-          }
-        },
-      });
-    }
+      isInfinite: true,
+      type: "warning",
+      hasDoNotShowAgain: true,
+      location: "top center",
+      onDismissed: (doNotShowAgain: boolean) => {
+        if (doNotShowAgain) {
+          userStore.showSubmissionWarning = false;
+        }
+      },
+    });
   }
-}
-export default toNative(CzSubmit);
+});
 </script>
 
 <style lang="scss" scoped>

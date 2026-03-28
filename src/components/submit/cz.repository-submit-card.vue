@@ -57,18 +57,13 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { IRepository } from '../submissions/types'
-import { Component, Prop, toNative, Vue } from 'vue-facing-decorator'
 
-@Component({
-  name: 'cz-repository-submit-card',
-})
-class CzRepositorySubmitCard extends Vue {
-  @Prop({ required: true }) repo!: IRepository
-  @Prop() hideLogo!: boolean
-}
-export default toNative(CzRepositorySubmitCard)
+defineProps<{
+  repo: IRepository
+  hideLogo?: boolean
+}>()
 </script>
 
 <style lang="scss" scoped>

@@ -1,7 +1,5 @@
 import type { EnumRepositoryKeys } from '~/components/submissions/types'
-import { supportedRepositoryModels } from '~/constants'
-import Repository from '~/models/repository.model'
-import External from '~/models/external.model'
+import { useRepositoryStore } from '~/stores/repository.store'
 
 /**
  * Returns whether the repository has been authorized or not.
@@ -11,15 +9,11 @@ export function isRepositoryAuthorized(
   repository: EnumRepositoryKeys,
   promptAuthorize: boolean = true,
 ): boolean {
-  const activeRepository = supportedRepositoryModels[repository]
+  const repositoryStore = useRepositoryStore()
 
-  if (
-    activeRepository
-    && activeRepository !== External
-    && !activeRepository?.$state.accessToken
-  ) {
+  if (!repositoryStore.isAuthorized(repository)) {
     if (promptAuthorize)
-      Repository.openAuthorizeDialog(repository)
+      repositoryStore.openAuthorizeDialog(repository)
 
     return false
   }

@@ -129,15 +129,8 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component, toNative, Vue } from "vue-facing-decorator";
-
-@Component({
-  name: "cz-quick-start-guide",
-  components: {},
-})
-class CzQuickStartGuide extends Vue {}
-export default toNative(CzQuickStartGuide);
+<script setup lang="ts">
+defineOptions({ name: 'cz-quick-start-guide' })
 </script>
 
 <style lang="scss" scoped></style>

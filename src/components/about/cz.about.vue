@@ -28,16 +28,8 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import { Component, Vue, toNative } from 'vue-facing-decorator'
-
-@Component({
-  name: 'cz-about',
-  components: {},
-})
-class CzAbout extends Vue {}
-
-export default toNative(CzAbout)
+<script setup lang="ts">
+defineOptions({ name: 'cz-about' })
 </script>
 
 <style lang="scss" scoped>

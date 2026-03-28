@@ -59,48 +59,37 @@
   </div>
 </template>
 
-<script lang="ts">
-import type { IRepository } from '../submissions/types'
+<script setup lang="ts">
+import { computed } from 'vue'
 import { Notifications } from '@cznethub/cznet-vue-core'
-import { Component, mixins, toNative } from 'vue-facing-decorator'
 import { repoMetadata } from '~/components/submit/constants'
-import { getRepositoryFromKey } from '~/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import Repository from '~/models/repository.model'
+import { useRepositoryStore } from '~/stores/repository.store'
+import { EnumRepositoryKeys } from '../submissions/types'
 
-@Component({
-  name: 'cz-authorized-repositories',
-  components: {},
-})
-class CzAuthorizedRepositories extends mixins(ActiveRepositoryMixin) {
-  repoMetadata = repoMetadata
+const repositoryStore = useRepositoryStore()
 
-  get supportedRepositories(): IRepository[] {
-    return Object.keys(repoMetadata)
-      .map(key => repoMetadata[key])
-      .filter(repo => !repo.isExternal && repo.isSupported?.form)
-  }
+const supportedRepositories = computed(() =>
+  Object.keys(repoMetadata)
+    .map(key => repoMetadata[key])
+    .filter(repo => !repo.isExternal && repo.isSupported?.form),
+)
 
-  getAccessToken(repositoryKey: string): string {
-    return getRepositoryFromKey(repositoryKey)?.$state.accessToken
-  }
-
-  onCopy(repositoryKey: string) {
-    navigator.clipboard.writeText(this.getAccessToken(repositoryKey))
-    Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
-  }
-
-  async openAuthorizePopup(repositoryKey: string) {
-    Repository.openAuthorizeDialog(repositoryKey)
-  }
-
-  openRevokeDialog(repositoryKey: string) {
-    Repository.openRevokeDialog(
-      getRepositoryFromKey(repositoryKey) as typeof Repository,
-    )
-  }
+function getAccessToken(repositoryKey: string): string {
+  return repositoryStore.getAccessToken(repositoryKey)
 }
-export default toNative(CzAuthorizedRepositories)
+
+function onCopy(repositoryKey: string) {
+  navigator.clipboard.writeText(getAccessToken(repositoryKey))
+  Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
+}
+
+function openAuthorizePopup(repositoryKey: string) {
+  repositoryStore.openAuthorizeDialog(repositoryKey)
+}
+
+function openRevokeDialog(repositoryKey: string) {
+  repositoryStore.openRevokeDialog(repositoryKey as EnumRepositoryKeys)
+}
 </script>
 
 <style lang="scss" scoped>

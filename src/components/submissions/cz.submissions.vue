@@ -431,10 +431,12 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { IRepository, ISubmission } from "~/components/submissions/types";
+import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { Subscription } from "rxjs";
-import { Component, mixins, Ref, toNative } from "vue-facing-decorator";
+import { useI18n } from "vue-i18n";
+import { useRouter } from "vue-router";
 import CzRegisterDatasetDialog from "~/components/register-dataset/cz.register-dataset-dialog.vue";
 import {
   itemsPerPageArray,
@@ -446,348 +448,247 @@ import {
   EnumSubmissionSorts,
 } from "~/components/submissions/types";
 import { repoMetadata } from "~/components/submit/constants";
-import { getRepositoryFromKey } from "~/constants";
-import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
+import { useUserStore } from "~/stores/user.store";
+import { useRepositoryStore } from "~/stores/repository.store";
+import { useSubmissionStore } from "~/stores/submission.store";
 
-import Repository from "~/models/repository.model";
-import Submission from "~/models/submission.model";
-import User from "~/models/user.model";
-import { isRepositoryAuthorized } from "~/util";
+const userStore = useUserStore();
+const repositoryStore = useRepositoryStore();
+const submissionStore = useSubmissionStore();
+const router = useRouter();
+const { t } = useI18n();
 
-@Component({
-  name: "cz-submissions",
-  components: { CzRegisterDatasetDialog },
-})
-class CzSubmissions extends mixins(ActiveRepositoryMixin) {
-  @Ref("registerDatasetDialog") registerDatasetDialog!: InstanceType<
-    typeof CzRegisterDatasetDialog
-  >;
+const registerDatasetDialog = ref<InstanceType<typeof CzRegisterDatasetDialog>>();
 
-  isUpdating: { [key: string]: boolean } = {};
-  isDeleting: { [key: string]: boolean } = {};
-  isDeleteDialogActive = false;
-  deleteDialogData: {
-    submission: ISubmission;
-    isExternal: boolean;
-    isPublished: boolean;
-  } | null = null;
+const isUpdating = reactive<Record<string, boolean>>({});
+const isDeleting = reactive<Record<string, boolean>>({});
+const isDeleteDialogActive = ref(false);
+const deleteDialogData = ref<{
+  submission: ISubmission;
+  isExternal: boolean;
+  isPublished: boolean;
+} | null>(null);
 
-  alsoDeleteInRepository = false;
+const alsoDeleteInRepository = ref(false);
+const filters = reactive<{ repository: string[]; searchStr: string }>({
+  repository: [],
+  searchStr: "",
+});
+const page = ref(1);
+const enumRepositoryKeys = EnumRepositoryKeys;
 
-  filters: {
-    repository: string[];
-    searchStr: string;
-  } = { repository: [], searchStr: "" };
+let loggedInSubject = new Subscription();
+let authorizedSubject = new Subscription();
 
-  itemsPerPageArray = itemsPerPageArray;
-  page = 1;
-  repoMetadata = repoMetadata;
-  enumRepositoryKeys = EnumRepositoryKeys;
-  loggedInSubject = new Subscription();
+const itemsPerPage = computed({
+  get: () => submissionStore.itemsPerPage,
+  set: (v: number) => { submissionStore.itemsPerPage = v },
+});
 
-  get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
+const isFetching = computed(() => submissionStore.isFetching);
+const isLoggedIn = computed(() => userStore.isLoggedIn);
+
+const sortBy = computed({
+  get: () => submissionStore.sortBy,
+  set: (v) => { submissionStore.sortBy = v },
+});
+
+const repoOptions = computed(() =>
+  Object.keys(repoMetadata)
+    .filter((key) => repoMetadata[key].isSupported)
+    .map((key) => ({ key, label: repoMetadata[key].name })),
+);
+
+const sortOptions = computed(() =>
+  Object.keys(EnumSubmissionSorts).map((key) => ({
+    key,
+    label: EnumSubmissionSorts[key as keyof typeof EnumSubmissionSorts],
+  })),
+);
+
+const sortDirectionOptions = computed(() =>
+  Object.keys(EnumSortDirections).map((key) => ({
+    key,
+    label:
+      sortDirectionsOverrides[sortBy.value.key]?.[key as keyof typeof EnumSortDirections]
+      || EnumSortDirections[key as keyof typeof EnumSortDirections],
+  })),
+);
+
+const submissions = computed<ISubmission[]>(() => submissionStore.all);
+
+const filteredSubmissions = computed(() => {
+  if (filters.repository.length) {
+    return submissions.value.filter((s) => filters.repository.includes(s.repository));
   }
+  return submissions.value;
+});
 
-  get supportedRepoMetadata() {
-    return this.repoCollection.filter(
-      (r) => !r.isExternal && r.isSupported?.form,
-    );
-  }
+const isAnyFilterAcitve = computed(() =>
+  Object.keys(filters).find((key) => (filters as any)[key]?.length),
+);
 
-  get externalRepoMetadata() {
-    return this.repoCollection.find((r) => r.isExternal);
-  }
+const numberOfPages = computed(() =>
+  isAnyFilterAcitve.value
+    ? Math.ceil(filteredSubmissions.value.length / itemsPerPage.value)
+    : Math.ceil(submissions.value.length / itemsPerPage.value),
+);
 
-  get itemsPerPage() {
-    return Submission.$state.itemsPerPage;
-  }
-
-  set itemsPerPage(itemsPerPage: number) {
-    Submission.commit((state) => {
-      state.itemsPerPage = itemsPerPage;
-    });
-  }
-
-  get isFetching() {
-    return Submission.$state.isFetching;
-  }
-
-  get repoOptions(): { key: string; label: string }[] {
-    return Object.keys(repoMetadata)
-      .filter((key) => repoMetadata[key].isSupported)
-      .map((key) => ({ key, label: repoMetadata[key].name }));
-  }
-
-  get sortOptions() {
-    return Object.keys(EnumSubmissionSorts).map((key) => {
-      return {
-        key,
-        label: EnumSubmissionSorts[key as keyof typeof EnumSubmissionSorts],
-      };
-    });
-  }
-
-  get sortBy() {
-    return Submission.$state.sortBy;
-  }
-
-  set sortBy(sortBy: { key: string; order: "asc" | "desc" }) {
-    Submission.commit((state) => {
-      state.sortBy = sortBy;
-    });
-  }
-
-  get isLoggedIn() {
-    return User.$state.isLoggedIn;
-  }
-
-  get isAnyFilterAcitve() {
-    return Object.keys(this.filters).find(
-      (key) => this.filters[key] && this.filters[key].length,
-    );
-  }
-
-  get sortDirectionOptions() {
-    return Object.keys(EnumSortDirections).map((key) => {
-      return {
-        key,
-        label:
-          sortDirectionsOverrides[this.sortBy.key]?.[
-            key as keyof typeof EnumSortDirections
-          ] || EnumSortDirections[key as keyof typeof EnumSortDirections],
-      };
-    });
-  }
-
-  get filteredSubmissions() {
-    if (this.filters.repository.length) {
-      return Submission.all().filter((s) =>
-        this.filters.repository.includes(s.repository),
-      );
-    }
-
-    return Submission.all();
-  }
-
-  get submissions(): ISubmission[] {
-    return Submission.all();
-  }
-
-  get repoName(): string {
-    if (this.deleteDialogData) {
-      return (
-        getRepositoryFromKey(this.deleteDialogData.submission.repository)
-          ?.name || ""
-      );
-    }
-
-    return "";
-  }
-
-  get numberOfPages() {
-    return this.isAnyFilterAcitve
-      ? Math.ceil(this.filteredSubmissions.length / this.itemsPerPage)
-      : Math.ceil(this.submissions.length / this.itemsPerPage);
-  }
-
-  created() {
-    if (User.$state.isLoggedIn) Submission.fetchSubmissions();
-
-    this.loggedInSubject = User.loggedIn$.subscribe(() => {
-      Submission.fetchSubmissions();
-    });
-  }
-
-  beforeDestroy() {
-    this.loggedInSubject.unsubscribe();
-  }
-
-  nextPage() {
-    if (this.page + 1 <= this.numberOfPages) this.page += 1;
-  }
-
-  formerPage() {
-    if (this.page - 1 >= 1) this.page -= 1;
-  }
-
-  goToEditSubmission(submission: ISubmission) {
-    const repo: IRepository = repoMetadata[submission.repository];
-    this.router.push({
-      name: "register-data.repository",
-      params: { repository: repo.key, id: submission.identifier },
-    });
-  }
-
-  getDateInLocalTime(date: number): string {
-    const offset = new Date(date).getTimezoneOffset() * 60 * 1000;
-    // TODO: subtracting offset because db stored dates seem to have the time shifted
-    const localDateTime = date - offset;
-    const localizedDate = new Date(localDateTime).toLocaleString();
-    return localizedDate;
-  }
-
-  openRegisterDatasetDialog() {
-    this.registerDatasetDialog.active = true;
-  }
-
-  async onUpdateRecord(submission: ISubmission) {
-    const key = `${submission.repository}-${submission.identifier}`;
-    this.isUpdating[key] = true;
-
-    await Repository.refetchSubmission(
-      submission.identifier,
-      submission.repository,
-    );
-
-    this.isUpdating[key] = false;
-  }
-
-  exportSubmissions() {
-    const parsedSubmissions = this.filteredSubmissions.map((s) => {
-      return {
-        authors: s.authors.join("; "),
-        date: new Date(s.date).toISOString(),
-        title: s.title,
-        repository: this.getRepositoryName(s),
-        url: s.url,
-      };
-    });
-
-    const columnLabels = [
-      "Authors",
-      "Publication Date",
-      "Title",
-      "Repository",
-      "URL",
-    ];
-
-    const headerRow = `${columnLabels.join(",")}\n`;
-    const rows = parsedSubmissions.map((s) => {
-      return Object.keys(s).map((key: string) => `"${s[key]}"`);
-    });
-
-    const csvContent = headerRow + rows.map((c) => c.join(",")).join("\n");
-
-    // Download as CSV
-    const filename = `${this.$t("footer.orgName")}_submissions.csv`;
-
-    const element = document.createElement("a");
-    element.setAttribute(
-      "href",
-      `data:text/plain;charset=utf-8,${encodeURIComponent(csvContent)}`,
-    );
-    element.setAttribute("download", filename);
-
-    element.style.display = "none";
-    document.body.appendChild(element);
-
-    element.click();
-
-    document.body.removeChild(element);
-  }
-
-  isDeleteButtonDisabled(submission: Submission) {
-    return this.isDeleting[`${submission.repository}-${submission.identifier}`];
-  }
-
-  isItemHsCollection(submission: ISubmission) {
-    return (
-      submission.repository === EnumRepositoryKeys.hydroshare &&
-      submission.metadata.type === "CollectionResource"
-    );
-  }
-
-  isItemPublished(submission: Submission): boolean {
-    if (submission.repository === EnumRepositoryKeys.hydroshare)
-      return !!submission?.metadata.published;
-    else if (submission.repository === EnumRepositoryKeys.earthchem)
-      return submission?.metadata?.status === "published";
-    // else if (submission.repository === EnumRepositoryKeys.zenodo)
-    //   return !!submission?.metadata?.doi
-
-    return false;
-  }
-
-  isItemEclSubmitted(submission: Submission): boolean {
-    return (
-      submission.repository === EnumRepositoryKeys.earthchem &&
-      submission?.metadata.status === "submitted"
-    );
-  }
-
-  itemHasFormSupport(submission: any) {
-    return repoMetadata[submission.repository]?.isSupported?.form;
-  }
-
-  onDelete(submission: Submission) {
-    this.deleteDialogData = {
-      submission,
-      isExternal:
-        repoMetadata[submission.repository]?.isExternal ||
-        !repoMetadata[submission.repository]?.isSupported?.form ||
-        false,
-      isPublished: this.isItemPublished(submission),
-    };
-    this.alsoDeleteInRepository = false; // we want it unchecked initially
-    this.isDeleteDialogActive = true;
-  }
-
-  async onDeleteSubmission() {
-    const key = `${this.deleteDialogData?.submission.repository}-${this.deleteDialogData?.submission.identifier}`;
-    this.isDeleting[key] = true;
-
-    if (this.deleteDialogData) {
-      const deleteInRepo =
-        !this.deleteDialogData.isExternal && this.alsoDeleteInRepository;
-
-      if (deleteInRepo) {
-        // Check that the user has authorized the selected repository
-        if (
-          !isRepositoryAuthorized(this.deleteDialogData.submission.repository)
-        ) {
-          this.isDeleting[key] = false;
-          this.authorizedSubject = Repository.authorized$.subscribe(
-            async (_repositoryKey: EnumRepositoryKeys) => {
-              // try again when the repository has been authorized
-              await this.onDeleteSubmission();
-            },
-          );
-          return;
-        }
-      }
-
-      await Repository.deleteSubmission(
-        this.deleteDialogData.submission.identifier,
-        this.deleteDialogData.submission.repository,
-        deleteInRepo,
-      );
-    }
-
-    this.isDeleting[key] = false;
-    this.deleteDialogData = null;
-  }
-
-  getRepositoryName(item: ISubmission) {
-    // For external submissions, we return the provider name instead
-    if (item.repository === EnumRepositoryKeys.external)
-      return item.metadata.provider?.name || "";
-
-    return repoMetadata[item.repository]
-      ? repoMetadata[item.repository].name
-      : "";
-  }
-
-  getItemResourceType(item: ISubmission) {
-    // For hydroshare submissions, get the resource type
-    if (item.repository === EnumRepositoryKeys.hydroshare) {
-      if (item.metadata.type === "CollectionResource") return "Collection";
-      else return "Resource";
-    }
-    return "";
-  }
+function nextPage() {
+  if (page.value + 1 <= numberOfPages.value) page.value += 1;
 }
-export default toNative(CzSubmissions);
+
+function formerPage() {
+  if (page.value - 1 >= 1) page.value -= 1;
+}
+
+function openRegisterDatasetDialog() {
+  if (registerDatasetDialog.value) registerDatasetDialog.value.active = true;
+}
+
+function goToEditSubmission(submission: ISubmission) {
+  const repo: IRepository = repoMetadata[submission.repository];
+  router.push({
+    name: "register-data.repository",
+    params: { repository: repo.key, id: submission.identifier },
+  });
+}
+
+function getDateInLocalTime(date: number): string {
+  const offset = new Date(date).getTimezoneOffset() * 60 * 1000;
+  // TODO: subtracting offset because db stored dates seem to have the time shifted
+  return new Date(date - offset).toLocaleString();
+}
+
+async function onUpdateRecord(submission: ISubmission) {
+  const key = `${submission.repository}-${submission.identifier}`;
+  isUpdating[key] = true;
+  await repositoryStore.refetchSubmission(submission.identifier, submission.repository);
+  isUpdating[key] = false;
+}
+
+function exportSubmissions() {
+  const parsedSubmissions = filteredSubmissions.value.map((s) => ({
+    authors: s.authors.join("; "),
+    date: new Date(s.date).toISOString(),
+    title: s.title,
+    repository: getRepositoryName(s),
+    url: s.url,
+  }));
+
+  const columnLabels = ["Authors", "Publication Date", "Title", "Repository", "URL"];
+  const headerRow = `${columnLabels.join(",")}\n`;
+  const rows = parsedSubmissions.map((s) =>
+    Object.keys(s).map((key: string) => `"${(s as any)[key]}"`),
+  );
+  const csvContent = headerRow + rows.map((c) => c.join(",")).join("\n");
+  const filename = `${t("footer.orgName")}_submissions.csv`;
+  const element = document.createElement("a");
+  element.setAttribute("href", `data:text/plain;charset=utf-8,${encodeURIComponent(csvContent)}`);
+  element.setAttribute("download", filename);
+  element.style.display = "none";
+  document.body.appendChild(element);
+  element.click();
+  document.body.removeChild(element);
+}
+
+function isDeleteButtonDisabled(submission: ISubmission) {
+  return isDeleting[`${submission.repository}-${submission.identifier}`];
+}
+
+function isItemHsCollection(submission: ISubmission) {
+  return (
+    submission.repository === EnumRepositoryKeys.hydroshare
+    && submission.metadata.type === "CollectionResource"
+  );
+}
+
+function isItemPublished(submission: ISubmission): boolean {
+  if (submission.repository === EnumRepositoryKeys.hydroshare)
+    return !!submission?.metadata.published;
+  else if (submission.repository === EnumRepositoryKeys.earthchem)
+    return submission?.metadata?.status === "published";
+  return false;
+}
+
+function isItemEclSubmitted(submission: ISubmission): boolean {
+  return (
+    submission.repository === EnumRepositoryKeys.earthchem
+    && submission?.metadata.status === "submitted"
+  );
+}
+
+function itemHasFormSupport(submission: ISubmission) {
+  return repoMetadata[submission.repository]?.isSupported?.form;
+}
+
+function onDelete(submission: ISubmission) {
+  deleteDialogData.value = {
+    submission,
+    isExternal:
+      repoMetadata[submission.repository]?.isExternal
+      || !repoMetadata[submission.repository]?.isSupported?.form
+      || false,
+    isPublished: isItemPublished(submission),
+  };
+  alsoDeleteInRepository.value = false;
+  isDeleteDialogActive.value = true;
+}
+
+async function onDeleteSubmission() {
+  const key = `${deleteDialogData.value?.submission.repository}-${deleteDialogData.value?.submission.identifier}`;
+  isDeleting[key] = true;
+
+  if (deleteDialogData.value) {
+    const deleteInRepo = !deleteDialogData.value.isExternal && alsoDeleteInRepository.value;
+
+    if (deleteInRepo) {
+      const repo = deleteDialogData.value.submission.repository;
+      if (repo !== EnumRepositoryKeys.external && !repositoryStore.getAccessToken(repo)) {
+        repositoryStore.openAuthorizeDialog(repo);
+        isDeleting[key] = false;
+        authorizedSubject = repositoryStore.authorized$.subscribe(async () => {
+          await onDeleteSubmission();
+        });
+        return;
+      }
+    }
+
+    await repositoryStore.deleteSubmission(
+      deleteDialogData.value.submission.identifier,
+      deleteDialogData.value.submission.repository,
+      deleteInRepo,
+    );
+  }
+
+  isDeleting[key] = false;
+  deleteDialogData.value = null;
+}
+
+function getRepositoryName(item: ISubmission) {
+  if (item.repository === EnumRepositoryKeys.external)
+    return item.metadata.provider?.name || "";
+  return repoMetadata[item.repository] ? repoMetadata[item.repository].name : "";
+}
+
+function getItemResourceType(item: ISubmission) {
+  if (item.repository === EnumRepositoryKeys.hydroshare) {
+    return item.metadata.type === "CollectionResource" ? "Collection" : "Resource";
+  }
+  return "";
+}
+
+onMounted(() => {
+  if (userStore.isLoggedIn) submissionStore.fetchSubmissions();
+  loggedInSubject = userStore.loggedIn$.subscribe(() => {
+    submissionStore.fetchSubmissions();
+  });
+});
+
+onBeforeUnmount(() => {
+  loggedInSubject.unsubscribe();
+  authorizedSubject.unsubscribe();
+});
 </script>
 
 <style lang="scss" scoped>

@@ -250,50 +250,35 @@
   </div>
 </template>
 
-<script lang="ts">
-import type { IRepository } from "~/components/submissions/types";
-import { Component, toNative, Vue } from "vue-facing-decorator";
-import { useRouter } from "vue-router";
+<script setup lang="ts">
+import { computed } from "vue";
 import { EnumRepositoryKeys } from "~/components/submissions/types";
 import { DISCOVERY_SITE_URL } from "~/constants";
-import User from "~/models/user.model";
+import { useUserStore } from "~/stores/user.store";
 import { repoMetadata } from "../submit/constants";
 
-@Component({
-  name: "cz-home",
-  components: {},
-})
-class CzHome extends Vue {
-  repoMetadata = repoMetadata;
-  discoverySiteUrl = DISCOVERY_SITE_URL;
-  router = useRouter();
+const userStore = useUserStore();
 
-  get isLoggedIn() {
-    return User.$state.isLoggedIn;
-  }
+const discoverySiteUrl = DISCOVERY_SITE_URL;
 
-  get supportedRepositories() {
-    return [
-      repoMetadata[EnumRepositoryKeys.hydroshare],
-      repoMetadata[EnumRepositoryKeys.earthchem],
-    ];
-  }
+const isLoggedIn = computed(() => userStore.isLoggedIn);
 
-  get exampleExternalRepositories(): Partial<IRepository>[] {
-    return [
-      repoMetadata[EnumRepositoryKeys.essDive],
-      repoMetadata[EnumRepositoryKeys.edi],
-      repoMetadata[EnumRepositoryKeys.zenodo],
-      repoMetadata[EnumRepositoryKeys.scienceBase],
-      repoMetadata[EnumRepositoryKeys.openTopography],
-    ];
-  }
+const supportedRepositories = [
+  repoMetadata[EnumRepositoryKeys.hydroshare],
+  repoMetadata[EnumRepositoryKeys.earthchem],
+];
 
-  openLogInDialog() {
-    User.openLogInDialog();
-  }
+const exampleExternalRepositories = [
+  repoMetadata[EnumRepositoryKeys.essDive],
+  repoMetadata[EnumRepositoryKeys.edi],
+  repoMetadata[EnumRepositoryKeys.zenodo],
+  repoMetadata[EnumRepositoryKeys.scienceBase],
+  repoMetadata[EnumRepositoryKeys.openTopography],
+];
+
+function openLogInDialog() {
+  userStore.openLogInDialog();
 }
-export default toNative(CzHome);
 </script>
 
 <style lang="scss" scoped>

@@ -5,7 +5,7 @@ import CzContact from '~/components/contact/cz.contact.vue'
 import CzHome from '~/components/home/cz.home.vue'
 import CzNewSubmission from '~/components/new-submission/cz.new-submission.vue'
 import CzAccount from '~/components/profile/cz.account.vue'
-import CzAuthorizedRepositories from '~/components/profile/cz.authorized-repositories.vue'
+// import CzAuthorizedRepositories from '~/components/profile/cz.authorized-repositories.vue'
 import CzProfile from '~/components/profile/cz.profile.vue'
 import CzQuickStartGuide from '~/components/quick-start-guide/cz.quick-start-guide.vue'
 import CzRecomendationsQuestionnaire from '~/components/recommendations/cz.recommendations-questionnaire.vue'
@@ -15,8 +15,7 @@ import CzSubmissions from '~/components/submissions/cz.submissions.vue'
 
 import CzSubmit from '~/components/submit/cz.submit.vue'
 
-// hasUnsavedChangesGuard: imported for future use (REQ-04)
-import { hasAccessTokenGuard, hasLoggedInGuard, hasUnsavedChangesGuard } from './guards'
+import { hasAccessTokenGuard, hasLoggedInGuard } from './guards'
 
 export const routes: RouteRecordRaw[] = [
   {
@@ -130,7 +129,7 @@ export const routes: RouteRecordRaw[] = [
       content: CzRegisterDataset,
       footer: CzFooter,
     },
-    beforeEnter: [hasLoggedInGuard, hasAccessTokenGuard],
+    beforeEnter: [hasLoggedInGuard],
     meta: {
       title: 'Register Dataset',
     },

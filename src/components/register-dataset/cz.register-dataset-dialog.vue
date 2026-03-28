@@ -2,9 +2,7 @@
   <v-dialog v-model="active" width="800">
     <v-card>
       <v-card-title>
-        <div class="text-heading-4 mb-4">
-          Register Dataset
-        </div>
+        <div class="text-heading-4 mb-4">Register Dataset</div>
       </v-card-title>
 
       <v-card-subtitle class="text-body-1">
@@ -25,9 +23,7 @@
               variant="elevated"
             >
               <v-card-text class="d-flex align-center gap-1">
-                <v-icon size="3rem" color="#87AAAA">
-                  mdi-link-plus
-                </v-icon>
+                <v-icon size="3rem" color="#87AAAA"> mdi-link-plus </v-icon>
                 <div>
                   <div class="text-overline mb-2 has-text-black">
                     SUPPORTED REPOSITORY
@@ -54,18 +50,12 @@
             >
               <v-card-text
                 class="d-flex align-center gap-1"
-                @click="
-                  submitTo(externalRepoMetadata);
-                "
+                @click="submitTo(externalRepoMetadata!)"
               >
-                <v-icon size="3rem" color="#C37B89">
-                  mdi-text-box-plus
-                </v-icon>
+                <v-icon size="3rem" color="#C37B89"> mdi-text-box-plus </v-icon>
                 <div>
-                  <div class="text-overline mb-2 has-text-black">
-                    OTHER
-                  </div>
-                  <div class="text-body-1  text-medium-emphasis">
+                  <div class="text-overline mb-2 has-text-black">OTHER</div>
+                  <div class="text-body-1 text-medium-emphasis">
                     Register a dataset from a different repository
                   </div>
                 </div>
@@ -79,45 +69,31 @@
 
       <v-card-actions>
         <v-spacer />
-        <v-btn variant="elevated" @click="active = false">
-          Cancel
-        </v-btn>
+        <v-btn variant="elevated" @click="active = false"> Cancel </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<script lang="ts">
-import { Component, mixins, toNative } from 'vue-facing-decorator'
+<script setup lang="ts">
+import { computed, ref } from 'vue'
 import { repoMetadata } from '~/components/submit/constants'
 import type { IRepository } from '~/components/submissions/types'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
+import { useActiveRepository } from '~/composables/useActiveRepository'
 
-@Component({
-  name: 'cz-register-dataset-dialog',
-  components: {},
-  emits: ['close'],
-})
-class CzRegisterDatasetDialog extends mixins(ActiveRepositoryMixin) {
-  public active = false
+const active = ref(false)
 
-  get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map(r => repoMetadata[r])
-  }
+const { submitTo } = useActiveRepository()
 
-  get supportedRepoMetadata() {
-    return this.repoCollection.filter(r => !r.isExternal && r.isSupported)
-  }
+const repoCollection = computed<IRepository[]>(() =>
+  Object.keys(repoMetadata).map(r => repoMetadata[r]),
+)
 
-  get externalRepoMetadata(): IRepository | undefined {
-    return this.repoCollection.find(r => r.isExternal)
-  }
+const externalRepoMetadata = computed<IRepository | undefined>(() =>
+  repoCollection.value.find(r => r.isExternal),
+)
 
-  close() {
-    this.$emit('close')
-  }
-}
-export default toNative(CzRegisterDatasetDialog)
+defineExpose({ active })
 </script>
 
 <style lang="scss" scoped>

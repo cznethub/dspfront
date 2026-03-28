@@ -105,7 +105,7 @@
 
             <div class="text-subtitle-1 font-weight-light pl-3 mb-4 mt-1">
               {{
-                `e.g. '${selectedRepository.exampleUrl}' or '${selectedRepository.exampleIdentifier}'`
+                `e.g. '${selectedRepository?.exampleUrl}' or '${selectedRepository?.exampleIdentifier}'`
               }}
             </div>
           </v-form>
@@ -455,233 +455,179 @@
   </v-container>
 </template>
 
-<script lang="ts">
-import type { IRepository } from "~/components/submissions/types";
+<script setup lang="ts">
+import type { IRepository, ISubmission } from "~/components/submissions/types";
+import { computed, onMounted, ref } from "vue";
 import { Notifications } from "@cznethub/cznet-vue-core";
-import { Component, mixins, toNative, Watch } from "vue-facing-decorator";
-import { useRoute, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import {
   VStepperVertical,
   VStepperVerticalItem,
 } from "vuetify/labs/VStepperVertical";
 import { EnumRepositoryKeys } from "~/components/submissions/types";
 import { repoMetadata } from "~/components/submit/constants";
-import { ActiveRepositoryMixin } from "~/mixins/activeRepository.mixin";
+import { useUserStore } from "~/stores/user.store";
+import { useRepositoryStore } from "~/stores/repository.store";
+import { useSubmissionStore } from "~/stores/submission.store";
 
-import Repository from "~/models/repository.model";
-import Submission from "~/models/submission.model";
-import User from "~/models/user.model";
-import { VTextField } from "vuetify/lib/components";
+const userStore = useUserStore();
+const repositoryStore = useRepositoryStore();
+const submissionStore = useSubmissionStore();
+const router = useRouter();
 
-@Component({
-  name: "cz-register-dataset",
-  components: { VStepperVertical, VStepperVerticalItem },
-})
-class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
-  url = "";
-  step = 1;
-  selectedRepository: IRepository | null = null;
-  isFetching = false;
-  isValid = false;
-  submission: Partial<Submission> | null = null;
-  apiSubmission: any = null;
-  wasUnauthorized = false;
-  isPublished = false;
-  isPublic = false;
-  isRegistering = false;
-  registrationError = "";
-  allowFileUpload = true;
-  resourceType = "";
-  isHsCollection = false;
-  route = useRoute();
-  router = useRouter();
+const url = ref("");
+const step = ref(1);
+const selectedRepository = ref<IRepository | null>(null);
+const isFetching = ref(false);
+const isValid = ref(false);
+const submission = ref<Partial<ISubmission> | null>(null);
+const apiSubmission = ref<any>(null);
+const wasUnauthorized = ref(false);
+const isPublished = ref(false);
+const isPublic = ref(false);
+const isRegistering = ref(false);
+const registrationError = ref("");
+const allowFileUpload = ref(true);
+const resourceType = ref("");
+const isHsCollection = ref(false);
 
-  get repoCollection(): IRepository[] {
-    return Object.keys(repoMetadata).map((r) => repoMetadata[r]);
+const repoCollection = Object.keys(repoMetadata).map((r) => repoMetadata[r]);
+
+const supportedRepoMetadata = computed(() =>
+  repoCollection.filter((r) => !r.isExternal && r.isSupported),
+);
+
+const canReadDataset = computed(
+  () => !isFetching.value && isValid.value && !!url.value,
+);
+
+const identifierFromUrl = computed(() => {
+  if (selectedRepository.value?.identifierPattern?.test(url.value)) {
+    return url.value;
   }
-
-  get supportedRepoMetadata() {
-    return this.repoCollection.filter((r) => !r.isExternal && r.isSupported);
+  else if (selectedRepository.value?.identifierUrlPattern?.test(url.value)) {
+    const matches = selectedRepository.value?.identifierUrlPattern?.exec(url.value);
+    if (matches && matches.length) return matches[1];
   }
+  return url.value;
+});
 
-  get canReadDataset(): boolean {
-    return !this.isFetching && this.isValid && !!this.url;
-  }
+onMounted(() => {
+  selectedRepository.value = repoCollection[0];
+});
 
-  get identifierFromUrl(): string {
-    if (this.selectedRepository?.identifierPattern?.test(this.url)) {
-      return this.url;
-    } else if (this.selectedRepository?.identifierUrlPattern?.test(this.url)) {
-      const matches = this.selectedRepository?.identifierUrlPattern?.exec(
-        this.url,
-      );
-
-      if (matches && matches.length) return matches[1];
-    }
-
-    return this.url; // default
-  }
-
-  @Watch("step")
-  onStepChange(currentStep: number, _previousStep: number) {
-    if (currentStep === 2) {
-      // @ts-ignore
-      (this.$refs.txtIdentifier as InstanceType<typeof VTextField>)?.focus();
-    }
-  }
-
-  created() {
-    this.selectedRepository = this.repoCollection[0];
-  }
-
-  onReadDataset() {
-    if (this.canReadDataset) {
-      this.step++;
-      this._readDataset();
-    }
-  }
-
-  goToEditSubmission() {
-    // We cannot pass objects through routing, so we store it in ORM temporarily
-    User.commit((state) => {
-      state.registeringSubmission = this.apiSubmission;
-    });
-
-    this.router.push({
-      name: "register-data.repository",
-      params: {
-        repository: (this.selectedRepository as IRepository).key,
-        id: this.identifierFromUrl,
-      },
-      query: { mode: "register" },
-    });
-  }
-
-  /** We register published submissions as they are because they can no longer be edited */
-  async registerSubmissionAsIs() {
-    this.isRegistering = true;
-    try {
-      const response = await Repository.readSubmission(
-        this.identifierFromUrl,
-        (this.selectedRepository as IRepository).key,
-      );
-
-      this.isRegistering = false;
-      if (isNaN(response)) {
-        Notifications.toast({
-          message: "Your dataset has been registered!",
-          type: "success",
-        });
-        this.router.push({
-          name: "submissions",
-        });
-      } else {
-        this.registrationError =
-          "Failed to register dataset. Please try again.";
-        Notifications.toast({
-          message: "Failed to register dataset",
-          type: "error",
-        });
-      }
-    } catch (e) {
-      this.isRegistering = false;
-      this.registrationError = "Failed to register dataset. Please try again.";
-      Notifications.toast({
-        message: "Failed to register dataset",
-        type: "error",
-      });
-    }
-  }
-
-  getDateInLocalTime(date: number): string {
-    const offset = new Date(date).getTimezoneOffset() * 60 * 1000;
-    const localDateTime = date + offset;
-    return new Date(localDateTime).toLocaleString();
-  }
-
-  isValidUrlOrIdentifier(): true | string {
-    if (!this.url) return "required";
-
-    const valid =
-      this.selectedRepository?.identifierPattern?.test(this.url) ||
-      this.selectedRepository?.identifierUrlPattern?.test(this.url);
-
-    if (valid) return true;
-
-    if (this.selectedRepository) {
-      return `Enter a valid ${this.selectedRepository.name} URL (e.g. '${this.selectedRepository.exampleUrl}') or identifier (e.g. '${this.selectedRepository.exampleIdentifier}')`;
-    }
-    return "Invalid URL or identifier";
-  }
-
-  private async _readDataset() {
-    this.submission = null;
-    this.isFetching = true;
-    this.wasUnauthorized = false;
-    this.isPublished = false;
-    this.isPublic = false;
-    this.isHsCollection = false;
-    this.allowFileUpload = true;
-    this.resourceType = "";
-
-    try {
-      if (this.selectedRepository) {
-        const response = await Repository.readExistingSubmission(
-          this.identifierFromUrl,
-          this.selectedRepository.key,
-        );
-
-        if (response && isNaN(response)) {
-          this.submission = Submission.getInsertData(
-            response.metadata,
-            this.selectedRepository.key,
-            this.identifierFromUrl,
-            true,
-            response.published,
-          );
-          this.apiSubmission = response.metadata;
-          if (response.published) this.isPublished = true;
-          if (response.public) this.isPublic = true;
-
-          // For earthchem submissions we need to set the community to a constant
-          // if (this.submission.repository === EnumRepositoryKeys.earthchem)
-          //   this.apiSubmission.community = this.$t('footer.orgName')
-
-          if (this.submission.repository === EnumRepositoryKeys.hydroshare) {
-            if (response.metadata.type === "CollectionResource")
-              this.isHsCollection = true;
-
-            this.allowFileUpload =
-              this.apiSubmission.type === "CompositeResource" &&
-              !this.isPublished;
-            this.resourceType =
-              this.apiSubmission.type === "CompositeResource"
-                ? "Resource"
-                : "Collection";
-          } else {
-            this.allowFileUpload = !this.isPublished;
-          }
-        }
-        // Repository was unauthorized
-        // else if (response === 401) {
-        //   this.wasUnauthorized = true;
-
-        //   // Try again when user has authorized the repository
-        //   this.authorizedSubject = Repository.authorized$.subscribe(
-        //     async (_repositoryKey: EnumRepositoryKeys) => {
-        //       await this._readDataset();
-        //     },
-        //   );
-        // }
-      }
-    } catch (e) {
-      console.log(e);
-    } finally {
-      this.isFetching = false;
-    }
+function onReadDataset() {
+  if (canReadDataset.value) {
+    step.value++;
+    _readDataset();
   }
 }
-export default toNative(CzRegisterDataset);
+
+function goToEditSubmission() {
+  userStore.registeringSubmission = apiSubmission.value;
+  router.push({
+    name: "register-data.repository",
+    params: {
+      repository: (selectedRepository.value as IRepository).key,
+      id: identifierFromUrl.value,
+    },
+    query: { mode: "register" },
+  });
+}
+
+async function registerSubmissionAsIs() {
+  isRegistering.value = true;
+  try {
+    const response = await repositoryStore.readSubmission(
+      (selectedRepository.value as IRepository).key,
+      identifierFromUrl.value,
+    );
+    isRegistering.value = false;
+    if (isNaN(response)) {
+      Notifications.toast({ message: "Your dataset has been registered!", type: "success" });
+      router.push({ name: "submissions" });
+    }
+    else {
+      registrationError.value = "Failed to register dataset. Please try again.";
+      Notifications.toast({ message: "Failed to register dataset", type: "error" });
+    }
+  }
+  catch {
+    isRegistering.value = false;
+    registrationError.value = "Failed to register dataset. Please try again.";
+    Notifications.toast({ message: "Failed to register dataset", type: "error" });
+  }
+}
+
+function getDateInLocalTime(date: number): string {
+  const offset = new Date(date).getTimezoneOffset() * 60 * 1000;
+  return new Date(date + offset).toLocaleString();
+}
+
+function isValidUrlOrIdentifier(): true | string {
+  if (!url.value) return "required";
+  const valid =
+    selectedRepository.value?.identifierPattern?.test(url.value)
+    || selectedRepository.value?.identifierUrlPattern?.test(url.value);
+  if (valid) return true;
+  if (selectedRepository.value) {
+    return `Enter a valid ${selectedRepository.value.name} URL (e.g. '${selectedRepository.value.exampleUrl}') or identifier (e.g. '${selectedRepository.value.exampleIdentifier}')`;
+  }
+  return "Invalid URL or identifier";
+}
+
+async function _readDataset() {
+  submission.value = null;
+  isFetching.value = true;
+  wasUnauthorized.value = false;
+  isPublished.value = false;
+  isPublic.value = false;
+  isHsCollection.value = false;
+  allowFileUpload.value = true;
+  resourceType.value = "";
+
+  try {
+    if (selectedRepository.value) {
+      const response = await repositoryStore.readExistingSubmission(
+        selectedRepository.value.key,
+        identifierFromUrl.value,
+      );
+
+      if (response && isNaN(response)) {
+        submission.value = submissionStore.getInsertData(
+          response.metadata,
+          selectedRepository.value.key,
+          identifierFromUrl.value,
+          true,
+          response.published,
+        );
+        apiSubmission.value = response.metadata;
+        if (response.published) isPublished.value = true;
+        if (response.public) isPublic.value = true;
+
+        if (submission.value.repository === EnumRepositoryKeys.hydroshare) {
+          if (response.metadata.type === "CollectionResource")
+            isHsCollection.value = true;
+          allowFileUpload.value = apiSubmission.value.type === "CompositeResource" && !isPublished.value;
+          resourceType.value = apiSubmission.value.type === "CompositeResource" ? "Resource" : "Collection";
+        }
+        else {
+          allowFileUpload.value = !isPublished.value;
+        }
+      }
+    }
+  }
+  catch (e) {
+    console.log(e);
+  }
+  finally {
+    isFetching.value = false;
+  }
+}
+
+function openAuthorizePopup(repositoryKey: string) {
+  repositoryStore.openAuthorizeDialog(repositoryKey as EnumRepositoryKeys)
+}
 </script>
 
 <style lang="scss" scoped>

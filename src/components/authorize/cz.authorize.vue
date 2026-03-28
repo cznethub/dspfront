@@ -65,47 +65,29 @@
   </v-card>
 </template>
 
-<script lang="ts">
-import { Component, mixins, Prop, toNative } from 'vue-facing-decorator'
-import { getRepositoryFromKey } from '~/constants'
-import { ActiveRepositoryMixin } from '~/mixins/activeRepository.mixin'
-import Repository from '~/models/repository.model'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRepositoryStore } from '~/stores/repository.store'
+import { EnumRepositoryKeys } from '~/components/submissions/types'
 
-@Component({
-  name: 'cz-authorize',
-  components: {},
-  emits: ['authorized', 'update:retry'],
-})
-class CzAuthorize extends mixins(ActiveRepositoryMixin) {
-  @Prop() repo!: string
-  @Prop() retry!: boolean
+const props = defineProps<{ repo: string; retry: boolean }>()
+const emit = defineEmits<{
+  (e: 'authorized', response: any): void
+  (e: 'update:retry', value: boolean): void
+}>()
 
-  get repository() {
-    return getRepositoryFromKey(this.repo) as typeof Repository
-  }
+const repositoryStore = useRepositoryStore()
 
-  get authorizeUrl() {
-    return this.repository?.get()?.urls?.authorizeUrl
-  }
+const repoData = computed(() => repositoryStore.getData(props.repo))
+const repoLogoSrc = computed(() => repoData.value?.logoSrc || '')
+const repoName = computed(() => repoData.value?.name || '')
 
-  get repoLogoSrc() {
-    return new URL(this.repository.get()?.logoSrc || '', import.meta.url).href
-  }
-
-  get repoName() {
-    return this.repository.get()?.name
-  }
-
-  async openAuthorizePopup() {
-    this.$emit('update:retry', false)
-    Repository.authorize(this.repository, this.onAuthorized)
-  }
-
-  onAuthorized(response: any) {
-    this.$emit('authorized', response)
-  }
+async function openAuthorizePopup() {
+  emit('update:retry', false)
+  await repositoryStore.authorize(props.repo as EnumRepositoryKeys, (response: any) => {
+    emit('authorized', response)
+  })
 }
-export default toNative(CzAuthorize)
 </script>
 
 <style lang="scss" scoped>

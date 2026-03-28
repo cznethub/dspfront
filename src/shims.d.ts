@@ -1,3 +1,5 @@
+declare const VITE_APP_VERSION: string
+
 declare interface Window {
   // extend the window
 }

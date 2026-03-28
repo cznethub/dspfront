@@ -86,32 +86,28 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Prop, Vue, toNative } from 'vue-facing-decorator'
+<script setup lang="ts">
+import { computed } from 'vue'
 
-@Component({
-  name: 'cz-new-submission-actions',
-  components: {},
-  emits: ['showUiSchema', 'saveAndFinish', 'cancel', 'save'],
-})
-class CzNewSubmissionActions extends Vue {
-  @Prop() isEditMode!: boolean
-  @Prop() repositoryUrl!: string
-  @Prop() isDevMode!: boolean
-  @Prop() hasUnsavedChanges!: boolean
-  @Prop() isSaving!: boolean
-  @Prop() confirmText!: string
-  @Prop() errors!: any[]
+const props = defineProps<{
+  isEditMode?: boolean
+  repositoryUrl?: string
+  isDevMode?: boolean
+  hasUnsavedChanges?: boolean
+  isSaving?: boolean
+  confirmText?: string
+  errors: any[]
+}>()
 
-  get canConfirm() {
-    return !this.isSaving && !this.errors.length
-  }
+defineEmits<{
+  showUiSchema: []
+  saveAndFinish: []
+  cancel: []
+  save: []
+}>()
 
-  get isValid() {
-    return !this.errors.length
-  }
-}
-export default toNative(CzNewSubmissionActions)
+const canConfirm = computed(() => !props.isSaving && !props.errors.length)
+const isValid = computed(() => !props.errors.length)
 </script>
 
 <style lang="scss" scoped>

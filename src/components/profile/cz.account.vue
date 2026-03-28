@@ -23,26 +23,19 @@
   </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
+import { computed } from 'vue'
 import { Notifications } from '@cznethub/cznet-vue-core'
-import { Component, toNative, Vue } from 'vue-facing-decorator'
-import User from '~/models/user.model'
+import { useUserStore } from '~/stores/user.store'
 
-@Component({
-  name: 'cz-account',
-  components: {},
-})
-class CzAccount extends Vue {
-  get token() {
-    return User.$state.orcidAccessToken
-  }
+const userStore = useUserStore()
 
-  onCopy() {
-    navigator.clipboard.writeText(this.token)
-    Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
-  }
+const token = computed(() => userStore.orcidAccessToken)
+
+function onCopy() {
+  navigator.clipboard.writeText(token.value)
+  Notifications.toast({ message: 'Copied to clipboard', type: 'info' })
 }
-export default toNative(CzAccount)
 </script>
 
 <style lang="scss" scoped></style>

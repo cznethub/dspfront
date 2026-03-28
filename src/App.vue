@@ -194,251 +194,198 @@
   </v-app>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import type { RouteLocationMatched, RouteLocationRaw } from "vue-router";
 import { CzNotifications, Notifications } from "@cznethub/cznet-vue-core";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useI18n } from "vue-i18n";
 import { Subscription } from "rxjs";
-import { Component, toNative, Vue, Watch } from "vue-facing-decorator";
 import { useRoute, useRouter } from "vue-router";
 import CzLogin from "~/components/account/cz.login.vue";
 import CzAuthorize from "~/components/authorize/cz.authorize.vue";
-import CzFooter from "~/components/base/cz.footer.vue";
-import User from "~/models/user.model";
-// import Zenodo from '~/models/zenodo.model'
 import { addRouteTags } from "~/modules/router";
 import { EnumRepositoryKeys } from "./components/submissions/types";
-import { DEFAULT_TOAST_DURATION, DISCOVERY_SITE_URL } from "./constants";
+import { DISCOVERY_SITE_URL } from "./constants";
 import { hasLoggedInGuard } from "./guards";
-import EarthChem from "./models/earthchem.model";
-import External from "./models/external.model";
-import HydroShare from "./models/hydroshare.model";
-import Repository from "./models/repository.model";
-import Submission from "./models/submission.model";
+import { useUserStore } from "./stores/user.store";
+import { useRepositoryStore } from "./stores/repository.store";
+import { useSubmissionStore } from "./stores/submission.store";
 
-const INITIAL_DIALOG = {
-  title: "",
-  content: "",
-  confirmText: "",
-  cancelText: "",
+const userStore = useUserStore();
+const repositoryStore = useRepositoryStore();
+const submissionStore = useSubmissionStore();
+
+const route = useRoute();
+const router = useRouter();
+const { t } = useI18n();
+
+const isLoading = ref(true);
+const showMobileNavigation = ref(false);
+
+const logInDialog = ref<{ isActive: boolean; onLoggedIn: () => void }>({
   isActive: false,
-  onConfirm: () => {},
-  onCancel: () => {},
-};
+  onLoggedIn: () => {},
+});
 
-const INITIAL_SNACKBAR = {
-  message: "",
-  duration: DEFAULT_TOAST_DURATION,
-  position: "center" as "center" | "left" | undefined,
-  type: "default" as "default" | "success" | "error" | "info",
+const authorizeDialog = ref<{
+  isActive: boolean;
+  retry: boolean;
+  repo: string;
+  onAuthorized: (response?: any) => void;
+}>({
   isActive: false,
-  isInfinite: false,
-  // isPersistent: false,
-};
+  retry: false,
+  repo: "",
+  onAuthorized: () => {},
+});
 
-@Component({
-  name: "app",
-  components: { CzFooter, CzLogin, CzAuthorize, CzNotifications },
-})
-class App extends Vue {
-  isLoading = true;
-  onOpenLogInDialog!: Subscription;
-  onOpenAuthorizeDialog!: Subscription;
-  showMobileNavigation = false;
-  loggedInSubject = new Subscription();
+const paths = [
+  {
+    attrs: { to: "/" },
+    label: "Home",
+    icon: "mdi-home",
+    isActive: () => route?.name === "home",
+  },
+  {
+    attrs: { to: "/submissions" },
+    label: "My Submissions",
+    icon: "mdi-bookmark-multiple",
+    isActive: () => route?.name === "submissions",
+  },
+  {
+    attrs: { to: "/resources" },
+    label: "Resources",
+    icon: "mdi-library",
+    isActive: () =>
+      ["resources", "quick-start-guide", "recommendations"].includes(
+        route?.name?.toString() || "",
+      ),
+  },
+  {
+    attrs: { to: "/register-data" },
+    label: "Register Data",
+    icon: "mdi-book-plus",
+    isActive: () =>
+      ["register-data", "register-data.repository", "register"].includes(
+        route?.name?.toString() || "",
+      ),
+  },
+  {
+    attrs: { href: DISCOVERY_SITE_URL },
+    label: "Discover Data",
+    icon: "mdi-card-search",
+    isExternal: true,
+  },
+  {
+    attrs: { to: "/about" },
+    label: "About",
+    icon: "mdi-help",
+    isActive: () => route?.name === "about",
+  },
+  {
+    attrs: { to: "/contact" },
+    label: "Contact",
+    icon: "mdi-book-open-blank-variant",
+    isActive: () => route?.name === "contact",
+  },
+];
 
-  snackbar: any & { isActive: boolean; isInfinite: boolean } = INITIAL_SNACKBAR;
+const isLoggedIn = computed(() => userStore.isLoggedIn);
 
-  route = useRoute();
-  router = useRouter();
-  dialog: any & { isActive: boolean } = INITIAL_DIALOG;
-  logInDialog: any & { isActive: boolean } = {
-    isActive: false,
-    onLoggedIn: () => {},
-    onCancel: () => {},
-  };
+function openLogInDialog() {
+  userStore.openLogInDialog();
+}
 
-  authorizeDialog: any & { isActive: boolean } = {
-    isActive: false,
-    retry: false,
-    repo: "",
-    onAuthorized: () => {},
-    onCancel: () => {},
-  };
+function logOut() {
+  Notifications.openDialog({
+    title: "Log out?",
+    content: "Are you sure you want to log out?",
+    confirmText: "Log Out",
+    cancelText: "Cancel",
+    onConfirm: () => {
+      userStore.logOut();
+      if (
+        route.matched.some((r: RouteLocationMatched) =>
+          (r.beforeEnter as any[])?.includes(hasLoggedInGuard),
+        )
+      ) {
+        router.push({ name: "home" });
+      }
+    },
+  });
+}
 
-  paths = [
-    {
-      attrs: { to: "/" },
-      label: "Home",
-      icon: "mdi-home",
-      isActive: () => {
-        return this.route?.name === "home";
-      },
-    },
-    {
-      attrs: { to: "/submissions" },
-      label: "My Submissions",
-      icon: "mdi-bookmark-multiple",
-      isActive: () => {
-        return this.route?.name === "submissions";
-      },
-    },
-    {
-      attrs: { to: "/resources" },
-      label: "Resources",
-      icon: "mdi-library",
-      isActive: () => {
-        return ["resources", "quick-start-guide", "recommendations"].includes(
-          this.route?.name?.toString() || "",
-        );
-      },
-    },
-    {
-      attrs: { to: "/register-data" },
-      label: "Register Data",
-      icon: "mdi-book-plus",
-      isActive: () => {
-        return ["register-data", "register-data.repository", "register"].includes(
-          this.route?.name?.toString() || "",
-        );
-      },
-    },
-    {
-      attrs: { href: DISCOVERY_SITE_URL },
-      label: "Discover Data",
-      icon: "mdi-card-search",
-      isExternal: true,
-    },
-    {
-      attrs: { to: "/about" },
-      label: "About",
-      icon: "mdi-help",
-      isActive: () => {
-        return this.route?.name === "about";
-      },
-    },
+let onOpenLogInDialog: Subscription;
+let onOpenAuthorizeDialog: Subscription;
+let loggedInSubject: Subscription = new Subscription();
 
-    {
-      attrs: { to: "/contact" },
-      label: "Contact",
-      icon: "mdi-book-open-blank-variant",
-      isActive: () => {
-        return this.route?.name === "contact";
-      },
-    },
-  ];
+function _initRepositories() {
+  return Promise.all([
+    repositoryStore.init(EnumRepositoryKeys.hydroshare),
+    repositoryStore.init(EnumRepositoryKeys.earthchem),
+    repositoryStore.init(EnumRepositoryKeys.external),
+  ]);
+}
 
-  get isLoggedIn(): boolean {
-    return User.$state.isLoggedIn;
+onMounted(async () => {
+  document.title = t("hubName");
+  addRouteTags(route, route);
+
+  if (route.name !== "submissions") {
+    // Only load submissions on app start if outside submissions page
+    submissionStore.fetchSubmissions();
   }
 
-  openLogInDialog() {
-    User.openLogInDialog();
-  }
+  onOpenLogInDialog = userStore.logInDialog$.subscribe(
+    (redirectTo?: RouteLocationRaw) => {
+      logInDialog.value.isActive = true;
+      logInDialog.value.onLoggedIn = () => {
+        if (redirectTo) router.push(redirectTo).catch(() => {});
+        logInDialog.value.isActive = false;
+      };
+    },
+  );
 
-  logOut() {
-    Notifications.openDialog({
-      title: "Log out?",
-      content: "Are you sure you want to log out?",
-      confirmText: "Log Out",
-      cancelText: "Cancel",
-      onConfirm: () => {
-        User.logOut();
-
-        if (
-          this.route.matched.some((r) =>
-            (r.beforeEnter as any[])?.includes(hasLoggedInGuard),
-          )
-        ) {
-          this.router.push({ name: "home" });
+  onOpenAuthorizeDialog = repositoryStore.authorizeDialog$.subscribe(
+    (params: { repository: string; redirectTo?: RouteLocationRaw }) => {
+      authorizeDialog.value.repo = params.repository;
+      authorizeDialog.value.retry = false;
+      authorizeDialog.value.isActive = true;
+      authorizeDialog.value.onAuthorized = async (response?: any) => {
+        if (response?.error) {
+          authorizeDialog.value.retry = true;
+          return;
         }
-      },
+        if (params.redirectTo) {
+          if (params.repository === EnumRepositoryKeys.hydroshare)
+            await repositoryStore.init(EnumRepositoryKeys.hydroshare);
+          else if (params.repository === EnumRepositoryKeys.earthchem)
+            await repositoryStore.init(EnumRepositoryKeys.earthchem);
+          router.push(params.redirectTo).catch(() => {});
+        }
+        authorizeDialog.value.isActive = false;
+      };
+    },
+  );
+
+  await userStore.checkAuthorization();
+
+  if (userStore.isLoggedIn) {
+    await _initRepositories();
+  } else {
+    loggedInSubject = userStore.loggedIn$.subscribe(async () => {
+      await _initRepositories();
     });
   }
 
-  /** Check if the user is still logged in after being idle for a while */
-  @Watch("isAppIdle")
-  onIdleChange(_wasActive: boolean, isActive: boolean) {
-    if (isActive) User.checkAuthorization();
-  }
+  isLoading.value = false;
+});
 
-  async created() {
-    document.title = `${this.$t("hubName")}`;
-    addRouteTags(this.route, this.route);
-
-    if (this.route.name !== "submissions") {
-      // Only load submissions on app start if outside submissions page. Otherwise the submissions page will load them on 'created' lifecyecle hook
-      Submission.fetchSubmissions();
-    }
-
-    this.onOpenLogInDialog = User.logInDialog$.subscribe(
-      (redirectTo?: RouteLocationRaw) => {
-        this.logInDialog.isActive = true;
-
-        this.logInDialog.onLoggedIn = () => {
-          if (redirectTo) this.router.push(redirectTo).catch(() => {});
-
-          this.logInDialog.isActive = false;
-        };
-      },
-    );
-
-    this.onOpenAuthorizeDialog = Repository.authorizeDialog$.subscribe(
-      (params: {
-        repository: string;
-        redirectTo?: RouteLocationRaw | undefined;
-      }) => {
-        this.authorizeDialog.repo = params.repository;
-        this.authorizeDialog.retry = false;
-        this.authorizeDialog.isActive = true;
-        this.authorizeDialog.onAuthorized = async (response?: any) => {
-          if (response?.error) {
-            this.authorizeDialog.retry = true;
-            return;
-          }
-          if (params.redirectTo) {
-            if (params.repository === EnumRepositoryKeys.hydroshare)
-              await HydroShare.init();
-            // else if (params.repository === EnumRepositoryKeys.zenodo)
-            //   await Zenodo.init()
-            else if (params.repository === EnumRepositoryKeys.earthchem)
-              await EarthChem.init();
-
-            this.router.push(params.redirectTo).catch(() => {});
-          }
-          this.authorizeDialog.isActive = false;
-        };
-      },
-    );
-
-    await User.checkAuthorization();
-
-    User.$state.isLoggedIn
-      ? await this._initRepositories()
-      : (this.loggedInSubject = User.loggedIn$.subscribe(async () => {
-          await this._initRepositories();
-        }));
-
-    this.isLoading = false;
-  }
-
-  private _initRepositories() {
-    return Promise.all([
-      HydroShare.init(),
-      EarthChem.init(),
-      // Zenodo.init(),
-      External.init(),
-    ]);
-  }
-
-  beforeDestroy() {
-    // Good practice
-    this.onOpenLogInDialog.unsubscribe();
-    this.onOpenAuthorizeDialog.unsubscribe();
-    this.loggedInSubject.unsubscribe();
-  }
-}
-
-export default toNative(App);
+onBeforeUnmount(() => {
+  onOpenLogInDialog?.unsubscribe();
+  onOpenAuthorizeDialog?.unsubscribe();
+  loggedInSubject?.unsubscribe();
+});
 </script>
 
 <style lang="scss" scoped>

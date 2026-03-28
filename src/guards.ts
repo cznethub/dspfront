@@ -1,42 +1,40 @@
 import { Notifications } from '@cznethub/cznet-vue-core'
 import type { NavigationGuard, RouteLocationRaw } from 'vue-router'
-import { isRepositoryAuthorized } from './util'
-import User from './models/user.model'
-import Repository from './models/repository.model'
+import { useUserStore } from '~/stores/user.store'
+import { useRepositoryStore } from '~/stores/repository.store'
 import type { EnumRepositoryKeys } from '~/components/submissions/types'
 
 export const hasNextRouteGuard: NavigationGuard = () => {
-  const nextRoute = User.$state.next
+  const userStore = useUserStore()
+  const nextRoute = userStore.next
   if (nextRoute) {
     // Consume the redirect
-    User.commit((state) => {
-      state.next = ''
-    })
+    userStore.next = ''
     return { path: nextRoute } satisfies RouteLocationRaw
   }
 }
 
 export const hasLoggedInGuard: NavigationGuard = (to, _from, next) => {
-  if (!User.$state.isLoggedIn) {
-    User.openLogInDialog({ path: to.path })
+  const userStore = useUserStore()
+  if (!userStore.isLoggedIn) {
+    userStore.openLogInDialog({ path: to.path })
     next({ name: 'home' })
   }
   else {
     next()
-  };
+  }
 }
 
 export const hasUnsavedChangesGuard: NavigationGuard = (to, _from, next) => {
-  if (User.$state.hasUnsavedChanges) {
+  const userStore = useUserStore()
+  if (userStore.hasUnsavedChanges) {
     Notifications.openDialog({
       title: 'You have unsaved changes',
       content: 'Do you want to continue and discard your changes?',
       confirmText: 'Discard',
       cancelText: 'Cancel',
       onConfirm: async () => {
-        await User.commit((state) => {
-          state.hasUnsavedChanges = false
-        })
+        userStore.hasUnsavedChanges = false
         next({ path: to.path })
       },
     })
@@ -47,13 +45,15 @@ export const hasUnsavedChangesGuard: NavigationGuard = (to, _from, next) => {
 }
 
 export const hasAccessTokenGuard: NavigationGuard = (to, _from, next) => {
+  const repositoryStore = useRepositoryStore()
+  const userStore = useUserStore()
+  const repoKey = to.params.repository as EnumRepositoryKeys
   if (
-    !(isRepositoryAuthorized(to.params.repository as EnumRepositoryKeys, false))
-    && User.$state.isLoggedIn
+    !repositoryStore.isAuthorized(repoKey)
+    && userStore.isLoggedIn
   ) {
-    Repository.openAuthorizeDialog(to.params.repository as EnumRepositoryKeys, { path: to.path })
+    repositoryStore.openAuthorizeDialog(repoKey, { path: to.path })
   }
-
   else {
     next()
   }
