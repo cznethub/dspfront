@@ -382,6 +382,19 @@
             </v-alert>
           </template>
 
+          <v-alert
+            v-if="registrationError"
+            class="mb-4 text-subtitle-1"
+            border="start"
+            type="error"
+            variant="outlined"
+            density="compact"
+            closable
+            @click:close="registrationError = ''"
+          >
+            {{ registrationError }}
+          </v-alert>
+
           <template #next>
             <template v-if="submission">
               <!-- <div v-if="!isPublished && !isHsCollection">
@@ -414,6 +427,13 @@
                 :disabled="isFetching || !isValid || !url || isRegistering"
                 @click="registerSubmissionAsIs"
               >
+                <v-progress-circular
+                  v-if="isRegistering"
+                  indeterminate
+                  size="16"
+                  width="2"
+                  class="mr-2"
+                />
                 {{ isRegistering ? "Registering..." : "Register Dataset" }}
               </v-btn>
             </template>
@@ -469,6 +489,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   isPublished = false;
   isPublic = false;
   isRegistering = false;
+  registrationError = "";
   allowFileUpload = true;
   resourceType = "";
   isHsCollection = false;
@@ -555,6 +576,8 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
           name: "submissions",
         });
       } else {
+        this.registrationError =
+          "Failed to register dataset. Please try again.";
         Notifications.toast({
           message: "Failed to register dataset",
           type: "error",
@@ -562,6 +585,7 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
       }
     } catch (e) {
       this.isRegistering = false;
+      this.registrationError = "Failed to register dataset. Please try again.";
       Notifications.toast({
         message: "Failed to register dataset",
         type: "error",
@@ -578,10 +602,16 @@ class CzRegisterDataset extends mixins(ActiveRepositoryMixin) {
   isValidUrlOrIdentifier(): true | string {
     if (!this.url) return "required";
 
-    return this.selectedRepository?.identifierPattern?.test(this.url) ||
-      this.selectedRepository?.identifierUrlPattern?.test(this.url)
-      ? true
-      : "invalid URL or Identifier";
+    const valid =
+      this.selectedRepository?.identifierPattern?.test(this.url) ||
+      this.selectedRepository?.identifierUrlPattern?.test(this.url);
+
+    if (valid) return true;
+
+    if (this.selectedRepository) {
+      return `Enter a valid ${this.selectedRepository.name} URL (e.g. '${this.selectedRepository.exampleUrl}') or identifier (e.g. '${this.selectedRepository.exampleIdentifier}')`;
+    }
+    return "Invalid URL or identifier";
   }
 
   private async _readDataset() {

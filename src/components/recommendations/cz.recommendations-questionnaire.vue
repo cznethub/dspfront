@@ -15,9 +15,20 @@
       journals to which you submit papers may require that associated data be
       deposited in a specific repository. We hope the repository recommendations
       provided here are helpful, but realize that they may be superseded by
-      other requirements. We recommend that you adress any of these issues
+      other requirements. We recommend that you address any of these issues
       before using this guide.
     </p>
+
+    <div v-if="steps.length > 1" class="mb-4">
+      <v-btn
+        variant="outlined"
+        size="small"
+        prepend-icon="mdi-refresh"
+        @click="resetQuestionnaire"
+      >
+        Start Over
+      </v-btn>
+    </div>
 
     <v-stepper-vertical v-model="currentStepIndex" flat>
       <template #default="{ step }">
@@ -164,7 +175,7 @@ interface CzStep {
     // The recommendations at the end of a query
     prefer: EnumRepositoryKeys[];
     consider?: EnumRepositoryKeys[];
-    linkToGuide?: boolean; // Wether the user should see a link that points to our existing guidance and best practices
+    linkToGuide?: keyof typeof EnumDataTemplateType; // Key that maps to a guide URL in guideUrls and a label in EnumDataTemplateType
   };
   selectedOption?: CzStep; // Used internally to track which option the user selected
   label?: string;
@@ -209,6 +220,12 @@ class CzRecommendationsQuestionnaire extends mixins(ActiveRepositoryMixin) {
           return a.isSupported?.form ? -1 : 1;
         })
     );
+  }
+
+  resetQuestionnaire() {
+    this.steps = [mappings] as CzStep[];
+    this.currentStepIndex = 1;
+    this.selectedOption = null;
   }
 
   onOptionChanged(_option: CzStep) {

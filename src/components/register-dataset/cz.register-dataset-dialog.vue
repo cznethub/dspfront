@@ -19,7 +19,7 @@
           <template #default="{ isHovering, props }">
             <v-card
               class="transition-swing"
-              :to="{ path: 'register' }"
+              :to="{ name: 'register' }"
               :elevation="isHovering ? 4 : 2"
               v-bind="props"
               variant="elevated"
