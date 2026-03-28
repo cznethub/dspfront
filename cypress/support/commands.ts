@@ -1,37 +1,37 @@
 /// <reference types="cypress" />
-// ***********************************************
-// This example commands.ts shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add('login', (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
-//
-// declare global {
-//   namespace Cypress {
-//     interface Chainable {
-//       login(email: string, password: string): Chainable<void>
-//       drag(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       dismiss(subject: string, options?: Partial<TypeOptions>): Chainable<Element>
-//       visit(originalFn: CommandOriginalFn, url: string, options: Partial<VisitOptions>): Chainable<Element>
-//     }
-//   }
-// }
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      /**
+       * Simulate authenticated state by seeding the vuex-persistedstate
+       * localStorage entry that the app reads on boot.
+       * Bypasses the ORCID OAuth popup entirely.
+       */
+      login(): Chainable<void>
+    }
+  }
+}
+
+Cypress.Commands.add('login', () => {
+  // vuex-persistedstate stores the Vuex tree under the key "CZ Hub".
+  // The hasLoggedInGuard reads User.$state.isLoggedIn, which maps to
+  // state.entities.users.isLoggedIn. We seed the minimum fields the
+  // guards and app need to treat the session as authenticated.
+  const vuexState = {
+    entities: {
+      users: {
+        isLoggedIn: true,
+        orcid: '0000-0000-0000-0000',
+        orcidAccessToken: 'fake-cypress-token',
+        next: '',
+        hasUnsavedChanges: false,
+        isSaving: false,
+        registeringSubmission: null,
+        showSubmissionWarning: true,
+      },
+    },
+  }
+
+  localStorage.setItem('CZ Hub', JSON.stringify(vuexState))
+})
