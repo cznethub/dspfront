@@ -104,6 +104,11 @@ export default defineConfig({
   test: {
     include: ['test/**/*.test.ts'],
     environment: 'jsdom',
+    server: {
+      deps: {
+        inline: [/vuetify/, /@cznethub/],
+      },
+    },
   },
 
   // https://vitejs.dev/config/preview-options

@@ -15,6 +15,7 @@ import CzSubmissions from '~/components/submissions/cz.submissions.vue'
 
 import CzSubmit from '~/components/submit/cz.submit.vue'
 
+import { useUserStore } from '~/stores/user.store'
 import { hasAccessTokenGuard, hasLoggedInGuard } from './guards'
 
 export const routes: RouteRecordRaw[] = [
@@ -32,12 +33,14 @@ export const routes: RouteRecordRaw[] = [
   {
     name: 'profile',
     path: '/profile',
-    redirect: '/profile/account',
+    redirect: () => {
+      const userStore = useUserStore()
+      return userStore.isLoggedIn ? { name: 'profile.account' } : { name: 'home' }
+    },
     components: {
       content: CzProfile,
       footer: CzFooter,
     },
-    beforeEnter: [hasLoggedInGuard],
     children: [
       {
         name: 'profile.account',

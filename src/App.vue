@@ -368,17 +368,19 @@ onMounted(async () => {
     },
   );
 
-  await userStore.checkAuthorization();
+  try {
+    await userStore.checkAuthorization();
 
-  if (userStore.isLoggedIn) {
-    await _initRepositories();
-  } else {
-    loggedInSubject = userStore.loggedIn$.subscribe(async () => {
+    if (userStore.isLoggedIn) {
       await _initRepositories();
-    });
+    } else {
+      loggedInSubject = userStore.loggedIn$.subscribe(async () => {
+        await _initRepositories();
+      });
+    }
+  } finally {
+    isLoading.value = false;
   }
-
-  isLoading.value = false;
 });
 
 onBeforeUnmount(() => {

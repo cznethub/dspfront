@@ -1,0 +1,29 @@
+[
+  {
+    "title": "Critical Zone Observatory Hydrology Data 2023",
+    "authors": ["Smith, John A.", "Doe, Jane B."],
+    "repo_type": "hydroshare",
+    "submitted": "2024-01-15T10:30:00.000Z",
+    "identifier": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4",
+    "metadata_json": "{}",
+    "url": "https://www.hydroshare.org/resource/a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4/"
+  },
+  {
+    "title": "Soil Geochemistry at Rocky Mountain CZO",
+    "authors": ["Johnson, Robert C."],
+    "repo_type": "earthchem",
+    "submitted": "2024-02-20T14:00:00.000Z",
+    "identifier": "42001",
+    "metadata_json": "{}",
+    "url": "https://ecl.earthchem.org/view.php?id=42001"
+  },
+  {
+    "title": "Watershed Sensor Time Series 2022-2023",
+    "authors": ["Williams, Sarah M.", "Brown, David K.", "Taylor, Emily R."],
+    "repo_type": "zenodo",
+    "submitted": "2023-11-05T09:15:00.000Z",
+    "identifier": "10154321",
+    "metadata_json": "{}",
+    "url": "https://zenodo.org/deposit/10154321"
+  }
+]
