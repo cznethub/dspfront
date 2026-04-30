@@ -36,8 +36,8 @@ export const repoMetadata: { [key: string]: IRepository } = {
       'EarthChem provides open data services to the geochemical, petrological, mineralogical, and related communities. Services include data preservation, discovery, access, and visualization.',
     submitTooltip: 'Submit a dataset to the EarthChem repository.',
     isSupported: { registration: true, form: false },
-    url: 'https://www.earthchem.org',
-    supportUrl: 'https://www.earthchem.org/resources/support/',
+    url: 'https://ecl.earthchem.org',
+    supportUrl: 'https://ecl.earthchem.org/resources/support/',
     supportedFileTypes: [
       '.csv',
       '.doc',
@@ -83,9 +83,9 @@ export const repoMetadata: { [key: string]: IRepository } = {
     maxUploadSizePerFile: 50 * 1024 ** 2, // 50 MB
     maxTotalUploadSize: 400 * 1024 ** 2, // 400 MB
     fileNameRegex: /^[-()\w\s]*$/, // File names can only contain upper or lowercase letters, numbers, spaces, _(underscores), -(dashes) and parenthesis().
-    exampleUrl: 'https://www.earthchem.org/view.php?id=2391',
+    exampleUrl: 'https://ecl.earthchem.org/view.php?id=2391',
     exampleIdentifier: '2391',
-    identifierUrlPattern: /(?:http:\/\/www.|https:\/\/www.|http:\/\/|https:\/\/)?earthchem.org\/view.php\?id=(\d+)\/?$/,
+    identifierUrlPattern: /(?:http:\/\/ecl.|https:\/\/ecl.|http:\/\/|https:\/\/)?earthchem.org\/view.php\?id=(\d+)\/?$/,
     identifierPattern: /^\d+$/,
   },
   [EnumRepositoryKeys.zenodo]: {
