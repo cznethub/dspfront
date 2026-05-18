@@ -57,7 +57,7 @@
     "vite-plugin-webfont-dl": "^3.12.0",
     "vite-ssg": "^28.3.0",
     "vite-ssg-sitemap": "^0.10.0",
-    "vitest": "^4.1.5",
+    "vitest": "^4.1.6",
     "vue-tsc": "^3.2.8"
   },
   "lint-staged": {
