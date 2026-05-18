@@ -31,7 +31,7 @@
     "vuetify": "4.0.7"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^8.2.0",
+    "@antfu/eslint-config": "^9.0.0",
     "@fortawesome/fontawesome-free": "^7.2.0",
     "@iconify-json/carbon": "^1.2.21",
     "@mdi/font": "^7.4.47",
