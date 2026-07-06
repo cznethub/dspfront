@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@cznethub/cznet-vue-core": "^0.3.0",
-    "@unhead/vue": "^3.1.6",
+    "@unhead/vue": "^3.1.7",
     "@vueuse/core": "^14.3.0",
     "@vueuse/head": "^2.0.0",
     "nprogress": "^0.2.0",
