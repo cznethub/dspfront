@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.1.0",
-    "@fortawesome/fontawesome-free": "^7.3.0",
+    "@fortawesome/fontawesome-free": "^7.3.1",
     "@iconify-json/carbon": "^1.2.24",
     "@mdi/font": "^7.4.47",
     "@types/nprogress": "^0.2.3",
