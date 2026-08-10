@@ -45,7 +45,7 @@
     "eslint": "10.8.0",
     "eslint-plugin-cypress": "^6.4.3",
     "eslint-plugin-format": "^2.0.1",
-    "lint-staged": "^17.2.0",
+    "lint-staged": "^17.3.0",
     "sass": "^1.102.0",
     "taze": "^19.16.0",
     "typescript": "^7.0.2",
