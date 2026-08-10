@@ -43,7 +43,7 @@
     "cypress": "^15.20.0",
     "cypress-vite": "^1.10.2",
     "eslint": "10.8.0",
-    "eslint-plugin-cypress": "^6.4.3",
+    "eslint-plugin-cypress": "^7.0.0",
     "eslint-plugin-format": "^2.0.1",
     "lint-staged": "^17.2.0",
     "sass": "^1.102.0",
