@@ -40,7 +40,7 @@
     "@vitejs/plugin-vue": "^6.0.8",
     "@vue/test-utils": "^2.4.11",
     "cross-env": "^10.1.0",
-    "cypress": "^15.20.0",
+    "cypress": "^15.20.1",
     "cypress-vite": "^1.10.2",
     "eslint": "10.8.0",
     "eslint-plugin-cypress": "^7.0.0",
