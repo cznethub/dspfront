@@ -28,7 +28,7 @@
     "vue-demi": "^0.14.10",
     "vue-i18n": "^11.4.10",
     "vue-router": "^5.3.0",
-    "vuetify": "4.1.12"
+    "vuetify": "4.2.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^9.3.0",
